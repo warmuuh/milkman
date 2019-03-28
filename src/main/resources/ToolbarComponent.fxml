@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Label?>
+<?import javafx.collections.*?>
+<?import java.lang.String?>
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Tab?>
+
+
+<ToolBar fx:id="toolbar" xmlns:fx="http://javafx.com/fxml/1"
+fx:controller="milkman.ui.main.ToolbarComponent">
+	<items>
+		<Label text="Workspace:"></Label>
+		<ChoiceBox value="EPD">
+			<items>
+				<FXCollections fx:factory="observableArrayList">
+					<String fx:value="EPD" />
+					<String fx:value="Personal" />
+					<Separator></Separator>
+					<String fx:value="manage workspaces..." />
+				</FXCollections>
+			</items>
+		</ChoiceBox>
+						<Label text="Synced"></Label>
+		
+
+
+		<Label text="Environment:"></Label>
+		<ChoiceBox value="Local">
+			<items>
+				<FXCollections fx:factory="observableArrayList">
+					<String fx:value="Local" />
+					<String fx:value="QA" />
+					<Separator></Separator>
+					<String fx:value="manage environments..." />
+				</FXCollections>
+			</items>
+		</ChoiceBox>
+	
+		<Button text="Preferences"></Button>
+	</items>
+</ToolBar>
+
