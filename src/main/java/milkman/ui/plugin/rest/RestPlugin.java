@@ -20,6 +20,9 @@ import milkman.ui.plugin.rest.domain.RestResponseHeaderAspect;
 
 public class RestPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 
+	RequestProcessor requestProcessor = new RequestProcessor();
+	
+	
 	@Override
 	public List<RequestAspectEditor> getRequestTabs() {
 		return Arrays.asList(new RequestHeaderTabController(), new RequestBodyTabController());
@@ -51,15 +54,7 @@ public class RestPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 
 	@Override
 	public ResponseContainer executeRequest(RequestContainer request) {
-		
-		RestRequestContainer restRequest = (RestRequestContainer) request;
-		
-		
-		
-		RestResponseContainer response = new RestResponseContainer();
-		response.getAspects().add(new RestResponseHeaderAspect());
-		response.getAspects().add(new RestResponseBodyAspect());
-		return response;
+		return requestProcessor.executeRequest((RestRequestContainer) request);
 	}
 
 	@Override

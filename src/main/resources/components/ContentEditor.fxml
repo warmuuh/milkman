@@ -27,6 +27,6 @@
 		<RadioButton text="raw"></RadioButton>
 		<RadioButton text="json"></RadioButton>
 	</HBox>
-	<TextArea></TextArea>
+	<TextArea fx:id="textArea"></TextArea>
 </VBox>
 

@@ -8,6 +8,7 @@ import milkman.domain.ResponseAspect;
 import milkman.ui.plugin.ResponseAspectEditor;
 import milkman.ui.plugin.rest.domain.RestHeaderAspect;
 import milkman.ui.plugin.rest.domain.RestResponseBodyAspect;
+import milkman.ui.plugin.rest.domain.RestResponseHeaderAspect;
 
 public class ResponseHeaderTabController implements ResponseAspectEditor {
 
@@ -21,7 +22,7 @@ public class ResponseHeaderTabController implements ResponseAspectEditor {
 
 	@Override
 	public boolean canHandleAspect(ResponseAspect aspect) {
-		return aspect instanceof RestResponseBodyAspect;
+		return aspect instanceof RestResponseHeaderAspect;
 	}
 
 }
