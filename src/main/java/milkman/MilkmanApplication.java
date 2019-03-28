@@ -29,7 +29,9 @@ public class MilkmanApplication extends Application {
 
 	private Workspace createDummyModel() {
 		RequestTypePlugin requestTypePlugin = module.getUiPluginManager().loadRequestTypePlugins().get(0);
-		Collection collection1 = new Collection("jsonPlaceholder", List.of(requestTypePlugin.createNewRequest()).asJava());
+		RequestContainer request = requestTypePlugin.createNewRequest();
+		module.getUiPluginManager().loadRequestAspectPlugins().forEach(p -> p.initializeAspects(request));
+		Collection collection1 = new Collection("jsonPlaceholder", List.of(request).asJava());
 		return new Workspace(List.of(collection1).asJava());
 	}
 

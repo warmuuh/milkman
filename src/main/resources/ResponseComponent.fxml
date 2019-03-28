@@ -22,7 +22,7 @@
 
 
 <VBox xmlns:fx="http://javafx.com/fxml/1"
-	fx:controller="milkman.ui.main.RestResponseComponent">
+	fx:controller="milkman.ui.main.ResponseComponent">
 	<TabPane fx:id="tabs">
 		<tabs>
 <!-- 			<Tab text="Response Headers"> -->

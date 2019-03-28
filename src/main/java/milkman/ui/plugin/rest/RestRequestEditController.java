@@ -8,17 +8,18 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import lombok.SneakyThrows;
 import milkman.domain.RequestContainer;
-import milkman.ui.plugin.MainEditingArea;
+import milkman.ui.plugin.RequestTypeEditor;
 import milkman.ui.plugin.rest.domain.RestRequestContainer;
 import milkman.utils.fxml.GenericBinding;
 
-public class RestRequestEditController implements MainEditingArea {
+public class RestRequestEditController implements RequestTypeEditor {
 
 	@FXML TextField requestUrl;
 	@FXML ChoiceBox<String> httpMethod;
 	
 	private GenericBinding<RestRequestContainer, String> urlBinding = GenericBinding.of(RestRequestContainer::getUrl, RestRequestContainer::setUrl);
 	private GenericBinding<RestRequestContainer, String> httpMethodBinding = GenericBinding.of(RestRequestContainer::getHttpMethod, RestRequestContainer::setHttpMethod);
+	private Runnable eventHandler;
 	
 	
 	@Override
@@ -41,6 +42,15 @@ public class RestRequestEditController implements MainEditingArea {
 		httpMethodBinding.bindTo(httpMethod.valueProperty(), restRequest);
 	}
 
-	@FXML public void onClick() {}
+	@FXML public void onClick() {
+		if (eventHandler != null)
+			eventHandler.run();
+	}
+
+	@Override
+	public void onSubmit(Runnable eventHandler) {
+		this.eventHandler = eventHandler;
+		
+	}
 
 }

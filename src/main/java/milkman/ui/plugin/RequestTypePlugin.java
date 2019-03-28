@@ -1,12 +1,15 @@
 package milkman.ui.plugin;
 
 import milkman.domain.RequestContainer;
+import milkman.domain.ResponseContainer;
 
 public interface RequestTypePlugin {
 	
 	RequestContainer createNewRequest();
 	
-	MainEditingArea getMainEditingArea();
+	RequestTypeEditor getRequestEditor();
+	
+	ResponseContainer executeRequest(RequestContainer request);
 	
 	
 }

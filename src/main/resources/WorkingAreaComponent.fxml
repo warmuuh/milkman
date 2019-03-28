@@ -25,8 +25,8 @@
 	fx:controller="milkman.ui.main.WorkingAreaComponent">
 	<ToolBar fx:id="openedTabsBar">
 	</ToolBar>
-	<fx:include source="RestRequestComponent.fxml"></fx:include>
-	<fx:include source="RestResponseComponent.fxml"></fx:include>
+	<fx:include source="RequestComponent.fxml"></fx:include>
+	<fx:include source="ResponseComponent.fxml"></fx:include>
 
 </VBox>
 

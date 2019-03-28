@@ -26,7 +26,7 @@
 
 
 <VBox xmlns:fx="http://javafx.com/fxml/1"
-	fx:controller="milkman.ui.main.RestRequestComponent">
+	fx:controller="milkman.ui.main.RequestComponent">
 	<HBox fx:id="mainEditingArea"></HBox>
 	<TabPane fx:id="tabs" prefHeight="300">
 		<tabs>

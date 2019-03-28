@@ -1,4 +1,4 @@
 <factorypath>
-    <factorypathentry kind="EXTJAR" id="C:\Users\peter\.m2\repository\com\github\warmuuh\hardwire\0.0.3\hardwire-0.0.3.jar" enabled="true" runInBatchMode="true"/>
     <factorypathentry kind="PLUGIN" id="org.eclipse.jst.ws.annotations.core" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="EXTJAR" id="C:\Users\pmucha\.m2\repository\com\github\warmuuh\hardwire\0.0.3\hardwire-0.0.3.jar" enabled="true" runInBatchMode="false"/>
 </factorypath>

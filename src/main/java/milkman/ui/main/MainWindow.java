@@ -18,8 +18,8 @@ import milkman.ui.components.HeaderComponent;
 @RequiredArgsConstructor(onConstructor_={@Inject})
 public class MainWindow {
 
-	private final RestRequestComponent restRequestComponent;
-	private final RestResponseComponent responseComponent;
+	private final RequestComponent restRequestComponent;
+	private final ResponseComponent responseComponent;
 	private final WorkingAreaComponent workingArea;
 	private final RequestCollectionComponent requestCollectionComponent;
 	private final ToolbarComponent toolbarComponent;
@@ -51,9 +51,9 @@ public class MainWindow {
 	public Object getController(Class<?> type) {
 		if (type.equals(MainWindow.class))
 			return this;
-		if (type.equals(RestRequestComponent.class))
+		if (type.equals(RequestComponent.class))
 			return restRequestComponent;
-		if (type.equals(RestResponseComponent.class))
+		if (type.equals(ResponseComponent.class))
 			return responseComponent;
 		if (type.equals(WorkingAreaComponent.class))
 			return workingArea;

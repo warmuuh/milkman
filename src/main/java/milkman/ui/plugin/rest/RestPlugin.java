@@ -5,22 +5,29 @@ import java.util.Collections;
 import java.util.List;
 
 import milkman.domain.RequestContainer;
-import milkman.ui.plugin.MainEditingArea;
+import milkman.domain.ResponseContainer;
+import milkman.ui.plugin.RequestTypeEditor;
 import milkman.ui.plugin.RequestTypePlugin;
-import milkman.ui.plugin.TabController;
-import milkman.ui.plugin.UiRequestAspectsPlugin;
+import milkman.ui.plugin.ResponseAspectEditor;
+import milkman.ui.plugin.RequestAspectEditor;
+import milkman.ui.plugin.RequestAspectsPlugin;
+import milkman.ui.plugin.rest.domain.RestBodyAspect;
+import milkman.ui.plugin.rest.domain.RestHeaderAspect;
 import milkman.ui.plugin.rest.domain.RestRequestContainer;
+import milkman.ui.plugin.rest.domain.RestResponseBodyAspect;
+import milkman.ui.plugin.rest.domain.RestResponseContainer;
+import milkman.ui.plugin.rest.domain.RestResponseHeaderAspect;
 
-public class RestPlugin implements UiRequestAspectsPlugin, RequestTypePlugin {
+public class RestPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 
 	@Override
-	public List<TabController> getRequestTabs() {
+	public List<RequestAspectEditor> getRequestTabs() {
 		return Arrays.asList(new RequestHeaderTabController(), new RequestBodyTabController());
 	}
 
 	@Override
-	public List<TabController> getResponseTabs() {
-		return Collections.emptyList();
+	public List<ResponseAspectEditor> getResponseTabs() {
+		return Arrays.asList(new ResponseHeaderTabController(), new ResponseBodyTabController());
 	}
 
 	@Override
@@ -29,8 +36,35 @@ public class RestPlugin implements UiRequestAspectsPlugin, RequestTypePlugin {
 	}
 
 	@Override
-	public MainEditingArea getMainEditingArea() {
+	public RequestTypeEditor getRequestEditor() {
 		return new RestRequestEditController();
+	}
+
+	@Override
+	public void initializeAspects(RequestContainer request) {
+		if (!request.getAspects().stream().anyMatch(RestHeaderAspect.class::isInstance))
+			request.getAspects().add(new RestHeaderAspect());
+		
+		if (!request.getAspects().stream().anyMatch(RestBodyAspect.class::isInstance))
+			request.getAspects().add(new RestBodyAspect());
+	}
+
+	@Override
+	public ResponseContainer executeRequest(RequestContainer request) {
+		
+		RestRequestContainer restRequest = (RestRequestContainer) request;
+		
+		
+		
+		RestResponseContainer response = new RestResponseContainer();
+		response.getAspects().add(new RestResponseHeaderAspect());
+		response.getAspects().add(new RestResponseBodyAspect());
+		return response;
+	}
+
+	@Override
+	public void initializeAspects(ResponseContainer response) {
+		// we dont need to do anything here as we created the request (where we added everything already)
 	}
 
 	

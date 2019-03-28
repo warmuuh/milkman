@@ -9,10 +9,10 @@ import javax.inject.Singleton;
 @Singleton
 public class UiPluginManager {
 
-	public List<UiRequestAspectsPlugin> loadRequestAspectPlugins(){
-		ServiceLoader<UiRequestAspectsPlugin> loader = ServiceLoader.load(UiRequestAspectsPlugin.class);
+	public List<RequestAspectsPlugin> loadRequestAspectPlugins(){
+		ServiceLoader<RequestAspectsPlugin> loader = ServiceLoader.load(RequestAspectsPlugin.class);
 		
-		List<UiRequestAspectsPlugin> result = new LinkedList<UiRequestAspectsPlugin>();
+		List<RequestAspectsPlugin> result = new LinkedList<RequestAspectsPlugin>();
 		loader.forEach(result::add);
 		
 		return result; 
