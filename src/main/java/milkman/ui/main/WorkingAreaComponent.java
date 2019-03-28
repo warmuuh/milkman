@@ -1,5 +1,7 @@
 package milkman.ui.main;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -21,9 +23,16 @@ public class WorkingAreaComponent {
 	@FXML ToolBar openedTabsBar;
 
 	
-	public void display(RequestContainer activeRequest) {
+	public final Event<Void> onNewRequest = new Event<Void>();
+	public final Event<RequestContainer> onRequestSelection = new Event<RequestContainer>();
+	
+	public void display(RequestContainer activeRequest, List<RequestContainer> openedRequests) {
 		openedTabsBar.getItems().clear();
-		openedTabsBar.getItems().add(new Button(activeRequest.getName()));
+		openedRequests.forEach(r -> {
+			Button button = new Button(r.getName());
+			button.setOnAction(e -> onRequestSelection.invoke(r));
+			openedTabsBar.getItems().add(button);	
+		});
 		restRequestComponent.display(activeRequest);
 	}
 	
@@ -31,4 +40,11 @@ public class WorkingAreaComponent {
 		responseComponent.display(activeResponse);
 	}
 	
+	@FXML public void onNewRequestClick() {
+		onNewRequest.invoke(null);
+	}
+
+	public void clearResponse() {
+		responseComponent.clear();
+	}
 }

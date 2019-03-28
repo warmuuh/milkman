@@ -13,6 +13,4 @@ public interface RequestTypeEditor {
 	
 	void displayRequest(RequestContainer container);
 	
-	void onSubmit(Runnable eventHandler);
-	
 }

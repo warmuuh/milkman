@@ -19,7 +19,6 @@ public class RestRequestEditController implements RequestTypeEditor {
 	
 	private GenericBinding<RestRequestContainer, String> urlBinding = GenericBinding.of(RestRequestContainer::getUrl, RestRequestContainer::setUrl);
 	private GenericBinding<RestRequestContainer, String> httpMethodBinding = GenericBinding.of(RestRequestContainer::getHttpMethod, RestRequestContainer::setHttpMethod);
-	private Runnable eventHandler;
 	
 	
 	@Override
@@ -42,15 +41,5 @@ public class RestRequestEditController implements RequestTypeEditor {
 		httpMethodBinding.bindTo(httpMethod.valueProperty(), restRequest);
 	}
 
-	@FXML public void onClick() {
-		if (eventHandler != null)
-			eventHandler.run();
-	}
-
-	@Override
-	public void onSubmit(Runnable eventHandler) {
-		this.eventHandler = eventHandler;
-		
-	}
 
 }

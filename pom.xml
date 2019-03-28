@@ -25,6 +25,15 @@
 			<artifactId>vavr</artifactId>
 			<version>0.10.0</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.dizitart</groupId>
+			<artifactId>nitrite</artifactId>
+			<version>3.2.0</version>
+		</dependency>
+
+
+
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>

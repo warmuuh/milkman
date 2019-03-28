@@ -4,6 +4,8 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.http.impl.conn.Wire;
+
 import lombok.RequiredArgsConstructor;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
@@ -23,16 +25,34 @@ public class WorkspaceController {
 	private final RequestComponent requestView;
 	
 	private final UiPluginManager plugins;
+	private Workspace activeWorkspace;
 	
 	public void loadWorkspace(Workspace workspace) {
+		this.activeWorkspace = workspace;
 		collectionView.display(workspace.getCollections());
+		workingAreaView.display(workspace.getActiveRequest(), workspace.getOpenRequests());
+		
 	}
 	
 	
 	public void loadRequest(RequestContainer request) {
-		workingAreaView.display(request);
+		if (!activeWorkspace.getOpenRequests().contains(request))
+			activeWorkspace.getOpenRequests().add(request);
+		
+		workingAreaView.display(request, activeWorkspace.getOpenRequests());
+		
+		if (activeWorkspace.getCachedResponses().containsKey(request))
+			workingAreaView.display(activeWorkspace.getCachedResponses().get(request));
+		else
+			workingAreaView.clearResponse();
 	}
 	
+	public void createNewRequest() {
+		RequestTypePlugin requestTypePlugin = plugins.loadRequestTypePlugins().get(0);
+		RequestContainer request = requestTypePlugin.createNewRequest();
+		plugins.loadRequestAspectPlugins().forEach(p -> p.initializeAspects(request));
+		loadRequest(request);
+	}
 	
 	public void executeRequest(RequestContainer request) {
 		System.out.println("Executing request: " + request);
@@ -42,6 +62,8 @@ public class WorkspaceController {
 		
 		plugins.loadRequestAspectPlugins().forEach(a -> a.initializeAspects(response));
 		
+		activeWorkspace.getCachedResponses().put(request, response);
+		
 		workingAreaView.display(response);
 	}
 	
@@ -50,6 +72,8 @@ public class WorkspaceController {
 	public void setup() {
 		collectionView.onRequestSelection.add(this::loadRequest);
 		requestView.onRequestSubmit.add(this::executeRequest);
+		workingAreaView.onNewRequest.add(x -> createNewRequest());
+		workingAreaView.onRequestSelection.add(this::loadRequest);
 	}
 	
 }

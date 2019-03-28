@@ -29,7 +29,7 @@ public class ResponseComponent {
 
 
 	public void display(ResponseContainer response) {
-		tabs.getTabs().clear();
+		clear();
 		for (RequestAspectsPlugin plugin : plugins.loadRequestAspectPlugins()) {
 			for (ResponseAspect aspect : response.getAspects()) {
 				for (ResponseAspectEditor tabController : plugin.getResponseTabs()) {
@@ -38,5 +38,10 @@ public class ResponseComponent {
 				}
 			}
 		}
+	}
+
+
+	public void clear() {
+		tabs.getTabs().clear();
 	}
 }

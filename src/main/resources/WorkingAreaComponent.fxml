@@ -23,8 +23,10 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="milkman.ui.main.WorkingAreaComponent">
-	<ToolBar fx:id="openedTabsBar">
-	</ToolBar>
+	<HBox>
+		<ToolBar fx:id="openedTabsBar"></ToolBar>
+		<Button text="+"  onAction="#onNewRequestClick"></Button>
+	</HBox>
 	<fx:include source="RequestComponent.fxml"></fx:include>
 	<fx:include source="ResponseComponent.fxml"></fx:include>
 

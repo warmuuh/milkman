@@ -31,8 +31,11 @@ public class MilkmanApplication extends Application {
 		RequestTypePlugin requestTypePlugin = module.getUiPluginManager().loadRequestTypePlugins().get(0);
 		RequestContainer request = requestTypePlugin.createNewRequest();
 		module.getUiPluginManager().loadRequestAspectPlugins().forEach(p -> p.initializeAspects(request));
-		Collection collection1 = new Collection("jsonPlaceholder", List.of(request).asJava());
-		return new Workspace(List.of(collection1).asJava());
+		Collection collection1 = new Collection("jsonPlaceholder", List.of(request).toJavaList());
+		return new Workspace("Test", 
+				List.of(collection1).toJavaList(), 
+				List.of(request).toJavaList(), 
+				request);
 	}
 
 	public static void main(String[] args) {

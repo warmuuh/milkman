@@ -26,7 +26,8 @@ public class RequestComponent {
 	@FXML HBox mainEditingArea;
 
 	
-	public final Event<RequestContainer> onRequestSubmit = new Event<RequestContainer>(); 
+	public final Event<RequestContainer> onRequestSubmit = new Event<RequestContainer>();
+	private RequestContainer currentRequest; 
 	
 	
 	@Inject
@@ -36,13 +37,12 @@ public class RequestComponent {
 
 	
 	public void display(RequestContainer request) {
-		
+		this.currentRequest = request;
 		RequestTypePlugin requestTypePlugin = plugins.loadRequestTypePlugins().get(0);
 		mainEditingArea.getChildren().clear();
 		RequestTypeEditor mainEditController = requestTypePlugin.getRequestEditor();
 		mainEditingArea.getChildren().add(mainEditController.getRoot());
 		mainEditController.displayRequest(request);
-		mainEditController.onSubmit(() -> onRequestSubmit.invoke(request));
 		
 		tabs.getTabs().clear();
 		for (RequestAspectsPlugin plugin : plugins.loadRequestAspectPlugins()) {
@@ -54,7 +54,19 @@ public class RequestComponent {
 			}
 		}
 	}
+
+	@FXML public void onSubmit() {
+		onRequestSubmit.invoke(currentRequest);
+	}
 	
 
+	@FXML public void onSave() {
+		
+	}
+	
+
+	@FXML public void onSaveAs() {
+		
+	}
 
 }

@@ -27,7 +27,12 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="milkman.ui.main.RequestComponent">
-	<HBox fx:id="mainEditingArea"></HBox>
+	<HBox>
+		<HBox fx:id="mainEditingArea"></HBox>
+		<Button text="submit" onAction="#onSubmit" />
+		<Button text="save" onAction="#onSave" />
+		<Button text="save as ..." onAction="#onSaveAs" />
+	</HBox>
 	<TabPane fx:id="tabs" prefHeight="300">
 		<tabs>
 <!-- 			<Tab text="Headers"> -->

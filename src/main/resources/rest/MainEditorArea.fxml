@@ -34,5 +34,4 @@
 		</items>
 	</ChoiceBox>
 	<TextField fx:id="requestUrl" />
-	<Button text="submit" onAction="#onClick" />
 </HBox>
