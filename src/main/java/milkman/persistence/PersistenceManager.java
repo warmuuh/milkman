@@ -31,9 +31,19 @@ public class PersistenceManager {
 	public Optional<Workspace> loadWorkspaceByName(String name) {
 		return Optional.ofNullable(workspaces
 				.find(ObjectFilters.eq("name", name))
-				.firstOrDefault());
+				.firstOrDefault())
+				.map(this::fixSerialization);
 	}
 
+	private Workspace fixSerialization(Workspace ws) {
+		//due to json serialization, the active request is duplicated, but should be references from openRequests
+		ws.getOpenRequests().stream()
+		.filter(r -> r.getId().equals(ws.getActiveRequest().getId()))
+		.findAny()
+		.ifPresent(or -> ws.setActiveRequest(or));
+		
+		return ws;
+	}
 	
 	public void persistWorkspace(Workspace workspace) {
 		if (workspace.getId() == 0) {

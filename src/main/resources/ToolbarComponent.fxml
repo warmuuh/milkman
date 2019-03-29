@@ -25,15 +25,15 @@
 fx:controller="milkman.ui.main.ToolbarComponent">
 	<items>
 		<Label text="Workspace:"></Label>
-		<ChoiceBox value="EPD">
-			<items>
-				<FXCollections fx:factory="observableArrayList">
-					<String fx:value="EPD" />
-					<String fx:value="Personal" />
-					<Separator></Separator>
-					<String fx:value="manage workspaces..." />
-				</FXCollections>
-			</items>
+		<ChoiceBox fx:id="workspaceSelection">
+<!-- 			<items> -->
+<!-- 				<FXCollections fx:factory="observableArrayList"> -->
+<!-- 					<String fx:value="EPD" /> -->
+<!-- 					<String fx:value="Personal" /> -->
+<!-- 					<Separator></Separator> -->
+<!-- 					<String fx:value="manage workspaces..." /> -->
+<!-- 				</FXCollections> -->
+<!-- 			</items> -->
 		</ChoiceBox>
 						<Label text="Synced"></Label>
 		

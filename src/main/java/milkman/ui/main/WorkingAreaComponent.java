@@ -37,9 +37,14 @@ public class WorkingAreaComponent {
 	private Button createRequestTabButton(RequestContainer r) {
 		Button button = new Button(r.getName());
 		button.setOnAction(e -> onCommand.invoke(new UiCommand.SwitchToRequest(r)));
+		
 		MenuItem closeEntry = new MenuItem("Close");
 		closeEntry.setOnAction(a -> onCommand.invoke(new UiCommand.CloseRequest(r)));
-		button.setContextMenu(new ContextMenu(closeEntry));
+		
+		MenuItem renameEntry = new MenuItem("Rename");
+		renameEntry.setOnAction(a -> onCommand.invoke(new UiCommand.RenameRequest(r, false)));
+		
+		button.setContextMenu(new ContextMenu(closeEntry, renameEntry));
 		return button;
 	}
 	

@@ -22,11 +22,14 @@ import milkman.domain.ResponseContainer;
 import milkman.domain.Workspace;
 import milkman.ui.commands.AppCommand;
 import milkman.ui.commands.UiCommand;
+import milkman.ui.commands.UiCommand.DeleteRequest;
+import milkman.ui.commands.UiCommand.RenameRequest;
 import milkman.ui.commands.AppCommand.PersistWorkspace;
 import milkman.ui.main.RequestCollectionComponent;
 import milkman.ui.main.RequestComponent;
 import milkman.ui.main.WorkingAreaComponent;
 import milkman.ui.main.dialogs.SaveRequestDialog;
+import milkman.ui.main.dialogs.StringInputDialog;
 import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.UiPluginManager;
 import milkman.utils.Event;
@@ -128,14 +131,55 @@ public class WorkspaceController {
 			createNewRequest();
 		} else if (command instanceof UiCommand.CloseRequest) {
 			closeRequest(((UiCommand.CloseRequest) command).getRequest());
-		}
-		else {
+		} else if (command instanceof UiCommand.RenameRequest) {
+			RenameRequest renameRequest = (UiCommand.RenameRequest) command;
+			renameRequest(renameRequest.getRequest(), renameRequest.isRefreshCollections());
+		} else if (command instanceof UiCommand.DeleteRequest) {
+			DeleteRequest deleteRequest = (UiCommand.DeleteRequest) command;
+			deleteRequest(deleteRequest.getCollection(), deleteRequest.getRequest());
+		} else {
 			throw new IllegalArgumentException("Unsupported command");
 		}
 	}
 	
 	
 	
+	private void deleteRequest(Collection collection, RequestContainer request) {
+		collection.getRequests().removeIf(r -> r.getId().equals(request.getId()));
+		loadCollections(activeWorkspace);
+		
+		Optional<RequestContainer> openRequest = activeWorkspace.getOpenRequests().stream()
+			.filter(r -> r.getId().equals(request.getId()))
+			.findAny();
+		
+		openRequest.ifPresent(this::closeRequest);
+	}
+
+
+	private void renameRequest(RequestContainer request, boolean refreshCollections) {
+		StringInputDialog inputDialog = new StringInputDialog();
+		inputDialog.showAndWait("Rename Request", "New Name", request.getName());
+		
+		if (!inputDialog.isCancelled() && inputDialog.wasChanged()) {
+			request.setName(inputDialog.getInput());
+
+			if (refreshCollections) {
+				loadCollections(activeWorkspace);
+				//also replace names in working copies:
+				activeWorkspace.getOpenRequests().stream()
+					.filter(r -> r.getId().equals(request.getId()))
+					.findAny().ifPresent(r -> r.setName(request.getName()));
+			}
+			
+			workingAreaView.display(activeWorkspace.getActiveRequest(), activeWorkspace.getOpenRequests());
+			
+		}
+		
+		
+		
+	}
+
+
 	private void closeRequest(RequestContainer request) {
 		//for now, force close it without asking to save
 		int indexOf = activeWorkspace.getOpenRequests().indexOf(request);
@@ -164,6 +208,7 @@ public class WorkspaceController {
 					RequestContainer requestContainer = iterator.next();
 					if (requestContainer.getId().equals(request.getId())){
 						iterator.set(ObjectUtils.deepClone(request));
+						loadCollections(activeWorkspace);
 						break outer;
 					}
 				}

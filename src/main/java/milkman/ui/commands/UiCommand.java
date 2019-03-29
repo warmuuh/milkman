@@ -1,6 +1,7 @@
 package milkman.ui.commands;
 
 import lombok.Value;
+import milkman.domain.Collection;
 import milkman.domain.RequestContainer;
 
 public interface UiCommand {
@@ -36,7 +37,18 @@ public interface UiCommand {
 		RequestContainer request;
 	}
 	
-
+	@Value
+	public static class DeleteRequest implements UiCommand {
+		RequestContainer request;
+		Collection collection;
+	}
+	
+	@Value
+	public static class RenameRequest implements UiCommand {
+		RequestContainer request;
+		boolean refreshCollections;
+	}
+	
 	@Value
 	public static class NewRequest implements UiCommand {
 	}

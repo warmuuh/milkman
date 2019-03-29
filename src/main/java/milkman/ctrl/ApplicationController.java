@@ -2,22 +2,18 @@ package milkman.ctrl;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.jws.Oneway;
 
 import lombok.RequiredArgsConstructor;
 import milkman.domain.RequestContainer;
 import milkman.domain.Workspace;
 import milkman.persistence.PersistenceManager;
 import milkman.ui.commands.AppCommand;
-import milkman.ui.main.RequestCollectionComponent;
-import milkman.ui.main.RequestComponent;
-import milkman.ui.main.WorkingAreaComponent;
+import milkman.ui.main.ToolbarComponent;
 import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.UiPluginManager;
 
@@ -29,24 +25,31 @@ public class ApplicationController {
 	private final WorkspaceController workspaceController;
 	private final UiPluginManager plugins;
 	
+	private final ToolbarComponent toolbarComponent;
+	
 	public void initApplication() {
 		List<String> names = persistence.loadWorkspaceNames();
-		if (names.isEmpty())
-			createFreshWorkspace();
-		else
-			loadWorkspace(names.get(0));
+		Workspace activeWs;
+		if (names.isEmpty()) {
+			activeWs = createFreshWorkspace();
+		}
+		else {
+			activeWs = loadWorkspace(names.get(0));
+		}
 				
+		toolbarComponent.setWorkspaces(activeWs.getName(), persistence.loadWorkspaceNames());
 	}
 
 
-	private void loadWorkspace(String name) {
+	private Workspace loadWorkspace(String name) {
 		Workspace ws = persistence.loadWorkspaceByName(name)
 			.orElseThrow(() -> new IllegalArgumentException("Could not find workspace " + name));
 		workspaceController.loadWorkspace(ws);
+		return ws;
 	}
 
 
-	private void createFreshWorkspace() {
+	private Workspace createFreshWorkspace() {
 		RequestTypePlugin requestTypePlugin = plugins.loadRequestTypePlugins().get(0);
 		RequestContainer newRequest = requestTypePlugin.createNewRequest();
 		plugins.loadRequestAspectPlugins().forEach(p -> p.initializeAspects(newRequest));
@@ -59,6 +62,8 @@ public class ApplicationController {
 		
 		persistence.persistWorkspace(workspace);
 		workspaceController.loadWorkspace(workspace);
+		
+		return workspace;
 	}
 	
 	public void handleCommand(AppCommand command) {
