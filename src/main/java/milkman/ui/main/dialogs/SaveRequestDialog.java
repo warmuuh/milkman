@@ -23,7 +23,7 @@ public class SaveRequestDialog implements Initializable{
 	private Stage dialog;
 
 	private RequestContainer request;
-	@Getter boolean cancelled = false;
+	@Getter boolean cancelled = true;
 	private List<Collection> collections;
 	
 	public SaveRequestDialog(RequestContainer request, List<Collection> collections) {
@@ -52,6 +52,7 @@ public class SaveRequestDialog implements Initializable{
 	}
 	
 	@FXML private void onSave() {
+		cancelled = false;
 		dialog.close();
 	}
 

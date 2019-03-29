@@ -13,19 +13,23 @@ import javax.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.conn.Wire;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import milkman.domain.Collection;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 import milkman.domain.Workspace;
+import milkman.ui.commands.AppCommand;
 import milkman.ui.commands.UiCommand;
+import milkman.ui.commands.AppCommand.PersistWorkspace;
 import milkman.ui.main.RequestCollectionComponent;
 import milkman.ui.main.RequestComponent;
 import milkman.ui.main.WorkingAreaComponent;
 import milkman.ui.main.dialogs.SaveRequestDialog;
 import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.UiPluginManager;
+import milkman.utils.Event;
 import milkman.utils.ObjectUtils;
 
 @Singleton
@@ -37,7 +41,8 @@ public class WorkspaceController {
 	private final RequestComponent requestView;
 	
 	private final UiPluginManager plugins;
-	private Workspace activeWorkspace;
+	@Getter private Workspace activeWorkspace;
+	public final Event<AppCommand> onCommand = new Event<AppCommand>();
 	
 	public void loadWorkspace(Workspace workspace) {
 		this.activeWorkspace = workspace;
@@ -154,16 +159,18 @@ public class WorkspaceController {
 		} else {
 			//have to go through all collections bc we dont have a backlink
 			//and replace the request
-			for (Collection collection : activeWorkspace.getCollections()) {
+			outer: for (Collection collection : activeWorkspace.getCollections()) {
 				for (ListIterator<RequestContainer> iterator = collection.getRequests().listIterator(); iterator.hasNext();) {
 					RequestContainer requestContainer = iterator.next();
 					if (requestContainer.getId().equals(request.getId())){
 						iterator.set(ObjectUtils.deepClone(request));
-						return;
+						break outer;
 					}
 				}
 			}
 		}
+		
+		onCommand.invoke(new AppCommand.PersistWorkspace(activeWorkspace));
 	}
 
 
