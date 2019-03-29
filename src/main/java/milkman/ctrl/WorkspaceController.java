@@ -1,5 +1,8 @@
 package milkman.ctrl;
 
+import java.util.LinkedList;
+import java.util.Optional;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -7,12 +10,16 @@ import javax.inject.Singleton;
 import org.apache.http.impl.conn.Wire;
 
 import lombok.RequiredArgsConstructor;
+import lombok.val;
+import milkman.domain.Collection;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 import milkman.domain.Workspace;
+import milkman.ui.commands.UiCommand;
 import milkman.ui.main.RequestCollectionComponent;
 import milkman.ui.main.RequestComponent;
 import milkman.ui.main.WorkingAreaComponent;
+import milkman.ui.main.dialogs.SaveRequestDialog;
 import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.UiPluginManager;
 
@@ -29,9 +36,14 @@ public class WorkspaceController {
 	
 	public void loadWorkspace(Workspace workspace) {
 		this.activeWorkspace = workspace;
-		collectionView.display(workspace.getCollections());
+		loadCollections(workspace);
 		workingAreaView.display(workspace.getActiveRequest(), workspace.getOpenRequests());
 		
+	}
+
+
+	private void loadCollections(Workspace workspace) {
+		collectionView.display(workspace.getCollections());
 	}
 	
 	
@@ -67,11 +79,44 @@ public class WorkspaceController {
 		workingAreaView.display(response);
 	}
 	
+	public void handleCommand(UiCommand command) {
+		if (command instanceof UiCommand.SubmitRequest) {
+			executeRequest(((UiCommand.SubmitRequest) command).getRequest());
+		} else if (command instanceof UiCommand.SaveRequestAsCommand) {
+			val saveCmd = ((UiCommand.SaveRequestAsCommand) command);
+			saveRequest(saveCmd.getRequest());
+		} else {
+			throw new IllegalArgumentException("Unsupported command");
+		}
+	}
 	
+	
+	
+	private void saveRequest(RequestContainer request) {
+		SaveRequestDialog dialog = new SaveRequestDialog(request, activeWorkspace.getCollections());
+		dialog.showAndWait();
+		if (dialog.isCancelled())
+			return;
+		
+		Optional<Collection> foundCollection = activeWorkspace.getCollections().stream()
+				.filter(c -> c.getName().equals(dialog.getCollectionName()))
+				.findAny();
+		Collection collection = foundCollection.orElseGet(() -> createNewCollection(dialog.getCollectionName()));
+		collection.getRequests().add(request);
+		loadCollections(activeWorkspace);
+	}
+
+	private Collection createNewCollection(String collectionName) {
+		Collection c = new Collection(collectionName, new LinkedList<>());
+		activeWorkspace.getCollections().add(c);
+		return c;
+	}
+	
+
 	@PostConstruct
 	public void setup() {
 		collectionView.onRequestSelection.add(this::loadRequest);
-		requestView.onRequestSubmit.add(this::executeRequest);
+		requestView.onCommand.add(this::handleCommand);
 		workingAreaView.onNewRequest.add(x -> createNewRequest());
 		workingAreaView.onRequestSelection.add(this::loadRequest);
 	}

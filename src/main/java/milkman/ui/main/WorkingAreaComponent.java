@@ -5,14 +5,14 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 import milkman.utils.Event;
-import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ToolBar;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_={@Inject})
@@ -20,18 +20,18 @@ public class WorkingAreaComponent {
 
 	private final RequestComponent restRequestComponent;
 	private final ResponseComponent responseComponent;
-	@FXML ToolBar openedTabsBar;
+	@FXML Pane openedTabsBar;
 
 	
 	public final Event<Void> onNewRequest = new Event<Void>();
 	public final Event<RequestContainer> onRequestSelection = new Event<RequestContainer>();
 	
 	public void display(RequestContainer activeRequest, List<RequestContainer> openedRequests) {
-		openedTabsBar.getItems().clear();
+		openedTabsBar.getChildren().clear();
 		openedRequests.forEach(r -> {
 			Button button = new Button(r.getName());
 			button.setOnAction(e -> onRequestSelection.invoke(r));
-			openedTabsBar.getItems().add(button);	
+			openedTabsBar.getChildren().add(button);	
 		});
 		restRequestComponent.display(activeRequest);
 	}

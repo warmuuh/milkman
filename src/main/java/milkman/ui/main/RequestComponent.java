@@ -11,6 +11,8 @@ import milkman.domain.RequestAspect;
 import milkman.domain.RequestContainer;
 import milkman.ui.plugin.RequestTypeEditor;
 import milkman.ui.plugin.RequestTypePlugin;
+import milkman.ui.commands.UiCommand;
+import milkman.ui.main.dialogs.SaveRequestDialog;
 import milkman.ui.plugin.RequestAspectEditor;
 import milkman.ui.plugin.UiPluginManager;
 import milkman.ui.plugin.RequestAspectsPlugin;
@@ -22,11 +24,10 @@ public class RequestComponent {
 
 	private final UiPluginManager plugins;
 	@FXML TabPane tabs;
-	private RestRequestContainer restRequest;
 	@FXML HBox mainEditingArea;
 
 	
-	public final Event<RequestContainer> onRequestSubmit = new Event<RequestContainer>();
+	public final Event<UiCommand> onCommand = new Event<UiCommand>();
 	private RequestContainer currentRequest; 
 	
 	
@@ -56,17 +57,17 @@ public class RequestComponent {
 	}
 
 	@FXML public void onSubmit() {
-		onRequestSubmit.invoke(currentRequest);
+		onCommand.invoke(new UiCommand.SubmitRequest(currentRequest));
 	}
 	
 
 	@FXML public void onSave() {
-		
+		onCommand.invoke(new UiCommand.SaveRequestAsCommand(currentRequest));
 	}
 	
 
 	@FXML public void onSaveAs() {
-		
+		onCommand.invoke(new UiCommand.SaveRequestAsCommand(currentRequest));
 	}
 
 }

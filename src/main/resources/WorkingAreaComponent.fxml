@@ -19,13 +19,17 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Tab?>
+<?import javafx.scene.layout.Pane?>
 
 
 <VBox xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="milkman.ui.main.WorkingAreaComponent">
 	<HBox>
-		<ToolBar fx:id="openedTabsBar"></ToolBar>
+		<ToolBar>
+		<HBox  fx:id="openedTabsBar"></HBox>
 		<Button text="+"  onAction="#onNewRequestClick"></Button>
+		</ToolBar>
+		
 	</HBox>
 	<fx:include source="RequestComponent.fxml"></fx:include>
 	<fx:include source="ResponseComponent.fxml"></fx:include>

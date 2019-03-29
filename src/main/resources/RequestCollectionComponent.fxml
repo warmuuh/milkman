@@ -33,8 +33,8 @@
 	<Label text="Request Collections" />
 	<ScrollPane>
 		<content>
-			<Accordion prefWidth="200" fx:id="collectionContainer">
-				<panes>
+			<VBox prefWidth="200" fx:id="collectionContainer">
+<!-- 				<panes> -->
 <!-- 					<TitledPane text="Request collection 1"> -->
 <!-- 						<content> -->
 <!-- 							<Button text="Request 1"></Button> -->
@@ -50,8 +50,8 @@
 <!-- 							<Button text="Request 1"></Button> -->
 <!-- 						</content> -->
 <!-- 					</TitledPane> -->
-				</panes>
-			</Accordion>
+<!-- 				</panes> -->
+			</VBox>
 		</content>
 	</ScrollPane>
 

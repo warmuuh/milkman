@@ -35,7 +35,7 @@ public class RestPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 
 	@Override
 	public RequestContainer createNewRequest() {
-		return new RestRequestContainer("todos", "https://jsonplaceholder.typicode.com/todos", "GET");
+		return new RestRequestContainer("New Request", "", "GET");
 	}
 
 	@Override

@@ -23,6 +23,9 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.Group?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SplitMenuButton?>
 
 
 <VBox xmlns:fx="http://javafx.com/fxml/1"
@@ -30,8 +33,11 @@
 	<HBox>
 		<HBox fx:id="mainEditingArea"></HBox>
 		<Button text="submit" onAction="#onSubmit" />
-		<Button text="save" onAction="#onSave" />
-		<Button text="save as ..." onAction="#onSaveAs" />
+		<SplitMenuButton  text="save" onAction="#onSave">
+			<items>
+				<MenuItem text="save as..." onAction="#onSaveAs"></MenuItem>
+			</items>
+		</SplitMenuButton>
 	</HBox>
 	<TabPane fx:id="tabs" prefHeight="300">
 		<tabs>

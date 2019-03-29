@@ -1,6 +1,8 @@
 package milkman;
 
 
+import java.util.LinkedList;
+
 import io.vavr.collection.List;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -24,18 +26,17 @@ public class MilkmanApplication extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		module.getMainWindow().start(primaryStage);
-		module.getWorkspaceController().loadWorkspace(createDummyModel());
+		module.getWorkspaceController().loadWorkspace(createFreshWorkspace());
 	}
 
-	private Workspace createDummyModel() {
+	private Workspace createFreshWorkspace() {
 		RequestTypePlugin requestTypePlugin = module.getUiPluginManager().loadRequestTypePlugins().get(0);
-		RequestContainer request = requestTypePlugin.createNewRequest();
-		module.getUiPluginManager().loadRequestAspectPlugins().forEach(p -> p.initializeAspects(request));
-		Collection collection1 = new Collection("jsonPlaceholder", List.of(request).toJavaList());
+		RequestContainer newRequest = requestTypePlugin.createNewRequest();
+		module.getUiPluginManager().loadRequestAspectPlugins().forEach(p -> p.initializeAspects(newRequest));
 		return new Workspace("Test", 
-				List.of(collection1).toJavaList(), 
-				List.of(request).toJavaList(), 
-				request);
+				new LinkedList<>(), 
+				List.of(newRequest).toJavaList(), 
+				newRequest);
 	}
 
 	public static void main(String[] args) {

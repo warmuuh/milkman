@@ -26,19 +26,22 @@ public class RequestCollectionComponent {
 	public final Event<RequestContainer> onRequestSelection = new Event<RequestContainer>();
 
 	
-	@FXML Accordion collectionContainer;
+	@FXML VBox collectionContainer;
 
 	public void display(List<Collection> collections) {
+		collectionContainer.getChildren().clear();
 		for (Collection collection : collections) {
 			TitledPane pane = createPane(collection);
-			collectionContainer.getPanes().add(pane);
+			collectionContainer.getChildren().add(pane);
 		}
 	}
 
 
 	private TitledPane createPane(Collection collection) {
 		List<Node> entries = collection.getRequests().stream().map(this::createRequestEntry).collect(Collectors.toList());
-		return new TitledPane(collection.getName(), new VBox(entries.toArray(new Node[] {})));
+		TitledPane titledPane = new TitledPane(collection.getName(), new VBox(entries.toArray(new Node[] {})));
+		titledPane.setExpanded(false);
+		return titledPane;
 	}
 
 
