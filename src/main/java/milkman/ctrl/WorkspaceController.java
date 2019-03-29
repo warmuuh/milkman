@@ -1,12 +1,16 @@
 package milkman.ctrl;
 
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.conn.Wire;
 
 import lombok.RequiredArgsConstructor;
@@ -22,6 +26,7 @@ import milkman.ui.main.WorkingAreaComponent;
 import milkman.ui.main.dialogs.SaveRequestDialog;
 import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.UiPluginManager;
+import milkman.utils.ObjectUtils;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_={@Inject})
@@ -47,7 +52,18 @@ public class WorkspaceController {
 	}
 	
 	
-	public void loadRequest(RequestContainer request) {
+	
+	public void loadRequestCopy(RequestContainer request) {
+		
+		//determine if we need to open a new copy of it or if it is opened already:
+		val openedReqCopy = activeWorkspace.getOpenRequests().stream()
+			.filter(r -> r.getId().equals(request.getId()))
+			.findAny();
+		
+		displayRequest(openedReqCopy.orElseGet(() -> ObjectUtils.deepClone(request)));
+	}
+	
+	public void displayRequest(RequestContainer request) {
 		if (!activeWorkspace.getOpenRequests().contains(request))
 			activeWorkspace.getOpenRequests().add(request);
 		
@@ -63,7 +79,7 @@ public class WorkspaceController {
 		RequestTypePlugin requestTypePlugin = plugins.loadRequestTypePlugins().get(0);
 		RequestContainer request = requestTypePlugin.createNewRequest();
 		plugins.loadRequestAspectPlugins().forEach(p -> p.initializeAspects(request));
-		loadRequest(request);
+		displayRequest(request);
 	}
 	
 	public void executeRequest(RequestContainer request) {
@@ -84,7 +100,13 @@ public class WorkspaceController {
 			executeRequest(((UiCommand.SubmitRequest) command).getRequest());
 		} else if (command instanceof UiCommand.SaveRequestAsCommand) {
 			val saveCmd = ((UiCommand.SaveRequestAsCommand) command);
+			saveAsRequest(saveCmd.getRequest());
+		} else if (command instanceof UiCommand.SaveRequestCommand) {
+			val saveCmd = ((UiCommand.SaveRequestCommand) command);
 			saveRequest(saveCmd.getRequest());
+		} else if (command instanceof UiCommand.LoadRequest) {
+			val openCmd = ((UiCommand.LoadRequest) command);
+			loadRequestCopy(openCmd.getRequest());
 		} else {
 			throw new IllegalArgumentException("Unsupported command");
 		}
@@ -93,6 +115,25 @@ public class WorkspaceController {
 	
 	
 	private void saveRequest(RequestContainer request) {
+		if (StringUtils.isBlank(request.getId())) {
+			saveAsRequest(request);
+		} else {
+			//have to go through all collections bc we dont have a backlink
+			//and replace the request
+			for (Collection collection : activeWorkspace.getCollections()) {
+				for (ListIterator<RequestContainer> iterator = collection.getRequests().listIterator(); iterator.hasNext();) {
+					RequestContainer requestContainer = iterator.next();
+					if (requestContainer.getId().equals(request.getId())){
+						iterator.set(ObjectUtils.deepClone(request));
+						return;
+					}
+				}
+			}
+		}
+	}
+
+
+	private void saveAsRequest(RequestContainer request) {
 		SaveRequestDialog dialog = new SaveRequestDialog(request, activeWorkspace.getCollections());
 		dialog.showAndWait();
 		if (dialog.isCancelled())
@@ -102,8 +143,13 @@ public class WorkspaceController {
 				.filter(c -> c.getName().equals(dialog.getCollectionName()))
 				.findAny();
 		Collection collection = foundCollection.orElseGet(() -> createNewCollection(dialog.getCollectionName()));
-		collection.getRequests().add(request);
+		
+		request.setId(UUID.randomUUID().toString());
+		request.setName(dialog.getRequestName());
+		
+		collection.getRequests().add(ObjectUtils.deepClone(request));
 		loadCollections(activeWorkspace);
+		displayRequest(request);
 	}
 
 	private Collection createNewCollection(String collectionName) {
@@ -115,10 +161,10 @@ public class WorkspaceController {
 
 	@PostConstruct
 	public void setup() {
-		collectionView.onRequestSelection.add(this::loadRequest);
+		collectionView.onCommand.add(this::handleCommand);
 		requestView.onCommand.add(this::handleCommand);
 		workingAreaView.onNewRequest.add(x -> createNewRequest());
-		workingAreaView.onRequestSelection.add(this::loadRequest);
+		workingAreaView.onRequestSelection.add(this::displayRequest);
 	}
 	
 }

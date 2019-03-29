@@ -7,14 +7,20 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @Data
-@RequiredArgsConstructor
+@NoArgsConstructor
 public abstract class RequestContainer {
 
-	private String id = UUID.randomUUID().toString();
-	private final String name;
-	private final List<RequestAspect> aspects = new LinkedList<RequestAspect>();
+	private String id = "";
+	private String name;
+	private List<RequestAspect> aspects = new LinkedList<RequestAspect>();
+	
+	public RequestContainer(String name) {
+		super();
+		this.name = name;
+	}
 	
 }

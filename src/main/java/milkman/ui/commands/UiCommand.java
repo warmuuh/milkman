@@ -11,10 +11,19 @@ public interface UiCommand {
 	}
 	
 	@Value
-	public static class SubmitRequest implements UiCommand {
+	public static class SaveRequestCommand implements UiCommand {
 		RequestContainer request;
 	}
 	
 	
+	@Value
+	public static class SubmitRequest implements UiCommand {
+		RequestContainer request;
+	}
+	
+	@Value
+	public static class LoadRequest implements UiCommand {
+		RequestContainer request;
+	}
 	
 }

@@ -62,7 +62,7 @@ public class RequestComponent {
 	
 
 	@FXML public void onSave() {
-		onCommand.invoke(new UiCommand.SaveRequestAsCommand(currentRequest));
+		onCommand.invoke(new UiCommand.SaveRequestCommand(currentRequest));
 	}
 	
 

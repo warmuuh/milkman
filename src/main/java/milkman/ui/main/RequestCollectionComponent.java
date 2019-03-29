@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import milkman.ctrl.WorkspaceController;
 import milkman.domain.Collection;
 import milkman.domain.RequestContainer;
+import milkman.ui.commands.UiCommand;
 import milkman.utils.Event;
 
 @Singleton
@@ -23,7 +24,7 @@ import milkman.utils.Event;
 public class RequestCollectionComponent {
 
 	
-	public final Event<RequestContainer> onRequestSelection = new Event<RequestContainer>();
+	public final Event<UiCommand> onCommand = new Event<UiCommand>();
 
 	
 	@FXML VBox collectionContainer;
@@ -47,7 +48,7 @@ public class RequestCollectionComponent {
 
 	private Node createRequestEntry(RequestContainer request) {
 		Button button = new Button(request.getName());
-		button.setOnAction(e -> onRequestSelection.invoke(request));
+		button.setOnAction(e -> onCommand.invoke(new UiCommand.LoadRequest(request)));
 		return button;
 	}
 	
