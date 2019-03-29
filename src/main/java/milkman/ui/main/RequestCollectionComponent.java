@@ -1,6 +1,8 @@
 package milkman.ui.main;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -29,6 +31,8 @@ public class RequestCollectionComponent {
 	
 	@FXML VBox collectionContainer;
 
+	Map<String, Boolean> expansionCache = new HashMap<>();
+	
 	public void display(List<Collection> collections) {
 		collectionContainer.getChildren().clear();
 		for (Collection collection : collections) {
@@ -39,16 +43,17 @@ public class RequestCollectionComponent {
 
 
 	private TitledPane createPane(Collection collection) {
-		List<Node> entries = collection.getRequests().stream().map(this::createRequestEntry).collect(Collectors.toList());
+		List<Node> entries = collection.getRequests().stream().map(r -> createRequestEntry(collection, r)).collect(Collectors.toList());
 		TitledPane titledPane = new TitledPane(collection.getName(), new VBox(entries.toArray(new Node[] {})));
-		titledPane.setExpanded(false);
+		titledPane.setExpanded(expansionCache.getOrDefault(collection.getName(), false));
+		titledPane.expandedProperty().addListener((v, o, n)->expansionCache.put(collection.getName(), n));
 		return titledPane;
 	}
 
 
-	private Node createRequestEntry(RequestContainer request) {
+	private Node createRequestEntry(Collection collection, RequestContainer request) {
 		Button button = new Button(request.getName());
-		button.setOnAction(e -> onCommand.invoke(new UiCommand.LoadRequest(request)));
+		button.setOnAction(e -> onCommand.invoke(new UiCommand.LoadRequest(request.getId())));
 		return button;
 	}
 	

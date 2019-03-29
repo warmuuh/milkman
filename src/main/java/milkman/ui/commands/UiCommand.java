@@ -23,7 +23,24 @@ public interface UiCommand {
 	
 	@Value
 	public static class LoadRequest implements UiCommand {
+		String requestId;
+	}
+
+	@Value
+	public static class SwitchToRequest implements UiCommand {
 		RequestContainer request;
 	}
+	
+	@Value
+	public static class CloseRequest implements UiCommand {
+		RequestContainer request;
+	}
+	
+
+	@Value
+	public static class NewRequest implements UiCommand {
+	}
+	
+	
 	
 }

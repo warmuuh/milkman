@@ -53,20 +53,30 @@ public class WorkspaceController {
 	
 	
 	
-	public void loadRequestCopy(RequestContainer request) {
+	public void loadRequestCopy(String requestId) {
 		
 		//determine if we need to open a new copy of it or if it is opened already:
 		val openedReqCopy = activeWorkspace.getOpenRequests().stream()
-			.filter(r -> r.getId().equals(request.getId()))
+			.filter(r -> r.getId().equals(requestId))
 			.findAny();
 		
-		displayRequest(openedReqCopy.orElseGet(() -> ObjectUtils.deepClone(request)));
+		RequestContainer request = openedReqCopy.orElseGet(() -> ObjectUtils.deepClone(findRequest(requestId)));
+		displayRequest(request);
+	}
+	
+	private RequestContainer findRequest(String requestId) {
+		return activeWorkspace.getCollections().stream()
+		.flatMap(c -> c.getRequests().stream())
+		.filter(r -> r.getId().equals(requestId))
+		.findAny()
+		.orElseThrow(() -> new IllegalArgumentException("Request with ID " + requestId + " not found in active workspace"));
 	}
 	
 	public void displayRequest(RequestContainer request) {
 		if (!activeWorkspace.getOpenRequests().contains(request))
 			activeWorkspace.getOpenRequests().add(request);
-		
+		activeWorkspace.setActiveRequest(request);
+
 		workingAreaView.display(request, activeWorkspace.getOpenRequests());
 		
 		if (activeWorkspace.getCachedResponses().containsKey(request))
@@ -106,14 +116,38 @@ public class WorkspaceController {
 			saveRequest(saveCmd.getRequest());
 		} else if (command instanceof UiCommand.LoadRequest) {
 			val openCmd = ((UiCommand.LoadRequest) command);
-			loadRequestCopy(openCmd.getRequest());
-		} else {
+			loadRequestCopy(openCmd.getRequestId());
+		} else if (command instanceof UiCommand.SwitchToRequest) {
+			displayRequest(((UiCommand.SwitchToRequest) command).getRequest());
+		} else if (command instanceof UiCommand.NewRequest) {
+			createNewRequest();
+		} else if (command instanceof UiCommand.CloseRequest) {
+			closeRequest(((UiCommand.CloseRequest) command).getRequest());
+		}
+		else {
 			throw new IllegalArgumentException("Unsupported command");
 		}
 	}
 	
 	
 	
+	private void closeRequest(RequestContainer request) {
+		//for now, force close it without asking to save
+		int indexOf = activeWorkspace.getOpenRequests().indexOf(request);
+		if (indexOf < 0) {
+			return;
+		}
+		activeWorkspace.getOpenRequests().remove(indexOf);
+		if(activeWorkspace.getOpenRequests().isEmpty()) {
+			createNewRequest();
+		} else {
+			RequestContainer newRequestToDisplay = activeWorkspace.getOpenRequests()
+					.get(Math.min(indexOf, activeWorkspace.getOpenRequests().size()-1));
+			displayRequest(newRequestToDisplay);
+		}
+	}
+
+
 	private void saveRequest(RequestContainer request) {
 		if (StringUtils.isBlank(request.getId())) {
 			saveAsRequest(request);
@@ -163,8 +197,7 @@ public class WorkspaceController {
 	public void setup() {
 		collectionView.onCommand.add(this::handleCommand);
 		requestView.onCommand.add(this::handleCommand);
-		workingAreaView.onNewRequest.add(x -> createNewRequest());
-		workingAreaView.onRequestSelection.add(this::displayRequest);
+		workingAreaView.onCommand.add(this::handleCommand);
 	}
 	
 }

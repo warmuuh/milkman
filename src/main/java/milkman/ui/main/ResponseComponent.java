@@ -4,6 +4,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import milkman.domain.RequestAspect;
 import milkman.domain.RequestContainer;
@@ -33,8 +34,11 @@ public class ResponseComponent {
 		for (RequestAspectsPlugin plugin : plugins.loadRequestAspectPlugins()) {
 			for (ResponseAspect aspect : response.getAspects()) {
 				for (ResponseAspectEditor tabController : plugin.getResponseTabs()) {
-					if (tabController.canHandleAspect(aspect))
-						tabs.getTabs().add(tabController.getRoot(aspect));
+					if (tabController.canHandleAspect(aspect)) {
+						Tab aspectTab = tabController.getRoot(aspect);
+						aspectTab.setClosable(false);
+						tabs.getTabs().add(aspectTab);
+					}
 				}
 			}
 		}
