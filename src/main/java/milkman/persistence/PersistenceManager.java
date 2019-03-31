@@ -64,6 +64,10 @@ public class PersistenceManager {
 
 		workspaces = db.getRepository(Workspace.class);
 	}
+
+	public boolean deleteWorkspace(String workspaceName) {
+		return workspaces.remove(ObjectFilters.eq("name", workspaceName)).getAffectedCount() > 0;
+	}
 	
 	
 }

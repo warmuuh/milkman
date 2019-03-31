@@ -2,18 +2,25 @@ package milkman.ctrl;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import javafx.application.Platform;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
+import milkman.domain.Collection;
 import milkman.domain.RequestContainer;
+import milkman.domain.ResponseContainer;
 import milkman.domain.Workspace;
 import milkman.persistence.PersistenceManager;
 import milkman.ui.commands.AppCommand;
+import milkman.ui.commands.AppCommand.RenameWorkspace;
 import milkman.ui.main.ToolbarComponent;
+import milkman.ui.main.dialogs.ManageWorkspacesDialog;
 import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.UiPluginManager;
 
@@ -29,15 +36,12 @@ public class ApplicationController {
 	
 	public void initApplication() {
 		List<String> names = persistence.loadWorkspaceNames();
-		Workspace activeWs;
 		if (names.isEmpty()) {
-			activeWs = createFreshWorkspace();
+			createFreshWorkspace("New Workspace", true);
 		}
 		else {
-			activeWs = loadWorkspace(names.get(0));
+			loadWorkspace(names.get(0));
 		}
-				
-		toolbarComponent.setWorkspaces(activeWs.getName(), persistence.loadWorkspaceNames());
 	}
 
 
@@ -45,23 +49,28 @@ public class ApplicationController {
 		Workspace ws = persistence.loadWorkspaceByName(name)
 			.orElseThrow(() -> new IllegalArgumentException("Could not find workspace " + name));
 		workspaceController.loadWorkspace(ws);
+		//we have to execute this later because we might have triggerd workspace loading from the toolbar
+		Platform.runLater(() -> toolbarComponent.setWorkspaces(name, persistence.loadWorkspaceNames()));
 		return ws;
 	}
 
 
-	private Workspace createFreshWorkspace() {
+	private Workspace createFreshWorkspace(String name, boolean loadWorkspace) {
 		RequestTypePlugin requestTypePlugin = plugins.loadRequestTypePlugins().get(0);
 		RequestContainer newRequest = requestTypePlugin.createNewRequest();
 		plugins.loadRequestAspectPlugins().forEach(p -> p.initializeAspects(newRequest));
 		Workspace workspace = new Workspace(0L, 
 				UUID.randomUUID().toString(),
-				"New Workspace", 
+				name, 
 				new LinkedList<>(), 
 				io.vavr.collection.List.of(newRequest).toJavaList(), 
 				newRequest);
 		
 		persistence.persistWorkspace(workspace);
-		workspaceController.loadWorkspace(workspace);
+		if (loadWorkspace)
+			workspaceController.loadWorkspace(workspace);
+			
+		toolbarComponent.setWorkspaces(workspaceController.getActiveWorkspace().getName(), persistence.loadWorkspaceNames());
 		
 		return workspace;
 	}
@@ -69,9 +78,62 @@ public class ApplicationController {
 	public void handleCommand(AppCommand command) {
 		if (command instanceof AppCommand.PersistWorkspace) {
 			persistWorkspace(((AppCommand.PersistWorkspace) command).getWorkspace());
+		} else if (command instanceof AppCommand.LoadWorkspace) {
+			persistWorkspace(workspaceController.getActiveWorkspace());
+			loadWorkspace(((AppCommand.LoadWorkspace) command).getWorkspaceName());
+		} else if (command instanceof AppCommand.ManageWorkspaces) {
+			openWorkspaceManagementDialog();
+		} else if (command instanceof AppCommand.CreateNewWorkspace) {
+			createNewWorkspace(((AppCommand.CreateNewWorkspace) command).getNewWorkspaceName());
+		} else if (command instanceof AppCommand.DeleteWorkspace) {
+			deleteWorkspace(((AppCommand.DeleteWorkspace) command).getWorkspaceName());
+		}else if (command instanceof AppCommand.RenameWorkspace) {
+			RenameWorkspace renameWorkspace = (AppCommand.RenameWorkspace) command;
+			renameWorkspace(renameWorkspace.getWorkspaceName(), renameWorkspace.getNewWorkspaceName());
 		} else {
 			throw new IllegalArgumentException("Unsupported command: " + command);
 		}
+	}
+
+
+	private void renameWorkspace(String workspaceName, String newWorkspaceName) {
+		boolean isActiveWorkspace = workspaceController.getActiveWorkspace().getName().equals(workspaceName);
+		if (isActiveWorkspace)
+			persistWorkspace(workspaceController.getActiveWorkspace());
+		
+		val ws = persistence.loadWorkspaceByName(workspaceName)
+			.orElseThrow(() -> new IllegalArgumentException("Workspace not found: " + workspaceName));
+		ws.setName(newWorkspaceName);
+		persistence.persistWorkspace(ws);
+		
+		if (isActiveWorkspace) {
+			loadWorkspace(newWorkspaceName);
+		}
+	}
+
+
+	private void deleteWorkspace(String workspaceName) {
+		persistence.deleteWorkspace(workspaceName);
+		if (workspaceController.getActiveWorkspace().getName().equals(workspaceName)) {
+			List<String> otherWorkspaces = persistence.loadWorkspaceNames();
+			if (otherWorkspaces.isEmpty()) {
+				createFreshWorkspace("New Workspace", true);
+			} else {
+				loadWorkspace(otherWorkspaces.get(0));
+			}
+		}
+	}
+
+
+	private void createNewWorkspace(String newWorkspaceName) {
+		createFreshWorkspace(newWorkspaceName, true);
+	}
+
+
+	private void openWorkspaceManagementDialog() {
+		ManageWorkspacesDialog dialog = new ManageWorkspacesDialog();
+		dialog.onCommand.add(this::handleCommand);
+		dialog.showAndWait(persistence.loadWorkspaceNames());
 	}
 
 
@@ -82,6 +144,7 @@ public class ApplicationController {
 	@PostConstruct
 	public void setup() {
 		workspaceController.onCommand.add(this::handleCommand);
+		toolbarComponent.onCommand.add(this::handleCommand);
 	}
 
 
