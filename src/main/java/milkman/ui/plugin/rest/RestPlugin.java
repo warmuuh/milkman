@@ -1,22 +1,18 @@
 package milkman.ui.plugin.rest;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
+import milkman.ui.plugin.RequestAspectEditor;
+import milkman.ui.plugin.RequestAspectsPlugin;
 import milkman.ui.plugin.RequestTypeEditor;
 import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.ResponseAspectEditor;
-import milkman.ui.plugin.RequestAspectEditor;
-import milkman.ui.plugin.RequestAspectsPlugin;
 import milkman.ui.plugin.rest.domain.RestBodyAspect;
 import milkman.ui.plugin.rest.domain.RestHeaderAspect;
 import milkman.ui.plugin.rest.domain.RestRequestContainer;
-import milkman.ui.plugin.rest.domain.RestResponseBodyAspect;
-import milkman.ui.plugin.rest.domain.RestResponseContainer;
-import milkman.ui.plugin.rest.domain.RestResponseHeaderAspect;
 
 public class RestPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 

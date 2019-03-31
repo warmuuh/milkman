@@ -1,14 +1,7 @@
 package milkman.utils.fxml;
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 
-import io.vavr.CheckedConsumer;
-import io.vavr.Function0;
 import io.vavr.Function1;
 import javafx.beans.property.ObjectPropertyBase;
 import javafx.beans.property.Property;

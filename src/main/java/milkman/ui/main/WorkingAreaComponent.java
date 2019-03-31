@@ -10,7 +10,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 import lombok.RequiredArgsConstructor;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;

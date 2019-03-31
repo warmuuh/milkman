@@ -3,14 +3,11 @@ package milkman.ui.main;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import lombok.RequiredArgsConstructor;
-import milkman.domain.RequestContainer;
 import milkman.ui.components.ContentEditor;
 import milkman.ui.components.HeaderComponent;
 

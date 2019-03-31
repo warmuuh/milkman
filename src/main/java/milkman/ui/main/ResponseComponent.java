@@ -6,14 +6,11 @@ import javax.inject.Singleton;
 import javafx.fxml.FXML;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import milkman.domain.RequestAspect;
-import milkman.domain.RequestContainer;
 import milkman.domain.ResponseAspect;
 import milkman.domain.ResponseContainer;
-import milkman.ui.plugin.RequestAspectEditor;
-import milkman.ui.plugin.UiPluginManager;
 import milkman.ui.plugin.RequestAspectsPlugin;
 import milkman.ui.plugin.ResponseAspectEditor;
+import milkman.ui.plugin.UiPluginManager;
 
 @Singleton
 public class ResponseComponent {

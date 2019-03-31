@@ -2,7 +2,6 @@ package milkman.utils;
 
 import java.util.function.BiConsumer;
 
-import io.vavr.CheckedConsumer;
 import io.vavr.collection.List;
 import lombok.SneakyThrows;
 import lombok.var;

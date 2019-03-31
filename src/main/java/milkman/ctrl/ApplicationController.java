@@ -2,7 +2,6 @@ package milkman.ctrl;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import javax.annotation.PostConstruct;
@@ -12,9 +11,7 @@ import javax.inject.Singleton;
 import javafx.application.Platform;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import milkman.domain.Collection;
 import milkman.domain.RequestContainer;
-import milkman.domain.ResponseContainer;
 import milkman.domain.Workspace;
 import milkman.persistence.PersistenceManager;
 import milkman.ui.commands.AppCommand;

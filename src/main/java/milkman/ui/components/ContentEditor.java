@@ -1,8 +1,9 @@
 package milkman.ui.components;
 
 import javax.inject.Singleton;
+
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.TextArea;
 
 @Singleton
 public class ContentEditor {

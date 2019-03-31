@@ -1,21 +1,14 @@
 package milkman.ui.main.dialogs;
 
-import java.net.URL;
-import java.util.List;
 import java.util.Objects;
-import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.control.ListView;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import lombok.Getter;
-import milkman.domain.Collection;
-import milkman.domain.RequestContainer;
 import milkman.utils.fxml.FxmlUtil;
-import javafx.scene.control.Label;
 
 public class StringInputDialog {
 

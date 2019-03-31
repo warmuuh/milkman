@@ -3,21 +3,18 @@ package milkman.ui.main;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-
 import javafx.fxml.FXML;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.HBox;
 import milkman.domain.RequestAspect;
 import milkman.domain.RequestContainer;
+import milkman.ui.commands.UiCommand;
+import milkman.ui.plugin.RequestAspectEditor;
+import milkman.ui.plugin.RequestAspectsPlugin;
 import milkman.ui.plugin.RequestTypeEditor;
 import milkman.ui.plugin.RequestTypePlugin;
-import milkman.ui.commands.UiCommand;
-import milkman.ui.main.dialogs.SaveRequestDialog;
-import milkman.ui.plugin.RequestAspectEditor;
 import milkman.ui.plugin.UiPluginManager;
-import milkman.ui.plugin.RequestAspectsPlugin;
-import milkman.ui.plugin.rest.domain.RestRequestContainer;
 import milkman.utils.Event;
 
 @Singleton

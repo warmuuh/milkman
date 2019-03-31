@@ -5,14 +5,10 @@ import javafx.scene.Parent;
 import javafx.scene.control.Tab;
 import lombok.SneakyThrows;
 import lombok.val;
-import milkman.domain.RequestAspect;
 import milkman.domain.ResponseAspect;
 import milkman.ui.components.ContentEditor;
-import milkman.ui.plugin.RequestAspectEditor;
 import milkman.ui.plugin.ResponseAspectEditor;
-import milkman.ui.plugin.rest.domain.RestHeaderAspect;
 import milkman.ui.plugin.rest.domain.RestResponseBodyAspect;
-import milkman.ui.plugin.rest.domain.RestResponseHeaderAspect;
 
 public class ResponseBodyTabController implements ResponseAspectEditor {
 

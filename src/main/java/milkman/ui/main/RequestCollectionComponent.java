@@ -12,24 +12,21 @@ import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import milkman.ctrl.WorkspaceController;
 import milkman.domain.Collection;
 import milkman.domain.RequestContainer;
 import milkman.ui.commands.UiCommand;
 import milkman.utils.Event;
 import milkman.utils.fxml.NoSelectionModel;
-import javafx.scene.control.TextField;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_ = { @Inject })

@@ -1,6 +1,5 @@
 package milkman.ctrl;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Optional;
@@ -11,7 +10,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.impl.conn.Wire;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +22,6 @@ import milkman.ui.commands.AppCommand;
 import milkman.ui.commands.UiCommand;
 import milkman.ui.commands.UiCommand.DeleteRequest;
 import milkman.ui.commands.UiCommand.RenameRequest;
-import milkman.ui.commands.AppCommand.PersistWorkspace;
 import milkman.ui.main.RequestCollectionComponent;
 import milkman.ui.main.RequestComponent;
 import milkman.ui.main.WorkingAreaComponent;

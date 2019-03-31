@@ -3,18 +3,15 @@ package milkman.ui.main;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 import javax.inject.Singleton;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Separator;
 import lombok.Value;
-import lombok.val;
 import milkman.ui.commands.AppCommand;
 import milkman.utils.Event;
 
