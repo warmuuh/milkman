@@ -1,13 +1,12 @@
 package milkman.ui.plugin.rest.domain;
 
-import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import milkman.domain.RequestContainer;
-import milkman.domain.ResponseAspect;
 
 @Data
 @AllArgsConstructor
@@ -25,5 +24,12 @@ public class RestRequestContainer extends RequestContainer {
 		this.httpMethod = httpMethod;
 	}
 
-	
+
+	@Override
+	public boolean match(String searchString) {
+		return StringUtils.containsIgnoreCase(url, searchString)
+				|| StringUtils.containsIgnoreCase(httpMethod, searchString)
+				|| super.match(searchString);
+	}
+
 }
