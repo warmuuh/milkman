@@ -208,6 +208,7 @@ public class WorkspaceController {
 					RequestContainer requestContainer = iterator.next();
 					if (requestContainer.getId().equals(request.getId())){
 						iterator.set(ObjectUtils.deepClone(request));
+						request.setDirty(false);
 						loadCollections(activeWorkspace);
 						break outer;
 					}
@@ -232,6 +233,7 @@ public class WorkspaceController {
 		
 		request.setId(UUID.randomUUID().toString());
 		request.setName(dialog.getRequestName());
+		request.setDirty(false);
 		
 		collection.getRequests().add(ObjectUtils.deepClone(request));
 		loadCollections(activeWorkspace);

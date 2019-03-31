@@ -10,6 +10,7 @@ import lombok.SneakyThrows;
 import milkman.domain.RequestContainer;
 import milkman.ui.plugin.RequestTypeEditor;
 import milkman.ui.plugin.rest.domain.RestRequestContainer;
+import milkman.utils.fxml.FxmlUtil;
 import milkman.utils.fxml.GenericBinding;
 
 public class RestRequestEditController implements RequestTypeEditor {
@@ -24,9 +25,7 @@ public class RestRequestEditController implements RequestTypeEditor {
 	@Override
 	@SneakyThrows
 	public Node getRoot() {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/rest/MainEditorArea.fxml"));
-		loader.setControllerFactory(c -> this);
-		Node root = loader.load();
+		Node root = FxmlUtil.loadAndInitialize("/rest/MainEditorArea.fxml", this);
 		return root;
 	}
 
@@ -39,6 +38,10 @@ public class RestRequestEditController implements RequestTypeEditor {
 		
 		urlBinding.bindTo(requestUrl.textProperty(), restRequest);
 		httpMethodBinding.bindTo(httpMethod.valueProperty(), restRequest);
+		
+		urlBinding.addListener(s -> request.setDirty(true));
+		httpMethodBinding.addListener(s -> request.setDirty(true));
+		
 	}
 
 

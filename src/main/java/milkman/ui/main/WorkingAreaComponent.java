@@ -30,12 +30,26 @@ public class WorkingAreaComponent {
 	
 	public void display(RequestContainer activeRequest, List<RequestContainer> openedRequests) {
 		openedTabsBar.getChildren().clear();
-		openedRequests.forEach(r -> openedTabsBar.getChildren().add(createRequestTabButton(r)));
+		openedRequests.forEach(r -> openedTabsBar.getChildren().add(createRequestTabButton(r, activeRequest == r)));
 		restRequestComponent.display(activeRequest);
 	}
 
-	private Button createRequestTabButton(RequestContainer r) {
-		Button button = new Button(r.getName());
+	private Button createRequestTabButton(RequestContainer r, boolean isActive) {
+		String btnName = (isActive ? ">" : "") + r.getName();
+		btnName += r.isDirty() ? "*" : "";
+		
+		Button button = new Button(btnName);
+		
+		
+		r.onDirtyChange.add((o,n) -> {
+			String text = button.getText();
+			if (n) 
+				button.setText(text + "*");
+			else
+				button.setText(text.substring(0, text.length()-1));
+		});
+		
+		
 		button.setOnAction(e -> onCommand.invoke(new UiCommand.SwitchToRequest(r)));
 		
 		MenuItem closeEntry = new MenuItem("Close");

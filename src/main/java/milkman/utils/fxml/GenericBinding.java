@@ -33,6 +33,7 @@ public class GenericBinding<O, T> extends ObjectPropertyBase<T> {
     @Override
     public void set(T v) {
         try {
+            fireValueChangedEvent();
             setter.accept(obj, v);
             super.set(v);
         } catch (final Throwable t) {
