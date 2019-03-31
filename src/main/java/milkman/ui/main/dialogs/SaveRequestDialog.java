@@ -3,11 +3,19 @@ package milkman.ui.main.dialogs;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MultipleSelectionModel;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import lombok.Getter;
@@ -40,7 +48,25 @@ public class SaveRequestDialog implements Initializable{
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		requestName.setText(request.getName());
-		collections.forEach(c -> collectionList.getItems().add(c.getName()));
+		List<String> collectionNames = collections.stream().map(c -> c.getName()).collect(Collectors.toList());
+		FilteredList<String> filteredList = new FilteredList<String>(FXCollections.observableList(collectionNames));
+		collectionName.textProperty().addListener(obs-> {
+	        String filter = collectionName.getText(); 
+	        if(filter == null || filter.length() == 0) {
+	        	Platform.runLater(() -> filteredList.setPredicate(s -> true));
+	        }
+	        else {
+	        	Platform.runLater(() -> filteredList.setPredicate(s -> s.contains(filter)));
+	        }
+		});
+		collectionList.setItems(filteredList);
+		
+		
+		collectionList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		collectionList.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> { 
+			if (n != null && n.length() > 0)
+				collectionName.setText(n);
+		});
 	}
 
 	
