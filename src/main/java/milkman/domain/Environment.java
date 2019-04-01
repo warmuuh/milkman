@@ -3,6 +3,7 @@ package milkman.domain;
 import java.util.LinkedList;
 import java.util.List;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,8 @@ import lombok.NoArgsConstructor;
 public class Environment {
 
 	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
 	public static class EnvironmentEntry {
 		String name;
 		String value;

@@ -1,21 +1,30 @@
 package milkman.ui.plugin.rest;
 
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.Tab;
 import lombok.SneakyThrows;
 import milkman.domain.RequestAspect;
+import milkman.ui.components.TableEditor;
 import milkman.ui.plugin.RequestAspectEditor;
 import milkman.ui.plugin.rest.domain.RestHeaderAspect;
+import milkman.ui.plugin.rest.domain.RestHeaderAspect.HeaderEntry;
+import milkman.utils.fxml.FxmlUtil;
 
 public class RequestHeaderTabController implements RequestAspectEditor {
 
 	@Override
 	@SneakyThrows
 	public Tab getRoot(RequestAspect aspect) {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/components/HeaderComponent.fxml"));
-		Parent root = loader.load();
-		return new Tab("Headers", root);
+		RestHeaderAspect headers = (RestHeaderAspect) aspect;
+		TableEditor<HeaderEntry> editor = FxmlUtil.loadAndInitialize("/components/TableEditor.fxml");
+		editor.setEditable(true);
+		editor.addCheckboxColumn("Enabled", HeaderEntry::isEnabled, HeaderEntry::setEnabled);
+		editor.addColumn("Name", HeaderEntry::getName, HeaderEntry::setName);
+		editor.addColumn("Value", HeaderEntry::getValue, HeaderEntry::setValue);
+		editor.addDeleteColumn("Delete");
+		
+		editor.setItems(headers.getEntries(), () -> new HeaderEntry("", "", true));
+		
+		return new Tab("Headers", editor);
 	}
 
 	@Override

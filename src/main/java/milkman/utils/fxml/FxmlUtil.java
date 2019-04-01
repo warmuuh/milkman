@@ -6,6 +6,8 @@ import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import lombok.SneakyThrows;
+import milkman.ui.components.TableEditor;
+import milkman.ui.plugin.rest.domain.RestHeaderAspect.HeaderEntry;
 
 public class FxmlUtil {
 
@@ -13,6 +15,13 @@ public class FxmlUtil {
 	public static <T, R> R loadAndInitialize(String file, T controller){
 		FXMLLoader loader = new FXMLLoader(FxmlUtil.class.getResource(file));
 		loader.setControllerFactory(c -> controller);
+		R root = loader.load();
+		return root;
+	}
+	
+	@SneakyThrows
+	public static <T, R> R loadAndInitialize(String file){
+		FXMLLoader loader = new FXMLLoader(FxmlUtil.class.getResource(file));
 		R root = loader.load();
 		return root;
 	}

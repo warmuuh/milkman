@@ -47,12 +47,21 @@ public class ManageEnvironmentsDialog {
 			Button renameButton = new Button("rename");
 			renameButton.setOnAction(e -> triggerRenameDialog(environment));
 			
+			Button editButton = new Button("edit");
+			editButton.setOnAction(e -> triggerEditEnvDialog(environment));
+			
 			Button deleteButton = new Button("x");
 			deleteButton.setOnAction(e -> {
 				onCommand.invoke(new AppCommand.DeleteEnvironment(environment));
 				refresh();
 			});
-			return new HBox(new Label(environment.getName()), renameButton, deleteButton);
+			return new HBox(new Label(environment.getName()), renameButton, editButton, deleteButton);
+		}
+
+
+		private void triggerEditEnvDialog(Environment environment) {
+			EditEnvironmentDialog envDialog = new EditEnvironmentDialog();
+			envDialog.showAndWait(environment);
 		}
 
 

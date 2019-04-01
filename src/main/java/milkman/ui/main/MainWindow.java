@@ -9,7 +9,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import lombok.RequiredArgsConstructor;
 import milkman.ui.components.ContentEditor;
-import milkman.ui.components.HeaderComponent;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_={@Inject})
@@ -20,7 +19,6 @@ public class MainWindow {
 	private final WorkingAreaComponent workingArea;
 	private final RequestCollectionComponent requestCollectionComponent;
 	private final ToolbarComponent toolbarComponent;
-	private final HeaderComponent headerComponent;
 	private final ContentEditor contentEditor;
 	
 
@@ -58,8 +56,6 @@ public class MainWindow {
 			return requestCollectionComponent;
 		if (type.equals(ToolbarComponent.class))
 			return toolbarComponent;
-		if (type.equals(HeaderComponent.class))
-			return headerComponent;
 		if (type.equals(ContentEditor.class))
 			return contentEditor;
 

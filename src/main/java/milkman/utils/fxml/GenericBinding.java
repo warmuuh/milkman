@@ -17,6 +17,13 @@ public class GenericBinding<O, T> extends ObjectPropertyBase<T> {
 	   return new GenericBinding<>(getter, setter);
    }
    
+   public static <OS, TS> GenericBinding<OS, TS> of(Function1<OS, TS> getter, BiConsumer<OS, TS> setter, OS obj){
+	   GenericBinding<OS, TS> b = new GenericBinding<>(getter, setter);
+	   b.obj = obj;
+	   return b;
+   }
+   
+   
     private GenericBinding(Function1<O, T> getter, BiConsumer<O, T> setter) {
         super();
 		this.getter = getter;
