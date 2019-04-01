@@ -9,7 +9,7 @@ public interface RequestTypePlugin {
 	
 	RequestTypeEditor getRequestEditor();
 	
-	ResponseContainer executeRequest(RequestContainer request);
+	ResponseContainer executeRequest(RequestContainer request, Templater templater);
 	
 	
 }

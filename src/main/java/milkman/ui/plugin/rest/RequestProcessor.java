@@ -11,6 +11,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
 import lombok.SneakyThrows;
+import milkman.ui.plugin.Templater;
 import milkman.ui.plugin.rest.domain.RestRequestContainer;
 import milkman.ui.plugin.rest.domain.RestResponseBodyAspect;
 import milkman.ui.plugin.rest.domain.RestResponseContainer;
@@ -22,8 +23,8 @@ public class RequestProcessor {
     
     
     @SneakyThrows
-	public RestResponseContainer executeRequest(RestRequestContainer request) {
-		RequestBuilder builder = toHttpRequest(request);
+	public RestResponseContainer executeRequest(RestRequestContainer request, Templater templater) {
+		RequestBuilder builder = toHttpRequest(request, templater);
 		HttpResponse httpResponse = executeRequest(builder);
 		RestResponseContainer response = toResponseContainer(httpResponse);
 		return response; 
@@ -39,9 +40,9 @@ public class RequestProcessor {
 
 
 
-	private RequestBuilder toHttpRequest(RestRequestContainer request) {
+	private RequestBuilder toHttpRequest(RestRequestContainer request, Templater templater) {
 		RequestBuilder builder = RequestBuilder.create(request.getHttpMethod());
-		builder.setUri(request.getUrl());
+		builder.setUri(templater.replaceTags(request.getUrl()));
 		return builder;
 	}
 

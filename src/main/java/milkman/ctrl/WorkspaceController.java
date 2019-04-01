@@ -15,10 +15,12 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import milkman.domain.Collection;
+import milkman.domain.Environment;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 import milkman.domain.Workspace;
 import milkman.ui.commands.AppCommand;
+import milkman.ui.commands.EnvironmentTemplater;
 import milkman.ui.commands.UiCommand;
 import milkman.ui.commands.UiCommand.DeleteRequest;
 import milkman.ui.commands.UiCommand.RenameRequest;
@@ -100,8 +102,11 @@ public class WorkspaceController {
 	public void executeRequest(RequestContainer request) {
 		System.out.println("Executing request: " + request);
 		
+		
+		Optional<Environment> activeEnv = activeWorkspace.getEnvironments().stream().filter(e -> e.isActive()).findAny();
+		
 		RequestTypePlugin plugin = plugins.loadRequestTypePlugins().get(0);
-		ResponseContainer response = plugin.executeRequest(request);
+		ResponseContainer response = plugin.executeRequest(request, new EnvironmentTemplater(activeEnv, activeWorkspace.getGlobalEnvironment()));
 		
 		plugins.loadRequestAspectPlugins().forEach(a -> a.initializeAspects(response));
 		

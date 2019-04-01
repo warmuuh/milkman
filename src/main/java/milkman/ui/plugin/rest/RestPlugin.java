@@ -10,6 +10,7 @@ import milkman.ui.plugin.RequestAspectsPlugin;
 import milkman.ui.plugin.RequestTypeEditor;
 import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.ResponseAspectEditor;
+import milkman.ui.plugin.Templater;
 import milkman.ui.plugin.rest.domain.RestBodyAspect;
 import milkman.ui.plugin.rest.domain.RestHeaderAspect;
 import milkman.ui.plugin.rest.domain.RestRequestContainer;
@@ -49,8 +50,8 @@ public class RestPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 	}
 
 	@Override
-	public ResponseContainer executeRequest(RequestContainer request) {
-		return requestProcessor.executeRequest((RestRequestContainer) request);
+	public ResponseContainer executeRequest(RequestContainer request, Templater templater) {
+		return requestProcessor.executeRequest((RestRequestContainer) request, templater);
 	}
 
 	@Override
