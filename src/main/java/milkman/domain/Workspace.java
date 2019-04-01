@@ -1,6 +1,7 @@
 package milkman.domain;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -32,8 +33,12 @@ public class Workspace {
 	private List<Collection> collections;
 	private List<RequestContainer> openRequests;
 	private RequestContainer activeRequest;
+	private List<Environment> environments = new LinkedList<Environment>();
+	private Environment globalEnvironment = new Environment();
+	
 	@JsonIgnore
 	private Map<RequestContainer, ResponseContainer> cachedResponses = new HashMap<RequestContainer, ResponseContainer>();
+	
 	public Workspace(long id, String workspaceId, String name, List<Collection> collections,
 			List<RequestContainer> openRequests, RequestContainer activeRequest) {
 		super();
@@ -44,6 +49,7 @@ public class Workspace {
 		this.openRequests = openRequests;
 		this.activeRequest = activeRequest;
 	}
+	
 	
 	
 }

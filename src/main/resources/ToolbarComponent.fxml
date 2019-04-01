@@ -40,15 +40,15 @@ fx:controller="milkman.ui.main.ToolbarComponent">
 
 
 		<Label text="Environment:"></Label>
-		<ChoiceBox value="Local">
-			<items>
-				<FXCollections fx:factory="observableArrayList">
-					<String fx:value="Local" />
-					<String fx:value="QA" />
-					<Separator></Separator>
-					<String fx:value="manage environments..." />
-				</FXCollections>
-			</items>
+		<ChoiceBox fx:id="environmentSelection">
+<!-- 			<items> -->
+<!-- 				<FXCollections fx:factory="observableArrayList"> -->
+<!-- 					<String fx:value="Local" /> -->
+<!-- 					<String fx:value="QA" /> -->
+<!-- 					<Separator></Separator> -->
+<!-- 					<String fx:value="manage environments..." /> -->
+<!-- 				</FXCollections> -->
+<!-- 			</items> -->
 		</ChoiceBox>
 	
 		<Button text="Preferences"></Button>

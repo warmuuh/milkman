@@ -1,6 +1,9 @@
 package milkman.ui.commands;
 
+import java.util.Optional;
+
 import lombok.Value;
+import milkman.domain.Environment;
 import milkman.domain.Workspace;
 
 public interface AppCommand {
@@ -37,4 +40,28 @@ public interface AppCommand {
 	}
 	
 	
+	
+	@Value
+	public static class ManageEnvironments implements AppCommand {
+		
+	}
+	@Value
+	public static class ActivateEnvironment implements AppCommand {
+		Optional<Environment> env;
+	}
+	@Value
+	public static class RenameEnvironment implements AppCommand {
+		Environment env;
+		String newName;
+	}
+	
+	@Value
+	public static class DeleteEnvironment implements AppCommand {
+		Environment env;
+	}
+	
+	@Value
+	public static class CreateNewEnvironment implements AppCommand {
+		Environment env;
+	}
 }

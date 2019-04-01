@@ -2,6 +2,7 @@ package milkman.ctrl;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.annotation.PostConstruct;
@@ -11,12 +12,15 @@ import javax.inject.Singleton;
 import javafx.application.Platform;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import milkman.domain.Environment;
 import milkman.domain.RequestContainer;
 import milkman.domain.Workspace;
 import milkman.persistence.PersistenceManager;
 import milkman.ui.commands.AppCommand;
+import milkman.ui.commands.AppCommand.RenameEnvironment;
 import milkman.ui.commands.AppCommand.RenameWorkspace;
 import milkman.ui.main.ToolbarComponent;
+import milkman.ui.main.dialogs.ManageEnvironmentsDialog;
 import milkman.ui.main.dialogs.ManageWorkspacesDialog;
 import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.UiPluginManager;
@@ -47,7 +51,7 @@ public class ApplicationController {
 			.orElseThrow(() -> new IllegalArgumentException("Could not find workspace " + name));
 		workspaceController.loadWorkspace(ws);
 		//we have to execute this later because we might have triggerd workspace loading from the toolbar
-		Platform.runLater(() -> toolbarComponent.setWorkspaces(name, persistence.loadWorkspaceNames()));
+		Platform.runLater(() -> toolbarComponent.setWorkspaces(ws, persistence.loadWorkspaceNames()));
 		return ws;
 	}
 
@@ -67,7 +71,7 @@ public class ApplicationController {
 		if (loadWorkspace)
 			workspaceController.loadWorkspace(workspace);
 			
-		toolbarComponent.setWorkspaces(workspaceController.getActiveWorkspace().getName(), persistence.loadWorkspaceNames());
+		toolbarComponent.setWorkspaces(workspaceController.getActiveWorkspace(), persistence.loadWorkspaceNames());
 		
 		return workspace;
 	}
@@ -84,12 +88,59 @@ public class ApplicationController {
 			createNewWorkspace(((AppCommand.CreateNewWorkspace) command).getNewWorkspaceName());
 		} else if (command instanceof AppCommand.DeleteWorkspace) {
 			deleteWorkspace(((AppCommand.DeleteWorkspace) command).getWorkspaceName());
-		}else if (command instanceof AppCommand.RenameWorkspace) {
+		} else if (command instanceof AppCommand.RenameWorkspace) {
 			RenameWorkspace renameWorkspace = (AppCommand.RenameWorkspace) command;
 			renameWorkspace(renameWorkspace.getWorkspaceName(), renameWorkspace.getNewWorkspaceName());
+		} else if (command instanceof AppCommand.ManageEnvironments) {
+			openEnvironmentManagementDialog();
+		} else if (command instanceof AppCommand.CreateNewEnvironment) {
+			createNewEnvironment(((AppCommand.CreateNewEnvironment) command).getEnv());
+		} else if (command instanceof AppCommand.DeleteEnvironment) {
+			deleteEnvironment(((AppCommand.DeleteEnvironment) command).getEnv());
+		} else if (command instanceof AppCommand.RenameEnvironment) {
+			RenameEnvironment renameEnvironment = (AppCommand.RenameEnvironment) command;
+			renameEnvironment(renameEnvironment.getEnv(), renameEnvironment.getNewName());
+		} else if (command instanceof AppCommand.ActivateEnvironment) {
+			activateEnvironment(((AppCommand.ActivateEnvironment) command).getEnv());
 		} else {
 			throw new IllegalArgumentException("Unsupported command: " + command);
 		}
+	}
+
+
+	private void renameEnvironment(Environment env, String newName) {
+		env.setName(newName);
+		persistWorkspace(workspaceController.getActiveWorkspace());
+		toolbarComponent.initEnvironmentDropdown(workspaceController.getActiveWorkspace().getEnvironments());
+	}
+
+
+	private void deleteEnvironment(Environment env) {
+		workspaceController.getActiveWorkspace().getEnvironments().remove(env);
+		persistWorkspace(workspaceController.getActiveWorkspace());
+		toolbarComponent.initEnvironmentDropdown(workspaceController.getActiveWorkspace().getEnvironments());
+	}
+
+
+	private void activateEnvironment(Optional<Environment> maybeEnv) {
+		workspaceController.getActiveWorkspace().getEnvironments().forEach(e -> {
+			e.setActive(maybeEnv.map(env -> env == e).orElse(false));
+		});
+		toolbarComponent.initEnvironmentDropdown(workspaceController.getActiveWorkspace().getEnvironments());
+	}
+
+
+	private void createNewEnvironment(Environment env) {
+		workspaceController.getActiveWorkspace().getEnvironments().add(env);
+		persistWorkspace(workspaceController.getActiveWorkspace());
+		activateEnvironment(Optional.of(env));
+	}
+
+
+	private void openEnvironmentManagementDialog() {
+		ManageEnvironmentsDialog dialog = new ManageEnvironmentsDialog();
+		dialog.onCommand.add(this::handleCommand);
+		dialog.showAndWait(workspaceController.getActiveWorkspace().getEnvironments());
 	}
 
 
