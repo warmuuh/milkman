@@ -88,7 +88,12 @@
 			<version>5.4.0</version>
 			<scope>test</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>org.testfx</groupId>
+			<artifactId>testfx-junit5</artifactId>
+			<version>4.0.15-alpha</version>
+			<scope>test</scope>
+		</dependency>
 
 	</dependencies>
 

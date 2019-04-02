@@ -1,6 +1,7 @@
 package milkman.utils.fxml;
 
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
@@ -12,10 +13,13 @@ import milkman.ui.plugin.rest.domain.RestHeaderAspect.HeaderEntry;
 public class FxmlUtil {
 
 	@SneakyThrows
-	public static <T, R> R loadAndInitialize(String file, T controller){
+	public static <T, R extends Node> R loadAndInitialize(String file, T controller){
 		FXMLLoader loader = new FXMLLoader(FxmlUtil.class.getResource(file));
 		loader.setControllerFactory(c -> controller);
 		R root = loader.load();
+		// to prevent GCing of controller
+		// see https://github.com/sialcasa/mvvmFX/issues/429#issuecomment-238829854 for more details
+		root.setUserData(controller);
 		return root;
 	}
 	

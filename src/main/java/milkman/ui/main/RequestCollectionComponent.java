@@ -43,18 +43,23 @@ public class RequestCollectionComponent {
 
 	public void display(List<Collection> collections) {
 		val filteredList = new FilteredList<>(FXCollections.observableList(collections));
+		setFilterPredicate(filteredList, searchField.getText());
 		collectionContainer.setItems(filteredList);
 		collectionContainer.setCellFactory(c -> new CollectionCell());
 
 		collectionContainer.setSelectionModel(new NoSelectionModel<Collection>());
 		
-		searchField.textProperty().addListener((obs) -> {
-			String searchTerm = searchField.getText();
-			if (searchTerm != null && searchTerm.length() > 0)
-				filteredList.setPredicate(c -> c.match(searchTerm));
-			else
-				filteredList.setPredicate(c -> true);
-		});
+		searchField.textProperty().addListener((obs) -> 
+			setFilterPredicate(filteredList, searchField.getText())
+		);
+	}
+
+	private void setFilterPredicate(FilteredList<milkman.domain.Collection> filteredList,
+			String searchTerm) {
+		if (searchTerm != null && searchTerm.length() > 0)
+			filteredList.setPredicate(c -> c.match(searchTerm));
+		else
+			filteredList.setPredicate(c -> true);
 	}
 
 

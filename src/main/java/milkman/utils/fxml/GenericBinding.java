@@ -73,4 +73,5 @@ public class GenericBinding<O, T> extends ObjectPropertyBase<T> {
 	public String getName() {
 		return "";
 	}
+
 }

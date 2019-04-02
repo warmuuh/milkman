@@ -1,6 +1,10 @@
 package milkman.ui.plugin.rest;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
@@ -41,6 +45,5 @@ public class RestRequestEditController implements RequestTypeEditor {
 		httpMethodBinding.addListener(s -> request.setDirty(true));
 		
 	}
-
 
 }
