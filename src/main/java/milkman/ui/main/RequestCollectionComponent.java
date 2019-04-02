@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
@@ -42,7 +44,12 @@ public class RequestCollectionComponent {
 	Map<String, Boolean> expansionCache = new HashMap<>();
 
 	public void display(List<Collection> collections) {
-		val filteredList = new FilteredList<>(FXCollections.observableList(collections));
+		val filteredList = new FilteredList<>(FXCollections.observableList(collections, c -> c.getRequests().stream()
+				.map(r -> r.onDirtyChange)
+				.collect(Collectors.toList())
+				.toArray(new Observable[]{}))
+		);
+		
 		setFilterPredicate(filteredList, searchField.getText());
 		collectionContainer.setItems(filteredList);
 		collectionContainer.setCellFactory(c -> new CollectionCell());
@@ -81,7 +88,11 @@ public class RequestCollectionComponent {
 		private TitledPane createPane(Collection collection) {
 			List<Node> entries = collection.getRequests().stream().map(r -> createRequestEntry(collection, r))
 					.collect(Collectors.toList());
-			TitledPane titledPane = new TitledPane(collection.getName(), new VBox(entries.toArray(new Node[] {})));
+			ListView<Node> listView = new ListView<Node>(FXCollections.observableList(entries));
+			
+			listView.setPrefHeight(entries.size() * 31 + 2);
+			
+			TitledPane titledPane = new TitledPane(collection.getName(), listView);
 			titledPane.setExpanded(expansionCache.getOrDefault(collection.getName(), false));
 			titledPane.expandedProperty().addListener((v, o, n) -> expansionCache.put(collection.getName(), n));
 			return titledPane;
