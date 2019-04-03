@@ -20,15 +20,27 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.layout.Pane?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTabPane?>
 
 
 <VBox xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="milkman.ui.main.WorkingAreaComponent">
+	<JFXTabPane fx:id="testTabs">
+		<tabs>
+		</tabs>
+	</JFXTabPane>
 	<HBox>
-		<ToolBar>
-		<HBox  fx:id="openedTabsBar"></HBox>
-		<Button text="+"  onAction="#onNewRequestClick"></Button>
-		</ToolBar>
+<!-- 		<ToolBar> -->
+<!-- 			<ScrollPane fx:id="openTabsScroller" pannable="true" hbarPolicy="NEVER" vbarPolicy="NEVER"> -->
+<!-- 				<HBox  fx:id="openedTabsBar"></HBox> -->
+<!-- 			</ScrollPane> -->
+		<JFXTabPane fx:id="testTabs">
+			<tabs>
+			</tabs>
+		</JFXTabPane>
+		<JFXButton text="+" prefWidth="40" onAction="#onNewRequestClick"></JFXButton>
+<!-- 		</ToolBar> -->
 		
 	</HBox>
 	<fx:include source="RequestComponent.fxml"></fx:include>

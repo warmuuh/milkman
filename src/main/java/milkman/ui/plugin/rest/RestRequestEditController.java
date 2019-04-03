@@ -3,6 +3,8 @@ package milkman.ui.plugin.rest;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import com.jfoenix.controls.JFXComboBox;
+
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -18,7 +20,7 @@ import milkman.utils.fxml.GenericBinding;
 public class RestRequestEditController implements RequestTypeEditor {
 
 	@FXML TextField requestUrl;
-	@FXML ChoiceBox<String> httpMethod;
+	@FXML JFXComboBox<String> httpMethod;
 	
 	private GenericBinding<RestRequestContainer, String> urlBinding = GenericBinding.of(RestRequestContainer::getUrl, RestRequestContainer::setUrl);
 	private GenericBinding<RestRequestContainer, String> httpMethodBinding = GenericBinding.of(RestRequestContainer::getHttpMethod, RestRequestContainer::setHttpMethod);

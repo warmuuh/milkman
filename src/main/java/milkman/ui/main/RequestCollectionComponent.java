@@ -1,6 +1,7 @@
 package milkman.ui.main;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -8,19 +9,21 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import javafx.beans.InvalidationListener;
+import com.jfoenix.controls.JFXListView;
+
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
+import javafx.scene.input.MouseButton;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
@@ -28,7 +31,6 @@ import milkman.domain.Collection;
 import milkman.domain.RequestContainer;
 import milkman.ui.commands.UiCommand;
 import milkman.utils.Event;
-import milkman.utils.fxml.NoSelectionModel;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_ = { @Inject })
@@ -37,71 +39,63 @@ public class RequestCollectionComponent {
 	public final Event<UiCommand> onCommand = new Event<UiCommand>();
 
 	@FXML
-	ListView<Collection> collectionContainer;
+	JFXListView<JFXListView<Node>> collectionContainer;
+	
 	@FXML
 	TextField searchField;
 
 	Map<String, Boolean> expansionCache = new HashMap<>();
 
 	public void display(List<Collection> collections) {
-		val filteredList = new FilteredList<>(FXCollections.observableList(collections, c -> c.getRequests().stream()
+
+		List<JFXListView<Node>> entries = new LinkedList<JFXListView<Node>>();
+		for (Collection collection : collections) {
+			JFXListView<Node> subList = new JFXListView<Node>();
+			
+			subList.setGroupnode(createCollectionEntry(collection));
+			subList.setUserData(collection);
+			
+			//TODO: this does not work. JFXListView is not firing expandedPropertyChange, bug?
+			subList.setExpanded(expansionCache.getOrDefault(collection.getName(), false));
+			subList.expandedProperty().addListener((v, o, n) -> expansionCache.put(collection.getName(), n));
+			
+			List<Node> requestNodes = collection.getRequests().stream()
+				.map(r -> createRequestEntry(collection, r))
+				.collect(Collectors.toList());
+			
+			subList.setItems(FXCollections.observableList(requestNodes));
+			entries.add(subList);
+		}
+		
+		val filteredList = new FilteredList<>(FXCollections.observableList(entries, c -> 
+				((Collection)c.getUserData()).getRequests().stream()
 				.map(r -> r.onDirtyChange)
 				.collect(Collectors.toList())
 				.toArray(new Observable[]{}))
 		);
-		
 		setFilterPredicate(filteredList, searchField.getText());
 		collectionContainer.setItems(filteredList);
-		collectionContainer.setCellFactory(c -> new CollectionCell());
-
-		collectionContainer.setSelectionModel(new NoSelectionModel<Collection>());
-		
 		searchField.textProperty().addListener((obs) -> 
 			setFilterPredicate(filteredList, searchField.getText())
 		);
 	}
 
-	private void setFilterPredicate(FilteredList<milkman.domain.Collection> filteredList,
+	private HBox createCollectionEntry(Collection collection) {
+		return new HBox(new FontAwesomeIconView(FontAwesomeIcon.FOLDER_ALT, "1.5em"), new Label(collection.getName()));
+	}
+
+	private void setFilterPredicate(FilteredList<JFXListView<Node>> filteredList,
 			String searchTerm) {
 		if (searchTerm != null && searchTerm.length() > 0)
-			filteredList.setPredicate(c -> c.match(searchTerm));
+			filteredList.setPredicate(o -> ((Collection)o.getUserData()).match(searchTerm));
 		else
-			filteredList.setPredicate(c -> true);
+			filteredList.setPredicate(o -> true);
 	}
 
 
-	private class CollectionCell extends ListCell<Collection> {
-
-		@Override
-		protected void updateItem(Collection collection, boolean empty) {
-			super.updateItem(collection, empty);
-			if (empty || collection == null) {
-				setText(null);
-				setGraphic(null);
-			} else {
-				setText(null);
-	            setGraphic(createPane(collection));
-			}
-		}
-
-
-		private TitledPane createPane(Collection collection) {
-			List<Node> entries = collection.getRequests().stream().map(r -> createRequestEntry(collection, r))
-					.collect(Collectors.toList());
-			ListView<Node> listView = new ListView<Node>(FXCollections.observableList(entries));
-			
-			listView.setPrefHeight(entries.size() * 31 + 2);
-			
-			TitledPane titledPane = new TitledPane(collection.getName(), listView);
-			titledPane.setExpanded(expansionCache.getOrDefault(collection.getName(), false));
-			titledPane.expandedProperty().addListener((v, o, n) -> expansionCache.put(collection.getName(), n));
-			return titledPane;
-		}
-	}
-
+	
 	private Node createRequestEntry(Collection collection, RequestContainer request) {
-		Button button = new Button(request.getName());
-		button.setOnAction(e -> onCommand.invoke(new UiCommand.LoadRequest(request.getId())));
+		Label button = new Label(request.getName());
 
 		MenuItem renameEntry = new MenuItem("Rename");
 		renameEntry.setOnAction(e -> onCommand.invoke(new UiCommand.RenameRequest(request, true)));
@@ -109,8 +103,21 @@ public class RequestCollectionComponent {
 		MenuItem deleteEntry = new MenuItem("Delete");
 		deleteEntry.setOnAction(e -> onCommand.invoke(new UiCommand.DeleteRequest(request, collection)));
 
-		button.setContextMenu(new ContextMenu(renameEntry, deleteEntry));
-		return button;
+		ContextMenu ctxMenu = new ContextMenu(renameEntry, deleteEntry);
+		VBox vBox = new VBox(button);
+		
+		vBox.setOnMouseClicked(e -> {
+			if (e.getButton() == MouseButton.PRIMARY)
+				onCommand.invoke(new UiCommand.LoadRequest(request.getId()));
+			else if (e.getButton() == MouseButton.SECONDARY)
+				ctxMenu.show(vBox, e.getScreenX(), e.getScreenY());
+				
+		});
+		return vBox;
+	}
+
+	@FXML public void clearSearch() {
+		searchField.clear();
 	}
 
 }

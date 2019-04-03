@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ import milkman.ui.commands.UiCommand.DeleteRequest;
 import milkman.ui.commands.UiCommand.RenameRequest;
 import milkman.ui.main.RequestCollectionComponent;
 import milkman.ui.main.RequestComponent;
+import milkman.ui.main.Toaster;
 import milkman.ui.main.WorkingAreaComponent;
 import milkman.ui.main.dialogs.SaveRequestDialog;
 import milkman.ui.main.dialogs.StringInputDialog;
@@ -41,6 +43,8 @@ public class WorkspaceController {
 	private final RequestCollectionComponent collectionView;
 	private final WorkingAreaComponent workingAreaView;
 	private final RequestComponent requestView;
+	
+	private final Toaster toaster;
 	
 	private final UiPluginManager plugins;
 	@Getter private Workspace activeWorkspace;
@@ -95,6 +99,7 @@ public class WorkspaceController {
 	public void createNewRequest() {
 		RequestTypePlugin requestTypePlugin = plugins.loadRequestTypePlugins().get(0);
 		RequestContainer request = requestTypePlugin.createNewRequest();
+		request.setId(UUID.randomUUID().toString());
 		plugins.loadRequestAspectPlugins().forEach(p -> p.initializeAspects(request));
 		displayRequest(request);
 	}
@@ -106,8 +111,13 @@ public class WorkspaceController {
 		Optional<Environment> activeEnv = activeWorkspace.getEnvironments().stream().filter(e -> e.isActive()).findAny();
 		
 		RequestTypePlugin plugin = plugins.loadRequestTypePlugins().get(0);
-		ResponseContainer response = plugin.executeRequest(request, new EnvironmentTemplater(activeEnv, activeWorkspace.getGlobalEnvironment()));
-		
+		ResponseContainer response;
+		try {
+			response = plugin.executeRequest(request, new EnvironmentTemplater(activeEnv, activeWorkspace.getGlobalEnvironment()));
+		} catch (Throwable t) {
+			toaster.showToast(ExceptionUtils.getRootCauseMessage(t));
+			return;
+		}
 		plugins.loadRequestAspectPlugins().forEach(a -> a.initializeAspects(response));
 		
 		activeWorkspace.getCachedResponses().put(request, response);

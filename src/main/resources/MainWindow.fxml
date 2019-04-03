@@ -20,7 +20,8 @@
 <?import javafx.scene.control.Tab?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml/1"
-	fx:controller="milkman.ui.main.MainWindow">
+	fx:controller="milkman.ui.main.MainWindow"
+	fx:id="root">
 
 	<top>
 		<fx:include source="ToolbarComponent.fxml"></fx:include>

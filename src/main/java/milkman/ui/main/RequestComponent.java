@@ -58,7 +58,11 @@ public class RequestComponent {
 	}
 
 	@FXML public void onSubmit() {
-		onCommand.invoke(new UiCommand.SubmitRequest(currentRequest));
+		try {
+			onCommand.invoke(new UiCommand.SubmitRequest(currentRequest));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 
