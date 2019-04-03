@@ -22,11 +22,12 @@
 <?import javafx.scene.control.ButtonType?>
 <?import javafx.scene.control.ListView?>
 <?import milkman.ui.components.TableEditor?>
+<?import milkman.ui.components.JfxTableEditor?>
 
 <VBox xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="milkman.ui.main.dialogs.EditEnvironmentDialog">
 
-	<TableEditor fx:id="editor"></TableEditor>
+	<JfxTableEditor fx:id="editor"></JfxTableEditor>
 
 
 	<HBox alignment="CENTER_RIGHT">

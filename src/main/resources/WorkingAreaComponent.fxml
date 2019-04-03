@@ -26,16 +26,12 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="milkman.ui.main.WorkingAreaComponent">
-	<JFXTabPane fx:id="testTabs">
-		<tabs>
-		</tabs>
-	</JFXTabPane>
 	<HBox>
 <!-- 		<ToolBar> -->
 <!-- 			<ScrollPane fx:id="openTabsScroller" pannable="true" hbarPolicy="NEVER" vbarPolicy="NEVER"> -->
 <!-- 				<HBox  fx:id="openedTabsBar"></HBox> -->
 <!-- 			</ScrollPane> -->
-		<JFXTabPane fx:id="testTabs">
+		<JFXTabPane fx:id="tabPane">
 			<tabs>
 			</tabs>
 		</JFXTabPane>

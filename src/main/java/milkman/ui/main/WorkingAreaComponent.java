@@ -10,6 +10,7 @@ import javax.inject.Singleton;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXToggleButton;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -23,6 +24,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.input.TouchEvent;
 import javafx.scene.layout.Pane;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 import milkman.ui.commands.UiCommand;
@@ -31,6 +33,7 @@ import com.jfoenix.controls.JFXTabPane;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_={@Inject})
+@Slf4j
 public class WorkingAreaComponent implements Initializable {
 
 	private static final String CSS_CLASS_REQUEST_ACTIVE = "mm-request-active";
@@ -44,8 +47,9 @@ public class WorkingAreaComponent implements Initializable {
 	private ChangeListener<? super Tab> tabChangeListener;
 	
 	public void display(RequestContainer activeRequest, List<RequestContainer> openedRequests) {
-		setupTabs(activeRequest, openedRequests);
 		restRequestComponent.display(activeRequest);
+		setupTabs(activeRequest, openedRequests);
+		log.info("request area refreshed");
 	}
 
 	private void setupTabs(RequestContainer activeRequest, List<RequestContainer> openedRequests) {
@@ -59,8 +63,7 @@ public class WorkingAreaComponent implements Initializable {
 				tabPane.getSelectionModel().select(tab);
 		});
 		tabPane.getSelectionModel().selectedItemProperty().addListener(tabChangeListener);
-
-
+		log.info("tab repainted");
 	}
 	private Tab createTestTab(RequestContainer r, boolean isActive) {
 		Tab tab = new Tab(r.getName());
@@ -112,5 +115,8 @@ public class WorkingAreaComponent implements Initializable {
 			}
 		};
 		tabPane.getSelectionModel().selectedItemProperty().addListener(tabChangeListener);
+		//Bug in jfoenix: when not disabling this, the GUI does not refresh except if i hover over it with mouse
+		//might be because we dont really use the content of the tabs
+		tabPane.setDisableAnimation(true);
 	}
 }

@@ -3,6 +3,7 @@ package milkman.ui.main;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -16,6 +17,7 @@ import milkman.ui.plugin.RequestTypeEditor;
 import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.UiPluginManager;
 import milkman.utils.Event;
+import com.jfoenix.controls.JFXButton;
 
 @Singleton
 public class RequestComponent {
@@ -26,7 +28,8 @@ public class RequestComponent {
 
 	
 	public final Event<UiCommand> onCommand = new Event<UiCommand>();
-	private RequestContainer currentRequest; 
+	private RequestContainer currentRequest;
+	@FXML JFXButton submitBtn; 
 	
 	
 	@Inject

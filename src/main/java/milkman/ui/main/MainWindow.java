@@ -43,7 +43,6 @@ public class MainWindow {
 			primaryStage.setWidth(1000);
 			primaryStage.setHeight(800);
 
-
 			
 			CSSFX.start(primaryStage);
 			

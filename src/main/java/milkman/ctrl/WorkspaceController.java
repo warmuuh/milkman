@@ -12,9 +12,11 @@ import javax.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
+import javafx.application.Platform;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 import milkman.domain.Collection;
 import milkman.domain.Environment;
 import milkman.domain.RequestContainer;
@@ -38,6 +40,7 @@ import milkman.utils.ObjectUtils;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_={@Inject})
+@Slf4j
 public class WorkspaceController {
 
 	private final RequestCollectionComponent collectionView;
@@ -84,6 +87,7 @@ public class WorkspaceController {
 	}
 	
 	public void displayRequest(RequestContainer request) {
+		log.info("Diplaying request: " + request);
 		if (!activeWorkspace.getOpenRequests().contains(request))
 			activeWorkspace.getOpenRequests().add(request);
 		activeWorkspace.setActiveRequest(request);
@@ -126,6 +130,7 @@ public class WorkspaceController {
 	}
 	
 	public void handleCommand(UiCommand command) {
+		log.info("Handling command: " + command);
 		if (command instanceof UiCommand.SubmitRequest) {
 			executeRequest(((UiCommand.SubmitRequest) command).getRequest());
 		} else if (command instanceof UiCommand.SaveRequestAsCommand) {

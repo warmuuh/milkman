@@ -19,15 +19,15 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Tab?>
-<?import milkman.ui.components.TableEditor?>
+<?import milkman.ui.components.JfxTableEditor?>
 
 
-<TableEditor xmlns:fx="http://javafx.com/fxml/1"
+<JfxTableEditor xmlns:fx="http://javafx.com/fxml/1"
 	fx:id="editor">
 <!-- 	<columns> -->
 <!-- 		<TableColumn text="Active"></TableColumn> -->
 <!-- 		<TableColumn text="Name"></TableColumn> -->
 <!-- 		<TableColumn text="Value"></TableColumn> -->
 <!-- 	</columns> -->
-</TableEditor>
+</JfxTableEditor>
 

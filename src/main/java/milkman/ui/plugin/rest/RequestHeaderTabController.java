@@ -3,7 +3,7 @@ package milkman.ui.plugin.rest;
 import javafx.scene.control.Tab;
 import lombok.SneakyThrows;
 import milkman.domain.RequestAspect;
-import milkman.ui.components.TableEditor;
+import milkman.ui.components.JfxTableEditor;
 import milkman.ui.plugin.RequestAspectEditor;
 import milkman.ui.plugin.rest.domain.RestHeaderAspect;
 import milkman.ui.plugin.rest.domain.RestHeaderAspect.HeaderEntry;
@@ -15,7 +15,7 @@ public class RequestHeaderTabController implements RequestAspectEditor {
 	@SneakyThrows
 	public Tab getRoot(RequestAspect aspect) {
 		RestHeaderAspect headers = (RestHeaderAspect) aspect;
-		TableEditor<HeaderEntry> editor = FxmlUtil.loadAndInitialize("/components/TableEditor.fxml");
+		JfxTableEditor<HeaderEntry> editor = FxmlUtil.loadAndInitialize("/components/TableEditor.fxml");
 		editor.setEditable(true);
 		editor.addCheckboxColumn("Enabled", HeaderEntry::isEnabled, HeaderEntry::setEnabled);
 		editor.addColumn("Name", HeaderEntry::getName, HeaderEntry::setName);
