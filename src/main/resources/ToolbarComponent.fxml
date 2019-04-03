@@ -19,6 +19,8 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Tab?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 
 
 <ToolBar fx:id="toolbar" xmlns:fx="http://javafx.com/fxml/1"
@@ -51,7 +53,11 @@ fx:controller="milkman.ui.main.ToolbarComponent">
 <!-- 			</items> -->
 		</ChoiceBox>
 	
-		<Button text="Preferences"></Button>
+		<JFXButton>
+			<graphic>
+				<FontAwesomeIconView glyphName="WRENCH" size="1.5em" styleClass="icon"></FontAwesomeIconView>
+			</graphic>
+		</JFXButton>
 	</items>
 </ToolBar>
 

@@ -18,6 +18,7 @@ import io.vavr.Function1;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContentDisplay;
@@ -54,8 +55,10 @@ public class JfxTableEditor<T> extends StackPane {
 		this.getChildren().add(table);
 		addItemBtn = new JFXButton();
 		addItemBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-		addItemBtn.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PLUS, "3em"));
+		addItemBtn.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PLUS, "1.5em"));
+		addItemBtn.getStyleClass().add("tbl-add-entry");
 		StackPane.setAlignment(addItemBtn, Pos.BOTTOM_RIGHT);
+		StackPane.setMargin(addItemBtn, new Insets(0, 20, 20, 0));
 		this.getChildren().add(addItemBtn);
 		
 	}

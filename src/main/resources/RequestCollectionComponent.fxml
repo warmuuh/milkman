@@ -27,14 +27,17 @@
 
 
 <VBox xmlns:fx="http://javafx.com/fxml/1"
-	fx:controller="milkman.ui.main.RequestCollectionComponent">
+	fx:controller="milkman.ui.main.RequestCollectionComponent"
+	minWidth="200"
+	maxWidth="400">
 <!-- 	<ToolBar fx:id="toolbar"> -->
 <!-- 		<items> -->
 <!-- 			<Button text="S"></Button> -->
 <!-- 			<Button text="D"></Button> -->
 <!-- 		</items> -->
 <!-- 	</ToolBar> -->
-	<HBox>
+	<HBox fx:id="searchArea">
+		<HBox fx:id="searchAreaField" HBox.hgrow="ALWAYS">
 		<Label>
 			<graphic>
 				 	<FontAwesomeIconView  glyphName="SEARCH" size="1.5em" styleClass="icon"/>
@@ -46,6 +49,7 @@
 			 	<FontAwesomeIconView  glyphName="TIMES_CIRCLE_ALT" size="1.5em" styleClass="icon"/>
 			</graphic>
 		</JFXButton>
+		</HBox>
 	</HBox>
 <!-- 	<Label text="Request Collections" /> -->
 <!-- 	<ScrollPane> -->

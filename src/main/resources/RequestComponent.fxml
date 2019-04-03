@@ -27,20 +27,22 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SplitMenuButton?>
 <?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTabPane?>
 
 
 <VBox xmlns:fx="http://javafx.com/fxml/1"
-	fx:controller="milkman.ui.main.RequestComponent">
-	<HBox>
+	fx:controller="milkman.ui.main.RequestComponent"
+	fx:id="requestComponent">
+	<HBox fx:id="generalRequestEdit">
 		<HBox fx:id="mainEditingArea" HBox.hgrow="ALWAYS"></HBox>
 		<JFXButton fx:id="submitBtn" style="button-raised" text="submit" onAction="#onSubmit" />
-		<SplitMenuButton  text="save" onAction="#onSave">
+		<SplitMenuButton fx:id="saveBtn" text="save" onAction="#onSave"  styleClass="secondary">
 			<items>
 				<MenuItem text="save as..." onAction="#onSaveAs"></MenuItem>
 			</items>
 		</SplitMenuButton>
 	</HBox>
-	<TabPane fx:id="tabs" prefHeight="300">
+	<JFXTabPane  fx:id="tabs" prefHeight="300">
 		<tabs>
 <!-- 			<Tab text="Headers"> -->
 <!-- 				<fx:include source="components/HeaderComponent.fxml" /> -->
@@ -49,7 +51,7 @@
 <!-- 				<fx:include source="components/ContentEditor.fxml" /> -->
 <!-- 			</Tab> -->
 		</tabs>
-	</TabPane>
+	</JFXTabPane>
 
 </VBox>
 

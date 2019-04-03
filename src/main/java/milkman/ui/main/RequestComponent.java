@@ -18,12 +18,13 @@ import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.UiPluginManager;
 import milkman.utils.Event;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXTabPane;
 
 @Singleton
 public class RequestComponent {
 
 	private final UiPluginManager plugins;
-	@FXML TabPane tabs;
+	@FXML JFXTabPane tabs;
 	@FXML HBox mainEditingArea;
 
 	

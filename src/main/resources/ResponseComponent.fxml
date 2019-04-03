@@ -19,11 +19,12 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Tab?>
+<?import com.jfoenix.controls.JFXTabPane?>
 
 
 <VBox xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="milkman.ui.main.ResponseComponent">
-	<TabPane fx:id="tabs">
+	<JFXTabPane  fx:id="tabs">
 		<tabs>
 <!-- 			<Tab text="Response Headers"> -->
 <!-- 				<fx:include source="components/HeaderComponent.fxml" /> -->
@@ -32,7 +33,7 @@
 <!-- 				<fx:include source="components/ContentEditor.fxml" /> -->
 <!-- 			</Tab> -->
 		</tabs>
-	</TabPane>
+	</JFXTabPane>
 
 </VBox>
 

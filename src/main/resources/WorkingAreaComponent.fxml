@@ -22,11 +22,12 @@
 <?import javafx.scene.layout.Pane?>
 <?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXTabPane?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 
 
 <VBox xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="milkman.ui.main.WorkingAreaComponent">
-	<HBox>
+	<HBox fx:id="openRequestArea">
 <!-- 		<ToolBar> -->
 <!-- 			<ScrollPane fx:id="openTabsScroller" pannable="true" hbarPolicy="NEVER" vbarPolicy="NEVER"> -->
 <!-- 				<HBox  fx:id="openedTabsBar"></HBox> -->
@@ -35,7 +36,11 @@
 			<tabs>
 			</tabs>
 		</JFXTabPane>
-		<JFXButton text="+" prefWidth="40" onAction="#onNewRequestClick"></JFXButton>
+		<JFXButton prefWidth="40" onAction="#onNewRequestClick">
+			<graphic>
+				<FontAwesomeIconView glyphName="PLUS" size="1.5em" styleClass="icon"></FontAwesomeIconView>
+			</graphic>
+		</JFXButton>
 <!-- 		</ToolBar> -->
 		
 	</HBox>

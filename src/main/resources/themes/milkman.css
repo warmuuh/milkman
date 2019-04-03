@@ -5,32 +5,177 @@
 
 
 /**
+ * toolbar
+ */
+
+#toolbar {
+	-fx-background-color: #2192F2;
+}
+
+#toolbar .label {
+	-fx-text-fill: white;
+}
+
+
+#toolbar .label {
+	-fx-text-fill: white;
+}
+
+#toolbar .choice-box {
+	-fx-background-color: #2C3964;
+	
+}
+#toolbar .choice-box .context-menu { 
+	-fx-background-color: #2C3964;
+}
+#toolbar .jfx-button  { 
+	-fx-text-fill: white;
+	-fx-background-color: #2C3964;
+	-fx-translate-y: 1;
+}
+
+#toolbar .jfx-button .icon { 
+	-fx-fill: white;
+}
+
+
+/**
 * working area
 */
+
+
+
 
 /**
 * working area > request tab bar
 */
-#openTabsScroller {
-	-fx-border-width: 0;
-	-fx-padding-width: 0;
+
+#openRequestArea {
+	-fx-background-color: white;
+}
+
+
+#openRequestArea .jfx-button {
+	-fx-padding: 7;
+}
+
+.jfx-tab-pane .tab-header-background {
+	-fx-background-color: white;
+}
+
+.jfx-tab-pane .tab-label {
+    -fx-text-fill: black;
+    -fx-font-weight: normal;
+    -fx-padding: 6 10 6 10;
+    -fx-font-size: 14;
+}
+
+.jfx-tab-pane .tab-header-area .jfx-rippler{
+    -jfx-rippler-fill: #2c3964;
+}
+
+.jfx-tab-pane .headers-region .tab-selected-line {
+    -fx-background-color: #2192f2;
+}
+.mm-request-dirty .tab-container > .tab-label   {
+	 -fx-font-weight: bold;
+}
+.mm-request-dirty .tab-container .context-menu  {
+	 -fx-font-weight: normal;
+}
+
+
+
+
+/**
+* working area > generalRequestEdit
+*/
+
+#generalRequestEdit {
+	-fx-padding: 20;
+	-fx-background-color: white;
 	
 }
 
+#generalRequestEdit #submitBtn {
+	-fx-background-color: #2192f2;
+    -fx-text-fill: white;
+}
 
-#openedTabsBar > .button {
-	 -fx-border-width: 2 1 1 0; 
-	 -fx-border-color: transparent grey grey;
+#generalRequestEdit  .split-menu-button > .label,
+#generalRequestEdit  .split-menu-button > .label:armed,
+#generalRequestEdit  .split-menu-button > .label:hover,
+#generalRequestEdit  .split-menu-button > .label:focus {
+	-fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
+	
+	-fx-background-radius: 3px 0px 0px 3px;
+	-fx-background-insets: 0px;
+	-fx-background-color: #2C3964; 
+	-fx-text-fill: white;
+}
+#generalRequestEdit  .split-menu-button .arrow-button,
+#generalRequestEdit  .split-menu-button .arrow-button:armed,
+#generalRequestEdit  .split-menu-button .arrow-button:hover,
+#generalRequestEdit  .split-menu-button .arrow-button:focus {
+	-fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
+	-fx-text-fill: white;
+	-fx-inner-border: TRANSPARENT;
+	-fx-background-radius: 0px 3px 3px 0px;
+	-fx-background-insets: 0px;
+	-fx-background-color: #2C3964; 
 }
 
 
-#openedTabsBar > .mm-request-active {
-	 -fx-border-width: 2 1 0 0; 
-	 -fx-border-color: #4d75df grey;
+/**
+ * request collection area
+ */
+
+/**
+ * request collection area > search area
+ */
+ 
+#searchArea {
+	-fx-padding: 10;
 }
 
-#openedTabsBar > .mm-request-dirty {
-	 -fx-font-weight: bold;
+#searchAreaField {
+	-fx-padding: 2 10 2 10;
+	-fx-background-color: lightgrey;
+ 	-fx-background-radius: 40px;
+}
+
+#searchAreaField .jfx-text-field{
+	-fx-padding: 4 10 4 10;
+}
+#searchAreaField .label .icon {
+	-fx-translate-y: 3;
+}
+ 
+.split-pane *.split-pane-divider {
+    -fx-padding: 0 1 0 1;
+}
+
+/**
+ * components
+ */
+
+.tbl-add-entry {
+    -fx-pref-width: 40px;
+    -fx-background-color: #2192f2;
+    -fx-background-radius: 40px;
+    -fx-pref-height: 40px;
+    -fx-min-width: -fx-pref-width;
+    -fx-max-width: -fx-pref-width;
+    -fx-min-height: -fx-pref-height;
+    -fx-max-height: -fx-pref-height;
+    -jfx-button-type: RAISED;
+    -fx-border-width: 0 50 50 0;
+}
+
+.jfx-tree-table-view .tree-table-cell {
+    -fx-border-width: 0 0 0 0;
+    -fx-pref-height: 32px;
+    -fx-alignment: center-left;
 }
 
 
