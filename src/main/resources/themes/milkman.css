@@ -1,0 +1,51 @@
+.root { 
+	-fx-focus-color: transparent; 
+	-fx-faint-focus-color: transparent;
+}
+
+
+/**
+* working area
+*/
+
+/**
+* working area > request tab bar
+*/
+#openTabsScroller {
+	-fx-border-width: 0;
+	-fx-padding-width: 0;
+	
+}
+
+
+#openedTabsBar > .button {
+	 -fx-border-width: 2 1 1 0; 
+	 -fx-border-color: transparent grey grey;
+}
+
+
+#openedTabsBar > .mm-request-active {
+	 -fx-border-width: 2 1 0 0; 
+	 -fx-border-color: #4d75df grey;
+}
+
+#openedTabsBar > .mm-request-dirty {
+	 -fx-font-weight: bold;
+}
+
+
+/**
+* Toast Style
+*/
+
+.jfx-snackbar-content {
+    -fx-background-color: #323232;
+}
+
+.jfx-snackbar-toast {
+    -fx-text-fill: WHITE;
+}
+
+.jfx-snackbar-action {
+    -fx-text-fill: #ff4081;
+} 

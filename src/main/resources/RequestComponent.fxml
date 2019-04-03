@@ -26,13 +26,14 @@
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SplitMenuButton?>
+<?import com.jfoenix.controls.JFXButton?>
 
 
 <VBox xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="milkman.ui.main.RequestComponent">
 	<HBox>
-		<HBox fx:id="mainEditingArea"></HBox>
-		<Button text="submit" onAction="#onSubmit" />
+		<HBox fx:id="mainEditingArea" HBox.hgrow="ALWAYS"></HBox>
+		<JFXButton style="button-raised" text="submit" onAction="#onSubmit" />
 		<SplitMenuButton  text="save" onAction="#onSave">
 			<items>
 				<MenuItem text="save as..." onAction="#onSaveAs"></MenuItem>

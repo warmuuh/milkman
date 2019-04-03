@@ -25,13 +25,33 @@
 			<artifactId>vavr</artifactId>
 			<version>0.10.0</version>
 		</dependency>
+		<dependency>
+			<groupId>de.jensd</groupId>
+			<artifactId>fontawesomefx-fontawesome</artifactId>
+			<version>4.7.0-5</version>
+		</dependency>
+		<dependency>
+			<groupId>de.jensd</groupId>
+			<artifactId>fontawesomefx-commons</artifactId>
+			<version>8.15</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.fxmisc.cssfx</groupId>
+			<artifactId>cssfx</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.dizitart</groupId>
 			<artifactId>nitrite</artifactId>
 			<version>3.2.0</version>
 		</dependency>
-
+		<dependency>
+			<groupId>com.jfoenix</groupId>
+			<artifactId>jfoenix</artifactId>
+			<version>8.0.8</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -101,6 +121,10 @@
 		<repository>
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
+		</repository>
+		<repository>
+			<id>spring</id>
+			<url>http://repo.spring.io/plugins-release</url>
 		</repository>
 	</repositories>
 

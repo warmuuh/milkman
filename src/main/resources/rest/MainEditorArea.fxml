@@ -19,11 +19,14 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Tab?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXTextField?>
 
 
 <HBox xmlns:fx="http://javafx.com/fxml/1"
-	fx:controller="milkman.ui.plugin.rest.RestRequestEditController">
-	<ChoiceBox fx:id="httpMethod" value="GET">
+	fx:controller="milkman.ui.plugin.rest.RestRequestEditController"
+	HBox.hgrow="ALWAYS">
+	<JFXComboBox fx:id="httpMethod" value="GET">
 		<items>
 			<FXCollections fx:factory="observableArrayList">
 				<String fx:value="GET" />
@@ -32,6 +35,6 @@
 				<String fx:value="DELETE" />
 			</FXCollections>
 		</items>
-	</ChoiceBox>
-	<TextField fx:id="requestUrl" />
+	</JFXComboBox>
+	<JFXTextField fx:id="requestUrl" HBox.hgrow="ALWAYS" />
 </HBox>
