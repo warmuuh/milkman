@@ -39,6 +39,9 @@ public class Workspace {
 	@JsonIgnore
 	private Map<RequestContainer, ResponseContainer> cachedResponses = new HashMap<RequestContainer, ResponseContainer>();
 	
+	@JsonIgnore
+	private List<String> enqueuedRequestIds = new LinkedList<String>();
+	
 	public Workspace(long id, String workspaceId, String name, List<Collection> collections,
 			List<RequestContainer> openRequests, RequestContainer activeRequest) {
 		super();

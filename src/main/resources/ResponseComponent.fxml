@@ -20,20 +20,22 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Tab?>
 <?import com.jfoenix.controls.JFXTabPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.Pane?>
 
 
 <VBox xmlns:fx="http://javafx.com/fxml/1"
-	fx:controller="milkman.ui.main.ResponseComponent">
-	<JFXTabPane  fx:id="tabs">
-		<tabs>
-<!-- 			<Tab text="Response Headers"> -->
-<!-- 				<fx:include source="components/HeaderComponent.fxml" /> -->
-<!-- 			</Tab> -->
-<!-- 			<Tab text="Response Body"> -->
-<!-- 				<fx:include source="components/ContentEditor.fxml" /> -->
-<!-- 			</Tab> -->
-		</tabs>
-	</JFXTabPane>
+	fx:controller="milkman.ui.main.ResponseComponent"  VBox.vgrow="ALWAYS">
+	<StackPane VBox.vgrow="ALWAYS">
+		<children>
+			<JFXTabPane  fx:id="tabs">
+				<tabs>
+		
+				</tabs>
+			</JFXTabPane>
+			<fx:include fx:id="spinner" source="components/Spinner.fxml"></fx:include>
+		</children>
+	</StackPane>
 
 </VBox>
 

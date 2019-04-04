@@ -63,6 +63,10 @@
 	-fx-background-color: white;
 }
 
+.jfx-tab-pane .tab-header-area .tab-down-button {
+	-fx-background-color: black;
+}
+
 .jfx-tab-pane .tab-label {
     -fx-text-fill: black;
     -fx-font-weight: normal;
@@ -83,8 +87,6 @@
 .mm-request-dirty .tab-container .context-menu  {
 	 -fx-font-weight: normal;
 }
-
-
 
 
 /**
@@ -126,6 +128,7 @@
 }
 
 
+
 /**
  * request collection area
  */
@@ -159,6 +162,10 @@
  * components
  */
 
+
+/**
+* Table Editor
+*/
 .tbl-add-entry {
     -fx-pref-width: 40px;
     -fx-background-color: #2192f2;
@@ -177,6 +184,88 @@
     -fx-pref-height: 32px;
     -fx-alignment: center-left;
 }
+
+
+/**
+* content Editor
+*/
+
+.contentEditor {
+	-fx-background-color: white;
+}
+.contentEditor  .contentEditor-header {
+	-fx-padding: 10;
+}
+.contentEditor  .label {
+	-fx-translate-y: 4;
+	-fx-padding: 0 10;
+}
+
+/**
+* spinner
+*/
+.jfx-spinner .arc {
+        -fx-stroke: #2192f2;
+}
+
+.first-spinner {
+    -jfx-radius: 20;
+}
+
+
+.first-spinner .arc {
+    -fx-stroke-width: 5.0;
+}
+
+.second-spinner {
+    -jfx-radius: 30;
+}
+
+.second-spinner .arc {
+    -fx-stroke-width: 5.0;
+}
+
+.third-spinner {
+    -jfx-radius: 40;
+}
+
+.third-spinner .arc {
+    -fx-stroke-width: 5.0;
+}
+
+.fourth-spinner {
+    -jfx-radius: 50;
+}
+
+.fourth-spinner .arc {
+    -fx-stroke-width: 5.0;
+}
+
+.fifth-spinner {
+    -jfx-radius: 60;
+}
+
+.fifth-spinner .arc {
+    -fx-stroke-width: 5.0;
+}
+
+.sixth-spinner {
+    -jfx-radius: 70;
+}
+
+.sixth-spinner .arc {
+    -fx-stroke-width: 5.0;
+}
+
+.seventh-spinner {
+    -jfx-radius: 80;
+}
+
+.seventh-spinner .arc {
+    -fx-stroke-width: 5.0;
+}
+  
+
 
 
 /**

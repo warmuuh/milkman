@@ -95,7 +95,9 @@ public class WorkspaceController {
 		workingAreaView.display(request, activeWorkspace.getOpenRequests());
 		
 		if (activeWorkspace.getCachedResponses().containsKey(request))
-			workingAreaView.display(activeWorkspace.getCachedResponses().get(request));
+			workingAreaView.displayResponseFor(request, activeWorkspace.getCachedResponses().get(request));
+		else if (activeWorkspace.getEnqueuedRequestIds().contains(request.getId()))
+			workingAreaView.showSpinner();
 		else
 			workingAreaView.clearResponse();
 	}
@@ -110,23 +112,30 @@ public class WorkspaceController {
 	
 	public void executeRequest(RequestContainer request) {
 		System.out.println("Executing request: " + request);
+		workingAreaView.showSpinner();
 		
 		
 		Optional<Environment> activeEnv = activeWorkspace.getEnvironments().stream().filter(e -> e.isActive()).findAny();
-		
 		RequestTypePlugin plugin = plugins.loadRequestTypePlugins().get(0);
-		ResponseContainer response;
-		try {
-			response = plugin.executeRequest(request, new EnvironmentTemplater(activeEnv, activeWorkspace.getGlobalEnvironment()));
-		} catch (Throwable t) {
-			toaster.showToast(ExceptionUtils.getRootCauseMessage(t));
-			return;
-		}
-		plugins.loadRequestAspectPlugins().forEach(a -> a.initializeAspects(response));
+		val executor = new RequestExecutor(request, plugin, new EnvironmentTemplater(activeEnv, activeWorkspace.getGlobalEnvironment()));
 		
-		activeWorkspace.getCachedResponses().put(request, response);
+		executor.setOnScheduled(e -> activeWorkspace.getEnqueuedRequestIds().add(request.getId()));
 		
-		workingAreaView.display(response);
+		executor.setOnFailed(e -> {
+			workingAreaView.hideSpinner();
+			activeWorkspace.getEnqueuedRequestIds().remove(request.getId());
+			toaster.showToast(executor.getMessage());
+		});
+		executor.setOnSucceeded(e -> {
+			ResponseContainer response = executor.getValue();
+			activeWorkspace.getEnqueuedRequestIds().remove(request.getId());
+			plugins.loadRequestAspectPlugins().forEach(a -> a.initializeAspects(response));
+			activeWorkspace.getCachedResponses().put(request, response);
+			log.info("Received response");
+			workingAreaView.displayResponseFor(request, response);	
+		});
+		
+		executor.start();
 	}
 	
 	public void handleCommand(UiCommand command) {

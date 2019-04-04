@@ -94,8 +94,9 @@ public class WorkingAreaComponent implements Initializable {
 		return tab;
 	}
 
-	public void display(ResponseContainer activeResponse) {
-		responseComponent.display(activeResponse);
+	public void displayResponseFor(RequestContainer request, ResponseContainer response) {
+		if (restRequestComponent.getCurrentRequest().getId().equals(request.getId()))
+			responseComponent.display(response);
 	}
 	
 	@FXML public void onNewRequestClick() {
@@ -103,8 +104,18 @@ public class WorkingAreaComponent implements Initializable {
 	}
 
 	public void clearResponse() {
+		hideSpinner();
 		responseComponent.clear();
 	}
+	
+	public void showSpinner() {
+		responseComponent.showSpinner();
+	}
+	public void hideSpinner() {
+		responseComponent.hideSpinner();
+	}
+	
+	
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {

@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.HBox;
+import lombok.Getter;
 import milkman.domain.RequestAspect;
 import milkman.domain.RequestContainer;
 import milkman.ui.commands.UiCommand;
@@ -29,7 +30,7 @@ public class RequestComponent {
 
 	
 	public final Event<UiCommand> onCommand = new Event<UiCommand>();
-	private RequestContainer currentRequest;
+	@Getter private RequestContainer currentRequest;
 	@FXML JFXButton submitBtn; 
 	
 	
