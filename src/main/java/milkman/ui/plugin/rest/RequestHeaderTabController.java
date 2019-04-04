@@ -5,8 +5,8 @@ import lombok.SneakyThrows;
 import milkman.domain.RequestAspect;
 import milkman.ui.components.JfxTableEditor;
 import milkman.ui.plugin.RequestAspectEditor;
+import milkman.ui.plugin.rest.domain.HeaderEntry;
 import milkman.ui.plugin.rest.domain.RestHeaderAspect;
-import milkman.ui.plugin.rest.domain.RestHeaderAspect.HeaderEntry;
 import milkman.utils.fxml.FxmlUtil;
 
 public class RequestHeaderTabController implements RequestAspectEditor {

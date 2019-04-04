@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import javafx.application.Platform;
+import javafx.scene.control.Label;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
@@ -119,6 +120,7 @@ public class WorkspaceController {
 		RequestTypePlugin plugin = plugins.loadRequestTypePlugins().get(0);
 		val executor = new RequestExecutor(request, plugin, new EnvironmentTemplater(activeEnv, activeWorkspace.getGlobalEnvironment()));
 		
+		long startTime = System.currentTimeMillis();
 		executor.setOnScheduled(e -> activeWorkspace.getEnqueuedRequestIds().add(request.getId()));
 		
 		executor.setOnFailed(e -> {
@@ -128,6 +130,7 @@ public class WorkspaceController {
 		});
 		executor.setOnSucceeded(e -> {
 			ResponseContainer response = executor.getValue();
+			addResponseTimeInfo(response, System.currentTimeMillis() - startTime);
 			activeWorkspace.getEnqueuedRequestIds().remove(request.getId());
 			plugins.loadRequestAspectPlugins().forEach(a -> a.initializeAspects(response));
 			activeWorkspace.getCachedResponses().put(request, response);
@@ -136,6 +139,11 @@ public class WorkspaceController {
 		});
 		
 		executor.start();
+	}
+
+
+	private void addResponseTimeInfo(ResponseContainer response, long responseTime) {
+		response.getStatusInformations().put("Time", responseTime + "ms");
 	}
 	
 	public void handleCommand(UiCommand command) {

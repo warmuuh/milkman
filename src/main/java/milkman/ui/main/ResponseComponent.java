@@ -1,6 +1,8 @@
 package milkman.ui.main;
 
 import java.net.URL;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
 
 import javax.inject.Inject;
@@ -11,12 +13,14 @@ import com.jfoenix.controls.JFXTabPane;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import milkman.domain.ResponseAspect;
 import milkman.domain.ResponseContainer;
 import milkman.ui.plugin.RequestAspectsPlugin;
 import milkman.ui.plugin.ResponseAspectEditor;
 import milkman.ui.plugin.UiPluginManager;
+import javafx.scene.layout.HBox;
 
 @Singleton
 public class ResponseComponent implements Initializable {
@@ -26,6 +30,8 @@ public class ResponseComponent implements Initializable {
 	@FXML JFXTabPane tabs;
 
 	@FXML Node spinner;
+
+	@FXML HBox statusDisplay;
 
 	
 	@Inject
@@ -37,6 +43,9 @@ public class ResponseComponent implements Initializable {
 	public void display(ResponseContainer response) {
 		clear();
 		hideSpinner();
+
+		addStatusInformation(response.getStatusInformations());
+		
 		for (RequestAspectsPlugin plugin : plugins.loadRequestAspectPlugins()) {
 			for (ResponseAspect aspect : response.getAspects()) {
 				for (ResponseAspectEditor tabController : plugin.getResponseTabs()) {
@@ -51,11 +60,24 @@ public class ResponseComponent implements Initializable {
 	}
 
 
+	private void addStatusInformation(Map<String, String> statusInformations) {
+		statusDisplay.getChildren().clear();
+		for (Entry<String, String> entry : statusInformations.entrySet()) {
+			Label name = new Label(entry.getKey() + ":");
+			Label value = new Label(entry.getValue());
+			value.getStyleClass().add("emphasized");
+			statusDisplay.getChildren().add(new HBox(name, value));
+		}
+	}
+
+
 	public void clear() {
+		statusDisplay.getChildren().clear();
 		tabs.getTabs().clear();
 	}
 	
 	public void showSpinner() {
+		statusDisplay.getChildren().clear();
 		spinner.setVisible(true);
 	}
 

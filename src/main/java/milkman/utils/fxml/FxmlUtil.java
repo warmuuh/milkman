@@ -8,7 +8,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import lombok.SneakyThrows;
 import milkman.ui.components.TableEditor;
-import milkman.ui.plugin.rest.domain.RestHeaderAspect.HeaderEntry;
 
 public class FxmlUtil {
 

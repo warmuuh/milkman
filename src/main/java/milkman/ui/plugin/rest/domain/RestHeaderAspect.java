@@ -3,27 +3,19 @@ package milkman.ui.plugin.rest.domain;
 import java.util.LinkedList;
 import java.util.List;
 
-import lombok.AllArgsConstructor;
+import org.apache.http.client.methods.RequestBuilder;
+
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import milkman.domain.RequestAspect;
 
 @Data
-public class RestHeaderAspect extends RequestAspect {
+public class RestHeaderAspect  extends RestRequestAspect  {
 
-	@Data
-	@AllArgsConstructor
-	@NoArgsConstructor
-	public static class HeaderEntry {
-		private String name;
-		private String value;
-		private boolean enabled;
-	}
-	
-	
 	private List<HeaderEntry> entries = new LinkedList<>();
 	
-	public RestHeaderAspect() {
-//		entries.add(new HeaderEntry("Accept", "application/json", true));
+	@Override
+	public void enrichRequest(RequestBuilder builder) throws Exception {
+		entries.stream()
+			.filter(HeaderEntry::isEnabled)
+			.forEach(h -> builder.addHeader(h.getName(), h.getValue()));
 	}
 }

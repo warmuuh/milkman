@@ -127,7 +127,19 @@
 	-fx-background-color: #2C3964; 
 }
 
+/**
+* working area > response area
+*/
 
+#statusDisplay {
+	-fx-translate-y:5
+}
+#statusDisplay {
+	-fx-spacing: 10;
+}
+#statusDisplay .emphasized {
+	-fx-font-weight: bold;
+}
 
 /**
  * request collection area

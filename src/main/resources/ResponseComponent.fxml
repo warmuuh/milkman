@@ -22,17 +22,17 @@
 <?import com.jfoenix.controls.JFXTabPane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.AnchorPane?>
 
 
 <VBox xmlns:fx="http://javafx.com/fxml/1"
-	fx:controller="milkman.ui.main.ResponseComponent"  VBox.vgrow="ALWAYS">
+	fx:controller="milkman.ui.main.ResponseComponent" VBox.vgrow="ALWAYS">
 	<StackPane VBox.vgrow="ALWAYS">
 		<children>
-			<JFXTabPane  fx:id="tabs">
-				<tabs>
-		
-				</tabs>
-			</JFXTabPane>
+			<AnchorPane>
+				<JFXTabPane fx:id="tabs" AnchorPane.topAnchor="1" AnchorPane.rightAnchor="1" AnchorPane.leftAnchor="1" AnchorPane.bottomAnchor="1" />
+				<HBox fx:id="statusDisplay" AnchorPane.topAnchor="3" AnchorPane.rightAnchor="5" />
+			</AnchorPane>
 			<fx:include fx:id="spinner" source="components/Spinner.fxml"></fx:include>
 		</children>
 	</StackPane>

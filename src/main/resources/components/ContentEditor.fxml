@@ -20,22 +20,10 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Tab?>
 <?import com.jfoenix.controls.JFXComboBox?>
+<?import milkman.ui.components.ContentEditor?>
 
 
-<VBox xmlns:fx="http://javafx.com/fxml/1"
-	fx:controller="milkman.ui.components.ContentEditor"
-	styleClass="contentEditor">
-	<HBox styleClass="contentEditor-header">
-		<Label text="Content Type:"></Label>
-		<JFXComboBox value="Plain Text">
-			<items>
-				<FXCollections fx:factory="observableArrayList">
-					<String fx:value="Plain Text" />
-					<String fx:value="Json" />
-				</FXCollections>
-			</items>
-		</JFXComboBox>
-	</HBox>
-	<TextArea fx:id="textArea" VBox.vgrow="ALWAYS"></TextArea>
-</VBox>
+<ContentEditor xmlns:fx="http://javafx.com/fxml/1" >
+	
+</ContentEditor>
 
