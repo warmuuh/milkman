@@ -101,7 +101,6 @@ public class TableEditor<T> extends TableView<T> {
             
 //            checkBox.setDisable(true);
             checkBox.setOnAction(e -> {
-        			System.out.println("value changed");
         			TableEditor.this.edit(getIndex(), getTableColumn());
 //        			itemProperty().setValue(newValue == null ? false : newValue);
                 	//if(isEditing())

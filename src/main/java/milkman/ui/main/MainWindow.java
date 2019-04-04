@@ -6,14 +6,17 @@ import javax.inject.Singleton;
 import org.fxmisc.cssfx.CSSFX;
 
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import milkman.ui.components.ContentEditor;
+import milkman.utils.fxml.FxmlUtil;
 import javafx.fxml.FXML;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_={@Inject})
@@ -25,7 +28,7 @@ public class MainWindow {
 	private final RequestCollectionComponent requestCollectionComponent;
 	private final ToolbarComponent toolbarComponent;
 	private final ContentEditor contentEditor;
-	@Getter @FXML BorderPane root;
+	@Getter @FXML StackPane root;
 	
 
 
@@ -34,7 +37,8 @@ public class MainWindow {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/MainWindow.fxml"));
 			loader.setControllerFactory(this::getController);
 
-			Parent root = loader.load();
+			StackPane root = loader.load();
+			FxmlUtil.setPrimaryStage(primaryStage);
 
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("/themes/milkman.css").toExternalForm());

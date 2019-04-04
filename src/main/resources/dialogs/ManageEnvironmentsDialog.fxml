@@ -21,21 +21,25 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.control.ButtonType?>
 <?import javafx.scene.control.ListView?>
+<?import com.jfoenix.controls.*?>
 
-<VBox xmlns:fx="http://javafx.com/fxml/1"
+<JFXDialogLayout xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="milkman.ui.main.dialogs.ManageEnvironmentsDialog">
-
-
-	<Label text="Environments"></Label>
-	<HBox alignment="CENTER_RIGHT">
-		<Button text="add new environment" onAction="#onCreateEnvironment"></Button>
-	</HBox>
-	<ListView fx:id="environmentList"></ListView>
-
-	<HBox alignment="CENTER_RIGHT">
-		<Button text="edit Globals" onAction="#onEditGlobals"></Button>
-		<Button text="close" onAction="#onClose"></Button>
-	</HBox>
-
-</VBox>
+		<heading>
+			<Label>Manage Environments</Label>
+		</heading>
+		<body>
+			<VBox>
+				<HBox alignment="CENTER_RIGHT">
+					<Button text="add new environment"
+						onAction="#onCreateEnvironment"></Button>
+				</HBox>
+				<ListView fx:id="environmentList"></ListView>
+			</VBox>
+		</body>
+		<actions>
+			<JFXButton onAction="#onEditGlobals" styleClass="dialog-accept">Edit Globals</JFXButton>
+			<JFXButton onAction="#onClose" styleClass="dialog-accept">Close</JFXButton>
+		</actions>
+</JFXDialogLayout>
 

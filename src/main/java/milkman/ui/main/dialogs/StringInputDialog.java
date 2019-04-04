@@ -2,32 +2,35 @@ package milkman.ui.main.dialogs;
 
 import java.util.Objects;
 
+import com.jfoenix.controls.JFXDialogLayout;
+
 import javafx.fxml.FXML;
-import javafx.scene.Parent;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 import lombok.Getter;
 import milkman.utils.fxml.FxmlUtil;
 
 public class StringInputDialog {
 
-	private Stage dialog;
+	private Dialog dialog;
 	@Getter boolean cancelled = true;
 
 	@FXML TextField input;
 	@FXML Label promptLabel;
 	private String prefilledValue;
+	@FXML Label title;
 	
 	public StringInputDialog() {}
 
 	public void showAndWait(String title, String prompt, String prefilledValue) {
 		this.prefilledValue = prefilledValue;
-		Parent content = FxmlUtil.loadAndInitialize("/dialogs/StringInputDialog.fxml", this);
+		JFXDialogLayout content = FxmlUtil.loadAndInitialize("/dialogs/StringInputDialog.fxml", this);
+		this.title.setText(title);
 		promptLabel.setText(prompt);
 		input.setText(prefilledValue);
 		
-		dialog = FxmlUtil.createDialog(title, content);
+		dialog = FxmlUtil.createDialog(content);
 		dialog.showAndWait();
 	}
 

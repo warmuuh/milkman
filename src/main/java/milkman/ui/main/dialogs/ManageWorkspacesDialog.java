@@ -1,6 +1,9 @@
 package milkman.ui.main.dialogs;
 
+import java.util.Collections;
 import java.util.List;
+
+import com.jfoenix.controls.JFXDialogLayout;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -8,10 +11,12 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import milkman.ui.commands.AppCommand;
 import milkman.utils.Event;
@@ -21,7 +26,7 @@ import milkman.utils.fxml.NoSelectionModel;
 public class ManageWorkspacesDialog {
 
 	@FXML ListView<String> workspaceList;
-	private Stage dialog;
+	private Dialog dialog;
 	private ObservableList<String> workspaces;
 
 	public Event<AppCommand> onCommand = new Event<AppCommand>();
@@ -69,12 +74,12 @@ public class ManageWorkspacesDialog {
 	}
 	
 	public void showAndWait(List<String> workspaceNames) {
-		Parent content = FxmlUtil.loadAndInitialize("/dialogs/ManageWorkspacesDialog.fxml", this);
+		JFXDialogLayout content = FxmlUtil.loadAndInitialize("/dialogs/ManageWorkspacesDialog.fxml", this);
 		workspaces = FXCollections.observableList(workspaceNames);
 		workspaceList.setItems(workspaces);
 		workspaceList.setCellFactory(l -> new WorkspaceCell());
 		workspaceList.setSelectionModel(new NoSelectionModel<String>());
-		dialog = FxmlUtil.createDialog("Manage Workspaces", content);
+		dialog = FxmlUtil.createDialog(content);
 		dialog.showAndWait();
 	}
 	

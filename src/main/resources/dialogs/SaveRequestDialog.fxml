@@ -21,23 +21,26 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.control.ButtonType?>
 <?import javafx.scene.control.ListView?>
+<?import com.jfoenix.controls.*?>
 
-<VBox xmlns:fx="http://javafx.com/fxml/1"
+<JFXDialogLayout xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="milkman.ui.main.dialogs.SaveRequestDialog">
+	<heading>
+		<Label>Save Request</Label>
+	</heading>
+	<body>
+		<VBox>
+			<Label text="Request Name:"></Label>
+			<TextField fx:id="requestName"></TextField>
 
-
-	<Label text="Request Name:"></Label>
-	<TextField fx:id="requestName"></TextField>
-
-	<Label text="Collection:"></Label>
-	<TextField fx:id="collectionName"></TextField>
-	<Label text="Existing Collections:"></Label>
-	<ListView fx:id="collectionList"></ListView>
-
-	<HBox alignment="CENTER_RIGHT">
-		<Button text="save" onAction="#onSave"></Button>
-		<Button text="cancel" onAction="#onCancel"></Button>
-	</HBox>
-
-</VBox>
-
+			<Label text="Collection:"></Label>
+			<TextField fx:id="collectionName"></TextField>
+			<Label text="Existing Collections:"></Label>
+			<ListView fx:id="collectionList"></ListView>
+		</VBox>
+	</body>
+	<actions>
+		<JFXButton onAction="#onSave">Save</JFXButton>
+		<JFXButton onAction="#onCancel">Cancel</JFXButton>
+	</actions>
+</JFXDialogLayout>

@@ -19,20 +19,20 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Tab?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+<StackPane xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="milkman.ui.main.MainWindow"
 	fx:id="root">
-
-	<top>
-		<fx:include source="ToolbarComponent.fxml"></fx:include>
-	</top>
-	<center>
-		<SplitPane dividerPositions="0.2">
-			<items>
-				<fx:include source="RequestCollectionComponent.fxml"></fx:include>
-				<fx:include source="WorkingAreaComponent.fxml"></fx:include>
-			</items>
-		</SplitPane>
-	</center>
-</BorderPane>
-
+	<BorderPane>
+		<top>
+			<fx:include source="ToolbarComponent.fxml"></fx:include>
+		</top>
+		<center>
+			<SplitPane dividerPositions="0.2">
+				<items>
+					<fx:include source="RequestCollectionComponent.fxml"></fx:include>
+					<fx:include source="WorkingAreaComponent.fxml"></fx:include>
+				</items>
+			</SplitPane>
+		</center>
+	</BorderPane>
+</StackPane>

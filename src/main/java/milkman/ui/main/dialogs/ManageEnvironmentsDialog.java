@@ -1,6 +1,11 @@
 package milkman.ui.main.dialogs;
 
+import java.util.Collections;
 import java.util.List;
+
+import com.jfoenix.controls.JFXAlert;
+import com.jfoenix.controls.JFXDialog;
+import com.jfoenix.controls.JFXDialogLayout;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -8,10 +13,13 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import milkman.domain.Environment;
 import milkman.ui.commands.AppCommand;
@@ -22,7 +30,7 @@ import milkman.utils.fxml.NoSelectionModel;
 public class ManageEnvironmentsDialog {
 
 	@FXML ListView<Environment> environmentList;
-	private Stage dialog;
+	private JFXAlert dialog;
 	private ObservableList<Environment> environments;
 
 	public Event<AppCommand> onCommand = new Event<AppCommand>();
@@ -78,13 +86,17 @@ public class ManageEnvironmentsDialog {
 	
 	public void showAndWait(List<Environment> envs) {
 		this.originalList = envs;
-		Parent content = FxmlUtil.loadAndInitialize("/dialogs/ManageEnvironmentsDialog.fxml", this);
+		JFXDialogLayout content = FxmlUtil.loadAndInitialize("/dialogs/ManageEnvironmentsDialog.fxml", this);
 		environments = FXCollections.observableList(envs);
 		environmentList.setItems(environments);
 		environmentList.setCellFactory(l -> new EnvironmentCell());
 		environmentList.setSelectionModel(new NoSelectionModel<Environment>());
-		dialog = FxmlUtil.createDialog("Manage Workspaces", content);
+		
+		dialog = FxmlUtil.createDialog(content);
+
+		System.out.println("Showing dialog");
 		dialog.showAndWait();
+		System.out.println("End dialog");
 	}
 	
 	private void refresh() {

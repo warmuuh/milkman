@@ -23,16 +23,18 @@
 <?import javafx.scene.control.ListView?>
 <?import milkman.ui.components.TableEditor?>
 <?import milkman.ui.components.JfxTableEditor?>
+<?import com.jfoenix.controls.*?>
 
-<VBox xmlns:fx="http://javafx.com/fxml/1"
+<JFXDialogLayout xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="milkman.ui.main.dialogs.EditEnvironmentDialog">
-
-	<JfxTableEditor fx:id="editor"></JfxTableEditor>
-
-
-	<HBox alignment="CENTER_RIGHT">
-		<Button text="close" onAction="#onClose"></Button>
-	</HBox>
-
-</VBox>
+		<heading>
+			<Label>Edit Environment</Label>
+		</heading>
+		<body>
+			<JfxTableEditor fx:id="editor"></JfxTableEditor>
+		</body>
+		<actions>
+			<JFXButton onAction="#onClose" styleClass="dialog-accept">Close</JFXButton>
+		</actions>
+</JFXDialogLayout>
 

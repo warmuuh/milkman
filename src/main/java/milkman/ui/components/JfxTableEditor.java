@@ -88,6 +88,7 @@ public class JfxTableEditor<T> extends StackPane {
 
 	public void setEditable(boolean editable) {
 		table.setEditable(editable);
+		addItemBtn.setVisible(editable);
 	}
 	
 	public void setItems(List<T> items, Supplier<T> newItemCreator) {
@@ -182,7 +183,6 @@ public class JfxTableEditor<T> extends StackPane {
             
 //            checkBox.setDisable(true);
             checkBox.setOnAction(e -> {
-        			System.out.println("value changed");
         			table.edit(BooleanCell.this.getTreeTableRow().getIndex(), column);
 //        			itemProperty().setValue(newValue == null ? false : newValue);
                 	//if(isEditing())

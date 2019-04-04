@@ -21,20 +21,22 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.control.ButtonType?>
 <?import javafx.scene.control.ListView?>
+<?import com.jfoenix.controls.*?>
 
-<VBox xmlns:fx="http://javafx.com/fxml/1"
+<JFXDialogLayout xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="milkman.ui.main.dialogs.ManageWorkspacesDialog">
-
-
-	<Label text="Workspaces"></Label>
-	<HBox alignment="CENTER_RIGHT">
+		<heading>
+			<Label>Workspaces</Label>
+		</heading>
+		<body>
+			<VBox>
+				<HBox alignment="CENTER_RIGHT">
 		<Button text="create new workspace" onAction="#onCreateWorkspace"></Button>
 	</HBox>
 	<ListView fx:id="workspaceList"></ListView>
-
-	<HBox alignment="CENTER_RIGHT">
-		<Button text="close" onAction="#onClose"></Button>
-	</HBox>
-
-</VBox>
-
+			</VBox>
+		</body>
+		<actions>
+			<JFXButton onAction="#onClose" styleClass="dialog-accept">Close</JFXButton>
+		</actions>
+</JFXDialogLayout>

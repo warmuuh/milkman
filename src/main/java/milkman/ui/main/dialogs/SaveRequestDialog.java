@@ -1,9 +1,12 @@
 package milkman.ui.main.dialogs;
 
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+
+import com.jfoenix.controls.JFXDialogLayout;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -11,9 +14,11 @@ import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import lombok.Getter;
 import milkman.domain.Collection;
@@ -25,7 +30,7 @@ public class SaveRequestDialog implements Initializable{
 	@FXML ListView<String> collectionList;
 	@FXML TextField requestName;
 	@FXML TextField collectionName;
-	private Stage dialog;
+	private Dialog dialog;
 
 	private RequestContainer request;
 	@Getter boolean cancelled = true;
@@ -37,8 +42,8 @@ public class SaveRequestDialog implements Initializable{
 	}
 
 	public void showAndWait() {
-		Parent content = FxmlUtil.loadAndInitialize("/dialogs/SaveRequestDialog.fxml", this);
-		dialog = FxmlUtil.createDialog("Save Request as", content);
+		JFXDialogLayout content = FxmlUtil.loadAndInitialize("/dialogs/SaveRequestDialog.fxml", this);
+		dialog = FxmlUtil.createDialog(content);
 		dialog.showAndWait();
 	}
 
