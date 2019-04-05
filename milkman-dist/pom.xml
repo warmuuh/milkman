@@ -56,26 +56,29 @@
 				<artifactId>github-release-plugin</artifactId>
 				<version>1.3.0</version>
 				<configuration>
-					<description>Description of your release</description>
-					<releaseName>${project.version} Final</releaseName>
+					<description>Release of Milkman</description>
+					<releaseName>${project.version}</releaseName>
 					<tag>${project.version}</tag>
+					<artifact>${project.artifactId}-bin.zip</artifact>
 
 					<!-- If your project has additional artifacts, such as ones produced 
 						by the maven-assembly-plugin, you can define the following (requires version 
 						1.1.1 of the plugin or higher): -->
-					<fileSets>
-						<fileSet>
-							<directory>${project.build.directory}</directory>
-							<includes>
-								<include>${project.artifactId}*.tar.gz</include>
-								<include>${project.artifactId}*.zip</include>
-							</includes>
-							<excludes>
-							<exclude>${project.artifactId}*.jar</exclude>
-							</excludes>
-						</fileSet>
-					</fileSets>
+<!-- 					<fileSets> -->
+<!-- 						<fileSet> -->
+<!-- 							<directory>${project.build.directory}</directory> -->
+<!-- 							<includes> -->
+<!-- 								<include>${project.artifactId}*.tar.gz</include> -->
+<!-- 								<include>${project.artifactId}*.zip</include> -->
+<!-- 							</includes> -->
+<!-- 							<excludes> -->
+<!-- 							<exclude>${project.artifactId}*.jar</exclude> -->
+<!-- 							</excludes> -->
+<!-- 						</fileSet> -->
+<!-- 					</fileSets> -->
+					
 				</configuration>
+				
 				<executions>
 					<execution>
 						<id>delpoy-github</id>
