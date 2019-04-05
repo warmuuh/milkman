@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.github.warmuuh</groupId>
 		<artifactId>milkman-parent</artifactId>
-		<version>0.0.2</version>
+		<version>0.0.3</version>
 	</parent>
 	<artifactId>milkman-dist</artifactId>
 
@@ -22,12 +22,12 @@
 		<dependency>
 			<groupId>com.github.warmuuh</groupId>
 			<artifactId>milkman</artifactId>
-			<version>0.0.2</version>
+			<version>0.0.3</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.warmuuh</groupId>
 			<artifactId>milkman-rest</artifactId>
-			<version>0.0.2</version>
+			<version>0.0.3</version>
 		</dependency>
 	</dependencies>
 
@@ -57,7 +57,7 @@
 				<version>1.3.0</version>
 				<configuration>
 					<description>Description of your release</description>
-					<releaseName>1.0 Final</releaseName>
+					<releaseName>${project.version} Final</releaseName>
 					<tag>${project.version}</tag>
 
 					<!-- If your project has additional artifacts, such as ones produced 
