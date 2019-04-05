@@ -1,11 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.github.warmuuh</groupId>
 		<artifactId>milkman-parent</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.0.1</version>
 	</parent>
 	<artifactId>milkman-dist</artifactId>
 
@@ -15,12 +13,12 @@
 		<dependency>
 			<groupId>com.github.warmuuh</groupId>
 			<artifactId>milkman</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.warmuuh</groupId>
 			<artifactId>milkman-rest</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.0.1</version>
 		</dependency>
 	</dependencies>
 
@@ -43,6 +41,29 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>de.jutzig</groupId>
+				<artifactId>github-release-plugin</artifactId>
+				<version>1.1.1</version>
+				<configuration>
+					<description>Description of your release</description>
+					<releaseName>1.0 Final</releaseName>
+					<tag>${project.version}</tag>
+
+					<!-- If your project has additional artifacts, such as ones produced 
+						by the maven-assembly-plugin, you can define the following (requires version 
+						1.1.1 of the plugin or higher): -->
+					<fileSets>
+						<fileSet>
+							<directory>${project.build.directory}</directory>
+							<includes>
+								<include>${project.artifactId}*.tar.gz</include>
+								<include>${project.artifactId}*.zip</include>
+							</includes>
+						</fileSet>
+					</fileSets>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

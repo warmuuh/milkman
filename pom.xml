@@ -1,10 +1,8 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.warmuuh</groupId>
 	<artifactId>milkman-parent</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<packaging>pom</packaging>
 	<name>milkman-parent</name>
 
@@ -26,7 +24,7 @@
 	<scm>
 		<url>https://github.com/warmuuh/milkman</url>
 		<connection>scm:git:https://github.com/warmuuh/milkman</connection>
-		<tag>${project.version}</tag>
+		<tag>milkman-parent-0.0.1</tag>
 	</scm>
 
 
@@ -74,6 +72,7 @@
 			<groupId>com.github.warmuuh</groupId>
 			<artifactId>hardwire</artifactId>
 			<version>0.0.3-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 

@@ -1,16 +1,17 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.github.warmuuh</groupId>
 		<artifactId>milkman-parent</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.0.1</version>
 	</parent>
 	<artifactId>milkman-rest</artifactId>
 	<name>milkman-rest</name>
 	<description>milkman rest plugin</description>
 
+	<properties>
+		<maven.deploy.skip>true</maven.deploy.skip>
+	</properties>
 
 
 	<dependencies>
@@ -22,7 +23,7 @@
 		<dependency>
 			<groupId>com.github.warmuuh</groupId>
 			<artifactId>milkman</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.0.1</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
