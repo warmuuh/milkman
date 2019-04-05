@@ -37,8 +37,10 @@ fx:controller="milkman.ui.main.ToolbarComponent">
 <!-- 				</FXCollections> -->
 <!-- 			</items> -->
 		</ChoiceBox>
-						<Label text="Synced"></Label>
-		
+
+<!-- 		<Label text="Synced"></Label> -->
+
+		<JFXButton text="Import" onAction="#onImport"></JFXButton>		
 
 
 		<Label text="Environment:"></Label>

@@ -64,4 +64,8 @@ public interface AppCommand {
 	public static class CreateNewEnvironment implements AppCommand {
 		Environment env;
 	}
+	
+	@Value
+	public static class RequestImport implements AppCommand {
+	}
 }

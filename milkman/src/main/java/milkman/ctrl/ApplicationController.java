@@ -19,7 +19,9 @@ import milkman.persistence.PersistenceManager;
 import milkman.ui.commands.AppCommand;
 import milkman.ui.commands.AppCommand.RenameEnvironment;
 import milkman.ui.commands.AppCommand.RenameWorkspace;
+import milkman.ui.main.Toaster;
 import milkman.ui.main.ToolbarComponent;
+import milkman.ui.main.dialogs.ImportDialog;
 import milkman.ui.main.dialogs.ManageEnvironmentsDialog;
 import milkman.ui.main.dialogs.ManageWorkspacesDialog;
 import milkman.ui.plugin.RequestTypePlugin;
@@ -34,6 +36,7 @@ public class ApplicationController {
 	private final UiPluginManager plugins;
 	
 	private final ToolbarComponent toolbarComponent;
+	private final Toaster toaster;
 	
 	public void initApplication() {
 		List<String> names = persistence.loadWorkspaceNames();
@@ -102,9 +105,19 @@ public class ApplicationController {
 			renameEnvironment(renameEnvironment.getEnv(), renameEnvironment.getNewName());
 		} else if (command instanceof AppCommand.ActivateEnvironment) {
 			activateEnvironment(((AppCommand.ActivateEnvironment) command).getEnv());
+		} else if (command instanceof AppCommand.RequestImport) {
+			openImportDialog();
 		} else {
 			throw new IllegalArgumentException("Unsupported command: " + command);
 		}
+	}
+
+
+	private void openImportDialog() {
+		ImportDialog dialog = new ImportDialog();
+		dialog.showAndWait(plugins.loadImporterPlugins(), toaster, workspaceController.getActiveWorkspace());
+		persistWorkspace(workspaceController.getActiveWorkspace());
+		workspaceController.loadWorkspace( workspaceController.getActiveWorkspace());
 	}
 
 

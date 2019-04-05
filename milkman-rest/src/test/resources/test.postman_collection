@@ -1,0 +1,54 @@
+{
+	"info": {
+		"_postman_id": "cb54ba63-2b19-446a-9943-8e7e71a9653d",
+		"name": "test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "testFolder",
+			"item": [
+				{
+					"name": "test",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "fsdf?sdf",
+							"host": [
+								"fsdf"
+							],
+							"query": [
+								{
+									"key": "sdf",
+									"value": ""
+								}
+							]
+						},
+						"description": "test"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "test234",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		}
+	]
+}

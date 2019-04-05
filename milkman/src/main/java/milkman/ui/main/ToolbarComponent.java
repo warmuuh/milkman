@@ -129,6 +129,10 @@ public class ToolbarComponent implements Initializable {
 	public void refreshEnvironments() {
 		
 	}
+
+	@FXML public void onImport() {
+		onCommand.invoke(new AppCommand.RequestImport());
+	}
 	
 	
 	

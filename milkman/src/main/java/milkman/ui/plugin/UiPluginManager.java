@@ -9,22 +9,30 @@ import javax.inject.Singleton;
 @Singleton
 public class UiPluginManager {
 
-	public List<RequestAspectsPlugin> loadRequestAspectPlugins(){
+	public List<RequestAspectsPlugin> loadRequestAspectPlugins() {
 		ServiceLoader<RequestAspectsPlugin> loader = ServiceLoader.load(RequestAspectsPlugin.class);
-		
+
 		List<RequestAspectsPlugin> result = new LinkedList<RequestAspectsPlugin>();
 		loader.forEach(result::add);
-		
-		return result; 
+
+		return result;
 	}
-	
-	
-	public List<RequestTypePlugin> loadRequestTypePlugins(){
+
+	public List<RequestTypePlugin> loadRequestTypePlugins() {
 		ServiceLoader<RequestTypePlugin> loader = ServiceLoader.load(RequestTypePlugin.class);
-		
+
 		List<RequestTypePlugin> result = new LinkedList<RequestTypePlugin>();
 		loader.forEach(result::add);
-		
-		return result; 
+
+		return result;
+	}
+
+	public List<ImporterPlugin> loadImporterPlugins() {
+		ServiceLoader<ImporterPlugin> loader = ServiceLoader.load(ImporterPlugin.class);
+
+		List<ImporterPlugin> result = new LinkedList<ImporterPlugin>();
+		loader.forEach(result::add);
+
+		return result;
 	}
 }

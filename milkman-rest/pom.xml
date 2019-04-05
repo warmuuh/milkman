@@ -26,9 +26,25 @@
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
-	
-		<build>
+
+	<build>
 		<plugins>
+			<!-- <plugin> -->
+			<!-- <groupId>org.jsonschema2pojo</groupId> -->
+			<!-- <artifactId>jsonschema2pojo-maven-plugin</artifactId> -->
+			<!-- <version>1.0.0</version> -->
+			<!-- <configuration> -->
+			<!-- <sourceDirectory>${basedir}/src/main/schema</sourceDirectory> -->
+			<!-- <targetPackage>com.milkman.rest.postman.schema</targetPackage> -->
+			<!-- </configuration> -->
+			<!-- <executions> -->
+			<!-- <execution> -->
+			<!-- <goals> -->
+			<!-- <goal>generate</goal> -->
+			<!-- </goals> -->
+			<!-- </execution> -->
+			<!-- </executions> -->
+			<!-- </plugin> -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
