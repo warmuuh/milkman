@@ -53,5 +53,9 @@ public interface UiCommand {
 	public static class NewRequest implements UiCommand {
 	}
 	
+	@Value
+	public static class DeleteCollection implements UiCommand {
+		Collection collection;
+	}
 	
 }

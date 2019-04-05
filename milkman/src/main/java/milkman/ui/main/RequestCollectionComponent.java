@@ -81,7 +81,19 @@ public class RequestCollectionComponent {
 	}
 
 	private HBox createCollectionEntry(Collection collection) {
-		return new HBox(new FontAwesomeIconView(FontAwesomeIcon.FOLDER_ALT, "1.5em"), new Label(collection.getName()));
+		HBox hBox = new HBox(new FontAwesomeIconView(FontAwesomeIcon.FOLDER_ALT, "1.5em"), new Label(collection.getName()));
+
+		MenuItem deleteEntry = new MenuItem("Delete");
+		deleteEntry.setOnAction(e -> onCommand.invoke(new UiCommand.DeleteCollection(collection)));
+		ContextMenu ctxMenu = new ContextMenu(deleteEntry);
+
+		hBox.setOnMouseClicked(e -> {
+			if (e.getButton() == MouseButton.SECONDARY) {
+				ctxMenu.show(hBox, e.getScreenX(), e.getScreenY());
+				e.consume();
+			}
+		});
+		return hBox;
 	}
 
 	private void setFilterPredicate(FilteredList<JFXListView<Node>> filteredList,

@@ -106,7 +106,8 @@ public class WorkspaceController {
 	public void createNewRequest() {
 		RequestTypePlugin requestTypePlugin = plugins.loadRequestTypePlugins().get(0);
 		RequestContainer request = requestTypePlugin.createNewRequest();
-		request.setId(UUID.randomUUID().toString());
+		//if we set id here, save->saveas does not work
+//		request.setId(UUID.randomUUID().toString());
 		plugins.loadRequestAspectPlugins().forEach(p -> p.initializeAspects(request));
 		displayRequest(request);
 	}
@@ -171,6 +172,8 @@ public class WorkspaceController {
 		} else if (command instanceof UiCommand.DeleteRequest) {
 			DeleteRequest deleteRequest = (UiCommand.DeleteRequest) command;
 			deleteRequest(deleteRequest.getCollection(), deleteRequest.getRequest());
+		} else if (command instanceof UiCommand.DeleteCollection) {
+			deleteCollection(((UiCommand.DeleteCollection) command).getCollection());
 		} else {
 			throw new IllegalArgumentException("Unsupported command");
 		}
@@ -178,6 +181,18 @@ public class WorkspaceController {
 	
 	
 	
+	private void deleteCollection(Collection collection) {
+		activeWorkspace.getCollections().remove(collection);
+		loadCollections(activeWorkspace);
+		for(RequestContainer request : collection.getRequests()) {
+			Optional<RequestContainer> openRequest = activeWorkspace.getOpenRequests().stream()
+					.filter(r -> r.getId().equals(request.getId()))
+					.findAny();
+				openRequest.ifPresent(this::closeRequest);
+		}
+	}
+
+
 	private void deleteRequest(Collection collection, RequestContainer request) {
 		collection.getRequests().removeIf(r -> r.getId().equals(request.getId()));
 		loadCollections(activeWorkspace);
