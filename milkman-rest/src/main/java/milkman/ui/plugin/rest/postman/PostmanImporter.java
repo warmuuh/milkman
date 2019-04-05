@@ -1,15 +1,22 @@
 package milkman.ui.plugin.rest.postman;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import co.poynt.postman.model.PostmanCollection;
 import co.poynt.postman.model.PostmanContainer;
+import co.poynt.postman.model.PostmanEnvValue;
+import co.poynt.postman.model.PostmanEnvironment;
 import milkman.domain.Collection;
+import milkman.domain.Environment;
+import milkman.domain.Environment.EnvironmentEntry;
 import milkman.domain.RequestContainer;
 import milkman.ui.plugin.rest.domain.HeaderEntry;
 import milkman.ui.plugin.rest.domain.RestBodyAspect;
@@ -18,11 +25,16 @@ import milkman.ui.plugin.rest.domain.RestRequestContainer;
 
 public class PostmanImporter {
 
-	public Collection importString(String json) throws Exception {
+	public Collection importCollection(String json) throws Exception {
+		PostmanCollection pmCollection = readJson(json, PostmanCollection.class);
+		return convertToDomain(pmCollection);
+	}
+
+	private <T> T readJson(String json, Class<T> type) throws IOException, JsonParseException, JsonMappingException {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-		PostmanCollection pmCollection = mapper.readValue(json, PostmanCollection.class);
-		return convertToDomain(pmCollection);
+		T pmCollection = mapper.readValue(json, type);
+		return pmCollection;
 	}
 
 	private Collection convertToDomain(PostmanCollection pmCollection) {
@@ -61,5 +73,14 @@ public class PostmanImporter {
 		
 		
 		return result;
+	}
+
+	public Environment importEnvironment(String json) throws Exception {
+		PostmanEnvironment pmEnv = readJson(json, PostmanEnvironment.class);
+		Environment resEnv = new Environment(pmEnv.name);
+		for (PostmanEnvValue envValue : pmEnv.values) {
+			resEnv.getEntries().add(new EnvironmentEntry(envValue.key, envValue.value, envValue.enabled));
+		}
+		return resEnv;
 	}
 }

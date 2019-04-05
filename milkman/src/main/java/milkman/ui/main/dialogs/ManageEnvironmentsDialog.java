@@ -93,10 +93,7 @@ public class ManageEnvironmentsDialog {
 		environmentList.setSelectionModel(new NoSelectionModel<Environment>());
 		
 		dialog = FxmlUtil.createDialog(content);
-
-		System.out.println("Showing dialog");
 		dialog.showAndWait();
-		System.out.println("End dialog");
 	}
 	
 	private void refresh() {

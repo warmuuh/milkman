@@ -118,6 +118,8 @@ public class ApplicationController {
 		dialog.showAndWait(plugins.loadImporterPlugins(), toaster, workspaceController.getActiveWorkspace());
 		persistWorkspace(workspaceController.getActiveWorkspace());
 		workspaceController.loadWorkspace( workspaceController.getActiveWorkspace());
+		toolbarComponent.setWorkspaces(workspaceController.getActiveWorkspace(), persistence.loadWorkspaceNames());
+		
 	}
 
 

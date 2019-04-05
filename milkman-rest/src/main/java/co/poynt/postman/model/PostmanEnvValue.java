@@ -5,6 +5,7 @@ public class PostmanEnvValue {
 	public String value;
 	public String type;
 	public String name;
+	public boolean enabled;
 	
 	@Override
 	public String toString() {
