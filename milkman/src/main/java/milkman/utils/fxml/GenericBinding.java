@@ -63,7 +63,6 @@ public class GenericBinding<O, T> extends ObjectPropertyBase<T> {
     	property.bindBidirectional(this);
     }
     
-
 	@Override
 	public Object getBean() {
 		return null;

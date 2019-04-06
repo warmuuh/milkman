@@ -11,6 +11,7 @@ import milkman.utils.fxml.FxmlUtil;
 
 public class RequestHeaderTabController implements RequestAspectEditor {
 
+
 	@Override
 	@SneakyThrows
 	public Tab getRoot(RequestAspect aspect) {
@@ -23,7 +24,6 @@ public class RequestHeaderTabController implements RequestAspectEditor {
 		editor.addDeleteColumn("Delete");
 		
 		editor.setItems(headers.getEntries(), () -> new HeaderEntry("", "", true));
-		
 		return new Tab("Headers", editor);
 	}
 

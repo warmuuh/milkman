@@ -41,7 +41,8 @@ public class MainWindow {
 
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("/themes/milkman.css").toExternalForm());
-			
+			scene.getStylesheets().add(getClass().getResource("/themes/syntax/milkman-syntax.css").toExternalForm());
+
 			primaryStage.setScene(scene);
 			primaryStage.setWidth(1000);
 			primaryStage.setHeight(800);

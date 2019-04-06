@@ -1,0 +1,32 @@
+
+.plain {
+	-fx-fill: black !important;
+}
+.object {
+    -fx-fill: black !important;
+}
+
+.property {
+    -fx-fill: #2C3964 !important;
+    -fx-font-weight: bold;
+}
+
+
+.value {
+    -fx-fill: #2192F2 !important;
+}
+
+.array {
+    -fx-fill: black !important;
+}
+
+.bool {
+    -fx-fill: black !important;
+    -fx-font-weight: bold;
+}
+
+.number {
+    -fx-fill: #2192F2 !important;
+    -fx-font-weight: bold;
+}
+

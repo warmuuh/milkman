@@ -35,4 +35,13 @@ public class UiPluginManager {
 
 		return result;
 	}
+	
+	public List<ContentTypePlugin> loadContentTypePlugins(){
+		ServiceLoader<ContentTypePlugin> loader = ServiceLoader.load(ContentTypePlugin.class);
+
+		List<ContentTypePlugin> result = new LinkedList<ContentTypePlugin>();
+		loader.forEach(result::add);
+
+		return result;
+	}
 }

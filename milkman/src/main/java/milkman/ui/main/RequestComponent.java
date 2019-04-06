@@ -12,6 +12,7 @@ import lombok.Getter;
 import milkman.domain.RequestAspect;
 import milkman.domain.RequestContainer;
 import milkman.ui.commands.UiCommand;
+import milkman.ui.plugin.ContentTypeAwareEditor;
 import milkman.ui.plugin.RequestAspectEditor;
 import milkman.ui.plugin.RequestAspectsPlugin;
 import milkman.ui.plugin.RequestTypeEditor;
@@ -53,6 +54,9 @@ public class RequestComponent {
 			for (RequestAspect aspect : request.getAspects()) {
 				for (RequestAspectEditor tabController : plugin.getRequestTabs()) {
 					if (tabController.canHandleAspect(aspect)) {
+						if (tabController instanceof ContentTypeAwareEditor) {
+							((ContentTypeAwareEditor) tabController).setContentTypePlugins(plugins.loadContentTypePlugins());
+						}
 						Tab aspectTab = tabController.getRoot(aspect);
 						aspectTab.setClosable(false);
 						tabs.getTabs().add(aspectTab);
