@@ -54,7 +54,7 @@ public class ResponseComponent implements Initializable {
 						if (tabController instanceof ContentTypeAwareEditor) {
 							((ContentTypeAwareEditor) tabController).setContentTypePlugins(plugins.loadContentTypePlugins());
 						}
-						Tab aspectTab = tabController.getRoot(aspect);
+						Tab aspectTab = tabController.getRoot(aspect, response);
 						aspectTab.setClosable(false);
 						tabs.getTabs().add(aspectTab);
 					}

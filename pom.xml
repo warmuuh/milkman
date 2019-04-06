@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.warmuuh</groupId>
 	<artifactId>milkman-parent</artifactId>
-	<version>0.0.3</version>
+	<version>0.0.4-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>milkman-parent</name>
 
@@ -74,6 +74,7 @@
 			<groupId>com.github.warmuuh</groupId>
 			<artifactId>hardwire</artifactId>
 			<version>0.0.3-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 

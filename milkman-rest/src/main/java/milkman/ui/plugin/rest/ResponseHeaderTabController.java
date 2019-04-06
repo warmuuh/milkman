@@ -5,6 +5,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Tab;
 import lombok.SneakyThrows;
 import milkman.domain.ResponseAspect;
+import milkman.domain.ResponseContainer;
 import milkman.ui.components.JfxTableEditor;
 import milkman.ui.plugin.ResponseAspectEditor;
 import milkman.ui.plugin.rest.domain.HeaderEntry;
@@ -16,7 +17,7 @@ public class ResponseHeaderTabController implements ResponseAspectEditor {
 
 	@Override
 	@SneakyThrows
-	public Tab getRoot(ResponseAspect aspect) {
+	public Tab getRoot(ResponseAspect aspect, ResponseContainer response) {
 		RestResponseHeaderAspect headers = (RestResponseHeaderAspect) aspect;
 		JfxTableEditor<HeaderEntry> editor = FxmlUtil.loadAndInitialize("/components/TableEditor.fxml");
 		editor.setEditable(false);

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -26,4 +27,8 @@ public abstract class ResponseContainer {
 	@JsonIgnore
 	private Map<String, String> statusInformations = new HashMap<String, String>();
 	
+	
+	public <T extends ResponseAspect> Optional<T> aspect(Class<T> type){
+		return aspects.stream().filter(a -> type.isInstance(a)).map(a -> (T)a).findAny();
+	}
 }

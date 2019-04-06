@@ -1,0 +1,12 @@
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] milkman-parent                                                     [pom]
+[INFO] milkman                                                            [jar]
+[INFO] milkman-rest                                                       [jar]
+[INFO] milkman-dist                                                       [jar]
+Batchvorgang abbrechen (J/N)? 
+Batchvorgang abbrechen (J/N)? 
+Batchvorgang abbrechen (J/N)? 
+Batchvorgang abbrechen (J/N)? Batchvorgang abbrechen (J/N)? Batchvorgang abbrechen (J/N)? 

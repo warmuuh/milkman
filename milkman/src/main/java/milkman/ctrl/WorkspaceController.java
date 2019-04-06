@@ -113,7 +113,6 @@ public class WorkspaceController {
 	}
 	
 	public void executeRequest(RequestContainer request) {
-		System.out.println("Executing request: " + request);
 		workingAreaView.showSpinner();
 		
 		

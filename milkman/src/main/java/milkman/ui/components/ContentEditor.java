@@ -76,7 +76,7 @@ public class ContentEditor extends VBox {
 		codeArea = new CodeArea();
 		
 		highlighters.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
-			codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText()));
+			highlightCode();
 			if (n != null)
 				format.setVisible( n.supportFormatting());
 		});
@@ -85,15 +85,21 @@ public class ContentEditor extends VBox {
 		Subscription cleanupWhenNoLongerNeedIt = codeArea
 				 .multiPlainChanges()
 				 .successionEnds(Duration.ofMillis(500))
-				 .subscribe(ignore -> codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText())));
+				 .subscribe(ignore -> highlightCode());
 		
 		VBox.setVgrow(codeArea, Priority.ALWAYS);
 		getChildren().add(codeArea);
 	}
+
+	private void highlightCode() {
+		codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText()));
+	}
 	
 	private void formatCode() {
-		if (highlighters.getValue() != null && highlighters.getValue().supportFormatting())
+		if (highlighters.getValue() != null && highlighters.getValue().supportFormatting()) {
 			codeArea.replaceText(highlighters.getValue().formatContent(codeArea.getText()));
+			highlightCode();			
+		}
 	}
 
 	private StyleSpans<? extends Collection<String>> computeHighlighting(String text) {
@@ -116,14 +122,22 @@ public class ContentEditor extends VBox {
 	public void setContentTypePlugins(List<ContentTypePlugin> plugins) {
 		highlighters.getItems().addAll(plugins);
 		//set plain highlighter as default:
+		String contentType = DEFAULT_CONTENTTYPE;
+		setActiveContentType(plugins, contentType);
+	}
+
+	private void setActiveContentType(List<ContentTypePlugin> plugins, String contentType) {
 		plugins.stream()
-		.filter(p -> p.getContentType().equals(DEFAULT_CONTENTTYPE))
+		.filter(p -> p.getContentType().equals(contentType))
 		.findAny().ifPresent(t -> {
 			format.setVisible(t.supportFormatting());
 			highlighters.setValue(t);
 		});
 	}
 	
+	public void setContentType(String contentType) {
+		setActiveContentType(highlighters.getItems(), contentType);
+	}
 	
 	public void setContent(Supplier<String> getter, Consumer<String> setter) {		
 		
