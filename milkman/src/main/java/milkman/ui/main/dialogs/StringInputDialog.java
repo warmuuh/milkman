@@ -3,6 +3,7 @@ package milkman.ui.main.dialogs;
 import java.util.Objects;
 
 import com.jfoenix.controls.JFXDialogLayout;
+import com.jfoenix.controls.JFXTextField;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Dialog;
@@ -16,7 +17,7 @@ public class StringInputDialog {
 	private Dialog dialog;
 	@Getter boolean cancelled = true;
 
-	@FXML TextField input;
+	@FXML JFXTextField input;
 	@FXML Label promptLabel;
 	private String prefilledValue;
 	@FXML Label title;
@@ -43,8 +44,10 @@ public class StringInputDialog {
 	}
 	
 	@FXML private void onSave() {
-		cancelled = false;
-		dialog.close();
+		if (input.validate()) {
+			cancelled = false;
+			dialog.close();	
+		}
 	}
 
 	@FXML private void onCancel() {

@@ -22,21 +22,31 @@
 <?import javafx.scene.control.ButtonType?>
 <?import javafx.scene.control.ListView?>
 <?import com.jfoenix.controls.*?>
+<?import com.jfoenix.validation.*?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import com.jfoenix.validation.*?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 
 <JFXDialogLayout xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="milkman.ui.main.dialogs.StringInputDialog">
-		<heading>
-			<Label fx:id="title">Title</Label>
-		</heading>
-		<body>
-			<VBox>
-				<Label fx:id="promptLabel"></Label>
-				<TextField fx:id="input"></TextField>
-			</VBox>
-		</body>
-		<actions>
-			<JFXButton onAction="#onSave">Apply</JFXButton>
-			<JFXButton onAction="#onCancel">Cancel</JFXButton>
-		</actions>
+	<heading>
+		<Label fx:id="title">Title</Label>
+	</heading>
+	<body>
+		<VBox>
+			<Label fx:id="promptLabel"></Label>
+			<JFXTextField  fx:id="input">
+				<validators>
+					<RequiredFieldValidator message="Input Required!">
+						<FontAwesomeIconView glyphName="WARNING" style="-fx-font-family: FontAwesome;" />
+					</RequiredFieldValidator>
+				</validators>
+			</JFXTextField>
+		</VBox>
+	</body>
+	<actions>
+		<JFXButton onAction="#onSave">Apply</JFXButton>
+		<JFXButton onAction="#onCancel">Cancel</JFXButton>
+	</actions>
 </JFXDialogLayout>
 

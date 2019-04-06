@@ -13,6 +13,7 @@
 			<useProjectArtifact>true</useProjectArtifact>
 			<unpack>false</unpack>
 			<scope>compile</scope>
+			<excludes><exclude></exclude></excludes>
 		</dependencySet>
 	</dependencySets>
 	
