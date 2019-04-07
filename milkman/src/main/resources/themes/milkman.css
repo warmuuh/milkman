@@ -170,6 +170,24 @@
     -fx-padding: 0 1 0 1;
 }
 
+
+/**
+ * request collcetion area > entries
+ */
+/*
+.jfx-list-cell .sub-list  {
+	-fx-background-insets: 0.0 !important;
+	-fx-padding: 0;
+}
+.jfx-list-cell > .request-entry {
+	-fx-scale-x: 1.8;
+	-fx-scale-y: 1.8;
+	-fx-padding: 0 50 0 50;
+	-fx-font-size: 10;
+	
+} 
+*/
+
 /**
  * components
  */

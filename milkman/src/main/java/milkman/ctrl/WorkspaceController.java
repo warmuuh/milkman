@@ -106,8 +106,7 @@ public class WorkspaceController {
 	public void createNewRequest() {
 		RequestTypePlugin requestTypePlugin = plugins.loadRequestTypePlugins().get(0);
 		RequestContainer request = requestTypePlugin.createNewRequest();
-		//if we set id here, save->saveas does not work
-//		request.setId(UUID.randomUUID().toString());
+		request.setId(UUID.randomUUID().toString());
 		plugins.loadRequestAspectPlugins().forEach(p -> p.initializeAspects(request));
 		displayRequest(request);
 	}
@@ -167,7 +166,7 @@ public class WorkspaceController {
 			closeRequest(((UiCommand.CloseRequest) command).getRequest());
 		} else if (command instanceof UiCommand.RenameRequest) {
 			RenameRequest renameRequest = (UiCommand.RenameRequest) command;
-			renameRequest(renameRequest.getRequest(), renameRequest.isRefreshCollections());
+			renameRequest(renameRequest.getRequest());
 		} else if (command instanceof UiCommand.DeleteRequest) {
 			DeleteRequest deleteRequest = (UiCommand.DeleteRequest) command;
 			deleteRequest(deleteRequest.getCollection(), deleteRequest.getRequest());
@@ -204,20 +203,25 @@ public class WorkspaceController {
 	}
 
 
-	private void renameRequest(RequestContainer request, boolean refreshCollections) {
+	private void renameRequest(RequestContainer request) {
 		StringInputDialog inputDialog = new StringInputDialog();
 		inputDialog.showAndWait("Rename Request", "New Name", request.getName());
 		
 		if (!inputDialog.isCancelled() && inputDialog.wasChanged()) {
-			request.setName(inputDialog.getInput());
+			String newName = inputDialog.getInput();
+//			request.setName(inputDialog.getInput());
+			
+			//replace names in working copies:
+			activeWorkspace.getOpenRequests().stream()
+				.filter(r -> r.getId().equals(request.getId()))
+				.findAny().ifPresent(r -> r.setName(newName));
 
-			if (refreshCollections) {
-				loadCollections(activeWorkspace);
-				//also replace names in working copies:
-				activeWorkspace.getOpenRequests().stream()
+			//replace names in collections:
+			activeWorkspace.getCollections().stream().flatMap(c -> c.getRequests().stream())
 					.filter(r -> r.getId().equals(request.getId()))
-					.findAny().ifPresent(r -> r.setName(request.getName()));
-			}
+					.findAny().ifPresent(r -> r.setName(newName));
+			
+			loadCollections(activeWorkspace);
 			
 			workingAreaView.display(activeWorkspace.getActiveRequest(), activeWorkspace.getOpenRequests());
 			
@@ -246,7 +250,7 @@ public class WorkspaceController {
 
 
 	private void saveRequest(RequestContainer request) {
-		if (StringUtils.isBlank(request.getId())) {
+		if (!request.isInStorage()) {
 			saveAsRequest(request);
 		} else {
 			//have to go through all collections bc we dont have a backlink
@@ -283,6 +287,7 @@ public class WorkspaceController {
 		request.setName(dialog.getRequestName());
 		request.setDirty(false);
 		
+		request.setInStorage(true);
 		collection.getRequests().add(ObjectUtils.deepClone(request));
 		loadCollections(activeWorkspace);
 		displayRequest(request);

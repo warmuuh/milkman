@@ -84,7 +84,9 @@ public class WorkingAreaComponent implements Initializable {
 		closeEntry.setOnAction(a -> onCommand.invoke(new UiCommand.CloseRequest(r)));
 		
 		MenuItem renameEntry = new MenuItem("Rename");
-		renameEntry.setOnAction(a -> onCommand.invoke(new UiCommand.RenameRequest(r, false)));
+		renameEntry.setOnAction(a -> {
+			onCommand.invoke(new UiCommand.RenameRequest(r));
+		});
 		
 		tab.setContextMenu(new ContextMenu(closeEntry, renameEntry));
 		

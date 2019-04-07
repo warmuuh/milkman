@@ -35,6 +35,7 @@ public class ManageEnvironmentsDialog {
 
 	public Event<AppCommand> onCommand = new Event<AppCommand>();
 	private List<Environment> originalList;
+	private Environment globalEnv;
 
 	
 	public class EnvironmentCell extends ListCell<Environment> {
@@ -84,14 +85,15 @@ public class ManageEnvironmentsDialog {
 		}
 	}
 	
-	public void showAndWait(List<Environment> envs) {
+	public void showAndWait(List<Environment> envs, Environment globalEnv) {
 		this.originalList = envs;
+		this.globalEnv = globalEnv;
 		JFXDialogLayout content = FxmlUtil.loadAndInitialize("/dialogs/ManageEnvironmentsDialog.fxml", this);
 		environments = FXCollections.observableList(envs);
 		environmentList.setItems(environments);
 		environmentList.setCellFactory(l -> new EnvironmentCell());
 		environmentList.setSelectionModel(new NoSelectionModel<Environment>());
-		
+		environmentList.setPlaceholder(new Label("No Environments created..."));
 		dialog = FxmlUtil.createDialog(content);
 		dialog.showAndWait();
 	}
@@ -114,7 +116,9 @@ public class ManageEnvironmentsDialog {
 			String newEnvironmentName = inputDialog.getInput();
 			Environment newEnv = new Environment(newEnvironmentName);
 			onCommand.invoke(new AppCommand.CreateNewEnvironment(newEnv));
-			environmentList.refresh();
+			//hack for first item, otherwise placeholder is not removed for some reason
+			environmentList.setItems(FXCollections.observableArrayList());
+			Platform.runLater(() -> environmentList.setItems(environments)); 
 		}
 		
 	}
@@ -122,7 +126,8 @@ public class ManageEnvironmentsDialog {
 
 
 	@FXML public void onEditGlobals() {
-		
+		EditEnvironmentDialog envDialog = new EditEnvironmentDialog();
+		envDialog.showAndWait(globalEnv);
 	}
 
 }

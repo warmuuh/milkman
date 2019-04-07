@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.jfoenix.controls.JFXListCell;
 import com.jfoenix.controls.JFXListView;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
@@ -55,9 +56,13 @@ public class RequestCollectionComponent {
 			subList.setGroupnode(createCollectionEntry(collection));
 			subList.setUserData(collection);
 			
-			//TODO: this does not work. JFXListView is not firing expandedPropertyChange, bug?
-			subList.setExpanded(expansionCache.getOrDefault(collection.getName(), false));
-			subList.expandedProperty().addListener((v, o, n) -> expansionCache.put(collection.getName(), n));
+			//TODO: this does not work. JFXListView is not expanding sublists, bug?
+//			if (expansionCache.getOrDefault(collection.getName(), false)) {
+//				subList.setExpanded(true);
+//				subList.setVerticalGap(20.0);
+//				subList.setStyle("-jfx-expanded: true");
+//			}
+			
 			
 			List<Node> requestNodes = collection.getRequests().stream()
 				.map(r -> createRequestEntry(collection, r))
@@ -78,6 +83,10 @@ public class RequestCollectionComponent {
 		searchField.textProperty().addListener((obs) -> 
 			setFilterPredicate(filteredList, searchField.getText())
 		);
+		
+		collectionContainer.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
+			System.out.println(n);
+		});
 	}
 
 	private HBox createCollectionEntry(Collection collection) {
@@ -88,6 +97,15 @@ public class RequestCollectionComponent {
 		ContextMenu ctxMenu = new ContextMenu(deleteEntry);
 
 		hBox.setOnMouseClicked(e -> {
+			
+			//we have to find out in a hackish way if we gonna expand the cell here or collapse
+			//because jfxListView does not fire the respective listeners correctly
+			if (hBox.getParent().getParent().getParent() instanceof JFXListCell) {
+				JFXListCell cell  = (JFXListCell) hBox.getParent().getParent().getParent();
+				boolean oldExpandedState = cell.isExpanded();
+				expansionCache.put(collection.getName(), !oldExpandedState);
+			}
+			
 			if (e.getButton() == MouseButton.SECONDARY) {
 				ctxMenu.show(hBox, e.getScreenX(), e.getScreenY());
 				e.consume();
@@ -110,14 +128,14 @@ public class RequestCollectionComponent {
 		Label button = new Label(request.getName());
 
 		MenuItem renameEntry = new MenuItem("Rename");
-		renameEntry.setOnAction(e -> onCommand.invoke(new UiCommand.RenameRequest(request, true)));
+		renameEntry.setOnAction(e -> onCommand.invoke(new UiCommand.RenameRequest(request)));
 
 		MenuItem deleteEntry = new MenuItem("Delete");
 		deleteEntry.setOnAction(e -> onCommand.invoke(new UiCommand.DeleteRequest(request, collection)));
 
 		ContextMenu ctxMenu = new ContextMenu(renameEntry, deleteEntry);
 		VBox vBox = new VBox(button);
-		
+		vBox.getStyleClass().add("request-entry");
 		vBox.setOnMouseClicked(e -> {
 			if (e.getButton() == MouseButton.PRIMARY)
 				onCommand.invoke(new UiCommand.LoadRequest(request.getId()));

@@ -46,7 +46,6 @@ public interface UiCommand {
 	@Value
 	public static class RenameRequest implements UiCommand {
 		RequestContainer request;
-		boolean refreshCollections;
 	}
 	
 	@Value

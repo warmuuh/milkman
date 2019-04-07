@@ -22,6 +22,7 @@
 <?import javafx.scene.control.ButtonType?>
 <?import javafx.scene.control.ListView?>
 <?import com.jfoenix.controls.*?>
+<?import com.jfoenix.controls.JFXListView?>
 
 <JFXDialogLayout xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="milkman.ui.main.dialogs.ManageEnvironmentsDialog">
@@ -34,7 +35,8 @@
 					<Button text="add new environment"
 						onAction="#onCreateEnvironment"></Button>
 				</HBox>
-				<ListView fx:id="environmentList"></ListView>
+				<ListView minHeight="400" fx:id="environmentList">
+				</ListView>
 			</VBox>
 		</body>
 		<actions>

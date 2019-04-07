@@ -16,9 +16,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @JsonTypeInfo(include = As.PROPERTY, use = Id.CLASS)
-public abstract class RequestContainer extends Dirtyable implements Searchable {
 
+public abstract class RequestContainer extends Dirtyable implements Searchable {
 	private String id = "";
+	private boolean inStorage = false;
 	private String name;
 	private List<RequestAspect> aspects = new LinkedList<RequestAspect>();
 

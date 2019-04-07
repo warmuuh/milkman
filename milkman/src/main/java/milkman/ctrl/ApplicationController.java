@@ -155,7 +155,7 @@ public class ApplicationController {
 	private void openEnvironmentManagementDialog() {
 		ManageEnvironmentsDialog dialog = new ManageEnvironmentsDialog();
 		dialog.onCommand.add(this::handleCommand);
-		dialog.showAndWait(workspaceController.getActiveWorkspace().getEnvironments());
+		dialog.showAndWait(workspaceController.getActiveWorkspace().getEnvironments(), workspaceController.getActiveWorkspace().getGlobalEnvironment());
 	}
 
 
