@@ -11,9 +11,11 @@ import javax.inject.Singleton;
 
 import com.jfoenix.controls.JFXListCell;
 import com.jfoenix.controls.JFXListView;
+import com.jfoenix.controls.JFXTreeView;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
@@ -22,7 +24,10 @@ import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SettableTreeItem;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeItemBuilder;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -30,6 +35,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 import milkman.domain.Collection;
 import milkman.domain.RequestContainer;
+import milkman.domain.Searchable;
 import milkman.ui.commands.UiCommand;
 import milkman.utils.Event;
 
@@ -40,7 +46,7 @@ public class RequestCollectionComponent {
 	public final Event<UiCommand> onCommand = new Event<UiCommand>();
 
 	@FXML
-	JFXListView<JFXListView<Node>> collectionContainer;
+	JFXTreeView<Node> collectionContainer;
 	
 	@FXML
 	TextField searchField;
@@ -49,45 +55,57 @@ public class RequestCollectionComponent {
 
 	public void display(List<Collection> collections) {
 
-		List<JFXListView<Node>> entries = new LinkedList<JFXListView<Node>>();
+		collectionContainer.setShowRoot(false);
+		
+		List<TreeItem<Node>> entries = new LinkedList<>();
 		for (Collection collection : collections) {
-			JFXListView<Node> subList = new JFXListView<Node>();
-			
-			subList.setGroupnode(createCollectionEntry(collection));
-			subList.setUserData(collection);
-			
-			//TODO: this does not work. JFXListView is not expanding sublists, bug?
-//			if (expansionCache.getOrDefault(collection.getName(), false)) {
-//				subList.setExpanded(true);
-//				subList.setVerticalGap(20.0);
-//				subList.setStyle("-jfx-expanded: true");
-//			}
-			
-			
-			List<Node> requestNodes = collection.getRequests().stream()
-				.map(r -> createRequestEntry(collection, r))
-				.collect(Collectors.toList());
-			
-			subList.setItems(FXCollections.observableList(requestNodes));
-			entries.add(subList);
+			entries.add(buildTree(collection));
 		}
+
 		
 		val filteredList = new FilteredList<>(FXCollections.observableList(entries, c -> 
-				((Collection)c.getUserData()).getRequests().stream()
+				((Collection)c.getValue().getUserData()).getRequests().stream()
 				.map(r -> r.onDirtyChange)
 				.collect(Collectors.toList())
 				.toArray(new Observable[]{}))
 		);
-		setFilterPredicate(filteredList, searchField.getText());
-		collectionContainer.setItems(filteredList);
+		SettableTreeItem<Node> root = new SettableTreeItem<Node>();
+		root.setChildren(filteredList);
+		Platform.runLater(() -> setFilterPredicate(filteredList, searchField.getText()));
+		collectionContainer.setRoot(root);
 		searchField.textProperty().addListener((obs) -> 
 			setFilterPredicate(filteredList, searchField.getText())
 		);
 		
 		collectionContainer.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
-			System.out.println(n);
+			if (n == null)
+				return;
+			Object userData = n.getValue().getUserData();
+			System.out.println("selected: " + userData);
+			if (userData instanceof Collection)
+				n.setExpanded(!n.isExpanded());
+			else if (userData instanceof RequestContainer) {
+				onCommand.invoke(new UiCommand.LoadRequest(((RequestContainer) userData).getId()));
+			}
 		});
 	}
+	
+	
+	public TreeItem<Node> buildTree(Collection collection){
+		TreeItem<Node> item = new TreeItem<Node>(createCollectionEntry(collection));
+		item.setExpanded(expansionCache.getOrDefault(collection.getName(), false));
+		item.getValue().setUserData(collection);
+		item.expandedProperty().addListener((obs, o, n) -> {
+			expansionCache.put(collection.getName(), n);
+		});
+		for (RequestContainer r : collection.getRequests()) {
+			TreeItem<Node> requestTreeItem = new TreeItem<Node>(createRequestEntry(collection, r));
+			requestTreeItem.getValue().setUserData(r);
+			item.getChildren().add(requestTreeItem);
+		}
+		return item;
+	}
+	
 
 	private HBox createCollectionEntry(Collection collection) {
 		HBox hBox = new HBox(new FontAwesomeIconView(FontAwesomeIcon.FOLDER_ALT, "1.5em"), new Label(collection.getName()));
@@ -98,13 +116,13 @@ public class RequestCollectionComponent {
 
 		hBox.setOnMouseClicked(e -> {
 			
-			//we have to find out in a hackish way if we gonna expand the cell here or collapse
-			//because jfxListView does not fire the respective listeners correctly
-			if (hBox.getParent().getParent().getParent() instanceof JFXListCell) {
-				JFXListCell cell  = (JFXListCell) hBox.getParent().getParent().getParent();
-				boolean oldExpandedState = cell.isExpanded();
-				expansionCache.put(collection.getName(), !oldExpandedState);
-			}
+//			//we have to find out in a hackish way if we gonna expand the cell here or collapse
+//			//because jfxListView does not fire the respective listeners correctly
+//			if (hBox.getParent().getParent().getParent() instanceof JFXListCell) {
+//				JFXListCell cell  = (JFXListCell) hBox.getParent().getParent().getParent();
+//				boolean oldExpandedState = cell.isExpanded();
+//				expansionCache.put(collection.getName(), !oldExpandedState);
+//			}
 			
 			if (e.getButton() == MouseButton.SECONDARY) {
 				ctxMenu.show(hBox, e.getScreenX(), e.getScreenY());
@@ -114,10 +132,10 @@ public class RequestCollectionComponent {
 		return hBox;
 	}
 
-	private void setFilterPredicate(FilteredList<JFXListView<Node>> filteredList,
+	private void setFilterPredicate(FilteredList<TreeItem<Node>> filteredList,
 			String searchTerm) {
 		if (searchTerm != null && searchTerm.length() > 0)
-			filteredList.setPredicate(o -> ((Collection)o.getUserData()).match(searchTerm));
+			filteredList.setPredicate(o -> ((Searchable)o.getValue().getUserData()).match(searchTerm));
 		else
 			filteredList.setPredicate(o -> true);
 	}
@@ -137,10 +155,13 @@ public class RequestCollectionComponent {
 		VBox vBox = new VBox(button);
 		vBox.getStyleClass().add("request-entry");
 		vBox.setOnMouseClicked(e -> {
-			if (e.getButton() == MouseButton.PRIMARY)
-				onCommand.invoke(new UiCommand.LoadRequest(request.getId()));
-			else if (e.getButton() == MouseButton.SECONDARY)
+//			if (e.getButton() == MouseButton.PRIMARY)
+//				onCommand.invoke(new UiCommand.LoadRequest(request.getId()));
+//			else
+			if (e.getButton() == MouseButton.SECONDARY) {
 				ctxMenu.show(vBox, e.getScreenX(), e.getScreenY());
+				e.consume();
+			}
 				
 		});
 		return vBox;
