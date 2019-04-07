@@ -112,7 +112,11 @@ public class RequestCollectionComponent {
 
 		MenuItem deleteEntry = new MenuItem("Delete");
 		deleteEntry.setOnAction(e -> onCommand.invoke(new UiCommand.DeleteCollection(collection)));
-		ContextMenu ctxMenu = new ContextMenu(deleteEntry);
+		
+		MenuItem renameEntry = new MenuItem("Rename");
+		renameEntry.setOnAction(e -> onCommand.invoke(new UiCommand.RenameCollection(collection)));
+		
+		ContextMenu ctxMenu = new ContextMenu(renameEntry, deleteEntry);
 
 		hBox.setOnMouseClicked(e -> {
 			

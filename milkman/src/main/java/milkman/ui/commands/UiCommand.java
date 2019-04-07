@@ -56,5 +56,8 @@ public interface UiCommand {
 	public static class DeleteCollection implements UiCommand {
 		Collection collection;
 	}
-	
+	@Value
+	public static class RenameCollection implements UiCommand {
+		Collection collection;
+	}
 }

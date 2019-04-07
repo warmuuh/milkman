@@ -52,7 +52,7 @@ public class RequestProcessor {
 
 		for (RequestAspect aspect : request.getAspects()) {
 			if (aspect instanceof RestRequestAspect) {
-				((RestRequestAspect) aspect).enrichRequest(builder);
+				((RestRequestAspect) aspect).enrichRequest(builder, templater);
 			}
 		}
 		

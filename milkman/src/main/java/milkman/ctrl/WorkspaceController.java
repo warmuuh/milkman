@@ -172,6 +172,8 @@ public class WorkspaceController {
 			deleteRequest(deleteRequest.getCollection(), deleteRequest.getRequest());
 		} else if (command instanceof UiCommand.DeleteCollection) {
 			deleteCollection(((UiCommand.DeleteCollection) command).getCollection());
+		} else if (command instanceof UiCommand.RenameCollection) {
+			renameCollection(((UiCommand.RenameCollection) command).getCollection());
 		} else {
 			throw new IllegalArgumentException("Unsupported command");
 		}
@@ -189,7 +191,17 @@ public class WorkspaceController {
 				openRequest.ifPresent(this::closeRequest);
 		}
 	}
-
+	
+	private void renameCollection(Collection collection) {
+		StringInputDialog dialog = new StringInputDialog();
+		dialog.showAndWait("Rename Collection", "New Collection name", collection.getName());
+		if (dialog.wasChanged() && !dialog.isCancelled()) {
+			collection.setName(dialog.getInput());
+		}
+		
+		loadCollections(activeWorkspace);
+		
+	}
 
 	private void deleteRequest(Collection collection, RequestContainer request) {
 		collection.getRequests().removeIf(r -> r.getId().equals(request.getId()));
