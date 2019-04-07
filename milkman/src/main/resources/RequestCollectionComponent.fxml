@@ -24,6 +24,7 @@
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTreeView?>
 
 
 <VBox xmlns:fx="http://javafx.com/fxml/1"
@@ -54,7 +55,7 @@
 <!-- 	<Label text="Request Collections" /> -->
 <!-- 	<ScrollPane> -->
 <!-- 		<content> -->
-			<JFXListView  VBox.vgrow="ALWAYS" prefWidth="200" fx:id="collectionContainer">
+			<JFXTreeView VBox.vgrow="ALWAYS" prefWidth="200" fx:id="collectionContainer">
 <!-- 				<panes> -->
 <!-- 					<TitledPane text="Request collection 1"> -->
 <!-- 						<content> -->
@@ -72,7 +73,7 @@
 <!-- 						</content> -->
 <!-- 					</TitledPane> -->
 <!-- 				</panes> -->
-			</JFXListView>
+			</JFXTreeView>
 <!-- 		</content> -->
 <!-- 	</ScrollPane> -->
 
