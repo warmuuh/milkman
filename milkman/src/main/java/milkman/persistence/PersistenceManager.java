@@ -1,5 +1,6 @@
 package milkman.persistence;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -8,8 +9,11 @@ import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 
 import org.dizitart.no2.Nitrite;
+import org.dizitart.no2.mapper.JacksonMapper;
 import org.dizitart.no2.objects.ObjectRepository;
 import org.dizitart.no2.objects.filters.ObjectFilters;
+
+import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
 
 import lombok.val;
 import milkman.domain.Workspace;
@@ -19,8 +23,9 @@ public class PersistenceManager {
 	
 	private Nitrite db;
 	private ObjectRepository<Workspace> workspaces;
+	private ObjectRepository<OptionEntry> options;
 
-
+	
 	public List<String> loadWorkspaceNames(){
 		List<String> result = new LinkedList<String>();
 		for(val workspace : workspaces.find())
@@ -54,6 +59,18 @@ public class PersistenceManager {
 			workspaces.update(workspace);
 	}
 	
+	public List<OptionEntry> loadOptions(){
+		List<OptionEntry> result = new LinkedList<OptionEntry>();
+		for(val option : options.find())
+			result.add(option);
+		return result;
+	}
+	
+	public void storeOptions(List<OptionEntry> optEntries) {
+		options.remove(ObjectFilters.ALL);
+		options.insert(optEntries.toArray(new OptionEntry[] {}));
+	}
+	
 	
 	@PostConstruct
 	public void init() {
@@ -63,6 +80,7 @@ public class PersistenceManager {
 		        .openOrCreate("milkman", "bringthemilk");
 
 		workspaces = db.getRepository(Workspace.class);
+		options = db.getRepository(OptionEntry.class);
 	}
 
 	public boolean deleteWorkspace(String workspaceName) {

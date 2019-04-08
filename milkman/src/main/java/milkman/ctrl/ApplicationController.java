@@ -1,9 +1,11 @@
 package milkman.ctrl;
 
+import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -15,6 +17,7 @@ import lombok.val;
 import milkman.domain.Environment;
 import milkman.domain.RequestContainer;
 import milkman.domain.Workspace;
+import milkman.persistence.OptionEntry;
 import milkman.persistence.PersistenceManager;
 import milkman.ui.commands.AppCommand;
 import milkman.ui.commands.AppCommand.RenameEnvironment;
@@ -24,6 +27,9 @@ import milkman.ui.main.ToolbarComponent;
 import milkman.ui.main.dialogs.ImportDialog;
 import milkman.ui.main.dialogs.ManageEnvironmentsDialog;
 import milkman.ui.main.dialogs.ManageWorkspacesDialog;
+import milkman.ui.main.dialogs.OptionsDialog;
+import milkman.ui.plugin.OptionPageProvider;
+import milkman.ui.plugin.OptionsObject;
 import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.UiPluginManager;
 
@@ -39,6 +45,7 @@ public class ApplicationController {
 	private final Toaster toaster;
 	
 	public void initApplication() {
+		loadOptions();
 		List<String> names = persistence.loadWorkspaceNames();
 		if (names.isEmpty()) {
 			createFreshWorkspace("New Workspace", true);
@@ -107,11 +114,43 @@ public class ApplicationController {
 			activateEnvironment(((AppCommand.ActivateEnvironment) command).getEnv());
 		} else if (command instanceof AppCommand.RequestImport) {
 			openImportDialog();
+		} else if (command instanceof AppCommand.ManageOptions) {
+			openOptionsDialog();
 		} else {
 			throw new IllegalArgumentException("Unsupported command: " + command);
 		}
 	}
 
+
+	private void openOptionsDialog() {
+		OptionsDialog dialog = new OptionsDialog();
+		List<OptionPageProvider<?>> optionProviders = plugins.loadOptionPages();
+		dialog.showAndWait(optionProviders);
+		
+		persistOptions(optionProviders);
+	}
+
+
+	private void persistOptions(List<OptionPageProvider<?>> optionProviders) {
+		List<OptionEntry> optEntries = optionProviders.stream()
+			.map(p -> new OptionEntry(0L, p.getClass().getName(), p.getOptions()))
+			.collect(Collectors.toList());
+		persistence.storeOptions(optEntries);
+	}
+
+	private void loadOptions() {
+		List<OptionPageProvider<?>> optionProviders = plugins.loadOptionPages();
+		persistence.loadOptions().forEach(e -> {
+			optionProviders.stream().filter(p -> p.getClass().getName().equals(e.getOptionProviderClass()))
+			.findAny().ifPresent(p -> {
+				((OptionPageProvider<OptionsObject>)p).setOptions(e.getOptionsObject());
+			});
+		});
+
+	}
+	
+	
+	
 
 	private void openImportDialog() {
 		ImportDialog dialog = new ImportDialog();

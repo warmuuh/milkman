@@ -44,4 +44,14 @@ public class UiPluginManager {
 
 		return result;
 	}
+	
+	public List<OptionPageProvider<?>> loadOptionPages(){
+		ServiceLoader<OptionPageProvider> loader = ServiceLoader.load(OptionPageProvider.class);
+
+		List<OptionPageProvider<?>> result = new LinkedList<OptionPageProvider<?>>();
+		loader.forEach(result::add);
+
+		return result;
+	}
+	
 }

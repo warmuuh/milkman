@@ -18,6 +18,7 @@ import org.reactfx.value.Var;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.scene.control.Label;
@@ -26,6 +27,8 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import lombok.val;
+import milkman.ui.main.options.CoreApplicationOptionsProvider;
+import milkman.ui.main.options.CoreApplicationOptionsProvider.CoreApplicationOptions;
 import milkman.ui.plugin.ContentTypePlugin;
 import milkman.utils.fxml.GenericBinding;
 
@@ -140,7 +143,6 @@ public class ContentEditor extends VBox {
 	}
 	
 	public void setContent(Supplier<String> getter, Consumer<String> setter) {		
-		
 //		if (contentBinding != null) {
 //			Bindings.unbindBidirectional(codeAreaTextBinding, contentBinding);
 //		}
@@ -153,6 +155,9 @@ public class ContentEditor extends VBox {
 			setter.accept(n);
 		});
 		
+		if (CoreApplicationOptionsProvider.options().isAutoformatContent()) {
+			Platform.runLater(this::formatCode);
+		}
 	}
 
 }

@@ -55,7 +55,7 @@ fx:controller="milkman.ui.main.ToolbarComponent">
 <!-- 			</items> -->
 		</ChoiceBox>
 	
-		<JFXButton>
+		<JFXButton onAction="#onOptions">
 			<graphic>
 				<FontAwesomeIconView glyphName="WRENCH" size="1.5em" styleClass="icon"></FontAwesomeIconView>
 			</graphic>

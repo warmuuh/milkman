@@ -38,6 +38,19 @@
 	-fx-fill: white;
 }
 
+/**
+ * options dialog
+ * 
+ */
+
+.options-page {
+	-fx-padding: 20
+}
+.options-page > .section-header {
+	-fx-text-fill: #2192F2;
+	-fx-font-size: 16;
+    -fx-font-weight: bold;
+}
 
 /**
 * working area

@@ -68,4 +68,9 @@ public interface AppCommand {
 	@Value
 	public static class RequestImport implements AppCommand {
 	}
+	
+
+	@Value
+	public static class ManageOptions implements AppCommand {
+	}
 }

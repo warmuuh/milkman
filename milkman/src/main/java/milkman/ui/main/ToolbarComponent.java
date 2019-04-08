@@ -133,6 +133,10 @@ public class ToolbarComponent implements Initializable {
 	@FXML public void onImport() {
 		onCommand.invoke(new AppCommand.RequestImport());
 	}
+
+	@FXML public void onOptions() {
+		onCommand.invoke(new AppCommand.ManageOptions());
+	}
 	
 	
 	
