@@ -31,7 +31,19 @@
 		<Label>Options</Label>
 	</heading>
 	<body>
-		<JFXTabPane prefHeight="400" tabMinWidth="40" tabMaxWidth="40"  tabMaxHeight="100" tabMinHeight="100" fx:id="tabs" side="LEFT" rotateGraphic="false"></JFXTabPane>
+		<TabPane 
+			prefHeight="400" 
+			prefWidth="400"
+			tabMinWidth="40" 
+			tabMaxWidth="40"  
+			tabMaxHeight="100" 
+			tabMinHeight="100" 
+			fx:id="tabs" 
+			styleClass="options-tabs"
+			side="LEFT" 
+			tabClosingPolicy="UNAVAILABLE"
+			rotateGraphic="false">
+		</TabPane>
 	</body>
 	<actions>
 		<JFXButton onAction="#onClose">Close</JFXButton>

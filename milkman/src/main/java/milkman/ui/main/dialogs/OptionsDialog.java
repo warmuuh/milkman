@@ -11,6 +11,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import milkman.domain.Workspace;
@@ -22,13 +23,13 @@ import milkman.ui.plugin.OptionPageProvider;
 import milkman.utils.fxml.FxmlUtil;
 
 public class OptionsDialog {
-	@FXML JFXTabPane tabs;
+	@FXML TabPane tabs;
 	private Dialog dialog;
 
 	
 	public void showAndWait(List<OptionPageProvider<?>> optionPageProviders) {
 		JFXDialogLayout content = FxmlUtil.loadAndInitialize("/dialogs/OptionsDialog.fxml", this);
-		
+		content.setPrefWidth(600);
 		
 		for(OptionPageProvider<?> p : optionPageProviders) {
 			OptionDialogPane pane = p.getOptionsDialog(new OptionDialogBuilder());
@@ -36,12 +37,16 @@ public class OptionsDialog {
 			Label label = new Label(pane.getName());
 			label.setRotate(90);
 			label.setMinWidth(100);
+			label.setMaxWidth(100);
+			label.setMinHeight(40);
+			label.setMaxHeight(40);
 			tab.setGraphic(label);
 			tabs.getTabs().add(tab);
 			
 		}
 
 		dialog = FxmlUtil.createDialog(content);
+		
 		dialog.showAndWait();
 	}
 	

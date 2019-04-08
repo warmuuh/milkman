@@ -46,10 +46,30 @@
 .options-page {
 	-fx-padding: 20
 }
+
+.options-tabs .tab-header-background {
+	-fx-background-color: white;
+}
+.options-tabs .tab {
+	-fx-border-width: 0 0 3 0;
+	-fx-background-color: white;
+	-fx-border-color: transparent;
+}
+.options-tabs .tab:selected {
+	-fx-border-width: 0 0 3 0;
+	-fx-border-color: #2192F2;
+}
 .options-page > .section-header {
 	-fx-text-fill: #2192F2;
 	-fx-font-size: 16;
     -fx-font-weight: bold;
+}
+.options-page .options-entry {
+	-fx-padding: 20
+}
+
+.options-page .options-entry > .label {
+	-fx-padding: 0 20 0 0
 }
 
 /**

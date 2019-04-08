@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXToggleButton;
 
 import io.vavr.Function1;
@@ -16,13 +17,14 @@ import milkman.utils.fxml.GenericBinding;
 public class OptionDialogBuilder  {
 
 	public interface OptionPaneBuilder<T> {
-		public OptionPaneBuilder<T> toggle(String name, Function1<T, Boolean> getter, BiConsumer<T, Boolean> setter);
-		public OptionSectionBuilder<T> endSection();
+		OptionPaneBuilder<T> toggle(String name, Function1<T, Boolean> getter, BiConsumer<T, Boolean> setter);
+		OptionPaneBuilder<T> textInput(String name, Function1<T, String> getter, BiConsumer<T, String> setter);
+		OptionSectionBuilder<T> endSection();
 	}
 	
 	public interface OptionSectionBuilder<T> {
-		public OptionPaneBuilder<T> section(String name);
-		public OptionDialogPane build();
+		OptionPaneBuilder<T> section(String name);
+		OptionDialogPane build();
 	}
 	
 	@RequiredArgsConstructor
@@ -50,10 +52,28 @@ public class OptionDialogBuilder  {
 			GenericBinding<T,Boolean> binding = GenericBinding.of(getter, setter, optionsObject);
 			bindings.add(binding);
 			button.selectedProperty().bindBidirectional(binding);
-			nodes.add(button);
+			HBox hbox = new HBox(button);
+			hbox.getStyleClass().add("options-entry");
+			nodes.add(hbox);
 			return this;
 		}
 
+		@Override
+		public OptionPaneBuilder<T> textInput(String name, Function1<T, String> getter, BiConsumer<T, String> setter) {
+
+			Label lbl = new Label(name);
+			JFXTextField text = new JFXTextField();
+			GenericBinding<T,String> binding = GenericBinding.of(getter, setter, optionsObject);
+			bindings.add(binding);
+			text.textProperty().bindBidirectional(binding);
+			HBox hbox = new HBox(lbl, text);
+			hbox.getStyleClass().add("options-entry");
+			nodes.add(hbox);
+			return this;
+		}
+
+		
+		
 		@Override
 		public OptionSectionBuilder<T> endSection() {
 			return this;

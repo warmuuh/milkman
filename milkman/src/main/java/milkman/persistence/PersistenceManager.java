@@ -68,6 +68,9 @@ public class PersistenceManager {
 	
 	public void storeOptions(List<OptionEntry> optEntries) {
 		options.remove(ObjectFilters.ALL);
+		//adjust IDs:
+		for(int i = 0; i < optEntries.size(); ++i)
+			optEntries.get(i).setId(i);
 		options.insert(optEntries.toArray(new OptionEntry[] {}));
 	}
 	
