@@ -59,7 +59,7 @@ public class JfxTableEditor<T> extends StackPane {
 		addItemBtn = new JFXButton();
 		addItemBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 		addItemBtn.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PLUS, "1.5em"));
-		addItemBtn.getStyleClass().add("tbl-add-entry");
+		addItemBtn.getStyleClass().add("btn-add-entry");
 		StackPane.setAlignment(addItemBtn, Pos.BOTTOM_RIGHT);
 		StackPane.setMargin(addItemBtn, new Insets(0, 20, 20, 0));
 		this.getChildren().add(addItemBtn);

@@ -22,6 +22,9 @@
 <?import javafx.scene.control.ButtonType?>
 <?import javafx.scene.control.ListView?>
 <?import com.jfoenix.controls.*?>
+<?import com.jfoenix.controls.JFXListView?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 
 <JFXDialogLayout xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="milkman.ui.main.dialogs.ManageWorkspacesDialog">
@@ -29,12 +32,20 @@
 			<Label>Workspaces</Label>
 		</heading>
 		<body>
-			<VBox>
-				<HBox alignment="CENTER_RIGHT">
-		<Button text="create new workspace" onAction="#onCreateWorkspace"></Button>
-	</HBox>
-	<ListView fx:id="workspaceList"></ListView>
-			</VBox>
+		<StackPane>
+			<JFXListView  verticalGap="10" minHeight="400"
+				fx:id="workspaceList">
+			</JFXListView>
+			<JFXButton 
+				StackPane.alignment="BOTTOM_RIGHT" 
+				onAction="#onCreateWorkspace" 
+				styleClass="btn-add-entry" >
+				<graphic>
+					<FontAwesomeIconView  glyphName="PLUS"
+						size="1.5em" />
+				</graphic>
+			</JFXButton>
+		</StackPane>
 		</body>
 		<actions>
 			<JFXButton onAction="#onClose" styleClass="dialog-accept">Close</JFXButton>

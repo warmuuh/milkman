@@ -228,11 +228,8 @@
  * components
  */
 
-
-/**
-* Table Editor
-*/
-.tbl-add-entry {
+/* plus button */
+.btn-add-entry {
     -fx-pref-width: 40px;
     -fx-background-color: #2192f2;
     -fx-background-radius: 40px;
@@ -244,6 +241,11 @@
     -jfx-button-type: RAISED;
     -fx-border-width: 0 50 50 0;
 }
+
+/**
+* Table Editor
+*/
+
 
 .jfx-tree-table-view .tree-table-cell {
     -fx-border-width: 0 0 0 0;

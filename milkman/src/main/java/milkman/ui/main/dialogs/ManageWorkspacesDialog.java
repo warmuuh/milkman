@@ -3,8 +3,12 @@ package milkman.ui.main.dialogs;
 import java.util.Collections;
 import java.util.List;
 
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialogLayout;
+import com.jfoenix.controls.JFXListCell;
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,6 +20,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import milkman.ui.commands.AppCommand;
@@ -32,7 +37,7 @@ public class ManageWorkspacesDialog {
 	public Event<AppCommand> onCommand = new Event<AppCommand>();
 
 	
-	public class WorkspaceCell extends ListCell<String> {
+	public class WorkspaceCell extends JFXListCell<String> {
 		@Override
 		protected void updateItem(String workspaceName, boolean empty) {
 			super.updateItem(workspaceName, empty);
@@ -47,15 +52,21 @@ public class ManageWorkspacesDialog {
 
 
 		private HBox createEntry(String workspaceName) {
-			Button renameButton = new Button("rename");
+			
+			JFXButton renameButton = new JFXButton();
+			renameButton.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PENCIL, "1.5em"));
 			renameButton.setOnAction(e -> triggerRenameDialog(workspaceName));
 			
-			Button deleteButton = new Button("x");
+			JFXButton deleteButton = new JFXButton();
+			deleteButton.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.TIMES, "1.5em"));
 			deleteButton.setOnAction(e -> {
 				onCommand.invoke(new AppCommand.DeleteWorkspace(workspaceName));
 				Platform.runLater(() -> workspaces.remove(workspaceName));
 			});
-			return new HBox(new Label(workspaceName), renameButton, deleteButton);
+			Label wsName = new Label(workspaceName);
+			HBox.setHgrow(wsName, Priority.ALWAYS);
+			
+			return new HBox(wsName, renameButton, deleteButton);
 		}
 
 

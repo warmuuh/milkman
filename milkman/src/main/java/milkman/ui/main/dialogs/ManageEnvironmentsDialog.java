@@ -4,9 +4,14 @@ import java.util.Collections;
 import java.util.List;
 
 import com.jfoenix.controls.JFXAlert;
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
+import com.jfoenix.controls.JFXListCell;
+import com.jfoenix.controls.JFXListView;
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,6 +23,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -29,7 +35,7 @@ import milkman.utils.fxml.NoSelectionModel;
 
 public class ManageEnvironmentsDialog {
 
-	@FXML ListView<Environment> environmentList;
+	@FXML JFXListView<Environment> environmentList;
 	private JFXAlert dialog;
 	private ObservableList<Environment> environments;
 
@@ -38,7 +44,7 @@ public class ManageEnvironmentsDialog {
 	private Environment globalEnv;
 
 	
-	public class EnvironmentCell extends ListCell<Environment> {
+	public class EnvironmentCell extends JFXListCell<Environment> {
 		@Override
 		protected void updateItem(Environment environment, boolean empty) {
 			super.updateItem(environment, empty);
@@ -53,18 +59,23 @@ public class ManageEnvironmentsDialog {
 
 
 		private HBox createEntry(Environment environment) {
-			Button renameButton = new Button("rename");
+			JFXButton renameButton = new JFXButton();
+			renameButton.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PENCIL, "1.5em"));
 			renameButton.setOnAction(e -> triggerRenameDialog(environment));
 			
-			Button editButton = new Button("edit");
+			JFXButton editButton = new JFXButton();
+			editButton.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.LIST, "1.5em"));
 			editButton.setOnAction(e -> triggerEditEnvDialog(environment));
 			
-			Button deleteButton = new Button("x");
+			JFXButton deleteButton = new JFXButton();
+			deleteButton.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.TIMES, "1.5em"));
 			deleteButton.setOnAction(e -> {
 				onCommand.invoke(new AppCommand.DeleteEnvironment(environment));
 				refresh();
 			});
-			return new HBox(new Label(environment.getName()), renameButton, editButton, deleteButton);
+			Label envName = new Label(environment.getName());
+			HBox.setHgrow(envName, Priority.ALWAYS);
+			return new HBox(envName, renameButton, editButton, deleteButton);
 		}
 
 
