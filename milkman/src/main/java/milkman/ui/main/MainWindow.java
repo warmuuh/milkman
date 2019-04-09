@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,7 @@ public class MainWindow {
 			primaryStage.setWidth(1000);
 			primaryStage.setHeight(800);
 
+			primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/icon.png")));
 			
 			CSSFX.start(primaryStage);
 			

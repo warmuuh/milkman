@@ -81,6 +81,8 @@ public class PostmanDumpImporter {
 
 		//TODO: this should happen automatically...
 		container.setId(UUID.randomUUID().toString());
+		container.setInStorage(true);
+		
 		
 		RestHeaderAspect headers = new RestHeaderAspect();
 		if (request.getHeaderData() != null)

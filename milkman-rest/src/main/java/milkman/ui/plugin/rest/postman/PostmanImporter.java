@@ -77,6 +77,7 @@ public class PostmanImporter {
 			
 			//TODO: this should happen automatically...
 			request.setId(UUID.randomUUID().toString());
+			request.setInStorage(true);
 			
 			//adding headers
 			RestHeaderAspect headers = new RestHeaderAspect();

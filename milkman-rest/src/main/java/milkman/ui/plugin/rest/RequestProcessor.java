@@ -1,11 +1,13 @@
 package milkman.ui.plugin.rest;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
@@ -105,7 +107,7 @@ public class RequestProcessor {
 	@SneakyThrows
 	private HttpUriRequest toHttpRequest(RestRequestContainer request, Templater templater) {
 		RequestBuilder builder = RequestBuilder.create(request.getHttpMethod());
-		builder.setUri(templater.replaceTags(request.getUrl()));
+		builder.setUri(escapeUrl(request, templater));
 		builder.setHeader("user-agent", "milkman");
 
 		for (RequestAspect aspect : request.getAspects()) {
@@ -117,6 +119,13 @@ public class RequestProcessor {
 		
 
 		return builder.build();
+	}
+
+	private String escapeUrl(RestRequestContainer request, Templater templater)
+			throws MalformedURLException, URISyntaxException {
+		URL url = new URL(templater.replaceTags(request.getUrl()));
+	    URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+	    return uri.toASCIIString();
 	}
 
 	private RestResponseContainer toResponseContainer(HttpResponse httpResponse) throws IOException {
