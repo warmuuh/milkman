@@ -48,8 +48,6 @@
 		</StackPane>
 	</body>
 	<actions>
-		<JFXButton onAction="#onEditGlobals"
-			styleClass="dialog-accept">Edit Globals</JFXButton>
 		<JFXButton onAction="#onClose" styleClass="dialog-accept">Close</JFXButton>
 	</actions>
 </JFXDialogLayout>

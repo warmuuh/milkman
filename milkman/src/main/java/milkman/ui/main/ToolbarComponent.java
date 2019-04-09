@@ -77,6 +77,9 @@ public class ToolbarComponent implements Initializable {
 
 		ChoiceboxEntryImpl activeEntry = null;
 		for(Environment env : environments) {
+			if (env.isGlobal())
+				continue;
+			
 			ChoiceboxEntryImpl newEntry;
 			if (env.isActive()) {
 				activeEntry = newEntry = new ChoiceboxEntryImpl(env.getName(), true, () -> {});

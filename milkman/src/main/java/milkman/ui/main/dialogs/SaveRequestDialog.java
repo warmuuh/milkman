@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 import com.jfoenix.controls.JFXDialogLayout;
+import com.jfoenix.controls.JFXTextField;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -28,8 +29,8 @@ import milkman.utils.fxml.FxmlUtil;
 public class SaveRequestDialog implements Initializable{
 
 	@FXML ListView<String> collectionList;
-	@FXML TextField requestName;
-	@FXML TextField collectionName;
+	@FXML JFXTextField requestName;
+	@FXML JFXTextField collectionName;
 	private Dialog dialog;
 
 	private RequestContainer request;
@@ -80,8 +81,10 @@ public class SaveRequestDialog implements Initializable{
 	}
 	
 	@FXML private void onSave() {
-		cancelled = false;
-		dialog.close();
+		if (requestName.validate() && collectionName.validate()) {
+			cancelled = false;
+			dialog.close();
+		}
 	}
 
 	@FXML private void onCancel() {

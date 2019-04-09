@@ -9,6 +9,7 @@ import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXListCell;
 import com.jfoenix.controls.JFXListView;
+import com.jfoenix.controls.JFXToggleNode;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
@@ -41,7 +42,6 @@ public class ManageEnvironmentsDialog {
 
 	public Event<AppCommand> onCommand = new Event<AppCommand>();
 	private List<Environment> originalList;
-	private Environment globalEnv;
 
 	
 	public class EnvironmentCell extends JFXListCell<Environment> {
@@ -67,15 +67,29 @@ public class ManageEnvironmentsDialog {
 			editButton.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.LIST, "1.5em"));
 			editButton.setOnAction(e -> triggerEditEnvDialog(environment));
 			
+			JFXToggleNode global = new JFXToggleNode(new FontAwesomeIconView(FontAwesomeIcon.GLOBE, "1.5em"));
+			global.setSelected(environment.isGlobal());
+			global.selectedProperty().addListener((obs, o, n) -> {
+				if (n != null) {
+					environment.setGlobal(n);
+					if (n)
+						environment.setActive(false);
+				}
+			});
+			
 			JFXButton deleteButton = new JFXButton();
 			deleteButton.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.TIMES, "1.5em"));
 			deleteButton.setOnAction(e -> {
 				onCommand.invoke(new AppCommand.DeleteEnvironment(environment));
 				refresh();
 			});
+			
+			
+			
+			
 			Label envName = new Label(environment.getName());
 			HBox.setHgrow(envName, Priority.ALWAYS);
-			return new HBox(envName, renameButton, editButton, deleteButton);
+			return new HBox(envName, renameButton, editButton, global, deleteButton);
 		}
 
 
@@ -96,9 +110,8 @@ public class ManageEnvironmentsDialog {
 		}
 	}
 	
-	public void showAndWait(List<Environment> envs, Environment globalEnv) {
+	public void showAndWait(List<Environment> envs) {
 		this.originalList = envs;
-		this.globalEnv = globalEnv;
 		JFXDialogLayout content = FxmlUtil.loadAndInitialize("/dialogs/ManageEnvironmentsDialog.fxml", this);
 		environments = FXCollections.observableList(envs);
 		environmentList.setItems(environments);
@@ -132,13 +145,6 @@ public class ManageEnvironmentsDialog {
 			Platform.runLater(() -> environmentList.setItems(environments)); 
 		}
 		
-	}
-
-
-
-	@FXML public void onEditGlobals() {
-		EditEnvironmentDialog envDialog = new EditEnvironmentDialog();
-		envDialog.showAndWait(globalEnv);
 	}
 
 }

@@ -22,6 +22,7 @@ public class Environment {
 	
 	String name;
 	boolean active;
+	boolean global;
 	List<EnvironmentEntry> entries = new LinkedList<Environment.EnvironmentEntry>();
 	
 	public Environment(String name) {

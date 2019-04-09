@@ -24,7 +24,20 @@ public class PersistenceManager {
 	private Nitrite db;
 	private ObjectRepository<Workspace> workspaces;
 	private ObjectRepository<OptionEntry> options;
+	private ObjectRepository<WorkbenchState> workbenchStates;
 
+	
+	public WorkbenchState loadWorkbenchState() {
+		WorkbenchState wb = workbenchStates.find().firstOrDefault();
+		if (wb == null) {
+			wb = new WorkbenchState();
+			workbenchStates.insert(wb);
+		}
+		return wb;
+	}
+	public void saveWorkbenchState(WorkbenchState state) {
+		workbenchStates.update(state);
+	}
 	
 	public List<String> loadWorkspaceNames(){
 		List<String> result = new LinkedList<String>();
@@ -84,6 +97,7 @@ public class PersistenceManager {
 
 		workspaces = db.getRepository(Workspace.class);
 		options = db.getRepository(OptionEntry.class);
+		workbenchStates = db.getRepository(WorkbenchState.class);
 	}
 
 	public boolean deleteWorkspace(String workspaceName) {

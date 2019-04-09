@@ -34,7 +34,6 @@ public class Workspace {
 	private List<RequestContainer> openRequests;
 	private RequestContainer activeRequest;
 	private List<Environment> environments = new LinkedList<Environment>();
-	private Environment globalEnvironment = new Environment();
 	
 	@JsonIgnore
 	private Map<RequestContainer, ResponseContainer> cachedResponses = new HashMap<RequestContainer, ResponseContainer>();

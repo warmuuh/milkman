@@ -19,6 +19,7 @@ import milkman.domain.RequestContainer;
 import milkman.domain.Workspace;
 import milkman.persistence.OptionEntry;
 import milkman.persistence.PersistenceManager;
+import milkman.persistence.WorkbenchState;
 import milkman.ui.commands.AppCommand;
 import milkman.ui.commands.AppCommand.RenameEnvironment;
 import milkman.ui.commands.AppCommand.RenameWorkspace;
@@ -46,12 +47,17 @@ public class ApplicationController {
 	
 	public void initApplication() {
 		loadOptions();
+		WorkbenchState state = persistence.loadWorkbenchState();
+		
 		List<String> names = persistence.loadWorkspaceNames();
 		if (names.isEmpty()) {
 			createFreshWorkspace("New Workspace", true);
 		}
 		else {
-			loadWorkspace(names.get(0));
+			if (names.contains(state.getLoadedWorkspace()))
+				loadWorkspace(state.getLoadedWorkspace());
+			else
+				loadWorkspace(names.get(0));
 		}
 	}
 
@@ -194,7 +200,8 @@ public class ApplicationController {
 	private void openEnvironmentManagementDialog() {
 		ManageEnvironmentsDialog dialog = new ManageEnvironmentsDialog();
 		dialog.onCommand.add(this::handleCommand);
-		dialog.showAndWait(workspaceController.getActiveWorkspace().getEnvironments(), workspaceController.getActiveWorkspace().getGlobalEnvironment());
+		dialog.showAndWait(workspaceController.getActiveWorkspace().getEnvironments());
+		toolbarComponent.initEnvironmentDropdown(workspaceController.getActiveWorkspace().getEnvironments());
 	}
 
 
@@ -252,6 +259,9 @@ public class ApplicationController {
 
 	public void persistState() {
 		persistWorkspace(workspaceController.getActiveWorkspace());
+		WorkbenchState state = persistence.loadWorkbenchState();
+		state.setLoadedWorkspace(workspaceController.getActiveWorkspace().getName());
+		persistence.saveWorkbenchState(state);
 	}
 	
 }

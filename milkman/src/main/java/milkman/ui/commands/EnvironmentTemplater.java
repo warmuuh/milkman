@@ -24,11 +24,12 @@ public class EnvironmentTemplater implements Templater{
 	
 	
 	
-	public EnvironmentTemplater(Optional<Environment> activeEnvironment, Environment globalEnvironment) {
+	public EnvironmentTemplater(Optional<Environment> activeEnvironment, List<Environment> globalEnvironments) {
 		super();
 		
 		List<EnvironmentEntry> envEntries = activeEnvironment.map(env -> new LinkedList<>(env.getEntries())).orElse(new LinkedList<>());
-		envEntries.addAll(globalEnvironment.getEntries());
+		globalEnvironments.forEach(ge -> envEntries.addAll(ge.getEntries()));
+		
 		
 		entries = envEntries.stream()
 			.filter(e -> e.isEnabled())

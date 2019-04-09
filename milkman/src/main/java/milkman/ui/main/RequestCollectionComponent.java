@@ -81,7 +81,6 @@ public class RequestCollectionComponent {
 			if (n == null)
 				return;
 			Object userData = n.getValue().getUserData();
-			System.out.println("selected: " + userData);
 			if (userData instanceof Collection)
 				n.setExpanded(!n.isExpanded());
 			else if (userData instanceof RequestContainer) {

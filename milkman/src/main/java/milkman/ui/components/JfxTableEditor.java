@@ -110,17 +110,13 @@ public class JfxTableEditor<T> extends StackPane {
 					return;
 				
 				if (c.wasRemoved()) {
-
-					System.out.println("removed");
 					items.remove(c.getFrom());
 				}
 				
 				if (c.wasAdded()) {
-					System.out.println("added");
 					RecursiveWrapper<T> newEntry = c.getAddedSubList().get(0);
 					items.add(newEntry.getData());
 				}
-				System.out.println(c);
 			}
 		});
 		

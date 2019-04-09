@@ -1,2 +1,3 @@
 milkman.ui.plugin.rest.postman.PostmanCollectionImporterPlugin
 milkman.ui.plugin.rest.postman.PostmanEnvironmentImporterPlugin
+milkman.ui.plugin.rest.postman.PostmanDumpImporterPlugin

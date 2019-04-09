@@ -25,11 +25,30 @@ import milkman.ui.plugin.rest.domain.RestRequestContainer;
 
 public class PostmanImporter {
 
+	
 	public Collection importCollection(String json) throws Exception {
 		PostmanCollection pmCollection = readJson(json, PostmanCollection.class);
 		return convertToDomain(pmCollection);
 	}
 
+
+	public Environment importEnvironment(String json) throws Exception {
+		PostmanEnvironment pmEnv = readJson(json, PostmanEnvironment.class);
+		return convertToDomain(pmEnv);
+	}
+
+
+
+
+	private Environment convertToDomain(PostmanEnvironment pmEnv) {
+		Environment resEnv = new Environment(pmEnv.name);
+		for (PostmanEnvValue envValue : pmEnv.values) {
+			resEnv.getEntries().add(new EnvironmentEntry(envValue.key, envValue.value, envValue.enabled));
+		}
+		return resEnv;
+	}
+	
+	
 	private <T> T readJson(String json, Class<T> type) throws IOException, JsonParseException, JsonMappingException {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
@@ -46,6 +65,8 @@ public class PostmanImporter {
 
 		return new Collection(pmCollection.info.name, requests);
 	}
+	
+	
 	private List<RequestContainer> convertToDomain(PostmanContainer pmItem) {
 		List<RequestContainer> result = new LinkedList<RequestContainer>();
 		
@@ -75,12 +96,4 @@ public class PostmanImporter {
 		return result;
 	}
 
-	public Environment importEnvironment(String json) throws Exception {
-		PostmanEnvironment pmEnv = readJson(json, PostmanEnvironment.class);
-		Environment resEnv = new Environment(pmEnv.name);
-		for (PostmanEnvValue envValue : pmEnv.values) {
-			resEnv.getEntries().add(new EnvironmentEntry(envValue.key, envValue.value, envValue.enabled));
-		}
-		return resEnv;
-	}
 }

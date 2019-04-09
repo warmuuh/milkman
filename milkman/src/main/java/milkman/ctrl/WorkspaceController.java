@@ -1,9 +1,11 @@
 package milkman.ctrl;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -58,7 +60,6 @@ public class WorkspaceController {
 		this.activeWorkspace = workspace;
 		loadCollections(workspace);
 		workingAreaView.display(workspace.getActiveRequest(), workspace.getOpenRequests());
-		
 	}
 
 
@@ -113,11 +114,10 @@ public class WorkspaceController {
 	
 	public void executeRequest(RequestContainer request) {
 		workingAreaView.showSpinner();
-		
-		
 		Optional<Environment> activeEnv = activeWorkspace.getEnvironments().stream().filter(e -> e.isActive()).findAny();
+		List<Environment> globalEnvs = activeWorkspace.getEnvironments().stream().filter(e -> e.isGlobal()).collect(Collectors.toList());
 		RequestTypePlugin plugin = plugins.loadRequestTypePlugins().get(0);
-		val executor = new RequestExecutor(request, plugin, new EnvironmentTemplater(activeEnv, activeWorkspace.getGlobalEnvironment()));
+		val executor = new RequestExecutor(request, plugin, new EnvironmentTemplater(activeEnv, globalEnvs));
 		
 		long startTime = System.currentTimeMillis();
 		executor.setOnScheduled(e -> activeWorkspace.getEnqueuedRequestIds().add(request.getId()));
