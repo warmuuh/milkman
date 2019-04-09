@@ -1,4 +1,4 @@
-# ![Milkman Logo](img/milk-bottle.png) Milkman - An extensible request/response workbench
+# ![Milkman Logo](img/milk-bottle.png) Milkman - An Extensible Request/Response Workbench
 
 Milkman is heavily inspired by Postman. But I got sick of all those electron-based applications that need ages and loads of memory to start up.
 Therefore i created a JavaFx-based workbench for crafting requests / responses. It is not limited to e.g. http (or more specificaly rest) requests. Due to nearly 
@@ -10,10 +10,13 @@ everything being a plugin, other things are possible, like database-requests or 
  * **Http Request Plugin: ** Several plugins are provided already that extend the core application to be a replacement for postman. Crafting and Executing Http/Rest requests with json highlighting. Proxy-server support.
  * **JavaFX Application: ** as in: `fast` (compared to electron at least :D)
  
+# Download
+
+Download latest version in [Release Section](https://github.com/warmuuh/milkman/releases).
 
 # Showcase
 
-// tbd
+![Milkman Logo](img/screenshot.png)
 
 # Plugins
 
