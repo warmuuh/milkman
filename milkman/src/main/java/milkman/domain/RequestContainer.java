@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @JsonTypeInfo(include = As.PROPERTY, use = Id.CLASS)
-
 public abstract class RequestContainer extends Dirtyable implements Searchable {
 	private String id = "";
 	private boolean inStorage = false;
@@ -47,6 +46,32 @@ public abstract class RequestContainer extends Dirtyable implements Searchable {
 		return StringUtils.containsIgnoreCase(name, searchString)
 				|| aspects.stream().anyMatch(a -> a.match(searchString));
 	}
+
+
+
+	public void setAspects(List<RequestAspect> aspects) {
+		this.aspects = aspects;
+		for (RequestAspect aspect : aspects) {
+			if (aspect.isDirty() && !this.isDirty())
+				setDirty(true);
+			aspect.propagateDirtyStateTo(this);
+		}
+	}
+
+
+
+	@Override
+	public void setDirty(boolean dirty) {
+		super.setDirty(dirty);
+		//propagate to children:
+		for (RequestAspect aspect : aspects) {
+			aspect.setDirty(false, false);
+		}
+	}
+	
+	
+	
+	
 	
 	
 	

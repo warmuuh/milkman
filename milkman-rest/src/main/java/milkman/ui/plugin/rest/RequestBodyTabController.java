@@ -1,5 +1,7 @@
 package milkman.ui.plugin.rest;
 
+import static milkman.utils.FunctionalUtils.run;
+
 import java.util.List;
 
 import javafx.fxml.FXMLLoader;
@@ -11,7 +13,6 @@ import milkman.ui.plugin.ContentTypeAwareEditor;
 import milkman.ui.plugin.ContentTypePlugin;
 import milkman.ui.plugin.RequestAspectEditor;
 import milkman.ui.plugin.rest.domain.RestBodyAspect;
-
 public class RequestBodyTabController implements RequestAspectEditor, ContentTypeAwareEditor {
 
 	private List<ContentTypePlugin> plugins;
@@ -23,7 +24,7 @@ public class RequestBodyTabController implements RequestAspectEditor, ContentTyp
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/components/ContentEditor.fxml"));
 		ContentEditor root = loader.load();
 		root.setEditable(true);
-		root.setContent(body::getBody, body::setBody);
+		root.setContent(body::getBody, run(body::setBody).andThen(() -> body.setDirty(true)));
 		if (plugins != null)
 			root.setContentTypePlugins(plugins);
 		

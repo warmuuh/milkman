@@ -14,8 +14,12 @@ public class Dirtyable {
 	public final PropertyChangeEvent<Boolean> onDirtyChange = new PropertyChangeEvent<>();
 	
 	public void setDirty(boolean dirty) {
+		setDirty(dirty, true);
+	}
+	public void setDirty(boolean dirty, boolean notification) {
 		if (dirty != this.dirty) {
-			onDirtyChange.invoke(this.dirty, dirty);
+			if (notification)
+				onDirtyChange.invoke(this.dirty, dirty);
 			this.dirty = dirty;
 		}
 	}

@@ -15,6 +15,7 @@ import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import io.vavr.Function1;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -30,12 +31,14 @@ import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.control.cell.CheckBoxTreeTableCell;
 import javafx.scene.layout.StackPane;
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import milkman.utils.fxml.GenericBinding;
 import com.jfoenix.controls.JFXButton;
 
 @Value
+@EqualsAndHashCode(callSuper = true)
 class RecursiveWrapper<T> extends RecursiveTreeObject<RecursiveWrapper<T>>{
 	T data;
 }
@@ -81,8 +84,12 @@ public class JfxTableEditor<T> extends StackPane {
 	}
 
 	public void addDeleteColumn(String name) {
+		addDeleteColumn(name, null);
+	}
+	
+	public void addDeleteColumn(String name, Runnable listener) {
 		TreeTableColumn<RecursiveWrapper<T>, String> column = new TreeTableColumn<>(name);
-		column.setCellFactory(c -> new DeleteEntryCell());
+		column.setCellFactory(c -> new DeleteEntryCell(listener));
 		table.getColumns().add(column);
 	}
 
@@ -103,10 +110,13 @@ public class JfxTableEditor<T> extends StackPane {
 					return;
 				
 				if (c.wasRemoved()) {
+
+					System.out.println("removed");
 					items.remove(c.getFrom());
 				}
 				
 				if (c.wasAdded()) {
+					System.out.println("added");
 					RecursiveWrapper<T> newEntry = c.getAddedSubList().get(0);
 					items.add(newEntry.getData());
 				}
@@ -117,7 +127,9 @@ public class JfxTableEditor<T> extends StackPane {
 		final TreeItem<RecursiveWrapper<T>> root = new RecursiveTreeItem<>(obsWrappedItems, RecursiveTreeObject::getChildren); 
 		table.setRoot(root);
 		
-		this.addItemBtn.setOnAction(e -> obsWrappedItems.add(new RecursiveWrapper(newItemCreator.get())));
+		this.addItemBtn.setOnAction(e -> { 
+					obsWrappedItems.add(new RecursiveWrapper<>(newItemCreator.get()));
+		});
 		//register double-click listener for empty rows, to add a new instance
 //		this.setRowFactory(view -> {
 //		    TableRow<T> row = new TableRow<T>();
@@ -146,8 +158,10 @@ public class JfxTableEditor<T> extends StackPane {
 
 	private final class DeleteEntryCell extends TreeTableCell<RecursiveWrapper<T>, String> {
 		final JFXButton btn;
-
-		public DeleteEntryCell() {
+		private Runnable listener;
+		
+		public DeleteEntryCell(Runnable listener) {
+			this.listener = listener;
 			btn = new JFXButton();
 			btn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 			btn.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.TIMES, "1.5em"));
@@ -161,9 +175,18 @@ public class JfxTableEditor<T> extends StackPane {
 		        setText(null);
 		    } else {
 		        btn.setOnAction(event -> {
-		        	obsWrappedItems.remove(getTreeTableRow().getIndex());
+
+					Platform.runLater( () -> {
+//						table.getRoot().getChildren().remove(getTreeTableRow().getIndex());
+						obsWrappedItems.remove(getTreeTableRow().getIndex());
+//						table.getRoot().getValue().setChildren(obsWrappedItems);
+//						table.setRoot(table.getRoot());
+//						table.refresh();
+					});
 //                        T element = getTreeTableView().getRoot().getChildren().get(getTreeTableRow().getIndex()).getValue();
 //                        getItems().remove(element);
+		        	if (listener != null)
+		        		listener.run();
 		        });
 		        setGraphic(btn);
 		        setText(null);
