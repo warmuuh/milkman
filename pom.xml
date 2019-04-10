@@ -12,6 +12,7 @@
 		<module>milkman</module>
 		<module>milkman-rest</module>
 		<module>milkman-dist</module>
+		<module>milkman-note</module>
 	</modules>
 
 	<properties>

@@ -29,7 +29,6 @@ public abstract class RequestContainer extends Dirtyable implements Searchable {
 	}
 	
 	
-	
 	public void addAspect(RequestAspect aspect) {
 		aspect.propagateDirtyStateTo(this);
 		aspects.add(aspect);
@@ -39,6 +38,9 @@ public abstract class RequestContainer extends Dirtyable implements Searchable {
 		return Collections.unmodifiableList(aspects);
 	}
 
+	public boolean hasAspect(Class<? extends RequestAspect> aspectType) {
+		return aspects.stream().anyMatch(aspectType::isInstance);
+	}
 
 
 	@Override

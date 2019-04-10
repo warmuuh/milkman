@@ -42,10 +42,10 @@ public class RestPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 
 	@Override
 	public void initializeAspects(RequestContainer request) {
-		if (!request.getAspects().stream().anyMatch(RestHeaderAspect.class::isInstance))
+		if (!request.hasAspect(RestHeaderAspect.class))
 			request.addAspect(new RestHeaderAspect());
 		
-		if (!request.getAspects().stream().anyMatch(RestBodyAspect.class::isInstance))
+		if (!request.hasAspect(RestBodyAspect.class))
 			request.addAspect(new RestBodyAspect());
 	}
 

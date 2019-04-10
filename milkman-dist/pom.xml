@@ -29,6 +29,11 @@
 			<artifactId>milkman-rest</artifactId>
 			<version>1.0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>com.github.warmuuh</groupId>
+			<artifactId>milkman-note</artifactId>
+			<version>1.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -44,8 +49,22 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
+							<finalName>${project.artifactId}</finalName>
 							<descriptors>
 								<descriptor>src/assembly/bin.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+					<execution>
+						<id>plugin-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<finalName>${project.artifactId}-plugins</finalName>
+							<descriptors>
+								<descriptor>src/assembly/plugins-bin.xml</descriptor>
 							</descriptors>
 						</configuration>
 					</execution>

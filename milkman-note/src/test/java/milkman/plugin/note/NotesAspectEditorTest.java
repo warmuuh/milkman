@@ -1,0 +1,46 @@
+package milkman.plugin.note;
+
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.testfx.assertions.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.testfx.api.FxRobot;
+import org.testfx.framework.junit5.ApplicationExtension;
+import org.testfx.framework.junit5.Start;
+
+import javafx.scene.Scene;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TextInputControl;
+import javafx.stage.Stage;
+
+@ExtendWith(ApplicationExtension.class)
+public class NotesAspectEditorTest {
+
+	private NotesAspect noteAspect;
+
+	@Start
+	public void setupStage(Stage stage) {
+		NotesAspectEditor sut = new NotesAspectEditor();
+		noteAspect = new NotesAspect();
+		noteAspect.setNote("first");
+		Tab root = sut.getRoot(noteAspect);
+		stage.setScene(new Scene(new TabPane(root)));
+		stage.show();
+	}
+	
+	
+	@Test
+	void testBindingsWorkingAfterGC(FxRobot robot) {
+		System.gc();
+		TextInputControl noteTextArea = robot.lookup(".text-area").queryTextInputControl();
+		assertThat(noteTextArea).hasText("first");
+		noteTextArea.setText("second");
+		
+		assertThat(noteAspect.getNote()).isEqualTo("second");
+		assertThat(noteAspect.isDirty()).isTrue();
+	}
+
+}

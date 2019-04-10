@@ -94,6 +94,10 @@ public class WorkspaceController {
 			activeWorkspace.getOpenRequests().add(request);
 		activeWorkspace.setActiveRequest(request);
 
+		
+		plugins.loadRequestAspectPlugins().forEach(p -> p.initializeAspects(request));
+
+		
 		workingAreaView.display(request, activeWorkspace.getOpenRequests());
 		
 		if (activeWorkspace.getCachedResponses().containsKey(request))

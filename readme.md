@@ -6,10 +6,17 @@ everything being a plugin, other things are possible, like database-requests or 
 
 # Features
 
- * **Everything is a plugin: ** Request-types (e.g. Http Request), request-aspects (e.g. Headers, Body, etc), editors for request aspects (e.g. table-based editors for headers), importers, whatever it is, you can extend it. The core application only handles Workspaces with Environments, Collections, Requests and their aspects.
- * **Http Request Plugin: ** Several plugins are provided already that extend the core application to be a replacement for postman. Crafting and Executing Http/Rest requests with json highlighting. Proxy-server support.
- * **JavaFX Application: ** as in: `fast` (compared to electron at least :D)
- 
+ * **Everything is a plugin:** Request-types (e.g. Http Request), request-aspects (e.g. Headers, Body, etc), editors for request aspects (e.g. table-based editors for headers), importers, whatever it is, you can extend it. The core application only handles Workspaces with Environments, Collections, Requests and their aspects.
+ * **Http Request Plugin:** Several plugins are provided already that extend the core application to be a replacement for postman. Crafting and Executing Http/Rest requests with json highlighting. Proxy-server support.
+ * **JavaFX Application:** as in: *fast* (compared to electron at least :D)
+
+
+### Http Request Plugin:
+The Http request plugin packaged with the release contains all means to do http request as well as import collections, environments or dumps from postman.
+To migrate from postman, just [export a dump-file from postman](https://learning.getpostman.com/docs/postman/collections/data_formats/#data-dumps) and import it by pasting its content into the `Postman (v2.1) Dump`-Importer. 
+
+The Http Request Plugin also comes with Proxy-support. Some proxies require credentials and support for supplying `BASIC` proxy credentials is built into the plugin. See Options-page to activate that as it is off by default.
+
 # Download
 
 Download latest version in [Release Section](https://github.com/warmuuh/milkman/releases).
@@ -22,7 +29,9 @@ Download latest version in [Release Section](https://github.com/warmuuh/milkman/
 
 No client fits all, so you are **encouraged** to write your own plugins to e.g. add headers that are necessary for your internal service structures or add importers for internal service registries.
 
-A sample plugin was provided (TBD) that extends all requests with a `Note` tab so you can add some description to any kind of requests. 
+A [sample plugin](https://github.com/warmuuh/milkman/tree/master/milkman-note) was provided that extends all requests with a `Note` tab so you can add some description to any kind of requests. 
+
+*Installation:* all plugins are to be copied to the `/plugins` folder
 
 # Roadmap
 This is only the beginning. Following features are already planned:

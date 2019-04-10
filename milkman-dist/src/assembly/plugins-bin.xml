@@ -1,0 +1,26 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+	<id>bin</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<baseDirectory>milkman-${project.version}</baseDirectory>
+	<!-- <includeBaseDirectory>false</includeBaseDirectory> -->
+	
+	<moduleSets>
+		
+		<moduleSet>
+			<useAllReactorProjects>true</useAllReactorProjects>
+			<includes>
+				<include>com.github.warmuuh:milkman-note</include>
+			</includes>
+			<binaries>
+				<unpack>false</unpack>
+				<outputFileNameMapping>${module.artifactId}.${module.extension}</outputFileNameMapping>
+				<outputDirectory>/plugins</outputDirectory>
+				<includeDependencies>false</includeDependencies>
+			</binaries>
+		</moduleSet>
+	</moduleSets>
+</assembly>
