@@ -1,5 +1,6 @@
 package milkman.persistence;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,12 +14,24 @@ import org.dizitart.no2.mapper.JacksonMapper;
 import org.dizitart.no2.objects.ObjectRepository;
 import org.dizitart.no2.objects.filters.ObjectFilters;
 
+import com.fasterxml.jackson.databind.DeserializationConfig;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
+import com.fasterxml.jackson.databind.deser.DeserializationProblemHandler;
+import com.fasterxml.jackson.databind.jsontype.TypeIdResolver;
+import com.fasterxml.jackson.databind.type.ReferenceType;
 
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
+import milkman.domain.RequestAspect.UnknownRequestAspect;
+import milkman.domain.RequestAspect;
 import milkman.domain.Workspace;
 
 @Singleton
+@Slf4j
 public class PersistenceManager {
 	
 	private Nitrite db;
@@ -90,9 +103,24 @@ public class PersistenceManager {
 	
 	@PostConstruct
 	public void init() {
+		JacksonMapper nitriteMapper = new JacksonMapper();
+		ObjectMapper mapper = nitriteMapper.getObjectMapper();
+		mapper.addHandler(new DeserializationProblemHandler() {
+			@Override
+			public JavaType handleUnknownTypeId(DeserializationContext ctxt, JavaType baseType, String subTypeId,
+					TypeIdResolver idResolver, String failureMsg) throws IOException {
+				if (baseType.hasRawClass(RequestAspect.class)) {
+					log.error("Unknown AspectType found: " + subTypeId + ". Purging...");
+					return ReferenceType.construct(UnknownRequestAspect.class);
+				}
+				return null;
+			}
+		});
+		
 		db = Nitrite.builder()
 		        .compressed()
 		        .filePath("database.db")
+		        .nitriteMapper(nitriteMapper)
 		        .openOrCreate("milkman", "bringthemilk");
 
 		workspaces = db.getRepository(Workspace.class);

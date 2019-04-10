@@ -6,12 +6,15 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.fasterxml.jackson.annotation.Nulls;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import milkman.domain.RequestAspect.UnknownRequestAspect;
 
 @Data
 @NoArgsConstructor
@@ -53,6 +56,7 @@ public abstract class RequestContainer extends Dirtyable implements Searchable {
 
 	public void setAspects(List<RequestAspect> aspects) {
 		this.aspects = aspects;
+		aspects.removeIf(a -> a instanceof UnknownRequestAspect);
 		for (RequestAspect aspect : aspects) {
 			if (aspect.isDirty() && !this.isDirty())
 				setDirty(true);

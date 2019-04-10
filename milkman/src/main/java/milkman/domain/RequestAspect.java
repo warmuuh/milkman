@@ -13,4 +13,7 @@ public abstract class RequestAspect extends Dirtyable implements Searchable {
 	}
 
 	
+	// used as deserialization target of unknown Aspects (e.g. removed plugins)
+	public static class UnknownRequestAspect extends RequestAspect{};
+	
 }
