@@ -15,6 +15,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextInputControl;
 import javafx.stage.Stage;
+import milkman.domain.RequestContainer;
 
 @ExtendWith(ApplicationExtension.class)
 public class NotesAspectEditorTest {
@@ -26,7 +27,9 @@ public class NotesAspectEditorTest {
 		NotesAspectEditor sut = new NotesAspectEditor();
 		noteAspect = new NotesAspect();
 		noteAspect.setNote("first");
-		Tab root = sut.getRoot(noteAspect);
+		RequestContainer request = new RequestContainer() {};
+		request.addAspect(noteAspect);
+		Tab root = sut.getRoot(request);
 		stage.setScene(new Scene(new TabPane(root)));
 		stage.show();
 	}

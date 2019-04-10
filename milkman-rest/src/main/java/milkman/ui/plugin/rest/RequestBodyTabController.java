@@ -8,6 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Tab;
 import lombok.SneakyThrows;
 import milkman.domain.RequestAspect;
+import milkman.domain.RequestContainer;
 import milkman.ui.components.ContentEditor;
 import milkman.ui.plugin.ContentTypeAwareEditor;
 import milkman.ui.plugin.ContentTypePlugin;
@@ -19,8 +20,8 @@ public class RequestBodyTabController implements RequestAspectEditor, ContentTyp
 
 	@Override
 	@SneakyThrows
-	public Tab getRoot(RequestAspect aspect) {
-		RestBodyAspect body = (RestBodyAspect) aspect;
+	public Tab getRoot(RequestContainer request) {
+		RestBodyAspect body = request.getAspect(RestBodyAspect.class).get();
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/components/ContentEditor.fxml"));
 		ContentEditor root = loader.load();
 		root.setEditable(true);
@@ -32,8 +33,8 @@ public class RequestBodyTabController implements RequestAspectEditor, ContentTyp
 	}
 
 	@Override
-	public boolean canHandleAspect(RequestAspect aspect) {
-		return aspect instanceof RestBodyAspect;
+	public boolean canHandleAspect(RequestContainer request) {
+		return request.getAspect(RestBodyAspect.class).isPresent();
 	}
 
 	@Override

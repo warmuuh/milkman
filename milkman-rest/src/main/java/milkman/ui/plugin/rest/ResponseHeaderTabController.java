@@ -4,6 +4,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Tab;
 import lombok.SneakyThrows;
+import milkman.domain.RequestContainer;
 import milkman.domain.ResponseAspect;
 import milkman.domain.ResponseContainer;
 import milkman.ui.components.JfxTableEditor;
@@ -17,8 +18,8 @@ public class ResponseHeaderTabController implements ResponseAspectEditor {
 
 	@Override
 	@SneakyThrows
-	public Tab getRoot(ResponseAspect aspect, ResponseContainer response) {
-		RestResponseHeaderAspect headers = (RestResponseHeaderAspect) aspect;
+	public Tab getRoot(RequestContainer request, ResponseContainer response) {
+		RestResponseHeaderAspect headers = response.getAspect(RestResponseHeaderAspect.class).get();
 		JfxTableEditor<HeaderEntry> editor = FxmlUtil.loadAndInitialize("/components/TableEditor.fxml");
 		editor.setEditable(false);
 		editor.addColumn("Name", HeaderEntry::getName, HeaderEntry::setName);
@@ -30,8 +31,8 @@ public class ResponseHeaderTabController implements ResponseAspectEditor {
 	}
 
 	@Override
-	public boolean canHandleAspect(ResponseAspect aspect) {
-		return aspect instanceof RestResponseHeaderAspect;
+	public boolean canHandleAspect(RequestContainer request, ResponseContainer response) {
+		return response.getAspect(RestResponseHeaderAspect.class).isPresent();
 	}
 
 }

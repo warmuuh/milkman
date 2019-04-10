@@ -28,7 +28,10 @@ public abstract class ResponseContainer {
 	private Map<String, String> statusInformations = new HashMap<String, String>();
 	
 	
-	public <T extends ResponseAspect> Optional<T> aspect(Class<T> type){
-		return aspects.stream().filter(a -> type.isInstance(a)).map(a -> (T)a).findAny();
+	public <T extends ResponseAspect> Optional<T> getAspect(Class<T> aspectType) {
+		return aspects.stream()
+				.filter(aspectType::isInstance)
+				.findAny()
+				.map(a -> (T)a);
 	}
 }

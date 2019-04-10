@@ -3,6 +3,7 @@ package milkman.domain;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -41,11 +42,13 @@ public abstract class RequestContainer extends Dirtyable implements Searchable {
 		return Collections.unmodifiableList(aspects);
 	}
 
-	public boolean hasAspect(Class<? extends RequestAspect> aspectType) {
-		return aspects.stream().anyMatch(aspectType::isInstance);
+	public <T extends RequestAspect> Optional<T> getAspect(Class<T> aspectType) {
+		return aspects.stream()
+				.filter(aspectType::isInstance)
+				.findAny()
+				.map(a -> (T)a);
 	}
-
-
+	
 	@Override
 	public boolean match(String searchString) {
 		return StringUtils.containsIgnoreCase(name, searchString)

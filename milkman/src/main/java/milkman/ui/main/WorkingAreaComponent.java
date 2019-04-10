@@ -98,7 +98,7 @@ public class WorkingAreaComponent implements Initializable {
 
 	public void displayResponseFor(RequestContainer request, ResponseContainer response) {
 		if (restRequestComponent.getCurrentRequest().getId().equals(request.getId()))
-			responseComponent.display(response);
+			responseComponent.display(request, response);
 	}
 	
 	@FXML public void onNewRequestClick() {

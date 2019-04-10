@@ -3,6 +3,7 @@ package milkman.ui.plugin.rest;
 import javafx.scene.control.Tab;
 import lombok.SneakyThrows;
 import milkman.domain.RequestAspect;
+import milkman.domain.RequestContainer;
 import milkman.ui.components.JfxTableEditor;
 import milkman.ui.plugin.RequestAspectEditor;
 import milkman.ui.plugin.rest.domain.HeaderEntry;
@@ -16,25 +17,25 @@ public class RequestHeaderTabController implements RequestAspectEditor {
 
 	@Override
 	@SneakyThrows
-	public Tab getRoot(RequestAspect aspect) {
-		RestHeaderAspect headers = (RestHeaderAspect) aspect;
+	public Tab getRoot(RequestContainer request) {
+		RestHeaderAspect headers = request.getAspect(RestHeaderAspect.class).get();
 		JfxTableEditor<HeaderEntry> editor = FxmlUtil.loadAndInitialize("/components/TableEditor.fxml");
 		editor.setEditable(true);
-		editor.addCheckboxColumn("Enabled", HeaderEntry::isEnabled, run(HeaderEntry::setEnabled).andThen(() -> aspect.setDirty(true)));
-		editor.addColumn("Name", HeaderEntry::getName, run(HeaderEntry::setName).andThen(() -> aspect.setDirty(true)));
-		editor.addColumn("Value", HeaderEntry::getValue,run(HeaderEntry::setValue).andThen(() -> aspect.setDirty(true)));
-		editor.addDeleteColumn("Delete", () -> aspect.setDirty(true));
+		editor.addCheckboxColumn("Enabled", HeaderEntry::isEnabled, run(HeaderEntry::setEnabled).andThen(() -> headers.setDirty(true)));
+		editor.addColumn("Name", HeaderEntry::getName, run(HeaderEntry::setName).andThen(() -> headers.setDirty(true)));
+		editor.addColumn("Value", HeaderEntry::getValue,run(HeaderEntry::setValue).andThen(() -> headers.setDirty(true)));
+		editor.addDeleteColumn("Delete", () -> headers.setDirty(true));
 		
 		editor.setItems(headers.getEntries(), () -> {
-			aspect.setDirty(true);
+			headers.setDirty(true);
 			return new HeaderEntry("", "", true);
 		});
 		return new Tab("Headers", editor);
 	}
 
 	@Override
-	public boolean canHandleAspect(RequestAspect aspect) {
-		return aspect instanceof RestHeaderAspect;
+	public boolean canHandleAspect(RequestContainer request) {
+		return request.getAspect(RestHeaderAspect.class).isPresent();
 	}
 
 }

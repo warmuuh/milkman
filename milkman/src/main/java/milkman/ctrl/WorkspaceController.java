@@ -59,7 +59,7 @@ public class WorkspaceController {
 	public void loadWorkspace(Workspace workspace) {
 		this.activeWorkspace = workspace;
 		loadCollections(workspace);
-		workingAreaView.display(workspace.getActiveRequest(), workspace.getOpenRequests());
+		displayRequest(workspace.getActiveRequest());
 	}
 
 
@@ -96,8 +96,6 @@ public class WorkspaceController {
 
 		
 		plugins.loadRequestAspectPlugins().forEach(p -> p.initializeAspects(request));
-
-		
 		workingAreaView.display(request, activeWorkspace.getOpenRequests());
 		
 		if (activeWorkspace.getCachedResponses().containsKey(request))

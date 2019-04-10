@@ -23,7 +23,7 @@ public class NotesAspectPlugin implements RequestAspectsPlugin {
 
 	@Override
 	public void initializeAspects(RequestContainer request) {
-		if (!request.hasAspect(NotesAspect.class))
+		if (!request.getAspect(NotesAspect.class).isPresent())
 			request.addAspect(new NotesAspect());
 	}
 

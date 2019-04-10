@@ -15,13 +15,13 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
-import milkman.domain.ResponseAspect;
+import javafx.scene.layout.HBox;
+import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 import milkman.ui.plugin.ContentTypeAwareEditor;
 import milkman.ui.plugin.RequestAspectsPlugin;
 import milkman.ui.plugin.ResponseAspectEditor;
 import milkman.ui.plugin.UiPluginManager;
-import javafx.scene.layout.HBox;
 
 @Singleton
 public class ResponseComponent implements Initializable {
@@ -41,23 +41,21 @@ public class ResponseComponent implements Initializable {
 	}
 
 
-	public void display(ResponseContainer response) {
+	public void display(RequestContainer request, ResponseContainer response) {
 		clear();
 		hideSpinner();
 
 		addStatusInformation(response.getStatusInformations());
 		
 		for (RequestAspectsPlugin plugin : plugins.loadRequestAspectPlugins()) {
-			for (ResponseAspect aspect : response.getAspects()) {
-				for (ResponseAspectEditor tabController : plugin.getResponseTabs()) {
-					if (tabController.canHandleAspect(aspect)) {
-						if (tabController instanceof ContentTypeAwareEditor) {
-							((ContentTypeAwareEditor) tabController).setContentTypePlugins(plugins.loadContentTypePlugins());
-						}
-						Tab aspectTab = tabController.getRoot(aspect, response);
-						aspectTab.setClosable(false);
-						tabs.getTabs().add(aspectTab);
+			for (ResponseAspectEditor tabController : plugin.getResponseTabs()) {
+				if (tabController.canHandleAspect(request, response)) {
+					if (tabController instanceof ContentTypeAwareEditor) {
+						((ContentTypeAwareEditor) tabController).setContentTypePlugins(plugins.loadContentTypePlugins());
 					}
+					Tab aspectTab = tabController.getRoot(request, response);
+					aspectTab.setClosable(false);
+					tabs.getTabs().add(aspectTab);
 				}
 			}
 		}

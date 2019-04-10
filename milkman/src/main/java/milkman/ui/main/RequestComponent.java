@@ -51,16 +51,14 @@ public class RequestComponent {
 		
 		tabs.getTabs().clear();
 		for (RequestAspectsPlugin plugin : plugins.loadRequestAspectPlugins()) {
-			for (RequestAspect aspect : request.getAspects()) {
-				for (RequestAspectEditor tabController : plugin.getRequestTabs()) {
-					if (tabController.canHandleAspect(aspect)) {
-						if (tabController instanceof ContentTypeAwareEditor) {
-							((ContentTypeAwareEditor) tabController).setContentTypePlugins(plugins.loadContentTypePlugins());
-						}
-						Tab aspectTab = tabController.getRoot(aspect);
-						aspectTab.setClosable(false);
-						tabs.getTabs().add(aspectTab);
+			for (RequestAspectEditor tabController : plugin.getRequestTabs()) {
+				if (tabController.canHandleAspect(request)) {
+					if (tabController instanceof ContentTypeAwareEditor) {
+						((ContentTypeAwareEditor) tabController).setContentTypePlugins(plugins.loadContentTypePlugins());
 					}
+					Tab aspectTab = tabController.getRoot(request);
+					aspectTab.setClosable(false);
+					tabs.getTabs().add(aspectTab);
 				}
 			}
 		}
