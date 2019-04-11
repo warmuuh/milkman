@@ -77,7 +77,7 @@ public class JsonContentType implements ContentTypePlugin {
                 = new StyleSpansBuilder<>();
         while (matcher.find()) {
             String styleClass
-                    = matcher.group("JSONPROPERTY") != null ? "property"
+                    = matcher.group("JSONPROPERTY") != null ? "keyword"
                     : matcher.group("JSONVALUE") != null ? "value"
                     : matcher.group("JSONARRAY") != null ? "array"
                     : matcher.group("JSONCURLY") != null ? "object"

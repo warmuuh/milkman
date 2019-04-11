@@ -2,6 +2,7 @@ package milkman.domain;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,5 +31,16 @@ public class Environment {
 		this.name = name;
 	}
 
+	
+	public void setOrAdd(String name, String value) {
+		Optional<EnvironmentEntry> maybeEntry = entries.stream().filter(e -> e.name.equals(name)).findAny();
+		if (maybeEntry.isPresent()) {
+			maybeEntry.get().setValue(value);
+		} else {
+			EnvironmentEntry entry = new EnvironmentEntry(name, value, true);
+			entries.add(entry);
+		}
+		
+	}
 	
 }

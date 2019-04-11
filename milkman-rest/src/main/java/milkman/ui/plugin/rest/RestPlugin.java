@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import milkman.domain.RequestContainer;
+import milkman.domain.RequestExecutionContext;
 import milkman.domain.ResponseContainer;
 import milkman.ui.plugin.RequestAspectEditor;
 import milkman.ui.plugin.RequestAspectsPlugin;
@@ -41,7 +42,7 @@ public class RestPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 	}
 
 	@Override
-	public void initializeAspects(RequestContainer request) {
+	public void initializeRequestAspects(RequestContainer request) {
 		if (request instanceof RestRequestContainer) {
 			if (!request.getAspect(RestHeaderAspect.class).isPresent())
 				request.addAspect(new RestHeaderAspect());
@@ -57,7 +58,7 @@ public class RestPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 	}
 
 	@Override
-	public void initializeAspects(ResponseContainer response) {
+	public void initializeResponseAspects(RequestContainer request, ResponseContainer response, RequestExecutionContext context) {
 		// we dont need to do anything here as we created the request (where we added everything already)
 	}
 

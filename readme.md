@@ -31,6 +31,8 @@ No client fits all, so you are **encouraged** to write your own plugins to e.g. 
 
 A [sample plugin](https://github.com/warmuuh/milkman/tree/master/milkman-note) was provided that extends all requests with a `Note` tab so you can add some description to any kind of requests. 
 
+More details about developing plugins can be found in the [plugin development guide](/docs/plugin-development.md).
+
 *Installation:* all plugins are to be copied to the `/plugins` folder
 
 # Roadmap

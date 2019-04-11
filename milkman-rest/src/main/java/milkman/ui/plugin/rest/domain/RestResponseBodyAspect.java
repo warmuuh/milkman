@@ -11,5 +11,10 @@ import milkman.domain.ResponseAspect;
 public class RestResponseBodyAspect implements ResponseAspect {
 
 	private String body;
+
+	@Override
+	public String getName() {
+		return "body";
+	}
 	
 }

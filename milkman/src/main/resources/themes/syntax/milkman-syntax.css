@@ -6,11 +6,6 @@
     -fx-fill: black !important;
 }
 
-.property {
-    -fx-fill: #2C3964 !important;
-    -fx-font-weight: bold;
-}
-
 
 .value {
     -fx-fill: #2192F2 !important;
@@ -30,3 +25,11 @@
     -fx-font-weight: bold;
 }
 
+.comment {
+	-fx-fill: grey !important;
+}
+
+.keyword {
+    -fx-fill: #2C3964 !important;
+    -fx-font-weight: bold;
+}

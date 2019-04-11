@@ -18,4 +18,16 @@ public class RestResponseHeaderAspect implements ResponseAspect {
 				.map(e -> HttpUtil.extractContentType(e.getValue()))
 				.findAny().orElse("text/plain");
 	}
+	
+	public String get(String headerName) {
+		return entries.stream()
+				.filter(e -> e.getName().equalsIgnoreCase(headerName))
+				.map(e -> e.getValue())
+				.findAny().orElse("");
+	}
+
+	@Override
+	public String getName() {
+		return "headers";
+	}
 }

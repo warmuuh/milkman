@@ -14,6 +14,7 @@
 			<useAllReactorProjects>true</useAllReactorProjects>
 			<includes>
 				<include>com.github.warmuuh:milkman-note</include>
+				<include>com.github.warmuuh:milkman-scripting</include>
 			</includes>
 			<binaries>
 				<unpack>false</unpack>

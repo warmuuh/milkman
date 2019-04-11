@@ -75,7 +75,7 @@ public class ApplicationController {
 	private Workspace createFreshWorkspace(String name, boolean loadWorkspace) {
 		RequestTypePlugin requestTypePlugin = plugins.loadRequestTypePlugins().get(0);
 		RequestContainer newRequest = requestTypePlugin.createNewRequest();
-		plugins.loadRequestAspectPlugins().forEach(p -> p.initializeAspects(newRequest));
+		plugins.loadRequestAspectPlugins().forEach(p -> p.initializeRequestAspects(newRequest));
 		Workspace workspace = new Workspace(0L, 
 				UUID.randomUUID().toString(),
 				name, 

@@ -48,6 +48,8 @@ public class ContentEditor extends VBox {
 	private JFXComboBox<ContentTypePlugin> highlighters;
 
 	JFXButton format;
+
+	private HBox header;
 	
 	
 	
@@ -72,7 +74,7 @@ public class ContentEditor extends VBox {
 		
 		format.setOnAction(e -> formatCode());
 		
-		HBox header = new HBox(new Label("Content Type:"), highlighters, format);
+		header = new HBox(new Label("Content Type:"), highlighters, format);
 		header.getStyleClass().add("contentEditor-header");
 		
 		getChildren().add(header);
@@ -94,6 +96,15 @@ public class ContentEditor extends VBox {
 		getChildren().add(codeArea);
 	}
 
+	
+	public void setHeaderVisibility(boolean isVisible) {
+		if (isVisible && !getChildren().contains(header)) {
+			getChildren().add(header);
+		} else {
+			getChildren().remove(header);
+		}
+	}
+	
 	private void highlightCode() {
 		codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText()));
 	}

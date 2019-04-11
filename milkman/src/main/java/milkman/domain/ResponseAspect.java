@@ -7,4 +7,5 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 @JsonTypeInfo(include = As.PROPERTY, use = Id.CLASS)
 public interface ResponseAspect {
 
+	String getName();
 }

@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import milkman.domain.Collection;
 import milkman.domain.Environment;
 import milkman.domain.RequestContainer;
+import milkman.domain.RequestExecutionContext;
 import milkman.domain.ResponseContainer;
 import milkman.domain.Workspace;
 import milkman.ui.commands.AppCommand;
@@ -95,7 +96,7 @@ public class WorkspaceController {
 		activeWorkspace.setActiveRequest(request);
 
 		
-		plugins.loadRequestAspectPlugins().forEach(p -> p.initializeAspects(request));
+		plugins.loadRequestAspectPlugins().forEach(p -> p.initializeRequestAspects(request));
 		workingAreaView.display(request, activeWorkspace.getOpenRequests());
 		
 		if (activeWorkspace.getCachedResponses().containsKey(request))
@@ -110,7 +111,7 @@ public class WorkspaceController {
 		RequestTypePlugin requestTypePlugin = plugins.loadRequestTypePlugins().get(0);
 		RequestContainer request = requestTypePlugin.createNewRequest();
 		request.setId(UUID.randomUUID().toString());
-		plugins.loadRequestAspectPlugins().forEach(p -> p.initializeAspects(request));
+		plugins.loadRequestAspectPlugins().forEach(p -> p.initializeRequestAspects(request));
 		displayRequest(request);
 	}
 	
@@ -120,6 +121,8 @@ public class WorkspaceController {
 		List<Environment> globalEnvs = activeWorkspace.getEnvironments().stream().filter(e -> e.isGlobal()).collect(Collectors.toList());
 		RequestTypePlugin plugin = plugins.loadRequestTypePlugins().get(0);
 		val executor = new RequestExecutor(request, plugin, new EnvironmentTemplater(activeEnv, globalEnvs));
+		
+		RequestExecutionContext context = new RequestExecutionContext(activeEnv);
 		
 		long startTime = System.currentTimeMillis();
 		executor.setOnScheduled(e -> activeWorkspace.getEnqueuedRequestIds().add(request.getId()));
@@ -133,7 +136,7 @@ public class WorkspaceController {
 			ResponseContainer response = executor.getValue();
 			addResponseTimeInfo(response, System.currentTimeMillis() - startTime);
 			activeWorkspace.getEnqueuedRequestIds().remove(request.getId());
-			plugins.loadRequestAspectPlugins().forEach(a -> a.initializeAspects(response));
+			plugins.loadRequestAspectPlugins().forEach(a -> a.initializeResponseAspects(request, response, context));
 			activeWorkspace.getCachedResponses().put(request, response);
 			log.info("Received response");
 			workingAreaView.displayResponseFor(request, response);	
