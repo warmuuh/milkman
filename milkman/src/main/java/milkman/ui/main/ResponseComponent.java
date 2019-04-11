@@ -42,6 +42,7 @@ public class ResponseComponent implements Initializable {
 
 
 	public void display(RequestContainer request, ResponseContainer response) {
+		int oldSelection = tabs.getSelectionModel().getSelectedIndex();
 		clear();
 		hideSpinner();
 
@@ -59,6 +60,7 @@ public class ResponseComponent implements Initializable {
 				}
 			}
 		}
+		tabs.getSelectionModel().select(oldSelection);
 	}
 
 

@@ -48,6 +48,7 @@ public class RequestComponent {
 		RequestTypeEditor mainEditController = requestTypePlugin.getRequestEditor();
 		mainEditingArea.getChildren().add(mainEditController.getRoot());
 		mainEditController.displayRequest(request);
+		int oldSelection = tabs.getSelectionModel().getSelectedIndex();
 		
 		tabs.getTabs().clear();
 		for (RequestAspectsPlugin plugin : plugins.loadRequestAspectPlugins()) {
@@ -62,6 +63,7 @@ public class RequestComponent {
 				}
 			}
 		}
+		tabs.getSelectionModel().select(oldSelection);
 	}
 
 	@FXML public void onSubmit() {
