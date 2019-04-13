@@ -71,6 +71,7 @@ public class JfxTableEditor<T> extends StackPane {
 		TreeTableColumn<RecursiveWrapper<T>, String> column = new TreeTableColumn<>(name);
 		column.setCellFactory((TreeTableColumn<RecursiveWrapper<T>, String> param) -> new GenericEditableTreeTableCell<RecursiveWrapper<T>, String>(new TextFieldEditorBuilder()));
 		column.setCellValueFactory(param -> GenericBinding.of(getter, setter, param.getValue().getValue().getData()));
+		column.setMaxWidth(400);
 		table.getColumns().add(column);
 	}
 

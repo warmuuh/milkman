@@ -7,28 +7,30 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.reactfx.Subscription;
-import org.reactfx.value.Val;
-import org.reactfx.value.Var;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.StringBinding;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import lombok.val;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
-import milkman.ui.main.options.CoreApplicationOptionsProvider.CoreApplicationOptions;
 import milkman.ui.plugin.ContentTypePlugin;
 import milkman.utils.fxml.GenericBinding;
 
@@ -51,11 +53,90 @@ public class ContentEditor extends VBox {
 
 	private HBox header;
 	
+	private TextField searchField;
 	
 	
 	public ContentEditor() {
 		getStyleClass().add("contentEditor");
 		
+		setupHeader();
+		setupCodeArea();
+		setupSearch();
+		
+		StackPane.setAlignment(searchField, Pos.TOP_RIGHT);
+		StackPane contentPane = new StackPane(new VirtualizedScrollPane(codeArea), searchField);
+		VBox.setVgrow(contentPane, Priority.ALWAYS);
+		
+		getChildren().add(contentPane);
+	}
+
+
+	private void setupCodeArea() {
+		codeArea = new CodeArea();
+		
+		
+		codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
+		Subscription cleanupWhenNoLongerNeedIt = codeArea
+				 .multiPlainChanges()
+				 .successionEnds(Duration.ofMillis(500))
+				 .subscribe(ignore -> highlightCode());
+		
+		
+		val keyCombination = new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN);
+		codeArea.setOnKeyPressed(e -> {
+			if (keyCombination.match(e)) {
+				focusSearch();
+			}
+		});
+	}
+
+
+	private void setupSearch() {
+		searchField = new TextField();
+		searchField.focusedProperty().addListener((obs, o, n) -> {
+			if (n != null && n == false) {
+				hideSearch();
+			}
+		});
+		searchField.setOnKeyReleased(e -> {
+			if (e.getCode() == KeyCode.ESCAPE) {
+				hideSearch();
+			}
+		});
+		
+		searchField.setVisible(false);
+		searchField.setPromptText("Search");
+		searchField.setMaxWidth(200);
+		searchField.setOnAction(e -> {
+			if (searchField.getText().length() > 0) {
+				int sIdx = codeArea.getText().indexOf(searchField.getText(), codeArea.getCaretPosition());
+				if (sIdx < 0) {
+					//wrap search:
+					sIdx = codeArea.getText().substring(0, codeArea.getCaretPosition()).indexOf(searchField.getText());
+				}
+				if (sIdx >= 0) {
+					codeArea.selectRange(sIdx, sIdx + searchField.getText().length());
+					codeArea.requestFollowCaret();
+				}
+				
+			}
+		});
+	}
+
+
+	private void hideSearch() {
+		searchField.setVisible(false);
+		codeArea.requestFocus();
+	}
+
+
+	private void focusSearch() {
+		searchField.setVisible(true);
+		searchField.requestFocus();
+	}
+
+
+	private void setupHeader() {
 		highlighters = new JFXComboBox<ContentTypePlugin>();
 		highlighters.setConverter(new StringConverter<ContentTypePlugin>() {
 			@Override
@@ -68,6 +149,12 @@ public class ContentEditor extends VBox {
 			}
 		});
 		
+		highlighters.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
+			highlightCode();
+			if (n != null)
+				format.setVisible( n.supportFormatting());
+		});
+		
 		
 		format = new JFXButton("Format");
 		format.setVisible(false);
@@ -78,22 +165,6 @@ public class ContentEditor extends VBox {
 		header.getStyleClass().add("contentEditor-header");
 		
 		getChildren().add(header);
-		codeArea = new CodeArea();
-		
-		highlighters.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
-			highlightCode();
-			if (n != null)
-				format.setVisible( n.supportFormatting());
-		});
-		
-		codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
-		Subscription cleanupWhenNoLongerNeedIt = codeArea
-				 .multiPlainChanges()
-				 .successionEnds(Duration.ofMillis(500))
-				 .subscribe(ignore -> highlightCode());
-		
-		VBox.setVgrow(codeArea, Priority.ALWAYS);
-		getChildren().add(codeArea);
 	}
 
 	

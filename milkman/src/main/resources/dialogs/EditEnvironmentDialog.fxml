@@ -31,7 +31,7 @@
 			<Label>Edit Environment</Label>
 		</heading>
 		<body>
-			<JfxTableEditor fx:id="editor"></JfxTableEditor>
+			<JfxTableEditor fx:id="editor" minWidth="800" minHeight="500"></JfxTableEditor>
 		</body>
 		<actions>
 			<JFXButton onAction="#onClose" styleClass="dialog-accept">Close</JFXButton>
