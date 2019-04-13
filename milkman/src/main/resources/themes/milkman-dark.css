@@ -1,0 +1,551 @@
+.root { 
+	-fx-focus-color: transparent; 
+	-fx-faint-focus-color: transparent;
+}
+
+/**
+ * jfoenix overwrites
+ */
+ 
+ 
+.input-line {
+    -fx-background-color: #e5e5e5;
+}
+
+.text-area .content  {
+	-fx-background-color: #4c4b4b;
+	-fx-text-fill: #e5e5e5;
+}
+.text-area {
+	-fx-text-fill: #e5e5e5;
+}
+
+/**
+ * toolbar
+ */
+
+#toolbar {
+	-fx-background-color: #2192F2;
+}
+
+#toolbar .label {
+	-fx-text-fill: white;
+}
+
+
+#toolbar .label {
+	-fx-text-fill: white;
+}
+
+#toolbar .choice-box {
+	-fx-background-color: #2C3964;
+	
+}
+#toolbar .choice-box .context-menu { 
+	-fx-background-color: #2C3964;
+}
+#toolbar .jfx-button  { 
+	-fx-text-fill: white;
+	-fx-background-color: #2C3964;
+	-fx-translate-y: 1;
+}
+
+#toolbar .jfx-button .icon { 
+	-fx-fill: white;
+}
+
+/**
+ * options dialog
+ * 
+ */
+
+.options-page {
+	-fx-padding: 20
+}
+
+.options-tabs .tab-header-background {
+	-fx-background-color: #4c4b4b;
+}
+.options-tabs .tab {
+	-fx-border-width: 0 0 3 0;
+	-fx-background-color: #4c4b4b;
+	-fx-border-color: transparent;
+}
+.options-tabs .tab:selected {
+	-fx-border-width: 0 0 3 0;
+	-fx-border-color: #2192F2;
+}
+.options-page > .section-header {
+	-fx-text-fill: #2192F2;
+	-fx-font-size: 16;
+    -fx-font-weight: bold;
+}
+.options-page .options-entry {
+	-fx-padding: 20
+}
+
+.options-page .options-entry > .label {
+	-fx-padding: 0 20 0 0
+}
+
+/**
+* working area
+*/
+
+
+
+
+/**
+* working area > request tab bar
+*/
+
+#openRequestArea {
+	-fx-background-color: #4c4b4b;
+}
+
+
+#openRequestArea .jfx-button {
+	-fx-padding: 7;
+}
+
+.jfx-tab-pane .tab-header-background {
+	-fx-background-color: #4c4b4b;
+}
+
+.jfx-tab-pane .tab-header-area .tab-down-button {
+	-fx-background-color: white;
+}
+
+.jfx-tab-pane .tab-label {
+    -fx-text-fill: #e5e5e5;
+    -fx-font-weight: normal;
+    -fx-padding: 6 10 6 10;
+    -fx-font-size: 14;
+}
+
+.jfx-tab-pane .tab-header-area .jfx-rippler{
+    -jfx-rippler-fill: #e5e5e5;
+}
+
+.jfx-tab-pane .headers-region .tab-selected-line {
+    -fx-background-color: #2192f2;
+}
+.mm-request-dirty .tab-container > .tab-label   {
+	 -fx-font-weight: bold;
+}
+.mm-request-dirty .tab-container .context-menu  {
+	 -fx-font-weight: normal;
+}
+
+
+/**
+* working area > generalRequestEdit
+*/
+
+#generalRequestEdit {
+	-fx-padding: 20;
+	-fx-background-color: #4c4b4b;
+	
+}
+
+
+#generalRequestEdit .text-field {
+	-fx-text-fill: #e5e5e5;
+}
+#generalRequestEdit .jfx-combo-box > * {
+	-fx-text-fill: #e5e5e5;
+}
+
+#generalRequestEdit #submitBtn {
+	-fx-background-color: #2192f2;
+    -fx-text-fill: white;
+}
+
+#generalRequestEdit  .split-menu-button > .label,
+#generalRequestEdit  .split-menu-button > .label:armed,
+#generalRequestEdit  .split-menu-button > .label:hover,
+#generalRequestEdit  .split-menu-button > .label:focus {
+	-fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
+	
+	-fx-background-radius: 3px 0px 0px 3px;
+	-fx-background-insets: 0px;
+	-fx-background-color: #2C3964; 
+	-fx-text-fill: white;
+}
+#generalRequestEdit  .split-menu-button .arrow-button,
+#generalRequestEdit  .split-menu-button .arrow-button:armed,
+#generalRequestEdit  .split-menu-button .arrow-button:hover,
+#generalRequestEdit  .split-menu-button .arrow-button:focus {
+	-fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
+	-fx-text-fill: white;
+	-fx-inner-border: TRANSPARENT;
+	-fx-background-radius: 0px 3px 3px 0px;
+	-fx-background-insets: 0px;
+	-fx-background-color: #2C3964; 
+}
+
+/**
+* working area > response area
+*/
+
+#statusDisplay {
+	-fx-translate-y:5
+}
+#statusDisplay {
+	-fx-spacing: 10;
+}
+#statusDisplay .emphasized {
+	-fx-font-weight: bold;
+}
+
+.responseArea {
+	-fx-border-color: #e5e5e5;
+	-fx-border-width: 1 0 0 0;
+	-fx-background-color: #4c4b4b;
+}
+.responseArea .glyph-icon {
+	-fx-fill: #e5e5e5;
+}
+/**
+ * request collection area
+ */
+
+/**
+ * request collection area > search area
+ */
+ 
+#searchArea {
+	-fx-padding: 10;
+	-fx-background-color: #4c4b4b;
+}
+
+#searchAreaField {
+	-fx-padding: 2 10 2 10;
+	-fx-background-color: lightgrey;
+ 	-fx-background-radius: 40px;
+}
+
+
+#searchAreaField .jfx-text-field{
+	-fx-padding: 4 10 4 10;
+}
+#searchAreaField .label .icon {
+	-fx-translate-y: 3;
+}
+ 
+.split-pane *.split-pane-divider {
+    -fx-padding: 0 1 0 1;
+}
+
+/**
+ * request collcetion area > entries
+ */
+#collectionContainer {
+	-fx-background-color: #4c4b4b;
+}
+ 
+#collectionContainer .tree-cell {
+ 	-fx-background-color: #4c4b4b;
+}
+
+#collectionContainer .tree-cell .glyph-icon,
+#collectionContainer .tree-cell .label
+{
+ 	-fx-text-fill: #e5e5e5;
+ 	-fx-fill: #e5e5e5;
+}
+
+#collectionContainer .tree-cell .arrow{
+	-fx-background-color: #e5e5e5;
+}
+
+
+/*
+.jfx-list-cell .sub-list  {
+	-fx-background-insets: 0.0 !important;
+	-fx-padding: 0;
+}
+.jfx-list-cell > .request-entry {
+	-fx-scale-x: 1.8;
+	-fx-scale-y: 1.8;
+	-fx-padding: 0 50 0 50;
+	-fx-font-size: 10;
+	
+} 
+*/
+
+
+#statusDisplay .label {
+	-fx-text-fill: #e5e5e5
+}
+
+/**
+ * components
+ */
+
+/* plus button */
+.btn-add-entry {
+    -fx-pref-width: 40px;
+    -fx-background-color: #2192f2;
+    -fx-background-radius: 40px;
+    -fx-pref-height: 40px;
+    -fx-min-width: -fx-pref-width;
+    -fx-max-width: -fx-pref-width;
+    -fx-min-height: -fx-pref-height;
+    -fx-max-height: -fx-pref-height;
+    -jfx-button-type: RAISED;
+    -fx-border-width: 0 50 50 0;
+}
+.btn-add-entry .glyph-icon {
+    -fx-fill: #e5e5e5;
+}
+/**
+* Table Editor
+*/
+.jfx-tree-table-view {
+	-fx-background-color: #4c4b4b
+}
+.jfx-tree-table-view .column-header .label {
+	-fx-text-fill: #e5e5e5
+}
+.jfx-tree-table-view .column-header {
+    -fx-border-width: 0 1 0 1;
+    -fx-border-color: #e5e5e5;
+}
+
+
+.jfx-tree-table-view .tree-table-cell {
+    -fx-border-width: 0 0 0 0;
+    -fx-pref-height: 32px;
+    -fx-alignment: center-left;
+}
+
+.jfx-tree-table-view > .virtual-flow > .clipped-container > .sheet > .tree-table-row-cell {
+	-fx-background-color: #4c4b4b;
+	
+}
+.jfx-tree-table-view:focused > .virtual-flow > .clipped-container > .sheet > .tree-table-row-cell:filled:selected {
+    -fx-background-color: #e5e5e5;
+    -fx-table-cell-border-color: -fx-tree-table-color;
+    -fx-text-fill: black;
+}
+
+.jfx-tree-table-view:focused .tree-table-row-cell:selected .tree-table-cell {
+    -fx-text-fill: black;
+}
+
+.jfx-tree-table-view .tree-table-row-cell .tree-table-cell {
+    -fx-text-fill: #e5e5e5;
+}
+/**
+* content Editor
+*/
+
+.contentEditor {
+	-fx-background-color: #4c4b4b;
+}
+.contentEditor .label,
+.contentEditor .button,
+.contentEditor .code-area,
+.contentEditor .list-cell {
+	-fx-text-fill: #e5e5e5;
+	-fx-background-color: #4c4b4b;
+}
+
+.contentEditor  .contentEditor-header {
+	-fx-padding: 10;
+}
+.contentEditor  .label {
+	-fx-translate-y: 4;
+	-fx-padding: 0 10;
+}
+
+/**
+ * dialogs
+ */
+
+
+.jfx-dialog-layout,
+.jfx-dialog-layout .list-view,
+.jfx-dialog-layout .list-cell {
+	-fx-background-color: #4c4b4b
+}
+.jfx-dialog-layout .glyph-icon {
+	-fx-fill: #e5e5e5
+}
+
+
+.jfx-dialog-layout .label,
+.jfx-dialog-layout .button,
+.jfx-dialog-layout .text-field,
+.jfx-dialog-layout .toggle-button,
+.jfx-dialog-layout .jfx-combo-box > * {
+	-fx-text-fill: #e5e5e5
+}
+
+
+/**
+* spinner
+*/
+.spinner {
+	-fx-background-color: #4c4b4b;
+}
+.jfx-spinner .arc {
+   -fx-stroke: #2192f2;
+}
+
+.first-spinner {
+    -jfx-radius: 20;
+}
+
+
+.first-spinner .arc {
+    -fx-stroke-width: 5.0;
+}
+
+.second-spinner {
+    -jfx-radius: 30;
+}
+
+.second-spinner .arc {
+    -fx-stroke-width: 5.0;
+}
+
+.third-spinner {
+    -jfx-radius: 40;
+}
+
+.third-spinner .arc {
+    -fx-stroke-width: 5.0;
+}
+
+.fourth-spinner {
+    -jfx-radius: 50;
+}
+
+.fourth-spinner .arc {
+    -fx-stroke-width: 5.0;
+}
+
+.fifth-spinner {
+    -jfx-radius: 60;
+}
+
+.fifth-spinner .arc {
+    -fx-stroke-width: 5.0;
+}
+
+.sixth-spinner {
+    -jfx-radius: 70;
+}
+
+.sixth-spinner .arc {
+    -fx-stroke-width: 5.0;
+}
+
+.seventh-spinner {
+    -jfx-radius: 80;
+}
+
+.seventh-spinner .arc {
+    -fx-stroke-width: 5.0;
+}
+  
+
+
+
+/**
+* Toast Style
+*/
+
+.jfx-snackbar-content {
+    -fx-background-color: #4c4b4b;
+}
+
+.jfx-snackbar-toast {
+    -fx-text-fill: #e5e5e5;
+}
+
+.jfx-snackbar-action {
+    -fx-text-fill: #ff4081;
+} 
+
+
+
+/****************************************************************
+
+  ScrollBar Skin  
+
+****************************************************************/
+.scroll-bar{
+ -fx-background-color: rgb(96,96,96);
+ -fx-background-radius: 2em;
+}
+.scroll-bar:horizontal .track,
+.scroll-bar:vertical .track {
+ -fx-background-color: transparent;
+ -fx-border-color:transparent;
+ -fx-background-radius: 2em;
+}
+.scroll-bar:vertical .track-background,
+.scroll-bar:horizontal .track-background {
+ -fx-background-color: transparent;
+ -fx-background-insets: 0;
+ -fx-background-radius: 2em;
+}
+.scroll-bar:horizontal .thumb {
+ -fx-background-color: rgb(211,211,211);
+ -fx-background-insets: 4 0 4 0;
+ -fx-background-radius: 2em;
+}
+.scroll-bar:vertical .thumb {
+ -fx-background-color: rgb(211,211,211);
+ -fx-background-insets: 0 4 0 4;
+ -fx-background-radius: 2em;
+}
+.scroll-bar:horizontal .thumb:hover,
+.scroll-bar:vertical .thumb:hover {
+ -fx-background-color: rgb(231,231,231);
+}
+.scroll-bar:horizontal .thumb:pressed,
+.scroll-bar:vertical .thumb:pressed {
+ -fx-background-color: rgb(255,255,255);
+}
+.scroll-bar:vertical .increment-button, .scroll-bar:vertical .decrement-button {
+ -fx-background-color:transparent;
+ -fx-background-radius: 2em;
+ -fx-padding: 5;
+}
+.scroll-bar:horizontal .increment-button, .scroll-bar:horizontal .decrement-button {
+ -fx-background-color:transparent;
+ -fx-background-radius: 2em;
+ -fx-padding: 5;
+}
+.scroll-bar:horizontal .increment-arrow {
+ -fx-shape: "M 0 0 L 4 8 L 8 0 Z";
+ -fx-background-color: rgb(211,211,211);
+ -fx-padding: 0.25em;
+ -fx-rotate: -90;
+}
+.scroll-bar:vertical .increment-arrow {
+ -fx-background-color: rgb(211,211,211);
+ -fx-shape: "M 0 0 L 4 8 L 8 0 Z";
+ -fx-padding: 0.25em;
+ -fx-rotate: 0;
+}
+.scroll-bar:horizontal .decrement-arrow {
+ -fx-background-color: rgb(211,211,211);
+ -fx-shape: "M 0 0 L 4 8 L 8 0 Z";
+ -fx-padding: 0.25em;
+ -fx-rotate: 90;
+}
+.scroll-bar:vertical .decrement-arrow {
+ -fx-background-color: rgb(211,211,211);
+ -fx-shape: "M 0 0 L 4 8 L 8 0 Z";
+ -fx-padding: 0.25em;
+ -fx-rotate: -180;
+}
+.scroll-bar:vertical:focused,
+.scroll-bar:horizontal:focused {
+ -fx-background-color: transparent,rgb(96,96,96),rgb(96,96,96);
+}

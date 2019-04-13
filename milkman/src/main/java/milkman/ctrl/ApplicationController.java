@@ -46,7 +46,6 @@ public class ApplicationController {
 	private final Toaster toaster;
 	
 	public void initApplication() {
-		loadOptions();
 		WorkbenchState state = persistence.loadWorkbenchState();
 		
 		List<String> names = persistence.loadWorkspaceNames();
@@ -144,7 +143,7 @@ public class ApplicationController {
 		persistence.storeOptions(optEntries);
 	}
 
-	private void loadOptions() {
+	public void initOptions() {
 		List<OptionPageProvider<?>> optionProviders = plugins.loadOptionPages();
 		persistence.loadOptions().forEach(e -> {
 			optionProviders.stream().filter(p -> p.getClass().getName().equals(e.getOptionProviderClass()))

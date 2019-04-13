@@ -1,6 +1,9 @@
 package milkman.ui.main.options;
 
+import java.util.Arrays;
+
 import lombok.Data;
+import milkman.ui.main.ThemeSwitcher;
 import milkman.ui.plugin.OptionPageProvider;
 import milkman.ui.plugin.OptionsObject;
 
@@ -8,13 +11,21 @@ public class CoreApplicationOptionsProvider implements OptionPageProvider<CoreAp
 
 	@Data
 	public static class CoreApplicationOptions implements OptionsObject {
-		private boolean autoformatContent;
-	}
+		private boolean autoformatContent = false;
+		private String theme = "Milkman";
+	} 
 
 	private static CoreApplicationOptions currentOptions = new CoreApplicationOptions();
 	public static CoreApplicationOptions options() {
 		return currentOptions;
 	}
+	
+	
+	private static ThemeSwitcher themeSwitcher;
+	public static void setThemeSwitcher(ThemeSwitcher switcher) {
+		themeSwitcher = switcher;
+	}
+	
 	
 	@Override
 	public CoreApplicationOptions getOptions() {
@@ -31,10 +42,14 @@ public class CoreApplicationOptionsProvider implements OptionPageProvider<CoreAp
 		return builder.page("Application", getOptions())
 				.section("General")
 					.toggle("Autoformat Content", CoreApplicationOptions::isAutoformatContent, CoreApplicationOptions::setAutoformatContent)
+					.selection("Theme", CoreApplicationOptions::getTheme, this::setTheme, themeSwitcher.getThemes())
 				.endSection()
 				.build();
 	}
-
 	
+	private void setTheme(CoreApplicationOptions options, String themeName) {
+		themeSwitcher.setTheme(themeName);
+		options.setTheme(themeName);
+	}
 	
 }

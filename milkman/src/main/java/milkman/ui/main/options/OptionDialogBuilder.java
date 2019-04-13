@@ -4,11 +4,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXToggleButton;
 
 import io.vavr.Function1;
 import javafx.scene.Node;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ public class OptionDialogBuilder  {
 	public interface OptionPaneBuilder<T> {
 		OptionPaneBuilder<T> toggle(String name, Function1<T, Boolean> getter, BiConsumer<T, Boolean> setter);
 		OptionPaneBuilder<T> textInput(String name, Function1<T, String> getter, BiConsumer<T, String> setter);
+		OptionPaneBuilder<T> selection(String name, Function1<T, String> getter, BiConsumer<T, String> setter, List<String> possibleValues);
 		OptionSectionBuilder<T> endSection();
 	}
 	
@@ -85,6 +88,22 @@ public class OptionDialogBuilder  {
 			pane.getStyleClass().add("options-page");
 			pane.getChildren().addAll(nodes);
 			return pane;
+		}
+
+		@Override
+		public OptionPaneBuilder<T> selection(String name, Function1<T, String> getter, BiConsumer<T, String> setter,
+				List<String> possibleValues) {
+			
+			Label lbl = new Label(name);
+			JFXComboBox<String> text = new JFXComboBox();
+			GenericBinding<T,String> binding = GenericBinding.of(getter, setter, optionsObject);
+			bindings.add(binding);
+			text.valueProperty().bindBidirectional(binding);
+			text.getItems().addAll(possibleValues);
+			HBox hbox = new HBox(lbl, text);
+			hbox.getStyleClass().add("options-entry");
+			nodes.add(hbox);
+			return this;
 		}
 	}
 	

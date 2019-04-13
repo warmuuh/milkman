@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import milkman.ui.components.ContentEditor;
+import milkman.ui.plugin.UiThemePlugin;
 import milkman.utils.fxml.FxmlUtil;
 import javafx.fxml.FXML;
 import javafx.scene.layout.BorderPane;
@@ -29,6 +30,7 @@ public class MainWindow {
 	private final RequestCollectionComponent requestCollectionComponent;
 	private final ToolbarComponent toolbarComponent;
 	@Getter @FXML StackPane root;
+	private Scene mainScene;
 	
 
 
@@ -40,11 +42,9 @@ public class MainWindow {
 			StackPane root = loader.load();
 			FxmlUtil.setPrimaryStage(primaryStage);
 
-			Scene scene = new Scene(root);
-			scene.getStylesheets().add(getClass().getResource("/themes/milkman.css").toExternalForm());
-			scene.getStylesheets().add(getClass().getResource("/themes/syntax/milkman-syntax.css").toExternalForm());
-
-			primaryStage.setScene(scene);
+			mainScene = new Scene(root);
+			
+			primaryStage.setScene(mainScene);
 			primaryStage.setWidth(1000);
 			primaryStage.setHeight(800);
 
@@ -76,6 +76,14 @@ public class MainWindow {
 			return toolbarComponent;
 
 		return null;
+	}
+
+	public void switchToTheme(UiThemePlugin theme) {
+
+		mainScene.getStylesheets().clear();
+		mainScene.getStylesheets().add(getClass().getResource(theme.getMainCss()).toExternalForm());
+		mainScene.getStylesheets().add(getClass().getResource(theme.getCodeCss()).toExternalForm());
+
 	}
 
 }

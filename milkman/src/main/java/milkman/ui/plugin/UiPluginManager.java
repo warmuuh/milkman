@@ -54,4 +54,14 @@ public class UiPluginManager {
 		return result;
 	}
 	
+
+	public List<UiThemePlugin> loadThemePlugins(){
+		ServiceLoader<UiThemePlugin> loader = ServiceLoader.load(UiThemePlugin.class);
+
+		List<UiThemePlugin> result = new LinkedList<UiThemePlugin>();
+		loader.forEach(result::add);
+
+		return result;
+	}
+	
 }

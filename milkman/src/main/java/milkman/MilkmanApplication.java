@@ -5,6 +5,8 @@ import org.fxmisc.cssfx.CSSFX;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import milkman.ui.main.options.CoreApplicationOptionsProvider;
+import milkman.ui.main.options.CoreApplicationOptionsProvider.CoreApplicationOptions;
 
 public class MilkmanApplication extends Application {
 	
@@ -19,7 +21,9 @@ public class MilkmanApplication extends Application {
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		module.getApplicationController().initOptions();
 		module.getMainWindow().start(primaryStage);
+		module.getThemeSwitcher().setTheme(CoreApplicationOptionsProvider.options().getTheme());
 		module.getApplicationController().initApplication();
 		primaryStage.setOnCloseRequest(e -> module.getApplicationController().persistState());
 	}
