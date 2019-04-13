@@ -14,6 +14,7 @@ import milkman.ui.plugin.ResponseAspectEditor;
 import milkman.ui.plugin.Templater;
 import milkman.ui.plugin.rest.domain.RestBodyAspect;
 import milkman.ui.plugin.rest.domain.RestHeaderAspect;
+import milkman.ui.plugin.rest.domain.RestQueryParamAspect;
 import milkman.ui.plugin.rest.domain.RestRequestContainer;
 
 public class RestPlugin implements RequestAspectsPlugin, RequestTypePlugin {
@@ -23,7 +24,7 @@ public class RestPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 	
 	@Override
 	public List<RequestAspectEditor> getRequestTabs() {
-		return Arrays.asList(new RequestHeaderTabController(), new RequestBodyTabController());
+		return Arrays.asList(new RequestHeaderTabController(), new RequestBodyTabController(), new RequestQueryParamTabController());
 	}
 
 	@Override
@@ -46,9 +47,15 @@ public class RestPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 		if (request instanceof RestRequestContainer) {
 			if (!request.getAspect(RestHeaderAspect.class).isPresent())
 				request.addAspect(new RestHeaderAspect());
-			
+
 			if (!request.getAspect(RestBodyAspect.class).isPresent())
 				request.addAspect(new RestBodyAspect());
+			
+			if (!request.getAspect(RestQueryParamAspect.class).isPresent()) {
+				RestQueryParamAspect aspect = new RestQueryParamAspect();
+				aspect.parseQueryParams(((RestRequestContainer) request).getUrl());
+				request.addAspect(aspect);
+			}
 		}
 	}
 

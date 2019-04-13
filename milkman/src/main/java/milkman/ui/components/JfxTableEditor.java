@@ -179,11 +179,12 @@ public class JfxTableEditor<T> extends StackPane {
 //						table.getRoot().getValue().setChildren(obsWrappedItems);
 //						table.setRoot(table.getRoot());
 //						table.refresh();
+						if (listener != null)
+			        		listener.run();
 					});
 //                        T element = getTreeTableView().getRoot().getChildren().get(getTreeTableRow().getIndex()).getValue();
 //                        getItems().remove(element);
-		        	if (listener != null)
-		        		listener.run();
+		        	
 		        });
 		        setGraphic(btn);
 		        setText(null);

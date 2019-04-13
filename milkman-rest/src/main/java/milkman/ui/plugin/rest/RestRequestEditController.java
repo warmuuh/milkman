@@ -13,6 +13,7 @@ import javafx.scene.control.TextField;
 import lombok.SneakyThrows;
 import milkman.domain.RequestContainer;
 import milkman.ui.plugin.RequestTypeEditor;
+import milkman.ui.plugin.rest.domain.RestQueryParamAspect;
 import milkman.ui.plugin.rest.domain.RestRequestContainer;
 import milkman.utils.fxml.FxmlUtil;
 import milkman.utils.fxml.GenericBinding;
@@ -45,6 +46,12 @@ public class RestRequestEditController implements RequestTypeEditor {
 		
 		urlBinding.addListener(s -> request.setDirty(true));
 		httpMethodBinding.addListener(s -> request.setDirty(true));
+		
+		
+		//bind to param tab:
+		request.onInvalidate.clear();
+		request.onInvalidate.add(() -> requestUrl.setText(restRequest.getUrl())); //contract with query-param tab
+		request.getAspect(RestQueryParamAspect.class).ifPresent(a -> a.linkToUrlTextfield(requestUrl.textProperty()));
 		
 	}
 
