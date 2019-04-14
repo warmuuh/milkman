@@ -4,7 +4,10 @@ import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Duration;
 import java.util.Collections;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,15 +61,25 @@ public class JqlAspectResponseEditor implements ResponseAspectEditor {
 				qryAspect); 
 
 		TextField qryInput = new TextField();
-		qryInput.textProperty().addListener((obs, o, n) -> {
-			if (n == null)
-				return;
-			String body = response.getAspect(RestResponseBodyAspect.class).map(b -> b.getBody()).orElse("");
-			String jmesRes = executeJmesQuery(n, body);
-			contentView.setContent(() -> jmesRes, s -> {});
-		});
+//		qryInput.textProperty().addListener((obs, o, n) -> {
+//			if (n == null)
+//				return;
+//			String body = response.getAspect(RestResponseBodyAspect.class).map(b -> b.getBody()).orElse("");
+//			String jmesRes = executeJmesQuery(n, body);
+//			contentView.setContent(() -> jmesRes, s -> {});
+//		});
 		qryInput.textProperty().bindBidirectional(binding);
 		qryInput.setUserData(binding);
+		
+		
+		if (StringUtils.isNotBlank(qryAspect.getQuery())) {
+			evaluateExpression(response, contentView, qryAspect.getQuery());
+		}
+		
+		binding.toStream().successionEnds(Duration.ofMillis(250))
+			.subscribe(qry -> evaluateExpression(response, contentView, qry));
+		
+		
 		HBox.setHgrow(qryInput, Priority.ALWAYS);
 		
 		JFXButton helpBtn = new JFXButton();
@@ -81,6 +94,12 @@ public class JqlAspectResponseEditor implements ResponseAspectEditor {
 		helpBtn.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.QUESTION_CIRCLE, "1.5em"));
 		tab.setContent(new VBox(new HBox(qryInput, helpBtn), contentView));
 		return tab;
+	}
+
+	private void evaluateExpression(ResponseContainer response, ContentEditor contentView, String qry) {
+		String body = response.getAspect(RestResponseBodyAspect.class).map(b -> b.getBody()).orElse("");
+		String jmesRes = executeJmesQuery(qry, body);
+		contentView.setContent(() -> jmesRes, s -> {});
 	}
 
 	private String executeJmesQuery(String query, String body) {

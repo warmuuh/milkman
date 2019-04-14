@@ -23,12 +23,12 @@ public class EditEnvironmentDialog {
 	public void showAndWait(Environment environment) {
 		JFXDialogLayout content = FxmlUtil.loadAndInitialize("/dialogs/EditEnvironmentDialog.fxml", this);
 		
-		editor.setEditable(true);
+		editor.enableEdition(() -> new EnvironmentEntry("", "", true));
 		editor.addCheckboxColumn("Enabled", EnvironmentEntry::isEnabled, EnvironmentEntry::setEnabled);
 		editor.addColumn("name", EnvironmentEntry::getName, EnvironmentEntry::setName);
 		editor.addColumn("value", EnvironmentEntry::getValue, EnvironmentEntry::setValue);
 		editor.addDeleteColumn("delete");
-		editor.setItems(environment.getEntries(), () -> new EnvironmentEntry("", "", true));
+		editor.setItems(environment.getEntries());
 		
 		dialog = FxmlUtil.createDialog(content);
 		dialog.showAndWait();

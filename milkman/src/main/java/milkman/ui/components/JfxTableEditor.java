@@ -94,12 +94,20 @@ public class JfxTableEditor<T> extends StackPane {
 		table.getColumns().add(column);
 	}
 
-	public void setEditable(boolean editable) {
-		table.setEditable(editable);
-		addItemBtn.setVisible(editable);
+	public void enableEdition(Supplier<T> newItemCreator) {
+		table.setEditable(true);
+		addItemBtn.setVisible(true);
+		this.addItemBtn.setOnAction(e -> { 
+			obsWrappedItems.add(new RecursiveWrapper<>(newItemCreator.get()));
+		});
+	}
+	public void disableEdition() {
+		table.setEditable(false);
+		addItemBtn.setVisible(false);
 	}
 	
-	public void setItems(List<T> items, Supplier<T> newItemCreator) {
+	
+	public void setItems(List<T> items) {
 		List<RecursiveWrapper<T>> wrappedItems = items.stream().map(i -> new RecursiveWrapper<>(i)).collect(Collectors.toList());
 		obsWrappedItems = FXCollections.observableList(wrappedItems);
 		obsWrappedItems.addListener(new ListChangeListener<RecursiveWrapper<T>>() {
@@ -124,9 +132,7 @@ public class JfxTableEditor<T> extends StackPane {
 		final TreeItem<RecursiveWrapper<T>> root = new RecursiveTreeItem<>(obsWrappedItems, RecursiveTreeObject::getChildren); 
 		table.setRoot(root);
 		
-		this.addItemBtn.setOnAction(e -> { 
-					obsWrappedItems.add(new RecursiveWrapper<>(newItemCreator.get()));
-		});
+		
 		//register double-click listener for empty rows, to add a new instance
 //		this.setRowFactory(view -> {
 //		    TableRow<T> row = new TableRow<T>();

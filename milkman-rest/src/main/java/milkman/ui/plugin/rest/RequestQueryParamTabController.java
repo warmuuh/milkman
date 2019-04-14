@@ -20,24 +20,19 @@ public class RequestQueryParamTabController implements RequestAspectEditor {
 	public Tab getRoot(RequestContainer request) {
 		RestQueryParamAspect qryParams = request.getAspect(RestQueryParamAspect.class).get();
 		JfxTableEditor<QueryParamEntry> editor = FxmlUtil.loadAndInitialize("/components/TableEditor.fxml");
-		editor.setEditable(true);
+		editor.enableEdition(() -> {
+			updateDirtyState(qryParams, request);
+			return new QueryParamEntry("", "");
+		});
 		editor.addColumn("Name", QueryParamEntry::getName, run(QueryParamEntry::setName).andThen(() -> updateDirtyState(qryParams, request)));
 		editor.addColumn("Value", QueryParamEntry::getValue,run(QueryParamEntry::setValue).andThen(() -> updateDirtyState(qryParams, request)));
 		editor.addDeleteColumn("Delete", () -> updateDirtyState(qryParams, request));
 		
 		//TODO: the listener is fired before the item gets added
-		//also the api should be like editor.enableEdit(creator, listener)
-		// and editor.disableEdit();
-		editor.setItems(qryParams.getEntries(), () -> {
-			updateDirtyState(qryParams, request);
-			return new QueryParamEntry("", "");
-		});
+		editor.setItems(qryParams.getEntries());
 		
 		qryParams.onInvalidate.clear();
-		qryParams.onInvalidate.add(() -> editor.setItems(qryParams.getEntries(), () -> {
-			updateDirtyState(qryParams, request);
-			return new QueryParamEntry("", "");
-		}));
+		qryParams.onInvalidate.add(() -> editor.setItems(qryParams.getEntries()));
 		
 		return new Tab("Parameter", editor);
 	}

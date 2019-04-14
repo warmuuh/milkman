@@ -1,6 +1,10 @@
 package milkman.utils.fxml;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiConsumer;
+
+import org.reactfx.EventStream;
+import org.reactfx.EventStreams;
 
 import io.vavr.Function1;
 import javafx.beans.property.ObjectPropertyBase;
@@ -71,6 +75,12 @@ public class GenericBinding<O, T> extends ObjectPropertyBase<T> {
 	@Override
 	public String getName() {
 		return "";
+	}
+	
+	
+	public EventStream<T> toStream(){
+		//this instead of EventStream.nonNullValues bc we want to omit initial (artificial) value
+		return EventStreams.changesOf(this).filterMap(c -> Optional.of(c.getNewValue()));
 	}
 
 }

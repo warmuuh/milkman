@@ -1,5 +1,6 @@
 package milkman.ui.main;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,6 +9,8 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.reactfx.EventStreams;
 
 import com.jfoenix.controls.JFXListCell;
 import com.jfoenix.controls.JFXListView;
@@ -73,9 +76,12 @@ public class RequestCollectionComponent {
 		root.setChildren(filteredList);
 		Platform.runLater(() -> setFilterPredicate(filteredList, searchField.getText()));
 		collectionContainer.setRoot(root);
-		searchField.textProperty().addListener((obs) -> 
-			setFilterPredicate(filteredList, searchField.getText())
-		);
+		EventStreams.nonNullValuesOf(searchField.textProperty())
+			.successionEnds(Duration.ofMillis(250))
+			.subscribe(qry -> setFilterPredicate(filteredList, qry));
+//		searchField.textProperty().addListener((obs) -> 
+//			setFilterPredicate(filteredList, searchField.getText())
+//		);
 		
 		collectionContainer.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
 			if (n == null)

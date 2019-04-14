@@ -20,16 +20,16 @@ public class RequestHeaderTabController implements RequestAspectEditor {
 	public Tab getRoot(RequestContainer request) {
 		RestHeaderAspect headers = request.getAspect(RestHeaderAspect.class).get();
 		JfxTableEditor<HeaderEntry> editor = FxmlUtil.loadAndInitialize("/components/TableEditor.fxml");
-		editor.setEditable(true);
+		editor.enableEdition(() -> {
+			headers.setDirty(true);
+			return new HeaderEntry("", "", true);
+		});
 		editor.addCheckboxColumn("Enabled", HeaderEntry::isEnabled, run(HeaderEntry::setEnabled).andThen(() -> headers.setDirty(true)));
 		editor.addColumn("Name", HeaderEntry::getName, run(HeaderEntry::setName).andThen(() -> headers.setDirty(true)));
 		editor.addColumn("Value", HeaderEntry::getValue,run(HeaderEntry::setValue).andThen(() -> headers.setDirty(true)));
 		editor.addDeleteColumn("Delete", () -> headers.setDirty(true));
 		
-		editor.setItems(headers.getEntries(), () -> {
-			headers.setDirty(true);
-			return new HeaderEntry("", "", true);
-		});
+		editor.setItems(headers.getEntries());
 		return new Tab("Headers", editor);
 	}
 
