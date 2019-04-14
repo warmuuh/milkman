@@ -27,7 +27,12 @@ public class NotesAspectEditorTest {
 		NotesAspectEditor sut = new NotesAspectEditor();
 		noteAspect = new NotesAspect();
 		noteAspect.setNote("first");
-		RequestContainer request = new RequestContainer() {};
+		RequestContainer request = new RequestContainer() {
+
+			@Override
+			public String getType() {
+				return "";
+			}};
 		request.addAspect(noteAspect);
 		Tab root = sut.getRoot(request);
 		stage.setScene(new Scene(new TabPane(root)));

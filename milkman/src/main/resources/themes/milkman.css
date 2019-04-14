@@ -203,6 +203,16 @@
     -fx-padding: 0 1 0 1;
 }
 
+.request-type {
+	-fx-font-size: 8;
+	-fx-font-weight: bold;
+	-fx-translate-y: 3;
+	-fx-text-fill: white;
+	-fx-background-color: grey;
+	-fx-background-radius: 3px;
+	-fx-padding: 0 3 0 3;
+	
+}
 
 /**
  * request collcetion area > entries

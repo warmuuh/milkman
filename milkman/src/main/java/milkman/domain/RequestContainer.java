@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
@@ -32,6 +33,8 @@ public abstract class RequestContainer extends Dirtyable implements Searchable {
 		this.name = name;
 	}
 	
+	@JsonIgnore
+	public abstract String getType();
 	
 	public void addAspect(RequestAspect aspect) {
 		aspect.propagateDirtyStateTo(this);

@@ -2,6 +2,8 @@ package milkman.ui.plugin.rest.domain;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -30,6 +32,12 @@ public class RestRequestContainer extends RequestContainer {
 		return StringUtils.containsIgnoreCase(url, searchString)
 				|| StringUtils.containsIgnoreCase(httpMethod, searchString)
 				|| super.match(searchString);
+	}
+
+
+	@Override
+	public String getType() {
+		return this.httpMethod;
 	}
 
 }

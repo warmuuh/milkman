@@ -82,7 +82,6 @@ public class RequestCollectionComponent {
 //		searchField.textProperty().addListener((obs) -> 
 //			setFilterPredicate(filteredList, searchField.getText())
 //		);
-		
 		collectionContainer.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
 			if (n == null)
 				return;
@@ -152,6 +151,8 @@ public class RequestCollectionComponent {
 
 	
 	private Node createRequestEntry(Collection collection, RequestContainer request) {
+		Label requestType = new Label(request.getType());
+		requestType.getStyleClass().add("request-type");
 		Label button = new Label(request.getName());
 
 		MenuItem renameEntry = new MenuItem("Rename");
@@ -161,7 +162,7 @@ public class RequestCollectionComponent {
 		deleteEntry.setOnAction(e -> onCommand.invoke(new UiCommand.DeleteRequest(request, collection)));
 
 		ContextMenu ctxMenu = new ContextMenu(renameEntry, deleteEntry);
-		VBox vBox = new VBox(button);
+		VBox vBox = new VBox(new HBox(requestType,button));
 		vBox.getStyleClass().add("request-entry");
 		vBox.setOnMouseClicked(e -> {
 //			if (e.getButton() == MouseButton.PRIMARY)
