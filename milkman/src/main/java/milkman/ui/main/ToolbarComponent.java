@@ -19,6 +19,7 @@ import milkman.domain.Environment;
 import milkman.domain.Workspace;
 import milkman.ui.commands.AppCommand;
 import milkman.utils.Event;
+import com.jfoenix.controls.JFXButton;
 
 @Singleton
 public class ToolbarComponent implements Initializable {
@@ -28,6 +29,8 @@ public class ToolbarComponent implements Initializable {
 	public final Event<AppCommand> onCommand = new Event<AppCommand>();
 
 	@FXML ChoiceBox<ChoiceboxEntry> environmentSelection;
+
+	@FXML JFXButton syncBtn;
 
 	
 	
@@ -59,6 +62,7 @@ public class ToolbarComponent implements Initializable {
 	
 	public void setWorkspaces(Workspace activeWs, List<String> workspaceNames) {
 		initWorkspaceDropdown(activeWs, workspaceNames);
+		syncBtn.setVisible(activeWs.getSyncDetails().isSyncActive());
 		initEnvironmentDropdown(activeWs.getEnvironments());
 		
 	}
@@ -139,6 +143,10 @@ public class ToolbarComponent implements Initializable {
 
 	@FXML public void onOptions() {
 		onCommand.invoke(new AppCommand.ManageOptions());
+	}
+
+	@FXML public void onSync() {
+		onCommand.invoke(new AppCommand.SyncWorkspace());
 	}
 	
 	

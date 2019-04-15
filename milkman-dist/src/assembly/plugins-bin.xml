@@ -17,6 +17,7 @@
 				<include>com.github.warmuuh:milkman-scripting</include>
 				<include>com.github.warmuuh:milkman-explore</include>
 				<include>com.github.warmuuh:milkman-jdbc</include>
+				<include>com.github.warmuuh:milkman-sync-git</include>
 			</includes>
 			<binaries>
 				<unpack>false</unpack>

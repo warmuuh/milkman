@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import milkman.ui.main.sync.NoSyncDetails;
 
 @Data
 @AllArgsConstructor
@@ -34,6 +35,8 @@ public class Workspace {
 	private List<RequestContainer> openRequests;
 	private RequestContainer activeRequest;
 	private List<Environment> environments = new LinkedList<Environment>();
+	
+	private SyncDetails syncDetails = new NoSyncDetails();
 	
 	@JsonIgnore
 	private Map<RequestContainer, ResponseContainer> cachedResponses = new HashMap<RequestContainer, ResponseContainer>();

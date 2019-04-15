@@ -64,4 +64,12 @@ public class UiPluginManager {
 		return result;
 	}
 	
+	public List<WorkspaceSynchronizer> loadSyncPlugins(){
+		ServiceLoader<WorkspaceSynchronizer> loader = ServiceLoader.load(WorkspaceSynchronizer.class);
+
+		List<WorkspaceSynchronizer> result = new LinkedList<WorkspaceSynchronizer>();
+		loader.forEach(result::add);
+
+		return result;
+	}
 }

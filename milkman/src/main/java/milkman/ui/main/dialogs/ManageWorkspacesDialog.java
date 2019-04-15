@@ -102,14 +102,7 @@ public class ManageWorkspacesDialog {
 
 
 	@FXML public void onCreateWorkspace() {
-		StringInputDialog inputDialog = new StringInputDialog();
-		inputDialog.showAndWait("Create new Workspace", "Name of new Workspace", "");
-		if (!inputDialog.isCancelled() && inputDialog.wasChanged()) {
-			String newWorkspaceName = inputDialog.getInput();
-			onCommand.invoke(new AppCommand.CreateNewWorkspace(newWorkspaceName));
-			workspaces.add(newWorkspaceName);
-		}
-		
+		onCommand.invoke(new AppCommand.CreateNewWorkspace());
 	}
 
 }

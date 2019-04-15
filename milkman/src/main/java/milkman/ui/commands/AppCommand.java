@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import lombok.Value;
 import milkman.domain.Environment;
+import milkman.domain.SyncDetails;
 import milkman.domain.Workspace;
 
 public interface AppCommand {
@@ -25,7 +26,7 @@ public interface AppCommand {
 	
 	@Value
 	public static class CreateNewWorkspace implements AppCommand {
-		String newWorkspaceName;
+		
 	}
 	
 	@Value
@@ -72,5 +73,9 @@ public interface AppCommand {
 
 	@Value
 	public static class ManageOptions implements AppCommand {
+	}
+	
+	@Value
+	public static class SyncWorkspace implements AppCommand {
 	}
 }

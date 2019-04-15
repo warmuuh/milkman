@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 import milkman.domain.Environment;
 import milkman.domain.RequestContainer;
+import milkman.domain.SyncDetails;
 import milkman.domain.Workspace;
 import milkman.persistence.OptionEntry;
 import milkman.persistence.PersistenceManager;
@@ -25,10 +26,12 @@ import milkman.ui.commands.AppCommand.RenameEnvironment;
 import milkman.ui.commands.AppCommand.RenameWorkspace;
 import milkman.ui.main.Toaster;
 import milkman.ui.main.ToolbarComponent;
+import milkman.ui.main.dialogs.CreateWorkspaceDialog;
 import milkman.ui.main.dialogs.ImportDialog;
 import milkman.ui.main.dialogs.ManageEnvironmentsDialog;
 import milkman.ui.main.dialogs.ManageWorkspacesDialog;
 import milkman.ui.main.dialogs.OptionsDialog;
+import milkman.ui.main.sync.NoSyncDetails;
 import milkman.ui.plugin.OptionPageProvider;
 import milkman.ui.plugin.OptionsObject;
 import milkman.ui.plugin.RequestTypePlugin;
@@ -42,6 +45,7 @@ public class ApplicationController {
 	private final WorkspaceController workspaceController;
 	private final UiPluginManager plugins;
 	private final RequestTypeManager requestTypeManager;
+	private final SynchManager syncManager;
 
 	
 	private final ToolbarComponent toolbarComponent;
@@ -72,8 +76,11 @@ public class ApplicationController {
 		return ws;
 	}
 
-
 	private Workspace createFreshWorkspace(String name, boolean loadWorkspace) {
+		return createFreshWorkspace(name, new NoSyncDetails(), loadWorkspace);
+	}
+
+	private Workspace createFreshWorkspace(String name, SyncDetails syncDetails, boolean loadWorkspace) {
 		RequestContainer newRequest = requestTypeManager.createNewRequest(true);
 		Workspace workspace = new Workspace(0L, 
 				UUID.randomUUID().toString(),
@@ -81,7 +88,7 @@ public class ApplicationController {
 				new LinkedList<>(), 
 				io.vavr.collection.List.of(newRequest).toJavaList(), 
 				newRequest);
-		
+		workspace.setSyncDetails(syncDetails);
 		persistence.persistWorkspace(workspace);
 		if (loadWorkspace)
 			workspaceController.loadWorkspace(workspace);
@@ -100,7 +107,7 @@ public class ApplicationController {
 		} else if (command instanceof AppCommand.ManageWorkspaces) {
 			openWorkspaceManagementDialog();
 		} else if (command instanceof AppCommand.CreateNewWorkspace) {
-			createNewWorkspace(((AppCommand.CreateNewWorkspace) command).getNewWorkspaceName());
+			createNewWorkspace();
 		} else if (command instanceof AppCommand.DeleteWorkspace) {
 			deleteWorkspace(((AppCommand.DeleteWorkspace) command).getWorkspaceName());
 		} else if (command instanceof AppCommand.RenameWorkspace) {
@@ -121,9 +128,16 @@ public class ApplicationController {
 			openImportDialog();
 		} else if (command instanceof AppCommand.ManageOptions) {
 			openOptionsDialog();
+		}  else if (command instanceof AppCommand.SyncWorkspace) {
+			syncWorkspace();
 		} else {
 			throw new IllegalArgumentException("Unsupported command: " + command);
 		}
+	}
+
+
+	private void syncWorkspace() {
+		syncManager.syncWorkspace(workspaceController.getActiveWorkspace());
 	}
 
 
@@ -233,8 +247,12 @@ public class ApplicationController {
 	}
 
 
-	private void createNewWorkspace(String newWorkspaceName) {
-		createFreshWorkspace(newWorkspaceName, true);
+	private void createNewWorkspace() {
+		CreateWorkspaceDialog dialog = new CreateWorkspaceDialog();
+		dialog.showAndWait(plugins.loadSyncPlugins(), toaster);
+		if (!dialog.wasCancelled()) {
+			createFreshWorkspace(dialog.getWorkspaceName(), dialog.getSyncDetails(), true);
+		}
 	}
 
 
