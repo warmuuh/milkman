@@ -92,12 +92,12 @@ public class SqlContentType implements ContentTypePlugin {
                     matcher.group("SEMICOLON") != null ? "plain" :
                     matcher.group("STRING") != null ? "value" :
                     matcher.group("COMMENT") != null ? "comment" :
-                    null; /* never happens */
-            spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
+                    "plain";
+            spansBuilder.add(Collections.singleton("plain"), matcher.start() - lastKwEnd);
             spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
             lastKwEnd = matcher.end();
 }
-        spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
+        spansBuilder.add(Collections.singleton("plain"), text.length() - lastKwEnd);
         return spansBuilder.create();
 	}
 
