@@ -11,5 +11,7 @@ public interface RequestTypePlugin {
 	
 	ResponseContainer executeRequest(RequestContainer request, Templater templater);
 	
+	String getRequestType();
 	
+	boolean canHandle(RequestContainer request);
 }

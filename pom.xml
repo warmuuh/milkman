@@ -15,6 +15,7 @@
 		<module>milkman-note</module>
 		<module>milkman-scripting</module>
 		<module>milkman-explore</module>
+		<module>milkman-jdbc</module>
 	</modules>
 
 	<properties>

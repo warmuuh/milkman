@@ -69,5 +69,15 @@ public class RestPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 		// we dont need to do anything here as we created the request (where we added everything already)
 	}
 
+	@Override
+	public String getRequestType() {
+		return "HTTP";
+	}
+
+	@Override
+	public boolean canHandle(RequestContainer request) {
+		return request instanceof RestRequestContainer;
+	}
+
 	
 }

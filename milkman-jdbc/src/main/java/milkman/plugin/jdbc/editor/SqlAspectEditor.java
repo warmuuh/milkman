@@ -1,0 +1,40 @@
+package milkman.plugin.jdbc.editor;
+
+import static milkman.utils.FunctionalUtils.run;
+
+import java.util.Collections;
+
+import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Tab;
+import lombok.SneakyThrows;
+import lombok.val;
+import milkman.domain.RequestContainer;
+import milkman.plugin.jdbc.SqlContentType;
+import milkman.plugin.jdbc.domain.JdbcSqlAspect;
+import milkman.ui.components.ContentEditor;
+import milkman.ui.plugin.RequestAspectEditor;
+
+public class SqlAspectEditor implements RequestAspectEditor {
+
+
+	@Override
+	@SneakyThrows
+	public Tab getRoot(RequestContainer request) {
+		val sqlAspect = request.getAspect(JdbcSqlAspect.class)
+				.orElseThrow(() -> new IllegalArgumentException("Jdbc Sql Aspect missing"));
+		
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/components/ContentEditor.fxml"));
+		ContentEditor root = loader.load();
+		root.setEditable(true);
+		root.setContent(sqlAspect::getSql, run(sqlAspect::setSql).andThen(() -> sqlAspect.setDirty(true)));
+		root.setContentTypePlugins(Collections.singletonList(new SqlContentType()));
+		root.setContentType("application/sql");
+		return new Tab("Body", root);
+	}
+
+	@Override
+	public boolean canHandleAspect(RequestContainer request) {
+		return request.getAspect(JdbcSqlAspect.class).isPresent();
+	}
+
+}

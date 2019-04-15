@@ -9,6 +9,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.HBox;
 import lombok.Getter;
+import milkman.ctrl.RequestTypeManager;
 import milkman.domain.RequestAspect;
 import milkman.domain.RequestContainer;
 import milkman.ui.commands.UiCommand;
@@ -25,27 +26,28 @@ import com.jfoenix.controls.JFXTabPane;
 @Singleton
 public class RequestComponent {
 
-	private final UiPluginManager plugins;
 	@FXML JFXTabPane tabs;
 	@FXML HBox mainEditingArea;
 
 	
 	public final Event<UiCommand> onCommand = new Event<UiCommand>();
 	@Getter private RequestContainer currentRequest;
-	@FXML JFXButton submitBtn; 
+	@FXML JFXButton submitBtn;
+	private RequestTypeManager reqTypeManager;
+	private UiPluginManager plugins; 
 	
 	
 	@Inject
-	public RequestComponent(UiPluginManager plugins) {
+	public RequestComponent(UiPluginManager plugins, RequestTypeManager reqTypeManager) {
 		this.plugins = plugins;
+		this.reqTypeManager = reqTypeManager;
 	}
 
 	
 	public void display(RequestContainer request) {
 		this.currentRequest = request;
-		RequestTypePlugin requestTypePlugin = plugins.loadRequestTypePlugins().get(0);
 		mainEditingArea.getChildren().clear();
-		RequestTypeEditor mainEditController = requestTypePlugin.getRequestEditor();
+		RequestTypeEditor mainEditController = reqTypeManager.getRequestEditor(request);
 		mainEditingArea.getChildren().add(mainEditController.getRoot());
 		mainEditController.displayRequest(request);
 		int oldSelection = tabs.getSelectionModel().getSelectedIndex();

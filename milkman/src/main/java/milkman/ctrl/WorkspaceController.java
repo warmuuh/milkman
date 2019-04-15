@@ -50,6 +50,7 @@ public class WorkspaceController {
 	private final RequestCollectionComponent collectionView;
 	private final WorkingAreaComponent workingAreaView;
 	private final RequestComponent requestView;
+	private final RequestTypeManager requestTypeManager;
 	
 	private final Toaster toaster;
 	
@@ -108,10 +109,7 @@ public class WorkspaceController {
 	}
 	
 	public void createNewRequest() {
-		RequestTypePlugin requestTypePlugin = plugins.loadRequestTypePlugins().get(0);
-		RequestContainer request = requestTypePlugin.createNewRequest();
-		request.setId(UUID.randomUUID().toString());
-		plugins.loadRequestAspectPlugins().forEach(p -> p.initializeRequestAspects(request));
+		RequestContainer request = requestTypeManager.createNewRequest(false);
 		displayRequest(request);
 	}
 	
@@ -119,7 +117,8 @@ public class WorkspaceController {
 		workingAreaView.showSpinner();
 		Optional<Environment> activeEnv = activeWorkspace.getEnvironments().stream().filter(e -> e.isActive()).findAny();
 		List<Environment> globalEnvs = activeWorkspace.getEnvironments().stream().filter(e -> e.isGlobal()).collect(Collectors.toList());
-		RequestTypePlugin plugin = plugins.loadRequestTypePlugins().get(0);
+		RequestTypePlugin plugin = requestTypeManager.getPluginFor(request);
+		
 		val executor = new RequestExecutor(request, plugin, new EnvironmentTemplater(activeEnv, globalEnvs));
 		
 		RequestExecutionContext context = new RequestExecutionContext(activeEnv);

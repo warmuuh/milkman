@@ -41,6 +41,8 @@ public class ApplicationController {
 	private final PersistenceManager persistence;
 	private final WorkspaceController workspaceController;
 	private final UiPluginManager plugins;
+	private final RequestTypeManager requestTypeManager;
+
 	
 	private final ToolbarComponent toolbarComponent;
 	private final Toaster toaster;
@@ -72,9 +74,7 @@ public class ApplicationController {
 
 
 	private Workspace createFreshWorkspace(String name, boolean loadWorkspace) {
-		RequestTypePlugin requestTypePlugin = plugins.loadRequestTypePlugins().get(0);
-		RequestContainer newRequest = requestTypePlugin.createNewRequest();
-		plugins.loadRequestAspectPlugins().forEach(p -> p.initializeRequestAspects(newRequest));
+		RequestContainer newRequest = requestTypeManager.createNewRequest(true);
 		Workspace workspace = new Workspace(0L, 
 				UUID.randomUUID().toString(),
 				name, 

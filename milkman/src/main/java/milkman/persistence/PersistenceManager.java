@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
@@ -78,7 +79,8 @@ public class PersistenceManager {
 	
 	public void persistWorkspace(Workspace workspace) {
 		if (workspace.getId() == 0) {
-			workspace.setId(workspaces.size()+1);
+			long newId = new Random().nextLong(); //todo awkward method to generate new id
+			workspace.setId(newId);			
 			workspaces.insert(workspace);
 		}
 		else
