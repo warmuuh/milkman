@@ -1,6 +1,7 @@
 package milkman.ui.commands;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import lombok.Value;
 import milkman.domain.Environment;
@@ -26,7 +27,7 @@ public interface AppCommand {
 	
 	@Value
 	public static class CreateNewWorkspace implements AppCommand {
-		
+		Consumer<Workspace> callback;
 	}
 	
 	@Value

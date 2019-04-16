@@ -102,7 +102,9 @@ public class ManageWorkspacesDialog {
 
 
 	@FXML public void onCreateWorkspace() {
-		onCommand.invoke(new AppCommand.CreateNewWorkspace());
+		onCommand.invoke(new AppCommand.CreateNewWorkspace(ws -> Platform.runLater(() -> {
+			workspaces.add(ws.getName());
+		})));
 	}
 
 }

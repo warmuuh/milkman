@@ -112,7 +112,9 @@ public class ApplicationController {
 		} else if (command instanceof AppCommand.ManageWorkspaces) {
 			openWorkspaceManagementDialog();
 		} else if (command instanceof AppCommand.CreateNewWorkspace) {
-			createNewWorkspace();
+			Workspace newWorkspace = createNewWorkspace();
+			if (newWorkspace != null)
+				((AppCommand.CreateNewWorkspace) command).getCallback().accept(newWorkspace);
 		} else if (command instanceof AppCommand.DeleteWorkspace) {
 			deleteWorkspace(((AppCommand.DeleteWorkspace) command).getWorkspaceName());
 		} else if (command instanceof AppCommand.RenameWorkspace) {
@@ -254,12 +256,13 @@ public class ApplicationController {
 	}
 
 
-	private void createNewWorkspace() {
+	private Workspace createNewWorkspace() {
 		CreateWorkspaceDialog dialog = new CreateWorkspaceDialog();
 		dialog.showAndWait(plugins.loadSyncPlugins(), toaster);
 		if (!dialog.wasCancelled()) {
-			createFreshWorkspace(dialog.getWorkspaceName(), dialog.getSyncDetails(), true);
+			return createFreshWorkspace(dialog.getWorkspaceName(), dialog.getSyncDetails(), true);
 		}
+		return null;
 	}
 
 
