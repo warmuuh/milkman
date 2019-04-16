@@ -24,6 +24,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.Collection;
 import milkman.domain.Workspace;
+import milkman.persistence.UnknownPluginHandler;
 import milkman.ui.plugin.WorkspaceSynchronizer;
 
 /**
@@ -35,7 +36,6 @@ import milkman.ui.plugin.WorkspaceSynchronizer;
  * @author peter
  *
  */
-@Slf4j
 public class GitWorkspaceSync implements WorkspaceSynchronizer {
 
 	@Override
@@ -51,8 +51,7 @@ public class GitWorkspaceSync implements WorkspaceSynchronizer {
 		//step1: update remote copy
 		File syncDir = new File("sync/"+workspace.getWorkspaceId()+"/");
 		Git repo = refreshRepository(syncDetails, syncDir);
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.enable(SerializationFeature.INDENT_OUTPUT); //allows git line-by-line diffs
+		ObjectMapper mapper = createMapper();
 		
 		//step 2: sync
 		File collectionFile = new File(syncDir, "collections.json");
@@ -72,6 +71,13 @@ public class GitWorkspaceSync implements WorkspaceSynchronizer {
 			List<Collection> remoteCollections = mapper.readValue(collectionFile, new TypeReference<List<Collection>>() {});
 			workspace.setCollections(remoteCollections);
 		}
+	}
+
+	private ObjectMapper createMapper() {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.addHandler(new UnknownPluginHandler());
+		mapper.enable(SerializationFeature.INDENT_OUTPUT); //allows git line-by-line diffs
+		return mapper;
 	}
 
 	private Git refreshRepository(GitSyncDetails syncDetails, File syncDir)

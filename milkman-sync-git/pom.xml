@@ -31,6 +31,7 @@
 			<groupId>de.danielbechler</groupId>
 			<artifactId>java-object-diff</artifactId>
 			<version>0.95</version>
+			<scope>test</scope>
 		</dependency>
 
 	</dependencies>
