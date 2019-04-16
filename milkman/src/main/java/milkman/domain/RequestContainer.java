@@ -1,5 +1,6 @@
 package milkman.domain;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,19 +9,32 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.TreeNode;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.annotation.Nulls;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import milkman.domain.RequestAspect.UnknownRequestAspect;
 
 @Data
 @NoArgsConstructor
-@JsonTypeInfo(include = As.PROPERTY, use = Id.CLASS)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonTypeInfo(include = As.PROPERTY, use = Id.CLASS, visible = true)
 public abstract class RequestContainer extends Dirtyable implements Searchable {
 	private String id = "";
 	private boolean inStorage = false;
@@ -62,7 +76,7 @@ public abstract class RequestContainer extends Dirtyable implements Searchable {
 
 	public void setAspects(List<RequestAspect> aspects) {
 		this.aspects = aspects;
-		aspects.removeIf(a -> a instanceof UnknownRequestAspect);
+//		aspects.removeIf(a -> a instanceof UnknownRequestAspect);
 		for (RequestAspect aspect : aspects) {
 			if (aspect.isDirty() && !this.isDirty())
 				setDirty(true);
@@ -84,7 +98,52 @@ public abstract class RequestContainer extends Dirtyable implements Searchable {
 	
 	
 	
-	
+	// used as deserialization target of unknown request containers (e.g. removed plugins)
+		@Data
+		@AllArgsConstructor
+		@JsonDeserialize(using = CustomUnknownDeserializer.class)
+		@JsonSerialize(using = CustomUnknownSerializer.class)
+		public static class UnknownRequestContainer extends RequestContainer {
+			private TreeNode content;
+			
+			@Override
+			public String getType() {
+				return "UNKNOWN";
+			}
+
+			@Override
+			public String getName() {
+				return "missing plugin";
+			}
+		};
+		
+		
+		public static class CustomUnknownDeserializer extends JsonDeserializer<UnknownRequestContainer> {
+
+			@Override
+			public UnknownRequestContainer deserialize(JsonParser p, DeserializationContext ctxt)
+					throws IOException, JsonProcessingException {
+				TreeNode tree = p.getCodec().readTree(p);
+				
+				return new UnknownRequestContainer(tree);
+			}
+			
+		}
+		
+		public static class CustomUnknownSerializer extends JsonSerializer<UnknownRequestContainer> {
+
+			@Override
+			public void serialize(UnknownRequestContainer value, JsonGenerator gen, SerializerProvider serializers)
+					throws IOException {
+				gen.writeTree(value.content);
+			}
+
+			@Override
+			public void serializeWithType(UnknownRequestContainer value, JsonGenerator gen, SerializerProvider serializers,
+					TypeSerializer typeSer) throws IOException {
+				gen.writeTree(value.content);
+			}
+		}
 	
 	
 }

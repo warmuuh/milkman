@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import milkman.domain.Collection;
 import milkman.domain.Environment;
 import milkman.domain.RequestContainer;
+import milkman.domain.RequestContainer.UnknownRequestContainer;
 import milkman.domain.RequestExecutionContext;
 import milkman.domain.ResponseContainer;
 import milkman.domain.Workspace;
@@ -61,7 +62,23 @@ public class WorkspaceController {
 	public void loadWorkspace(Workspace workspace) {
 		this.activeWorkspace = workspace;
 		loadCollections(workspace);
+		closeUnknownRequestContainers(workspace);
 		displayRequest(workspace.getActiveRequest());
+	}
+
+
+	private void closeUnknownRequestContainers(Workspace workspace) {
+		
+		workspace.getOpenRequests().removeIf(UnknownRequestContainer.class::isInstance);
+		
+		if (workspace.getOpenRequests().isEmpty()) {
+			workspace.getOpenRequests().add(requestTypeManager.createNewRequest(true));
+		}
+		
+		if (workspace.getActiveRequest() instanceof UnknownRequestContainer) {
+			workspace.setActiveRequest(workspace.getOpenRequests().get(0));
+		}
+			
 	}
 
 
@@ -310,7 +327,7 @@ public class WorkspaceController {
 	}
 
 	private Collection createNewCollection(String collectionName) {
-		Collection c = new Collection(collectionName, new LinkedList<>());
+		Collection c = new Collection(UUID.randomUUID().toString(), collectionName, new LinkedList<>());
 		activeWorkspace.getCollections().add(c);
 		return c;
 	}

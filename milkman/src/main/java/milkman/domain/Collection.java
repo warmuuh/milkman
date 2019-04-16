@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Collection implements Searchable {
+	private String id;
 	private String name;
 	private List<RequestContainer> requests;
 	

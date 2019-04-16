@@ -137,7 +137,7 @@ public class ApplicationController {
 
 
 	private void syncWorkspace() {
-		syncManager.syncWorkspace(workspaceController.getActiveWorkspace());
+		syncManager.syncWorkspace(workspaceController.getActiveWorkspace(), toaster);
 	}
 
 

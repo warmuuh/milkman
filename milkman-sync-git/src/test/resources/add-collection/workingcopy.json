@@ -1,0 +1,49 @@
+[ {
+  "name" : "requests",
+  "requests" : [ {
+    "@class" : "milkman.ui.plugin.rest.domain.RestRequestContainer",
+    "dirty" : false,
+    "id" : "6d5fdd99-a207-4a1e-917f-07913cd74ed8",
+    "inStorage" : true,
+    "name" : "google",
+    "aspects" : [ {
+      "@class" : "milkman.ui.plugin.rest.domain.RestHeaderAspect",
+      "dirty" : false,
+      "entries" : [ ]
+    }, {
+      "@class" : "milkman.ui.plugin.rest.domain.RestBodyAspect",
+      "dirty" : false,
+      "body" : null
+    }, {
+      "@class" : "milkman.ui.plugin.rest.domain.RestQueryParamAspect",
+      "dirty" : false,
+      "entries" : [ ]
+    }],
+    "url" : "http://www.google.com",
+    "httpMethod" : "GET"
+  } ]
+}, {
+  "name" : "newCollection",
+  "requests" : [ {
+    "@class" : "milkman.ui.plugin.rest.domain.RestRequestContainer",
+    "dirty" : false,
+    "id" : "12893798as9d",
+    "inStorage" : true,
+    "name" : "google",
+    "aspects" : [ {
+      "@class" : "milkman.ui.plugin.rest.domain.RestHeaderAspect",
+      "dirty" : false,
+      "entries" : [ ]
+    }, {
+      "@class" : "milkman.ui.plugin.rest.domain.RestBodyAspect",
+      "dirty" : false,
+      "body" : null
+    }, {
+      "@class" : "milkman.ui.plugin.rest.domain.RestQueryParamAspect",
+      "dirty" : false,
+      "entries" : [ ]
+    }],
+    "url" : "http://www.google.com",
+    "httpMethod" : "GET"
+  } ]
+} ]
