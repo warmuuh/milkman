@@ -13,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Separator;
+import javafx.scene.layout.HBox;
 import lombok.Value;
 import lombok.val;
 import milkman.domain.Environment;
@@ -30,7 +31,7 @@ public class ToolbarComponent implements Initializable {
 
 	@FXML ChoiceBox<ChoiceboxEntry> environmentSelection;
 
-	@FXML JFXButton syncBtn;
+	@FXML HBox syncBtn;
 
 	
 	
@@ -146,7 +147,15 @@ public class ToolbarComponent implements Initializable {
 	}
 
 	@FXML public void onSync() {
-		onCommand.invoke(new AppCommand.SyncWorkspace());
+		
+	}
+
+	@FXML public void onPull() {
+		onCommand.invoke(new AppCommand.SyncWorkspace(false));
+	}
+
+	@FXML public void onPush() {
+		onCommand.invoke(new AppCommand.SyncWorkspace(true));
 	}
 	
 	

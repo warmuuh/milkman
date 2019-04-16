@@ -77,5 +77,6 @@ public interface AppCommand {
 	
 	@Value
 	public static class SyncWorkspace implements AppCommand {
+		boolean isPush;
 	}
 }

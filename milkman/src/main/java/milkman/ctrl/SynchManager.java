@@ -19,14 +19,14 @@ public class SynchManager {
 
 	private final UiPluginManager plugins;
 
-	public void syncWorkspace(Workspace workspace, Toaster toaster) {
+	public void syncWorkspace(boolean isPush, Workspace workspace, Toaster toaster) {
 		if (!workspace.getSyncDetails().isSyncActive())
 			return;
 		
 		for (WorkspaceSynchronizer synchronizer : plugins.loadSyncPlugins()) {
 			if (synchronizer.supportSyncOf(workspace)) {
 				try {
-					synchronizer.synchronize(workspace);
+					synchronizer.synchronize(isPush, workspace);
 				} catch (Throwable t) {
 					log.warn("Failed to sync", t);
 					toaster.showToast(ExceptionUtils.getRootCauseMessage(t));

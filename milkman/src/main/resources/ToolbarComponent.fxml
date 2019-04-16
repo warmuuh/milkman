@@ -38,8 +38,10 @@ fx:controller="milkman.ui.main.ToolbarComponent">
 <!-- 			</items> -->
 		</ChoiceBox>
 
-		<JFXButton text="Sync"  onAction="#onSync" fx:id="syncBtn" ></JFXButton>
-
+		<HBox  fx:id="syncBtn">
+			<JFXButton text="Pull"  onAction="#onPull"></JFXButton>
+			<JFXButton text="Push"  onAction="#onPush"></JFXButton>
+		</HBox>
 		<JFXButton text="Import" onAction="#onImport"></JFXButton>		
 
 
