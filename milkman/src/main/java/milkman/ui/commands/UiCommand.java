@@ -35,6 +35,12 @@ public interface UiCommand {
 	@Value
 	public static class CloseRequest implements UiCommand {
 		RequestContainer request;
+		CloseType type;
+		public enum CloseType {
+			CLOSE_THIS,
+			CLOSE_ALL,
+			CLOSE_RIGHT,
+		}
 	}
 	
 	@Value

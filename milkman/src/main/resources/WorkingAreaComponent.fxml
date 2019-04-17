@@ -32,7 +32,7 @@
 <!-- 			<ScrollPane fx:id="openTabsScroller" pannable="true" hbarPolicy="NEVER" vbarPolicy="NEVER"> -->
 <!-- 				<HBox  fx:id="openedTabsBar"></HBox> -->
 <!-- 			</ScrollPane> -->
-		<JFXTabPane fx:id="tabPane">
+		<JFXTabPane fx:id="tabPane" HBox.hgrow="ALWAYS">
 			<tabs>
 			</tabs>
 		</JFXTabPane>

@@ -9,6 +9,7 @@ import javax.inject.Singleton;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXToggleButton;
+import com.jfoenix.skins.JFXTabPaneSkin;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -28,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 import milkman.ui.commands.UiCommand;
+import milkman.ui.commands.UiCommand.CloseRequest.CloseType;
 import milkman.utils.Event;
 import com.jfoenix.controls.JFXTabPane;
 
@@ -55,13 +57,21 @@ public class WorkingAreaComponent implements Initializable {
 	private void setupTabs(RequestContainer activeRequest, List<RequestContainer> openedRequests) {
 		tabPane.getSelectionModel().selectedItemProperty().removeListener(tabChangeListener);
 		tabPane.getTabs().clear();
-		openedRequests.forEach(r -> {
+		Tab activeTab = null;
+		for(RequestContainer r : openedRequests){
 			boolean isActive = activeRequest == r;
 			Tab tab = createTestTab(r, isActive);
 			tabPane.getTabs().add(tab);
 			if (isActive)
-				tabPane.getSelectionModel().select(tab);
-		});
+				activeTab = tab;
+		};
+		if (activeTab != null) {
+			Tab t = activeTab;
+//			Platform.runLater(() -> {
+				tabPane.getSelectionModel().select(t);	
+//			});
+		}
+		
 		tabPane.getSelectionModel().selectedItemProperty().addListener(tabChangeListener);
 		log.info("tab repainted");
 	}
@@ -81,14 +91,21 @@ public class WorkingAreaComponent implements Initializable {
 		});
 		
 		MenuItem closeEntry = new MenuItem("Close");
-		closeEntry.setOnAction(a -> onCommand.invoke(new UiCommand.CloseRequest(r)));
+		closeEntry.setOnAction(a -> onCommand.invoke(new UiCommand.CloseRequest(r, CloseType.CLOSE_THIS)));
+		
+		MenuItem closeRightEntry = new MenuItem("Close Tabs to the Right");
+		closeRightEntry.setOnAction(a -> onCommand.invoke(new UiCommand.CloseRequest(r, CloseType.CLOSE_RIGHT)));
+		
+		MenuItem closeAllEntry = new MenuItem("Close All");
+		closeAllEntry.setOnAction(a -> onCommand.invoke(new UiCommand.CloseRequest(r, CloseType.CLOSE_ALL)));
+		
 		
 		MenuItem renameEntry = new MenuItem("Rename");
 		renameEntry.setOnAction(a -> {
 			onCommand.invoke(new UiCommand.RenameRequest(r));
 		});
 		
-		tab.setContextMenu(new ContextMenu(closeEntry, renameEntry));
+		tab.setContextMenu(new ContextMenu(closeEntry, closeRightEntry,closeAllEntry, renameEntry));
 		
 		tab.setUserData(r);
 

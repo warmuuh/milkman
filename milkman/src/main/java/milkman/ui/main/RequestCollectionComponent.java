@@ -91,6 +91,9 @@ public class RequestCollectionComponent {
 			else if (userData instanceof RequestContainer) {
 				onCommand.invoke(new UiCommand.LoadRequest(((RequestContainer) userData).getId()));
 			}
+			//necessary to allow re-clicking selected item, otherwise the request wont open
+			//doesnt look too good though as there is no selection.
+			Platform.runLater(() -> collectionContainer.getSelectionModel().clearSelection()); 
 		});
 	}
 	

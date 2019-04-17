@@ -80,6 +80,7 @@ public class FxmlUtil {
 	public static JFXAlert createDialog(JFXDialogLayout content) {
 		JFXAlert dialog = new JFXAlert(primaryStage);
 		dialog.setContent(content);
+		dialog.setOverlayClose(false);
 		dialog.initModality(Modality.APPLICATION_MODAL);
 		return dialog;
 	}

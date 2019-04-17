@@ -79,7 +79,7 @@ public class SqlContentType implements ContentTypePlugin {
 	
 	@Override
 	public StyleSpans<Collection<String>> computeHighlighting(String text) {
-		Matcher matcher = PATTERN.matcher(text);
+		Matcher matcher = PATTERN.matcher(text.toUpperCase());
         int lastKwEnd = 0;
         StyleSpansBuilder<Collection<String>> spansBuilder
                 = new StyleSpansBuilder<>();

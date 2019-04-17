@@ -30,6 +30,8 @@ import milkman.domain.Workspace;
 import milkman.ui.commands.AppCommand;
 import milkman.ui.commands.EnvironmentTemplater;
 import milkman.ui.commands.UiCommand;
+import milkman.ui.commands.UiCommand.CloseRequest;
+import milkman.ui.commands.UiCommand.CloseRequest.CloseType;
 import milkman.ui.commands.UiCommand.DeleteRequest;
 import milkman.ui.commands.UiCommand.RenameRequest;
 import milkman.ui.main.RequestCollectionComponent;
@@ -129,7 +131,10 @@ public class WorkspaceController {
 		RequestContainer request = requestTypeManager.createNewRequest(false);
 		displayRequest(request);
 	}
-	
+	public void createNewRequestWithDefault() {
+		RequestContainer request = requestTypeManager.createNewRequest(true);
+		displayRequest(request);
+	}
 	public void executeRequest(RequestContainer request) {
 		workingAreaView.showSpinner();
 		Optional<Environment> activeEnv = activeWorkspace.getEnvironments().stream().filter(e -> e.isActive()).findAny();
@@ -184,7 +189,8 @@ public class WorkspaceController {
 		} else if (command instanceof UiCommand.NewRequest) {
 			createNewRequest();
 		} else if (command instanceof UiCommand.CloseRequest) {
-			closeRequest(((UiCommand.CloseRequest) command).getRequest());
+			CloseRequest closeRequest = (UiCommand.CloseRequest) command;
+			closeRequest(closeRequest.getRequest(), closeRequest.getType());
 		} else if (command instanceof UiCommand.RenameRequest) {
 			RenameRequest renameRequest = (UiCommand.RenameRequest) command;
 			renameRequest(renameRequest.getRequest());
@@ -209,7 +215,7 @@ public class WorkspaceController {
 			Optional<RequestContainer> openRequest = activeWorkspace.getOpenRequests().stream()
 					.filter(r -> r.getId().equals(request.getId()))
 					.findAny();
-				openRequest.ifPresent(this::closeRequest);
+				openRequest.ifPresent(r -> closeRequest(r, CloseType.CLOSE_THIS));
 		}
 	}
 	
@@ -232,7 +238,7 @@ public class WorkspaceController {
 			.filter(r -> r.getId().equals(request.getId()))
 			.findAny();
 		
-		openRequest.ifPresent(this::closeRequest);
+		openRequest.ifPresent(r -> closeRequest(r, CloseType.CLOSE_THIS));
 	}
 
 
@@ -265,15 +271,29 @@ public class WorkspaceController {
 	}
 
 
-	private void closeRequest(RequestContainer request) {
+	private void closeRequest(RequestContainer request, CloseType type) {
 		//for now, force close it without asking to save
 		int indexOf = activeWorkspace.getOpenRequests().indexOf(request);
 		if (indexOf < 0) {
 			return;
 		}
-		activeWorkspace.getOpenRequests().remove(indexOf);
+		
+		switch (type) {
+		case CLOSE_ALL:
+			activeWorkspace.getOpenRequests().clear();
+			break;
+		case CLOSE_RIGHT:
+				while(activeWorkspace.getOpenRequests().size() > indexOf+1)
+					activeWorkspace.getOpenRequests().remove(activeWorkspace.getOpenRequests().size()-1);
+			break;
+		case CLOSE_THIS:
+			activeWorkspace.getOpenRequests().remove(indexOf);
+			break;
+		default:
+			break;
+		}
 		if(activeWorkspace.getOpenRequests().isEmpty()) {
-			createNewRequest();
+			createNewRequestWithDefault();
 		} else {
 			RequestContainer newRequestToDisplay = activeWorkspace.getOpenRequests()
 					.get(Math.min(indexOf, activeWorkspace.getOpenRequests().size()-1));
