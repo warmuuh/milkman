@@ -92,7 +92,10 @@ public abstract class RequestContainer extends Dirtyable implements Searchable {
 
 
 	@Override
-	public void setDirty(boolean dirty) {
+	public void setDirty(Boolean dirty) {
+		if (dirty == null)
+			dirty = false;
+		
 		super.setDirty(dirty);
 		//propagate to children:
 		for (RequestAspect aspect : aspects) {
