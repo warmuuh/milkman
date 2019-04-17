@@ -347,7 +347,7 @@ public class WorkspaceController {
 	}
 
 	private Collection createNewCollection(String collectionName) {
-		Collection c = new Collection(UUID.randomUUID().toString(), collectionName, new LinkedList<>());
+		Collection c = new Collection(UUID.randomUUID().toString(), collectionName, false, new LinkedList<>());
 		activeWorkspace.getCollections().add(c);
 		return c;
 	}

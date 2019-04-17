@@ -247,6 +247,10 @@
 	-fx-padding: 0 3 0 3;
 }
 
+.btn-starring {
+	-fx-translate-y: -3;
+}
+
 /**
  * request collcetion area > entries
  */

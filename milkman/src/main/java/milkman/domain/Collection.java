@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class Collection implements Searchable {
 	private String id;
 	private String name;
+	private boolean starred;
 	private List<RequestContainer> requests;
 	
 	@Override

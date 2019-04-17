@@ -63,7 +63,7 @@ public class PostmanImporter {
 			requests.addAll(convertToDomain(container));	
 		}
 
-		return new Collection(UUID.randomUUID().toString(), pmCollection.info.name, requests);
+		return new Collection(UUID.randomUUID().toString(), pmCollection.info.name, false, requests);
 	}
 	
 	

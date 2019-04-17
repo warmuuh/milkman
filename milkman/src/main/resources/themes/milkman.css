@@ -214,6 +214,10 @@
 	
 }
 
+.btn-starring {
+	-fx-translate-y: -3;
+}
+
 /**
  * request collcetion area > entries
  */

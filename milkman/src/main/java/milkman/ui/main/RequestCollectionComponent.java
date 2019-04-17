@@ -12,8 +12,10 @@ import javax.inject.Singleton;
 
 import org.reactfx.EventStreams;
 
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXListCell;
 import com.jfoenix.controls.JFXListView;
+import com.jfoenix.controls.JFXToggleButton;
 import com.jfoenix.controls.JFXTreeView;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
@@ -33,6 +35,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeItemBuilder;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
@@ -115,7 +118,21 @@ public class RequestCollectionComponent {
 	
 
 	private HBox createCollectionEntry(Collection collection) {
-		HBox hBox = new HBox(new FontAwesomeIconView(FontAwesomeIcon.FOLDER_ALT, "1.5em"), new Label(collection.getName()));
+		Label collectionName = new Label(collection.getName());
+		HBox.setHgrow(collectionName, Priority.ALWAYS);
+		
+		
+		
+		JFXButton starringBtn = new JFXButton();
+		starringBtn.getStyleClass().add("btn-starring");
+		starringBtn.setGraphic(collection.isStarred() ? new FontAwesomeIconView(FontAwesomeIcon.STAR, "1em") : new FontAwesomeIconView(FontAwesomeIcon.STAR_ALT, "1em"));
+		starringBtn.setOnAction( e -> {
+			collection.setStarred(!collection.isStarred());
+			starringBtn.setGraphic(collection.isStarred() ? new FontAwesomeIconView(FontAwesomeIcon.STAR, "1em") : new FontAwesomeIconView(FontAwesomeIcon.STAR_ALT, "1em"));
+		});
+		
+		
+		HBox hBox = new HBox(new FontAwesomeIconView(FontAwesomeIcon.FOLDER_ALT, "1.5em"), collectionName, starringBtn);
 
 		MenuItem deleteEntry = new MenuItem("Delete");
 		deleteEntry.setOnAction(e -> onCommand.invoke(new UiCommand.DeleteCollection(collection)));
@@ -146,7 +163,14 @@ public class RequestCollectionComponent {
 	private void setFilterPredicate(FilteredList<TreeItem<Node>> filteredList,
 			String searchTerm) {
 		if (searchTerm != null && searchTerm.length() > 0)
-			filteredList.setPredicate(o -> ((Searchable)o.getValue().getUserData()).match(searchTerm));
+			filteredList.setPredicate(o -> {
+				Object userData = o.getValue().getUserData();
+				if (userData instanceof Collection)
+					if (((Collection) userData).isStarred())
+						return true;
+				
+				return ((Searchable)userData).match(searchTerm);
+			});
 		else
 			filteredList.setPredicate(o -> true);
 	}
