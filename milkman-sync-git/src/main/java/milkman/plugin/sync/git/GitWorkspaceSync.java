@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.errors.CanceledException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidConfigurationException;
@@ -74,17 +75,20 @@ public class GitWorkspaceSync implements WorkspaceSynchronizer {
 		DiffNode workingCopyChanges = diffMerger.compare(workingCopy, commonCopy);
 
 		//step2: merge diffs to server copy
-		diffMerger.mergeDiffs(workingCopy, serverCopy, workingCopyChanges);
-		mapper.writeValue(collectionFile, serverCopy);
-		repo.add()
-			.addFilepattern(".")
-			.call();
-		repo.commit()
-			.setMessage("milkman sync")
-			.call();
-		repo.push()
-			.setCredentialsProvider(creds(syncDetails))
-			.call();
+		if (workingCopyChanges.isChanged()) {
+			diffMerger.mergeDiffs(workingCopy, serverCopy, workingCopyChanges);
+			mapper.writeValue(collectionFile, serverCopy);
+			repo.add()
+				.addFilepattern(".")
+				.call();
+			repo.commit()
+				.setMessage("milkman sync")
+				.call();
+			repo.push()
+				.setCredentialsProvider(creds(syncDetails))
+				.call();
+		}
+		
 		
 		//step3: merge server-diffs to working copy
 		workspace.setCollections(serverCopy);

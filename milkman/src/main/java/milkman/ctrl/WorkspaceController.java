@@ -312,8 +312,8 @@ public class WorkspaceController {
 				for (ListIterator<RequestContainer> iterator = collection.getRequests().listIterator(); iterator.hasNext();) {
 					RequestContainer requestContainer = iterator.next();
 					if (requestContainer.getId().equals(request.getId())){
-						iterator.set(ObjectUtils.deepClone(request));
 						request.setDirty(false);
+						iterator.set(ObjectUtils.deepClone(request));
 						loadCollections(activeWorkspace);
 						break outer;
 					}
