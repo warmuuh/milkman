@@ -9,7 +9,7 @@ public interface WorkspaceSynchronizer {
 	
 	boolean supportSyncOf(Workspace workspace);
 	
-	void synchronize(boolean isPush, Workspace workspace);
+	void synchronize(Workspace workspace);
 
 	
 

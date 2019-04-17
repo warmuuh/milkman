@@ -2,7 +2,9 @@ package milkman.plugin.sync.git;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.CanceledException;
@@ -20,6 +22,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import de.danielbechler.diff.node.DiffNode;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.Collection;
@@ -45,32 +48,46 @@ public class GitWorkspaceSync implements WorkspaceSynchronizer {
 
 	@Override
 	@SneakyThrows
-	public void synchronize(boolean isPush, Workspace workspace) {
+	public void synchronize(Workspace workspace) {
 		GitSyncDetails syncDetails = (GitSyncDetails) workspace.getSyncDetails();
-		
-		//step1: update remote copy
-		File syncDir = new File("sync/"+workspace.getWorkspaceId()+"/");
-		Git repo = refreshRepository(syncDetails, syncDir);
 		ObjectMapper mapper = createMapper();
+		CollectionDiffer diffMerger = new CollectionDiffer();
+
 		
-		//step 2: sync
+		File syncDir = new File("sync/"+workspace.getWorkspaceId()+"/");
 		File collectionFile = new File(syncDir, "collections.json");
+
+		List<Collection> commonCopy = new LinkedList<Collection>();
+		if (collectionFile.exists())
+			commonCopy = mapper.readValue(collectionFile, new TypeReference<List<Collection>>() {});
 		
-		if (isPush) {
-			mapper.writeValue(collectionFile, workspace.getCollections());
-			repo.add()
-				.addFilepattern(".")
-				.call();
-			repo.commit()
-				.setMessage("milkman sync")
-				.call();
-			repo.push()
-				.setCredentialsProvider(creds(syncDetails))
-				.call();
-		} else { // pull
-			List<Collection> remoteCollections = mapper.readValue(collectionFile, new TypeReference<List<Collection>>() {});
-			workspace.setCollections(remoteCollections);
-		}
+		
+		Git repo = refreshRepository(syncDetails, syncDir);
+		
+		List<Collection> serverCopy = new LinkedList<Collection>();
+		if (collectionFile.exists())
+			serverCopy = mapper.readValue(collectionFile, new TypeReference<List<Collection>>() {});
+		
+		List<Collection> workingCopy = workspace.getCollections();
+		
+		//step1: compute diff against common copy
+		DiffNode workingCopyChanges = diffMerger.compare(workingCopy, commonCopy);
+
+		//step2: merge diffs to server copy
+		diffMerger.mergeDiffs(workingCopy, serverCopy, workingCopyChanges);
+		mapper.writeValue(collectionFile, serverCopy);
+		repo.add()
+			.addFilepattern(".")
+			.call();
+		repo.commit()
+			.setMessage("milkman sync")
+			.call();
+		repo.push()
+			.setCredentialsProvider(creds(syncDetails))
+			.call();
+		
+		//step3: merge server-diffs to working copy
+		workspace.setCollections(serverCopy);
 	}
 
 	private ObjectMapper createMapper() {

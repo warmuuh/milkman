@@ -92,7 +92,7 @@ public class ApplicationController {
 		
 		//initial pull of shared repo
 		if (syncDetails.isSyncActive())
-			syncManager.syncWorkspace(false, workspace, toaster);
+			syncManager.syncWorkspace(workspace, toaster);
 		
 		persistence.persistWorkspace(workspace);
 		if (loadWorkspace)
@@ -136,17 +136,16 @@ public class ApplicationController {
 		} else if (command instanceof AppCommand.ManageOptions) {
 			openOptionsDialog();
 		}  else if (command instanceof AppCommand.SyncWorkspace) {
-			syncWorkspace(((AppCommand.SyncWorkspace) command).isPush());
+			syncWorkspace();
 		} else {
 			throw new IllegalArgumentException("Unsupported command: " + command);
 		}
 	}
 
 
-	private void syncWorkspace(boolean isPush) {
-		syncManager.syncWorkspace(isPush, workspaceController.getActiveWorkspace(), toaster);
-		if (!isPush)
-			workspaceController.loadWorkspace(workspaceController.getActiveWorkspace());
+	private void syncWorkspace() {
+		syncManager.syncWorkspace(workspaceController.getActiveWorkspace(), toaster);
+		workspaceController.loadWorkspace(workspaceController.getActiveWorkspace());
 	}
 
 

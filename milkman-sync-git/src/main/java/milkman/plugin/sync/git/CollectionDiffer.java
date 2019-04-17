@@ -1,6 +1,5 @@
 package milkman.plugin.sync.git;
 
-import static org.assertj.core.api.Assertions.assertThat;
 
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -11,14 +10,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-
 import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.danielbechler.diff.ObjectDifferBuilder;
 import de.danielbechler.diff.identity.IdentityStrategy;
@@ -109,6 +102,7 @@ public class CollectionDiffer {
 			else if (node.getState() == DiffNode.State.REMOVED)
 			{
 				node.canonicalUnset(head);
+				visit.dontGoDeeper();
 			}
 			else if (node.getState() == DiffNode.State.CHANGED)
 			{

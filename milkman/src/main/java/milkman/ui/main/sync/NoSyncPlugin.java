@@ -14,7 +14,7 @@ public class NoSyncPlugin implements WorkspaceSynchronizer {
 	}
 
 	@Override
-	public void synchronize(boolean isPush, Workspace workspace) {
+	public void synchronize(Workspace workspace) {
 		
 	}
 

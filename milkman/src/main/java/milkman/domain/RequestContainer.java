@@ -56,7 +56,7 @@ public abstract class RequestContainer extends Dirtyable implements Searchable {
 	}
 	
 	public List<RequestAspect> getAspects(){
-		return Collections.unmodifiableList(aspects);
+		return aspects;
 	}
 
 	public <T extends RequestAspect> Optional<T> getAspect(Class<T> aspectType) {
@@ -76,6 +76,11 @@ public abstract class RequestContainer extends Dirtyable implements Searchable {
 
 	public void setAspects(List<RequestAspect> aspects) {
 		this.aspects = aspects;
+		if (aspects == null) {
+			this.aspects = new LinkedList<RequestAspect>();
+			return;
+		}
+			
 //		aspects.removeIf(a -> a instanceof UnknownRequestAspect);
 		for (RequestAspect aspect : aspects) {
 			if (aspect.isDirty() && !this.isDirty())
