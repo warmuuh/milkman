@@ -31,7 +31,7 @@ public class ToolbarComponent implements Initializable {
 
 	@FXML ChoiceBox<ChoiceboxEntry> environmentSelection;
 
-	@FXML HBox syncBtn;
+	@FXML JFXButton syncBtn;
 
 	
 	
@@ -147,17 +147,7 @@ public class ToolbarComponent implements Initializable {
 	}
 
 	@FXML public void onSync() {
-		
+		onCommand.invoke(new AppCommand.SyncWorkspace());
 	}
-
-	@FXML public void onPull() {
-		onCommand.invoke(new AppCommand.SyncWorkspace(false));
-	}
-
-	@FXML public void onPush() {
-		onCommand.invoke(new AppCommand.SyncWorkspace(true));
-	}
-	
-	
 	
 }
