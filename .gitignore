@@ -4,4 +4,3 @@
 target/
 /.apt_generated_tests/
 database.db
-sync/
