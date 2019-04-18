@@ -86,7 +86,7 @@ public class PostmanDumpImporter {
 		
 		RestHeaderAspect headers = new RestHeaderAspect();
 		if (request.getHeaderData() != null)
-			request.getHeaderData().forEach(h -> headers.getEntries().add(new HeaderEntry(h.getKey(), h.getValue(), true)));
+			request.getHeaderData().forEach(h -> headers.getEntries().add(new HeaderEntry(UUID.randomUUID().toString(), h.getKey(), h.getValue(), true)));
 		container.addAspect(headers);
 		
 		RestBodyAspect body = new RestBodyAspect();

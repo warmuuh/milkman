@@ -68,6 +68,14 @@ public class WorkspaceController {
 		displayRequest(workspace.getActiveRequest());
 	}
 
+	public void reloadActiveWorkspace() {
+		loadCollections(activeWorkspace);
+		closeUnknownRequestContainers(activeWorkspace);
+		//refresh from store, if no changes
+		if (!activeWorkspace.getActiveRequest().isDirty()) {
+			loadRequestCopy(activeWorkspace.getActiveRequest().getId(), true);
+		}
+	}
 
 	private void closeUnknownRequestContainers(Workspace workspace) {
 		
@@ -90,14 +98,21 @@ public class WorkspaceController {
 	
 	
 	
-	public void loadRequestCopy(String requestId) {
+	public void loadRequestCopy(String requestId, boolean forceRefresh) {
 		
+		if (forceRefresh) {
+			activeWorkspace.getOpenRequests().removeIf(r -> r.getId().equals(requestId));
+		}
+
 		//determine if we need to open a new copy of it or if it is opened already:
 		val openedReqCopy = activeWorkspace.getOpenRequests().stream()
 			.filter(r -> r.getId().equals(requestId))
 			.findAny();
 		
+		
 		RequestContainer request = openedReqCopy.orElseGet(() -> ObjectUtils.deepClone(findRequest(requestId)));
+		
+		
 		displayRequest(request);
 	}
 	
@@ -183,7 +198,7 @@ public class WorkspaceController {
 			saveRequest(saveCmd.getRequest());
 		} else if (command instanceof UiCommand.LoadRequest) {
 			val openCmd = ((UiCommand.LoadRequest) command);
-			loadRequestCopy(openCmd.getRequestId());
+			loadRequestCopy(openCmd.getRequestId(), false);
 		} else if (command instanceof UiCommand.SwitchToRequest) {
 			displayRequest(((UiCommand.SwitchToRequest) command).getRequest());
 		} else if (command instanceof UiCommand.NewRequest) {

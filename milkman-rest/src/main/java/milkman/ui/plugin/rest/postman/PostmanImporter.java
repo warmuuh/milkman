@@ -81,7 +81,7 @@ public class PostmanImporter {
 			
 			//adding headers
 			RestHeaderAspect headers = new RestHeaderAspect();
-			pmItem.request.header.forEach(h -> headers.getEntries().add(new HeaderEntry(h.key, h.value, true)));
+			pmItem.request.header.forEach(h -> headers.getEntries().add(new HeaderEntry(UUID.randomUUID().toString(),h.key, h.value, true)));
 			request.addAspect(headers);
 			
 			//adding bodies

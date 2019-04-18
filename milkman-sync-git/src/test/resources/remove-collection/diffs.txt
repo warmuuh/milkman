@@ -1,0 +1,1 @@
+/collections[Collection(name=newCollection)] [Collection(name=newCollection) -> null]

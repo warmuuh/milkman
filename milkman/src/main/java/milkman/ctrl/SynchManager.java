@@ -1,9 +1,9 @@
 package milkman.ctrl;
 
+import java.util.concurrent.CompletableFuture;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
-import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
@@ -22,36 +22,45 @@ public class SynchManager {
 
 	private final UiPluginManager plugins;
 
-	public void syncWorkspace(Workspace workspace, Toaster toaster) {
-		if (!workspace.getSyncDetails().isSyncActive())
-			return;
+	public CompletableFuture<Void> syncWorkspace(Workspace workspace, Toaster toaster) {
+		if (!workspace.getSyncDetails().isSyncActive()) {
+			CompletableFuture<Void> future = new CompletableFuture<Void>();
+			future.completeExceptionally(new RuntimeException("Sync not active"));
+			return future;
+		}
 		
 		for (WorkspaceSynchronizer synchronizer : plugins.loadSyncPlugins()) {
 			if (synchronizer.supportSyncOf(workspace)) {
-				triggerSynchronization(workspace, synchronizer, toaster);
-				return;
+				return triggerSynchronization(workspace, synchronizer, toaster);
 			}
 		}
+		
+		CompletableFuture<Void> future = new CompletableFuture<Void>();
+		future.completeExceptionally(new RuntimeException("No matching sync plugin found"));
+		return future;
 	}
 
 	
-	private void triggerSynchronization(Workspace workspace, WorkspaceSynchronizer synchronizer, Toaster toaster) {
+	private CompletableFuture<Void> triggerSynchronization(Workspace workspace, WorkspaceSynchronizer synchronizer, Toaster toaster) {
+		CompletableFuture<Void> future = new CompletableFuture<Void>();
 		SyncServiceTask task = new SyncServiceTask(workspace, synchronizer);
 		
 		task.setOnSucceeded(e -> {
 			SyncResult result = task.getValue();
 			if (result.isSuccess()) {
-				toaster.showToast("Synchronized");
+				future.complete(null);
 			} else {
-				toaster.showToast("Sync failed: " + ExceptionUtils.getRootCauseMessage(result.getT()));
+				future.completeExceptionally(result.getT());
 			}
 		});
 		
 		task.setOnFailed(e -> {
-			toaster.showToast("Sync Failed");
+			future.completeExceptionally(new RuntimeException("Sync Failed"));
 		});
 		
 		task.start();
+		
+		return future;
 	}
 
 

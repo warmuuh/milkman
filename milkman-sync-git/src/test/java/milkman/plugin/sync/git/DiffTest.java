@@ -30,7 +30,13 @@ public class DiffTest {
 	
 
 	@ParameterizedTest
-	@ValueSource(strings = {"simple-change", "add-collection"})
+	@ValueSource(strings = {
+			"change-url", 
+			"add-collection", 
+			"remove-collection",
+			"add-header",
+			"change-header" // 2 diffs (removed, added) because no identity defined for header-entries and equals = false 
+			})
 	public void shouldOnlyFindOneDiff(String dir) throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		List<Collection> remoteCollections = mapper.readValue(getClass().getResourceAsStream("/"+dir+"/basecopy.json"),
@@ -100,7 +106,25 @@ public class DiffTest {
 		
 	}
 	
-	
+
+	@Test
+	public void shouldMergeBooleansToFalse() throws JsonParseException, JsonMappingException, IOException {
+		String colId = UUID.randomUUID().toString();
+		
+		List<Collection> base = new LinkedList<Collection>();
+		base.add(new Collection(colId, "collection1", true, new LinkedList<>()));
+		
+		List<Collection> working = new LinkedList<Collection>();
+		working.add(new Collection(colId, "collection1", false, new LinkedList<>()));
+		
+		CollectionDiffer collectionDiffer = new CollectionDiffer();
+		DiffNode diffNode = collectionDiffer.compare(working, base);
+		
+		collectionDiffer.mergeDiffs(working, base, diffNode);
+		assertThat(base.get(0).isStarred()).isFalse();
+		
+		
+	}
 	
 	
 	

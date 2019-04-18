@@ -147,7 +147,12 @@ public class ToolbarComponent implements Initializable {
 	}
 
 	@FXML public void onSync() {
-		onCommand.invoke(new AppCommand.SyncWorkspace());
+		syncBtn.setDisable(true);
+		syncBtn.setText("Syncing...");
+		onCommand.invoke(new AppCommand.SyncWorkspace(() -> {
+			syncBtn.setDisable(false);
+			syncBtn.setText("Sync");
+		}));
 	}
 	
 }

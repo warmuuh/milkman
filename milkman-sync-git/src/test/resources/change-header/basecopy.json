@@ -10,7 +10,11 @@
     "aspects" : [ {
       "@class" : "milkman.ui.plugin.rest.domain.RestHeaderAspect",
       "dirty" : false,
-      "entries" : [ ]
+      "entries" : [ {
+        "name" : "content-type",
+        "value" : "application/xml",
+        "enabled" : true
+	  } ]
     }, {
       "@class" : "milkman.ui.plugin.rest.domain.RestBodyAspect",
       "dirty" : false,

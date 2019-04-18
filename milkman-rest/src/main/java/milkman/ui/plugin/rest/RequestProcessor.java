@@ -5,6 +5,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -135,7 +136,7 @@ public class RequestProcessor {
 		
 		RestResponseHeaderAspect headers = new RestResponseHeaderAspect();
 		for (Header h : httpResponse.getAllHeaders()) {
-			headers.getEntries().add(new HeaderEntry(h.getName(), h.getValue(), false));
+			headers.getEntries().add(new HeaderEntry(UUID.randomUUID().toString(), h.getName(), h.getValue(), false));
 		}
 		response.getAspects().add(headers);
 		

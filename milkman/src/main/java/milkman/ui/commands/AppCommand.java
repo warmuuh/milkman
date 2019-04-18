@@ -78,5 +78,6 @@ public interface AppCommand {
 	
 	@Value
 	public static class SyncWorkspace implements AppCommand {
+		Runnable callback;
 	}
 }

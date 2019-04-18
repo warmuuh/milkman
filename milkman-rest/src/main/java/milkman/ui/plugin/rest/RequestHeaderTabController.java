@@ -12,6 +12,8 @@ import milkman.utils.fxml.FxmlUtil;
 
 import static milkman.utils.FunctionalUtils.*;
 
+import java.util.UUID;
+
 public class RequestHeaderTabController implements RequestAspectEditor {
 
 
@@ -22,7 +24,7 @@ public class RequestHeaderTabController implements RequestAspectEditor {
 		JfxTableEditor<HeaderEntry> editor = FxmlUtil.loadAndInitialize("/components/TableEditor.fxml");
 		editor.enableEdition(() -> {
 			headers.setDirty(true);
-			return new HeaderEntry("", "", true);
+			return new HeaderEntry(UUID.randomUUID().toString(), "", "", true);
 		});
 		editor.addCheckboxColumn("Enabled", HeaderEntry::isEnabled, run(HeaderEntry::setEnabled).andThen(() -> headers.setDirty(true)));
 		editor.addColumn("Name", HeaderEntry::getName, run(HeaderEntry::setName).andThen(() -> headers.setDirty(true)));

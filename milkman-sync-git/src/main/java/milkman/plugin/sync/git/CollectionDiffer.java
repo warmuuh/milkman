@@ -6,17 +6,29 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+
+import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.introspect.ConcreteBeanPropertyBase;
 
 import de.danielbechler.diff.ObjectDifferBuilder;
+import de.danielbechler.diff.comparison.PrimitiveDefaultValueMode;
 import de.danielbechler.diff.identity.IdentityStrategy;
 import de.danielbechler.diff.node.DiffNode;
 import de.danielbechler.diff.node.Visit;
+import de.danielbechler.diff.path.NodePath;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,9 +36,38 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
 import milkman.domain.Collection;
+import milkman.domain.RequestContainer;
 
 public class CollectionDiffer {
 
+	/**
+	 * this class->subClass mechanic is needed because java-object-diff does not support 
+	 * defining identity strategies for generic super-classes but only the concrete types.
+	 * TODO: once fixed/introduced in java-object-diff, this needs to be removed
+	 */
+	static Map<Class, Set<Class>> classToSubclassCache = new HashMap<>();
+	private static Reflections reflections;
+	static Set<Class> subtypesOf(Class clazz){
+		if (classToSubclassCache.containsKey(clazz))
+			return classToSubclassCache.get(clazz);
+		
+		
+		
+		if (reflections == null)
+			reflections = new Reflections(new ConfigurationBuilder()
+//					.filterInputsBy(new FilterBuilder().excludePackage("lombok"))
+					.setScanners(new SubTypesScanner())
+					.build());
+		
+		Set<Class> typesOf = reflections.getSubTypesOf(clazz);
+		classToSubclassCache.put(clazz, typesOf);
+		
+		return typesOf;
+	}
+	
+	
+	
+	
 	@RequiredArgsConstructor
 	private final class PropertyBasedIdentityStrategy implements IdentityStrategy {
 		private final String propertyName;
@@ -48,6 +89,15 @@ public class CollectionDiffer {
 		}
 	}
 
+	@RequiredArgsConstructor
+	private final class TypeBasedIdentityStrategy implements IdentityStrategy {
+		@Override
+		@SneakyThrows
+		public boolean equals(Object working, Object base) {
+			return Objects.equals(working.getClass(), base.getClass());
+		}
+	}
+
 	@Data
 	@AllArgsConstructor
 	@NoArgsConstructor
@@ -56,7 +106,7 @@ public class CollectionDiffer {
 	}
 	
 	public DiffNode compare(List<Collection> working, List<Collection> base) throws JsonParseException, JsonMappingException, IOException {
-		DiffNode diffNode = ObjectDifferBuilder.startBuilding()
+		ObjectDifferBuilder diffBuilder = ObjectDifferBuilder.startBuilding()
 //				.comparison()
 //					.ofType(RestRequestContainer.class).toUseEqualsMethodOfValueProvidedByMethod("getId")
 //					.ofType(Collection.class).toUseEqualsMethodOfValueProvidedByMethod("getName")
@@ -64,9 +114,17 @@ public class CollectionDiffer {
 				.inclusion()
 					.exclude().propertyName("onDirtyChange")
 							  .propertyName("onInvalidate")
+				.and();
+		
+		
+		registerSubtypeIdentityStrategies(diffBuilder, RequestContainer.class, "aspects", new TypeBasedIdentityStrategy());
+		
+		DiffNode diffNode = diffBuilder
+				.identity().ofCollectionItems(DataHolder.class, "collections").via(new PropertyBasedIdentityStrategy("id"))
+						   .ofCollectionItems(Collection.class, "requests").via(new PropertyBasedIdentityStrategy("id"))
 				.and()
-				.identity().ofCollectionItems(Collection.class, "requests").via(new PropertyBasedIdentityStrategy("id"))
-						   .ofCollectionItems(DataHolder.class, "collections").via(new PropertyBasedIdentityStrategy("id"))
+				.comparison()
+					.ofPrimitiveTypes().toTreatDefaultValuesAs(PrimitiveDefaultValueMode.ASSIGNED)
 				.and()
 				.build()
 				.compare(new DataHolder(working), new DataHolder(base));
@@ -74,6 +132,12 @@ public class CollectionDiffer {
 		return diffNode;
 	}
 	
+	private void registerSubtypeIdentityStrategies(ObjectDifferBuilder diffBuilder, Class type, String property, IdentityStrategy strat) {
+		for (Class subType : subtypesOf(type)) {
+			diffBuilder.identity().ofCollectionItems(subType, property).via(strat);
+		}
+	}
+
 	public void mergeDiffs(List<Collection> mergeSource, List<Collection> mergeTarget, DiffNode diffs) {
 		val merger = new MergingDifferenceVisitor<>(new DataHolder(mergeTarget), new DataHolder(mergeSource));
 		diffs.visit(merger);

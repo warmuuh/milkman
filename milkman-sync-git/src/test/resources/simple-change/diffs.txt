@@ -1,1 +1,0 @@
-/collections[Collection(id=null, name=requests, requests=[RestRequestContainer(url=http://www.google.com, httpMethod=GET)])]/requests[RestRequestContainer(url=http://www.google.com, httpMethod=GET)]/url [http://www.google.com -> http://www.gogle.com]

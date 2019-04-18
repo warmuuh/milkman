@@ -9,15 +9,15 @@ import milkman.utils.PropertyChangeEvent;
 @Data
 public class Dirtyable {
 
-	private Boolean dirty = false;
+	private boolean dirty = false;
 	
 	@JsonIgnore
 	public final PropertyChangeEvent<Boolean> onDirtyChange = new PropertyChangeEvent<>();
 	@JsonIgnore
 	public final Event0 onInvalidate = new Event0();
 	
-	public void setDirty(Boolean dirty) {
-		setDirty(Boolean.TRUE.equals(dirty), true);
+	public void setDirty(boolean dirty) {
+		setDirty(dirty, true);
 	}
 	public void setDirty(boolean dirty, boolean notification) {
 		onInvalidate.invoke();
@@ -31,10 +31,5 @@ public class Dirtyable {
 	public void propagateDirtyStateTo(Dirtyable other) {
 		onDirtyChange.add((o,n) -> other.setDirty(n));
 	}
-	
-	public boolean isDirty() {
-		return dirty;
-	}
-	
-	
+		
 }

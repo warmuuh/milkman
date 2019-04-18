@@ -7,13 +7,15 @@ import org.apache.commons.lang3.StringUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(onlyExplicitlyIncluded = true)
 public class Collection implements Searchable {
 	private String id;
-	private String name;
+	@ToString.Include private String name;
 	private boolean starred;
 	private List<RequestContainer> requests;
 	

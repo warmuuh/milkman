@@ -1,4 +1,5 @@
 [ {
+  "id" : "colid1",
   "name" : "requests",
   "requests" : [ {
     "@class" : "milkman.ui.plugin.rest.domain.RestRequestContainer",
@@ -9,7 +10,11 @@
     "aspects" : [ {
       "@class" : "milkman.ui.plugin.rest.domain.RestHeaderAspect",
       "dirty" : false,
-      "entries" : [ ]
+      "entries" : [ {
+        "name" : "content-type",
+        "value" : "application/json",
+        "enabled" : true
+	  } ]
     }, {
       "@class" : "milkman.ui.plugin.rest.domain.RestBodyAspect",
       "dirty" : false,
@@ -19,7 +24,7 @@
       "dirty" : false,
       "entries" : [ ]
     }],
-    "url" : "http://www.gogle.com",
+    "url" : "http://www.google.com",
     "httpMethod" : "GET"
   } ]
 } ]

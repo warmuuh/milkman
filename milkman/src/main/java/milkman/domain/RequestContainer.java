@@ -30,15 +30,17 @@ import com.fasterxml.jackson.annotation.Nulls;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(include = As.PROPERTY, use = Id.CLASS, visible = true)
+@ToString(onlyExplicitlyIncluded = true)
 public abstract class RequestContainer extends Dirtyable implements Searchable {
 	private String id = "";
 	private boolean inStorage = false;
-	private String name;
+	@ToString.Include private String name;
 	private List<RequestAspect> aspects = new LinkedList<RequestAspect>();
 
 	
@@ -92,10 +94,7 @@ public abstract class RequestContainer extends Dirtyable implements Searchable {
 
 
 	@Override
-	public void setDirty(Boolean dirty) {
-		if (dirty == null)
-			dirty = false;
-		
+	public void setDirty(boolean dirty) {
 		super.setDirty(dirty);
 		//propagate to children:
 		for (RequestAspect aspect : aspects) {

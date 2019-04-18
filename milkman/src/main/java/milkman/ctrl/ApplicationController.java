@@ -5,11 +5,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import javafx.application.Platform;
 import lombok.RequiredArgsConstructor;
@@ -136,16 +139,26 @@ public class ApplicationController {
 		} else if (command instanceof AppCommand.ManageOptions) {
 			openOptionsDialog();
 		}  else if (command instanceof AppCommand.SyncWorkspace) {
-			syncWorkspace();
+			syncWorkspace(((AppCommand.SyncWorkspace) command).getCallback());
 		} else {
 			throw new IllegalArgumentException("Unsupported command: " + command);
 		}
 	}
 
 
-	private void syncWorkspace() {
-		syncManager.syncWorkspace(workspaceController.getActiveWorkspace(), toaster);
-		workspaceController.loadWorkspace(workspaceController.getActiveWorkspace());
+	private void syncWorkspace(Runnable callback) {
+		CompletableFuture<Void> future = syncManager.syncWorkspace(workspaceController.getActiveWorkspace(), toaster);
+		future.whenComplete((r, e) -> {
+			callback.run();
+			if (e != null) {
+				toaster.showToast("Sync failed: " + ExceptionUtils.getRootCauseMessage(e));
+			} else {
+				toaster.showToast("Sync Successfull");
+				Platform.runLater(() -> {
+					workspaceController.reloadActiveWorkspace();
+				});
+			}
+		});
 	}
 
 

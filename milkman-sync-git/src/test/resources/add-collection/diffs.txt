@@ -1,1 +1,1 @@
-/collections[Collection(id=null, name=newCollection, requests=[RestRequestContainer(url=http://www.google.com, httpMethod=GET)])] [null -> Collection(id=null, name=newCollection, requests=[RestRequestContainer(url=http://www.google.com, httpMethod=GET)])]
+/collections[Collection(name=newCollection)] [null -> Collection(name=newCollection)]
