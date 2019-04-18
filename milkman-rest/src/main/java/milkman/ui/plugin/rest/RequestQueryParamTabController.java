@@ -2,6 +2,8 @@ package milkman.ui.plugin.rest;
 
 import static milkman.utils.FunctionalUtils.run;
 
+import java.util.UUID;
+
 import javafx.scene.control.Tab;
 import lombok.SneakyThrows;
 import milkman.domain.RequestContainer;
@@ -22,7 +24,7 @@ public class RequestQueryParamTabController implements RequestAspectEditor {
 		JfxTableEditor<QueryParamEntry> editor = FxmlUtil.loadAndInitialize("/components/TableEditor.fxml");
 		editor.enableEdition(() -> {
 			updateDirtyState(qryParams, request);
-			return new QueryParamEntry("", "");
+			return new QueryParamEntry(UUID.randomUUID().toString(), "", "");
 		});
 		editor.addColumn("Name", QueryParamEntry::getName, run(QueryParamEntry::setName).andThen(() -> updateDirtyState(qryParams, request)));
 		editor.addColumn("Value", QueryParamEntry::getValue,run(QueryParamEntry::setValue).andThen(() -> updateDirtyState(qryParams, request)));

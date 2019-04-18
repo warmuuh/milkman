@@ -51,7 +51,10 @@ public class RestRequestEditController implements RequestTypeEditor {
 		//bind to param tab:
 		request.onInvalidate.clear();
 		request.onInvalidate.add(() -> requestUrl.setText(restRequest.getUrl())); //contract with query-param tab
-		request.getAspect(RestQueryParamAspect.class).ifPresent(a -> a.linkToUrlTextfield(requestUrl.textProperty()));
+		request.getAspect(RestQueryParamAspect.class).ifPresent(a -> {
+			a.parseQueryParams(requestUrl.getText());
+			a.linkToUrlTextfield(requestUrl.textProperty());
+		});
 		
 	}
 

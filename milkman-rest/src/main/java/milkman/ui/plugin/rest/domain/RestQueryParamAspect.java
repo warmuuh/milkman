@@ -2,9 +2,12 @@ package milkman.ui.plugin.rest.domain;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.http.client.methods.RequestBuilder;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javafx.beans.property.StringProperty;
 import lombok.Data;
@@ -12,6 +15,7 @@ import milkman.ui.plugin.Templater;
 
 @Data
 public class RestQueryParamAspect extends RestRequestAspect {
+
 	private List<QueryParamEntry> entries = new LinkedList<>();
 	
 	@Override
@@ -39,7 +43,7 @@ public class RestQueryParamAspect extends RestRequestAspect {
 				String[] splittedPair = pair.split("=");
 				String key = splittedPair.length > 0 ? splittedPair[0] : "";
 				String value = splittedPair.length > 1 ? splittedPair[1] : "";
-				entries.add(new QueryParamEntry(key, value));
+				entries.add(new QueryParamEntry(UUID.randomUUID().toString(), key, value));
 			}
 		}
 	}
