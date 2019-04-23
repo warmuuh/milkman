@@ -53,18 +53,21 @@ public class RequestComponent {
 		int oldSelection = tabs.getSelectionModel().getSelectedIndex();
 		
 		tabs.getTabs().clear();
-		for (RequestAspectsPlugin plugin : plugins.loadRequestAspectPlugins()) {
-			for (RequestAspectEditor tabController : plugin.getRequestTabs()) {
-				if (tabController.canHandleAspect(request)) {
-					if (tabController instanceof ContentTypeAwareEditor) {
-						((ContentTypeAwareEditor) tabController).setContentTypePlugins(plugins.loadContentTypePlugins());
-					}
-					Tab aspectTab = tabController.getRoot(request);
-					aspectTab.setClosable(false);
-					tabs.getTabs().add(aspectTab);
+		
+		plugins.loadRequestAspectPlugins().stream()
+		.flatMap(p -> p.getRequestTabs().stream())
+		.sorted((a,b) -> a.getOrder() - b.getOrder())
+		.forEach(tabController -> {
+			if (tabController.canHandleAspect(request)) {
+				if (tabController instanceof ContentTypeAwareEditor) {
+					((ContentTypeAwareEditor) tabController).setContentTypePlugins(plugins.loadContentTypePlugins());
 				}
+				Tab aspectTab = tabController.getRoot(request);
+				aspectTab.setClosable(false);
+				tabs.getTabs().add(aspectTab);
 			}
-		}
+		});
+		
 		tabs.getSelectionModel().select(oldSelection);
 	}
 
