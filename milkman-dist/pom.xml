@@ -65,6 +65,49 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>com.akathist.maven.plugins.launch4j</groupId>
+				<artifactId>launch4j-maven-plugin</artifactId>
+				<version>1.7.25</version>
+				<executions>
+					<execution>
+						<id>l4j-clui</id>
+						<phase>package</phase>
+						<goals>
+							<goal>launch4j</goal>
+						</goals>
+						<configuration>
+							<headerType>gui</headerType>
+							<outfile>target/milkman.exe</outfile>
+							<errTitle>Milkman</errTitle>
+							<icon>src/bin/milkman.ico</icon>
+							<classPath>
+								<mainClass>milkman.MilkmanApplication</mainClass>
+								<addDependencies>false</addDependencies>
+								<preCp>plugins/*;milkman.jar</preCp>
+							</classPath>
+							<jre>
+								<minVersion>1.8.0</minVersion>
+								<maxVersion>1.9.0</maxVersion>
+								<opts>
+									<opt>-Djava.endorsed.dirs=./endorsed</opt>
+								</opts>
+							</jre>
+							<versionInfo>
+								<fileVersion>2.0.0.0</fileVersion>
+								<txtFileVersion>2.0.0.0</txtFileVersion>
+								<fileDescription>Milkman</fileDescription>
+								<copyright>copyright</copyright>
+								<productVersion>2.0.0.0</productVersion>
+								<txtProductVersion>2.0.0.0</txtProductVersion>
+								<productName>Milkman</productName>
+								<internalName>milkman</internalName>
+								<originalFilename>milkman.exe</originalFilename>
+							</versionInfo>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.6</version>
 				<executions>
