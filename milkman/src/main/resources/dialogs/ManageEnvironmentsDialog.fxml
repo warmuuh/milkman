@@ -48,7 +48,7 @@
 		</StackPane>
 	</body>
 	<actions>
-		<JFXButton onAction="#onClose" styleClass="dialog-accept">Close</JFXButton>
+		<JFXButton cancelButton="true" onAction="#onClose" styleClass="dialog-accept">Close</JFXButton>
 	</actions>
 </JFXDialogLayout>
 

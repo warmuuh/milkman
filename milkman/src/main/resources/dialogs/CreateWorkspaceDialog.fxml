@@ -52,8 +52,8 @@
 		</VBox>
 	</body>
 	<actions>
-		<JFXButton onAction="#onCreate">Create</JFXButton>
-		<JFXButton onAction="#onClose">Close</JFXButton>
+		<JFXButton defaultButton="true" onAction="#onCreate">Create</JFXButton>
+		<JFXButton cancelButton="true" onAction="#onClose">Close</JFXButton>
 	</actions>
 </JFXDialogLayout>
 

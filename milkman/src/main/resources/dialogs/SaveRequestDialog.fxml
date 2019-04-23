@@ -55,7 +55,7 @@
 		</VBox>
 	</body>
 	<actions>
-		<JFXButton onAction="#onSave">Save</JFXButton>
-		<JFXButton onAction="#onCancel">Cancel</JFXButton>
+		<JFXButton defaultButton="true" onAction="#onSave">Save</JFXButton>
+		<JFXButton cancelButton="true" onAction="#onCancel">Cancel</JFXButton>
 	</actions>
 </JFXDialogLayout>

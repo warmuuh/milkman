@@ -46,7 +46,7 @@
 		</TabPane>
 	</body>
 	<actions>
-		<JFXButton onAction="#onClose">Close</JFXButton>
+		<JFXButton cancelButton="true" onAction="#onClose">Close</JFXButton>
 	</actions>
 </JFXDialogLayout>
 

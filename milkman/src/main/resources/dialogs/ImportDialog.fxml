@@ -37,8 +37,8 @@
 		</VBox>
 	</body>
 	<actions>
-		<JFXButton onAction="#onImport">Import</JFXButton>
-		<JFXButton onAction="#onClose">Close</JFXButton>
+		<JFXButton defaultButton="true" onAction="#onImport">Import</JFXButton>
+		<JFXButton cancelButton="true" onAction="#onClose">Close</JFXButton>
 	</actions>
 </JFXDialogLayout>
 
