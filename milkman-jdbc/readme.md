@@ -7,7 +7,7 @@ After placing the jar into `\plugin` folder, you also have to place the driver-j
 
 # Screenshot
 
-![img](/img/sql-plugin.png)
+![img](/img/sql-plugin.PNG)
 
 # Features
 

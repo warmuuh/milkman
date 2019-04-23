@@ -11,7 +11,7 @@ milkman.setEnvironmentVariable("test.url", url)
 
 # Screenshot
 
-![img](/img/scripting-plugin.png)
+![img](/img/scripting-plugin.PNG)
 
 # API
 
