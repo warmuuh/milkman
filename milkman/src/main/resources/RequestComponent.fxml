@@ -42,7 +42,7 @@
 			</items>
 		</SplitMenuButton>
 	</HBox>
-	<JFXTabPane  fx:id="tabs" prefHeight="300">
+	<JFXTabPane  VBox.vgrow="ALWAYS" fx:id="tabs" prefHeight="300">
 		<tabs>
 <!-- 			<Tab text="Headers"> -->
 <!-- 				<fx:include source="components/HeaderComponent.fxml" /> -->

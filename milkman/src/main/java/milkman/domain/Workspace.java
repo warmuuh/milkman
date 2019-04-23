@@ -39,7 +39,7 @@ public class Workspace {
 	private SyncDetails syncDetails = new NoSyncDetails();
 	
 	@JsonIgnore
-	private Map<RequestContainer, ResponseContainer> cachedResponses = new HashMap<RequestContainer, ResponseContainer>();
+	private Map<String, ResponseContainer> cachedResponses = new HashMap<String, ResponseContainer>();
 	
 	@JsonIgnore
 	private List<String> enqueuedRequestIds = new LinkedList<String>();

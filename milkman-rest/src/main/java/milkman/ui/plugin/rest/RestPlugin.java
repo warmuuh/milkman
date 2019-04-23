@@ -21,6 +21,9 @@ public class RestPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 
 	RequestProcessor requestProcessor = new RequestProcessor();
 	
+	public RestPlugin() {
+		System.out.println("Ctor Rest Plugin");
+	}
 	
 	@Override
 	public List<RequestAspectEditor> getRequestTabs() {

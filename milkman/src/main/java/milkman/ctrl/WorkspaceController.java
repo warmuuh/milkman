@@ -11,11 +11,10 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-
-import javafx.application.Platform;
-import javafx.scene.control.Label;
+import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
@@ -34,6 +33,8 @@ import milkman.ui.commands.UiCommand.CloseRequest;
 import milkman.ui.commands.UiCommand.CloseRequest.CloseType;
 import milkman.ui.commands.UiCommand.DeleteRequest;
 import milkman.ui.commands.UiCommand.RenameRequest;
+import milkman.ui.commands.UiCommand.SubmitRequest;
+import milkman.ui.main.HotkeyManager;
 import milkman.ui.main.RequestCollectionComponent;
 import milkman.ui.main.RequestComponent;
 import milkman.ui.main.Toaster;
@@ -54,7 +55,7 @@ public class WorkspaceController {
 	private final WorkingAreaComponent workingAreaView;
 	private final RequestComponent requestView;
 	private final RequestTypeManager requestTypeManager;
-	
+	private final HotkeyManager hotkeys;
 	private final Toaster toaster;
 	
 	private final UiPluginManager plugins;
@@ -134,8 +135,8 @@ public class WorkspaceController {
 		plugins.loadRequestAspectPlugins().forEach(p -> p.initializeRequestAspects(request));
 		workingAreaView.display(request, activeWorkspace.getOpenRequests());
 		
-		if (activeWorkspace.getCachedResponses().containsKey(request))
-			workingAreaView.displayResponseFor(request, activeWorkspace.getCachedResponses().get(request));
+		if (activeWorkspace.getCachedResponses().containsKey(request.getId()))
+			workingAreaView.displayResponseFor(request, activeWorkspace.getCachedResponses().get(request.getId()));
 		else if (activeWorkspace.getEnqueuedRequestIds().contains(request.getId()))
 			workingAreaView.showSpinner();
 		else
@@ -173,7 +174,7 @@ public class WorkspaceController {
 			addResponseTimeInfo(response, System.currentTimeMillis() - startTime);
 			activeWorkspace.getEnqueuedRequestIds().remove(request.getId());
 			plugins.loadRequestAspectPlugins().forEach(a -> a.initializeResponseAspects(request, response, context));
-			activeWorkspace.getCachedResponses().put(request, response);
+			activeWorkspace.getCachedResponses().put(request.getId(), response);
 			log.info("Received response");
 			workingAreaView.displayResponseFor(request, response);	
 		});
@@ -190,6 +191,8 @@ public class WorkspaceController {
 		log.info("Handling command: " + command);
 		if (command instanceof UiCommand.SubmitRequest) {
 			executeRequest(((UiCommand.SubmitRequest) command).getRequest());
+		} if (command instanceof UiCommand.SubmitActiveRequest) {
+			executeRequest(activeWorkspace.getActiveRequest());
 		} else if (command instanceof UiCommand.SaveRequestAsCommand) {
 			val saveCmd = ((UiCommand.SaveRequestAsCommand) command);
 			saveAsRequest(saveCmd.getRequest());
@@ -209,6 +212,8 @@ public class WorkspaceController {
 		} else if (command instanceof UiCommand.RenameRequest) {
 			RenameRequest renameRequest = (UiCommand.RenameRequest) command;
 			renameRequest(renameRequest.getRequest());
+		}  else if (command instanceof UiCommand.RenameActiveRequest) {
+			renameRequest(activeWorkspace.getActiveRequest());
 		} else if (command instanceof UiCommand.DeleteRequest) {
 			DeleteRequest deleteRequest = (UiCommand.DeleteRequest) command;
 			deleteRequest(deleteRequest.getCollection(), deleteRequest.getRequest());
@@ -366,6 +371,8 @@ public class WorkspaceController {
 		activeWorkspace.getCollections().add(c);
 		return c;
 	}
+
+	
 	
 
 	@PostConstruct
@@ -373,6 +380,7 @@ public class WorkspaceController {
 		collectionView.onCommand.add(this::handleCommand);
 		requestView.onCommand.add(this::handleCommand);
 		workingAreaView.onCommand.add(this::handleCommand);
+		hotkeys.onCommand.add(this::handleCommand);
 	}
 	
 }

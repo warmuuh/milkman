@@ -164,14 +164,14 @@ public class ApplicationController {
 
 	private void openOptionsDialog() {
 		OptionsDialog dialog = new OptionsDialog();
-		List<OptionPageProvider<?>> optionProviders = plugins.loadOptionPages();
+		List<OptionPageProvider> optionProviders = plugins.loadOptionPages();
 		dialog.showAndWait(optionProviders);
 		
 		persistOptions(optionProviders);
 	}
 
 
-	private void persistOptions(List<OptionPageProvider<?>> optionProviders) {
+	private void persistOptions(List<OptionPageProvider> optionProviders) {
 		List<OptionEntry> optEntries = optionProviders.stream()
 			.map(p -> new OptionEntry(0L, p.getClass().getName(), p.getOptions()))
 			.collect(Collectors.toList());
@@ -179,7 +179,7 @@ public class ApplicationController {
 	}
 
 	public void initOptions() {
-		List<OptionPageProvider<?>> optionProviders = plugins.loadOptionPages();
+		List<OptionPageProvider> optionProviders = plugins.loadOptionPages();
 		persistence.loadOptions().forEach(e -> {
 			optionProviders.stream().filter(p -> p.getClass().getName().equals(e.getOptionProviderClass()))
 			.findAny().ifPresent(p -> {

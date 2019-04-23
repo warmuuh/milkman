@@ -48,8 +48,11 @@ public class ResponseComponent implements Initializable {
 
 		addStatusInformation(response.getStatusInformations());
 		
-		for (RequestAspectsPlugin plugin : plugins.loadRequestAspectPlugins()) {
-			for (ResponseAspectEditor tabController : plugin.getResponseTabs()) {
+		
+		plugins.loadRequestAspectPlugins().stream()
+			.flatMap(p -> p.getResponseTabs().stream())
+			.sorted((a,b) -> a.getOrder() - b.getOrder())
+			.forEach(tabController -> {
 				if (tabController.canHandleAspect(request, response)) {
 					if (tabController instanceof ContentTypeAwareEditor) {
 						((ContentTypeAwareEditor) tabController).setContentTypePlugins(plugins.loadContentTypePlugins());
@@ -58,8 +61,8 @@ public class ResponseComponent implements Initializable {
 					aspectTab.setClosable(false);
 					tabs.getTabs().add(aspectTab);
 				}
-			}
-		}
+			});
+		
 		tabs.getSelectionModel().select(oldSelection);
 	}
 

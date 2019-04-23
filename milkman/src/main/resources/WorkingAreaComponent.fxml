@@ -23,6 +23,7 @@
 <?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXTabPane?>
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.scene.control.SplitPane?>
 
 
 <VBox xmlns:fx="http://javafx.com/fxml/1"
@@ -44,8 +45,9 @@
 <!-- 		</ToolBar> -->
 		
 	</HBox>
-	<fx:include source="RequestComponent.fxml"></fx:include>
-	<fx:include source="ResponseComponent.fxml"></fx:include>
-
+	<SplitPane orientation="VERTICAL" VBox.vgrow="ALWAYS">
+		<fx:include source="RequestComponent.fxml"></fx:include>
+		<fx:include source="ResponseComponent.fxml"></fx:include>
+	</SplitPane>
 </VBox>
 

@@ -27,7 +27,7 @@ public class OptionsDialog {
 	private Dialog dialog;
 
 	
-	public void showAndWait(List<OptionPageProvider<?>> optionPageProviders) {
+	public void showAndWait(List<OptionPageProvider> optionPageProviders) {
 		JFXDialogLayout content = FxmlUtil.loadAndInitialize("/dialogs/OptionsDialog.fxml", this);
 		content.setPrefWidth(600);
 		

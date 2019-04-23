@@ -5,20 +5,16 @@ import javax.inject.Singleton;
 
 import org.fxmisc.cssfx.CSSFX;
 
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import milkman.ui.components.ContentEditor;
 import milkman.ui.plugin.UiThemePlugin;
 import milkman.utils.fxml.FxmlUtil;
-import javafx.fxml.FXML;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_={@Inject})
@@ -29,6 +25,7 @@ public class MainWindow {
 	private final WorkingAreaComponent workingArea;
 	private final RequestCollectionComponent requestCollectionComponent;
 	private final ToolbarComponent toolbarComponent;
+	private final HotkeyManager hotkeys;
 	@Getter @FXML StackPane root;
 	private Scene mainScene;
 	
@@ -44,6 +41,8 @@ public class MainWindow {
 
 			mainScene = new Scene(root);
 			
+			hotkeys.registerGlobalHotkeys(mainScene);
+			
 			primaryStage.setScene(mainScene);
 			primaryStage.setWidth(1000);
 			primaryStage.setHeight(800);
@@ -51,7 +50,6 @@ public class MainWindow {
 			primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/icon.png")));
 			
 			CSSFX.start(primaryStage);
-			
 			
 			
 			primaryStage.show();

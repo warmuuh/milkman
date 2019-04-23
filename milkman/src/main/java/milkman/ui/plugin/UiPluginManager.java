@@ -1,7 +1,9 @@
 package milkman.ui.plugin;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.ServiceLoader;
 
 import javax.inject.Singleton;
@@ -9,67 +11,48 @@ import javax.inject.Singleton;
 @Singleton
 public class UiPluginManager {
 
+	Map<Class, List> cachedInstances = new HashMap<Class, List>();
+	
 	public List<RequestAspectsPlugin> loadRequestAspectPlugins() {
-		ServiceLoader<RequestAspectsPlugin> loader = ServiceLoader.load(RequestAspectsPlugin.class);
-
-		List<RequestAspectsPlugin> result = new LinkedList<RequestAspectsPlugin>();
-		loader.forEach(result::add);
-
-		return result;
+		return loadSpiInstances(RequestAspectsPlugin.class);
 	}
 
 	public List<RequestTypePlugin> loadRequestTypePlugins() {
-		ServiceLoader<RequestTypePlugin> loader = ServiceLoader.load(RequestTypePlugin.class);
-
-		List<RequestTypePlugin> result = new LinkedList<RequestTypePlugin>();
-		loader.forEach(result::add);
-
-		return result;
+		return loadSpiInstances(RequestTypePlugin.class);
 	}
 
 	public List<ImporterPlugin> loadImporterPlugins() {
-		ServiceLoader<ImporterPlugin> loader = ServiceLoader.load(ImporterPlugin.class);
-
-		List<ImporterPlugin> result = new LinkedList<ImporterPlugin>();
-		loader.forEach(result::add);
-
-		return result;
+		return loadSpiInstances(ImporterPlugin.class);
 	}
 	
 	public List<ContentTypePlugin> loadContentTypePlugins(){
-		ServiceLoader<ContentTypePlugin> loader = ServiceLoader.load(ContentTypePlugin.class);
-
-		List<ContentTypePlugin> result = new LinkedList<ContentTypePlugin>();
-		loader.forEach(result::add);
-
-		return result;
+		return loadSpiInstances(ContentTypePlugin.class);
 	}
 	
-	public List<OptionPageProvider<?>> loadOptionPages(){
-		ServiceLoader<OptionPageProvider> loader = ServiceLoader.load(OptionPageProvider.class);
-
-		List<OptionPageProvider<?>> result = new LinkedList<OptionPageProvider<?>>();
-		loader.forEach(result::add);
-
-		return result;
+	public List<OptionPageProvider> loadOptionPages(){
+		return loadSpiInstances(OptionPageProvider.class);
 	}
 	
 
 	public List<UiThemePlugin> loadThemePlugins(){
-		ServiceLoader<UiThemePlugin> loader = ServiceLoader.load(UiThemePlugin.class);
-
-		List<UiThemePlugin> result = new LinkedList<UiThemePlugin>();
-		loader.forEach(result::add);
-
-		return result;
+		return loadSpiInstances(UiThemePlugin.class);
 	}
 	
 	public List<WorkspaceSynchronizer> loadSyncPlugins(){
-		ServiceLoader<WorkspaceSynchronizer> loader = ServiceLoader.load(WorkspaceSynchronizer.class);
-
-		List<WorkspaceSynchronizer> result = new LinkedList<WorkspaceSynchronizer>();
+		return loadSpiInstances(WorkspaceSynchronizer.class);
+	}
+	
+	private <T> List<T> loadSpiInstances(Class<T> type) {
+		if (cachedInstances.containsKey(type))
+			return cachedInstances.get(type);
+		
+		ServiceLoader<T> loader = ServiceLoader.load(type);
+		List<T> result = new LinkedList<T>();
 		loader.forEach(result::add);
-
+		
+		cachedInstances.put(type, result);
 		return result;
 	}
+
+	
 }

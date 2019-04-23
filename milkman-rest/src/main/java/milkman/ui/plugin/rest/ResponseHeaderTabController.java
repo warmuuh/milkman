@@ -35,4 +35,8 @@ public class ResponseHeaderTabController implements ResponseAspectEditor {
 		return response.getAspect(RestResponseHeaderAspect.class).isPresent();
 	}
 
+	@Override
+	public int getOrder() {
+		return 200;
+	}
 }

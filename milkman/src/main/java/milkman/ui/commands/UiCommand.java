@@ -21,7 +21,9 @@ public interface UiCommand {
 	public static class SubmitRequest implements UiCommand {
 		RequestContainer request;
 	}
-	
+	@Value
+	public static class SubmitActiveRequest implements UiCommand {
+	}
 	@Value
 	public static class LoadRequest implements UiCommand {
 		String requestId;
@@ -54,6 +56,9 @@ public interface UiCommand {
 		RequestContainer request;
 	}
 	
+	@Value
+	public static class RenameActiveRequest implements UiCommand {
+	}
 	@Value
 	public static class NewRequest implements UiCommand {
 	}
