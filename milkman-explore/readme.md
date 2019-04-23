@@ -4,4 +4,4 @@ Extends Milkman-rest with an additional response-tab that allows for `applicatio
 
 # Screenshot
 
-tbd
+![img](/img/explore-plugin.png)

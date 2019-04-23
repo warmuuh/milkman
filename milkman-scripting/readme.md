@@ -9,6 +9,9 @@ var url = JSON.parse(milkman.response.body.body).url
 milkman.setEnvironmentVariable("test.url", url)
 ```
 
+# Screenshot
+
+![img](/img/scripting-plugin.png)
 
 # API
 

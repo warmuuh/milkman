@@ -6,4 +6,4 @@ This plugin serves demonstrational purposes and should show how milkman can be e
 
 # Screenshot
 
-tbd
+![img](/img/notes-plugin.png)

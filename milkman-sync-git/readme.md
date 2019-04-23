@@ -4,7 +4,7 @@ This plugin allows to setup a git repository to where a workspace can be synchro
 
 # Screenshot
 
-tbd
+![img](/img/git-sync-plugin.png)
 
 # Features
  * synchronizes (on-demand for now) workspaces with a remote git repository
