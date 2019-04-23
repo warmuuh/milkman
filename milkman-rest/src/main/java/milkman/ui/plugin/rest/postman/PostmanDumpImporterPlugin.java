@@ -1,6 +1,8 @@
 package milkman.ui.plugin.rest.postman;
 
 
+import java.io.InputStream;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import javafx.scene.Node;
@@ -13,7 +15,7 @@ import milkman.ui.plugin.ImporterPlugin;
 @Slf4j
 public class PostmanDumpImporterPlugin implements ImporterPlugin {
 
-	private TextArea textArea;
+	private ImportControl importCtrl;
 
 	private PostmanDumpImporter importer = new PostmanDumpImporter();
 	
@@ -24,23 +26,29 @@ public class PostmanDumpImporterPlugin implements ImporterPlugin {
 
 	@Override
 	public Node getImportControls() {
-		textArea = new TextArea();
-		return textArea;
+		importCtrl = new ImportControl();
+		return importCtrl;
 	}
 
 	@Override
 	public boolean importInto(Workspace workspace, Toaster toaster) {
+
+		InputStream stream = importCtrl.getInput();
+		if (stream == null) {
+			toaster.showToast("Missing or invalid data");
+			return false;
+		}
 		
 		try {
-			Workspace importedStuff = importer.importDump(textArea.getText());
+			Workspace importedStuff = importer.importDump(stream);
 			workspace.getCollections().addAll(importedStuff.getCollections());
 			workspace.getEnvironments().addAll(importedStuff.getEnvironments());
 			toaster.showToast("Import successful");
+			return true;
 		} catch (Exception e) {
 			log.error("Failed to import postman collection", e);
 			toaster.showToast("Failed import: " + ExceptionUtils.getRootCauseMessage(e));
 		}
-		
-		return true;
+		return false;
 	}
 }

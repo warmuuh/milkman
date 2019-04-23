@@ -1,10 +1,11 @@
 package milkman.ui.plugin.rest.postman;
 
 
+import java.io.InputStream;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import javafx.scene.Node;
-import javafx.scene.control.TextArea;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.Environment;
 import milkman.domain.Workspace;
@@ -14,7 +15,7 @@ import milkman.ui.plugin.ImporterPlugin;
 @Slf4j
 public class PostmanEnvironmentImporterPlugin implements ImporterPlugin {
 
-	private TextArea textArea;
+	private ImportControl importCtrl;
 
 	private PostmanImporter importer = new PostmanImporter();
 	
@@ -25,15 +26,19 @@ public class PostmanEnvironmentImporterPlugin implements ImporterPlugin {
 
 	@Override
 	public Node getImportControls() {
-		textArea = new TextArea();
-		return textArea;
+		importCtrl = new ImportControl();
+		return importCtrl;
 	}
 
 	@Override
 	public boolean importInto(Workspace workspace, Toaster toaster) {
-		
+		InputStream stream = importCtrl.getInput();
+		if (stream == null) {
+			toaster.showToast("Missing or invalid data");
+			return false;
+		}
 		try {
-			Environment env = importer.importEnvironment(textArea.getText());
+			Environment env = importer.importEnvironment(stream);
 			workspace.getEnvironments().add(env);
 			toaster.showToast("Imported Environment: " + env.getName());
 		} catch (Exception e) {

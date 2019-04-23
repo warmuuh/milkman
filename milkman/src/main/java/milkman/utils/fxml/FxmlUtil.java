@@ -29,6 +29,9 @@ public class FxmlUtil {
 		FxmlUtil.primaryStage = primaryStage;
 	}
 	
+	public static Stage getPrimaryStage() {
+		return primaryStage;
+	}
 	@SneakyThrows
 	public static <T, R extends Node> R loadAndInitialize(String file, T controller){
 		FXMLLoader loader = new FXMLLoader(FxmlUtil.class.getResource(file));

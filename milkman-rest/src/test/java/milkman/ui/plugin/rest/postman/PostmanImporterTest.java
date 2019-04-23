@@ -16,14 +16,14 @@ class PostmanImporterTest {
 	@Test
 	void shouldConvertCollectionProperly() throws IOException, Exception {
 		PostmanImporter sut = new PostmanImporter();
-		Collection collection  = sut.importCollection(IOUtils.toString(getClass().getResourceAsStream("/test.postman_collection.json"), "UTF-8"));
+		Collection collection  = sut.importCollection(getClass().getResourceAsStream("/test.postman_collection.json"));
 		assertThat(collection.getName()).isEqualTo("test");
 	}
 
 	@Test
 	void shouldConvertEnvironmentProperly() throws IOException, Exception {
 		PostmanImporter sut = new PostmanImporter();
-		Environment env = sut.importEnvironment(IOUtils.toString(getClass().getResourceAsStream("/test.postman_environment.json"), "UTF-8"));
+		Environment env = sut.importEnvironment(getClass().getResourceAsStream("/test.postman_environment.json"));
 		assertThat(env.getName()).isEqualTo("test");
 	}
 }

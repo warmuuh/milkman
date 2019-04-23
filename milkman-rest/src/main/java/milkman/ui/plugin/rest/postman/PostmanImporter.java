@@ -1,6 +1,7 @@
 package milkman.ui.plugin.rest.postman;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -26,13 +27,13 @@ import milkman.ui.plugin.rest.domain.RestRequestContainer;
 public class PostmanImporter {
 
 	
-	public Collection importCollection(String json) throws Exception {
+	public Collection importCollection(InputStream json) throws Exception {
 		PostmanCollection pmCollection = readJson(json, PostmanCollection.class);
 		return convertToDomain(pmCollection);
 	}
 
 
-	public Environment importEnvironment(String json) throws Exception {
+	public Environment importEnvironment(InputStream json) throws Exception {
 		PostmanEnvironment pmEnv = readJson(json, PostmanEnvironment.class);
 		return convertToDomain(pmEnv);
 	}
@@ -49,7 +50,7 @@ public class PostmanImporter {
 	}
 	
 	
-	private <T> T readJson(String json, Class<T> type) throws IOException, JsonParseException, JsonMappingException {
+	private <T> T readJson(InputStream json, Class<T> type) throws IOException, JsonParseException, JsonMappingException {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 		T pmCollection = mapper.readValue(json, type);

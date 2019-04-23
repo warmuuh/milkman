@@ -1,6 +1,7 @@
 package milkman.ui.plugin.rest.postman;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,7 +27,7 @@ import milkman.ui.plugin.rest.postman.dump.PostmanDump.PostmanRequest;
 
 public class PostmanDumpImporter {
 
-	public Workspace importDump(String json) throws Exception {
+	public Workspace importDump(InputStream json) throws Exception {
 		PostmanDump pmDump = readJson(json, PostmanDump.class);
 		
 		
@@ -98,7 +99,7 @@ public class PostmanDumpImporter {
 	}
 
 
-	private <T> T readJson(String json, Class<T> type) throws IOException, JsonParseException, JsonMappingException {
+	private <T> T readJson(InputStream json, Class<T> type) throws IOException, JsonParseException, JsonMappingException {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 		T pmCollection = mapper.readValue(json, type);
