@@ -17,6 +17,7 @@
 		<module>milkman-explore</module>
 		<module>milkman-jdbc</module>
 		<module>milkman-sync-git</module>
+		<module>milkman-privatebin</module>
 	</modules>
 
 	<properties>

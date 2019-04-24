@@ -89,6 +89,14 @@
 }
 
 /**
+ * export dialog
+ */
+ 
+ #exportArea {
+ 	-fx-padding: 20;
+ }
+
+/**
 * working area
 */
 

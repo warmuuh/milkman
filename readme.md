@@ -32,6 +32,10 @@ This plugin introduces SQL capability to milkman. You can query SQL databases vi
 ### Git Team Synchronization Plugin
 This plugin allows to synchronize workspaces via Git (using Differential Synchronization). Teams can use this plugin to have a shared workspace that synchronizes between members.
 
+### PrivateBin Sharing Plugin
+Adds capability to share requests via [PrivateBin](http://PrivateBin.net), including `Burn After Reading` feature
+
+
 # Download
 
 Download latest version in [Release Section](https://github.com/warmuuh/milkman/releases).
