@@ -36,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
 import milkman.domain.Collection;
+import milkman.domain.Environment;
 import milkman.domain.RequestContainer;
 
 public class CollectionDiffer {
@@ -104,6 +105,12 @@ public class CollectionDiffer {
 	public static class DataHolder {
 		List<Collection> collections;
 	}
+	@Data
+	@AllArgsConstructor
+	@NoArgsConstructor
+	public static class DataHolderEnv {
+		List<Environment> environments;
+	}
 	
 	public DiffNode compare(List<Collection> working, List<Collection> base) throws JsonParseException, JsonMappingException, IOException {
 		ObjectDifferBuilder diffBuilder = ObjectDifferBuilder.startBuilding()
@@ -132,6 +139,29 @@ public class CollectionDiffer {
 		return diffNode;
 	}
 	
+	public DiffNode compareEnvs(List<Environment> working, List<Environment> base) throws JsonParseException, JsonMappingException, IOException {
+		ObjectDifferBuilder diffBuilder = ObjectDifferBuilder.startBuilding()
+//				.comparison()
+//					.ofType(RestRequestContainer.class).toUseEqualsMethodOfValueProvidedByMethod("getId")
+//					.ofType(Collection.class).toUseEqualsMethodOfValueProvidedByMethod("getName")
+//				.and()
+				.inclusion()
+//					.exclude().propertyName("onDirtyChange")
+//							  .propertyName("onInvalidate")
+				.and();
+		
+		DiffNode diffNode = diffBuilder
+				.identity().ofCollectionItems(DataHolderEnv.class, "environments").via(new PropertyBasedIdentityStrategy("id"))
+						   .ofCollectionItems(Environment.class, "entries").via(new PropertyBasedIdentityStrategy("id"))
+				.and()
+				.comparison()
+					.ofPrimitiveTypes().toTreatDefaultValuesAs(PrimitiveDefaultValueMode.ASSIGNED)
+				.and()
+				.build()
+				.compare(new DataHolderEnv(working), new DataHolderEnv(base));
+		
+		return diffNode;
+	}
 	private void registerSubtypeIdentityStrategies(ObjectDifferBuilder diffBuilder, Class type, String property, IdentityStrategy strat) {
 		for (Class subType : subtypesOf(type)) {
 			diffBuilder.identity().ofCollectionItems(subType, property).via(strat);
@@ -140,6 +170,10 @@ public class CollectionDiffer {
 
 	public void mergeDiffs(List<Collection> mergeSource, List<Collection> mergeTarget, DiffNode diffs) {
 		val merger = new MergingDifferenceVisitor<>(new DataHolder(mergeTarget), new DataHolder(mergeSource));
+		diffs.visit(merger);
+	}
+	public void mergeDiffsEnvs(List<Environment> mergeSource, List<Environment> mergeTarget, DiffNode diffs) {
+		val merger = new MergingDifferenceVisitor<>(new DataHolderEnv(mergeTarget), new DataHolderEnv(mergeSource));
 		diffs.visit(merger);
 	}
 	

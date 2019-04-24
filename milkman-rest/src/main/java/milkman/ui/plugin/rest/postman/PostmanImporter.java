@@ -44,7 +44,7 @@ public class PostmanImporter {
 	private Environment convertToDomain(PostmanEnvironment pmEnv) {
 		Environment resEnv = new Environment(pmEnv.name);
 		for (PostmanEnvValue envValue : pmEnv.values) {
-			resEnv.getEntries().add(new EnvironmentEntry(envValue.key, envValue.value, envValue.enabled));
+			resEnv.getEntries().add(new EnvironmentEntry(UUID.randomUUID().toString(), envValue.key, envValue.value, envValue.enabled));
 		}
 		return resEnv;
 	}

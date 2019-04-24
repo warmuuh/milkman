@@ -3,6 +3,7 @@ package milkman.domain;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,11 +17,13 @@ public class Environment {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class EnvironmentEntry {
+		String id;
 		String name;
 		String value;
 		boolean enabled;
 	}
 	
+	String id;
 	String name;
 	boolean active;
 	boolean global;
@@ -28,6 +31,7 @@ public class Environment {
 	
 	public Environment(String name) {
 		super();
+		this.id  = UUID.randomUUID().toString();
 		this.name = name;
 	}
 
@@ -37,7 +41,7 @@ public class Environment {
 		if (maybeEntry.isPresent()) {
 			maybeEntry.get().setValue(value);
 		} else {
-			EnvironmentEntry entry = new EnvironmentEntry(name, value, true);
+			EnvironmentEntry entry = new EnvironmentEntry(UUID.randomUUID().toString(), name, value, true);
 			entries.add(entry);
 		}
 		

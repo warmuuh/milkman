@@ -56,7 +56,7 @@ public class PostmanDumpImporter {
 	
 	private Environment convertToDomain(PostmanDump.PostmanEnvironment postmanEnv) {
 		Environment result = new Environment(postmanEnv.getName());
-		postmanEnv.getValues().forEach(e -> result.getEntries().add(new EnvironmentEntry(e.getKey(), e.getValue(), e.isEnabled())));
+		postmanEnv.getValues().forEach(e -> result.getEntries().add(new EnvironmentEntry(UUID.randomUUID().toString(), e.getKey(), e.getValue(), e.isEnabled())));
 		return result;
 	}
 

@@ -27,15 +27,13 @@ import de.danielbechler.diff.node.DiffNode;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.Collection;
+import milkman.domain.Environment;
 import milkman.domain.Workspace;
 import milkman.persistence.UnknownPluginHandler;
 import milkman.ui.plugin.WorkspaceSynchronizer;
 
 /**
- * very easy way of syncing by either pushing/ pulling changes manually.
- * there is no sync actually going on like diffing/merging
- * 
- * TODO: need to implement some kind of Differential Synchronization using java-object-diff (see Difftest.java).
+ * some simplistic diff-sync way of synchronizing workspace with remote
  * 
  * @author peter
  *
@@ -56,28 +54,45 @@ public class GitWorkspaceSync implements WorkspaceSynchronizer {
 
 		
 		File syncDir = new File("sync/"+workspace.getWorkspaceId()+"/");
-		File collectionFile = new File(syncDir, "collections.json");
 
-		List<Collection> commonCopy = new LinkedList<Collection>();
+		File collectionFile = new File(syncDir, "collections.json");
+		List<Collection> collectionCommonCopy = new LinkedList<Collection>();
 		if (collectionFile.exists())
-			commonCopy = mapper.readValue(collectionFile, new TypeReference<List<Collection>>() {});
+			collectionCommonCopy = mapper.readValue(collectionFile, new TypeReference<List<Collection>>() {});
+		
+		File environmentFile = new File(syncDir, "environments.json");
+		List<Environment> environmentCommonCopy = new LinkedList<Environment>();
+		if (environmentFile.exists())
+			environmentCommonCopy = mapper.readValue(environmentFile, new TypeReference<List<Environment>>() {});
+		
 		
 		
 		Git repo = refreshRepository(syncDetails, syncDir);
 		
-		List<Collection> serverCopy = new LinkedList<Collection>();
+		List<Collection> collectionServerCopy = new LinkedList<Collection>();
 		if (collectionFile.exists())
-			serverCopy = mapper.readValue(collectionFile, new TypeReference<List<Collection>>() {});
+			collectionServerCopy = mapper.readValue(collectionFile, new TypeReference<List<Collection>>() {});
 		
-		List<Collection> workingCopy = workspace.getCollections();
+		List<Environment> environmentServerCopy = new LinkedList<Environment>();
+		if (environmentFile.exists())
+			environmentServerCopy = mapper.readValue(environmentFile, new TypeReference<List<Environment>>() {});
+		
+		
+		
+
+		List<Collection> collectionWorkingCopy = workspace.getCollections();
+		List<Environment> environmentWorkingCopy = workspace.getEnvironments();
 		
 		//step1: compute diff against common copy
-		DiffNode workingCopyChanges = diffMerger.compare(workingCopy, commonCopy);
+		DiffNode collectionWorkingCopyChanges = diffMerger.compare(collectionWorkingCopy, collectionCommonCopy);
+		DiffNode environmentWorkingCopyChanges = diffMerger.compareEnvs(environmentWorkingCopy, environmentCommonCopy);
 
 		//step2: merge diffs to server copy
-		if (workingCopyChanges.isChanged()) {
-			diffMerger.mergeDiffs(workingCopy, serverCopy, workingCopyChanges);
-			mapper.writeValue(collectionFile, serverCopy);
+		if (collectionWorkingCopyChanges.isChanged() || environmentWorkingCopyChanges.isChanged()) {
+			diffMerger.mergeDiffs(collectionWorkingCopy, collectionServerCopy, collectionWorkingCopyChanges);
+			diffMerger.mergeDiffsEnvs(environmentWorkingCopy, environmentServerCopy, environmentWorkingCopyChanges);
+			mapper.writeValue(collectionFile, collectionServerCopy);
+			mapper.writeValue(environmentFile, environmentServerCopy);
 			repo.add()
 				.addFilepattern(".")
 				.call();
@@ -91,7 +106,8 @@ public class GitWorkspaceSync implements WorkspaceSynchronizer {
 		
 		
 		//step3: merge server-diffs to working copy
-		workspace.setCollections(serverCopy);
+		workspace.setCollections(collectionServerCopy);
+		workspace.setEnvironments(environmentServerCopy);
 	}
 
 	private ObjectMapper createMapper() {
