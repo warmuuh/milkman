@@ -37,9 +37,13 @@ public class UiPluginManager {
 	public List<UiThemePlugin> loadThemePlugins(){
 		return loadSpiInstances(UiThemePlugin.class);
 	}
-	
+
 	public List<WorkspaceSynchronizer> loadSyncPlugins(){
 		return loadSpiInstances(WorkspaceSynchronizer.class);
+	}
+
+	public List<RequestExporterPlugin> loadRequestExportPlugins(){
+		return loadSpiInstances(RequestExporterPlugin.class);
 	}
 	
 	private <T> List<T> loadSpiInstances(Class<T> type) {

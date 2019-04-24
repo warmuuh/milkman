@@ -49,6 +49,10 @@ provides an application-theme css and a syntax-theme css for styling.
 
 provides a mechanism to synchronize the workspace with some external mechanism
 
+## Request Export Plugin
+
+extension point for adding export methods to a request-type.
+
 # Persistence
 All requests and RequestAspects (not response-aspects) will be stored in database and serialized using jackson. So you have to make sure that your classes properly serialize/deserialize.
 

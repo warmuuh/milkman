@@ -71,4 +71,9 @@ public interface UiCommand {
 	public static class RenameCollection implements UiCommand {
 		Collection collection;
 	}
+	
+	@Value
+	public static class ExportRequest implements UiCommand {
+		RequestContainer request;
+	}
 }

@@ -39,8 +39,10 @@ import milkman.ui.main.RequestCollectionComponent;
 import milkman.ui.main.RequestComponent;
 import milkman.ui.main.Toaster;
 import milkman.ui.main.WorkingAreaComponent;
+import milkman.ui.main.dialogs.ExportDialog;
 import milkman.ui.main.dialogs.SaveRequestDialog;
 import milkman.ui.main.dialogs.StringInputDialog;
+import milkman.ui.plugin.RequestExporterPlugin;
 import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.UiPluginManager;
 import milkman.utils.Event;
@@ -221,6 +223,8 @@ public class WorkspaceController {
 			deleteCollection(((UiCommand.DeleteCollection) command).getCollection());
 		} else if (command instanceof UiCommand.RenameCollection) {
 			renameCollection(((UiCommand.RenameCollection) command).getCollection());
+		} else if (command instanceof UiCommand.ExportRequest) {
+			exportRequest(((UiCommand.ExportRequest) command).getRequest());
 		} else {
 			throw new IllegalArgumentException("Unsupported command");
 		}
@@ -228,6 +232,15 @@ public class WorkspaceController {
 	
 	
 	
+	private void exportRequest(RequestContainer request) {
+		ExportDialog dialog = new ExportDialog();
+		List<RequestExporterPlugin> exportPlugins = plugins.loadRequestExportPlugins().stream()
+			.filter(p -> p.canHandle(request))
+			.collect(Collectors.toList());
+		
+		dialog.showAndWait(exportPlugins, toaster, request);
+	}
+
 	private void deleteCollection(Collection collection) {
 		activeWorkspace.getCollections().remove(collection);
 		loadCollections(activeWorkspace);

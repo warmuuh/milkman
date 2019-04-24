@@ -39,6 +39,7 @@
 		<SplitMenuButton fx:id="saveBtn" text="save" onAction="#onSave"  styleClass="secondary">
 			<items>
 				<MenuItem text="save as..." onAction="#onSaveAs"></MenuItem>
+				<MenuItem text="export..." onAction="#onExport"></MenuItem>
 			</items>
 		</SplitMenuButton>
 	</HBox>

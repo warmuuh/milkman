@@ -89,4 +89,9 @@ public class RequestComponent {
 		onCommand.invoke(new UiCommand.SaveRequestAsCommand(currentRequest));
 	}
 
+
+	@FXML public void onExport() {
+		onCommand.invoke(new UiCommand.ExportRequest(currentRequest));
+	}
+
 }
