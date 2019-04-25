@@ -53,7 +53,7 @@ public class RequestProcessor {
 				.addInterceptorFirst(new RequestContent());
 		
 		
-		if (StringUtils.isNotBlank(HttpOptionsPluginProvider.options().getProxyUrl())) {
+		if (HttpOptionsPluginProvider.options().isUseProxy()) {
 			URL url = new URL(HttpOptionsPluginProvider.options().getProxyUrl());
 			
 			if (proxyCredentials != null) {

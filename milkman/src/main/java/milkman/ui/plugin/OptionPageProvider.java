@@ -24,5 +24,11 @@ public interface OptionPageProvider<T extends OptionsObject> {
     * returns the ui for editing the options. For building the page, the provided builder can be used.
     */
 	public OptionDialogPane getOptionsDialog(OptionDialogBuilder builder);
-
+	
+	/**
+	 * defines the order between aspect tabs, the higher, the more to the right
+	 */
+	public default int getOrder() {
+		return Integer.MAX_VALUE;
+	}
 }

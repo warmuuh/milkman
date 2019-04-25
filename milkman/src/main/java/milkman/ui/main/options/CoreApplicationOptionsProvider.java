@@ -51,5 +51,13 @@ public class CoreApplicationOptionsProvider implements OptionPageProvider<CoreAp
 		themeSwitcher.setTheme(themeName);
 		options.setTheme(themeName);
 	}
+
+
+	@Override
+	public int getOrder() {
+		return 100;
+	}
+	
+	
 	
 }

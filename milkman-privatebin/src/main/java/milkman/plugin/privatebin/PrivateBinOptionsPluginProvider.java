@@ -37,4 +37,11 @@ public class PrivateBinOptionsPluginProvider implements OptionPageProvider<Priva
 				.endSection()
 				.build();
 	}
+
+	@Override
+	public int getOrder() {
+		return 300;
+	}
+	
+	
 }

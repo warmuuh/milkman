@@ -10,6 +10,7 @@ public class HttpOptionsPluginProvider implements OptionPageProvider<HttpOptions
 
 	@Data
 	public static class HttpOptions implements OptionsObject {
+		private boolean useProxy = false;
 		private String proxyUrl = "";
 		private boolean askForProxyAuth = false;
 	}
@@ -34,9 +35,17 @@ public class HttpOptionsPluginProvider implements OptionPageProvider<HttpOptions
 	public OptionDialogPane getOptionsDialog(OptionDialogBuilder builder) {
 		return builder.page("Http", getOptions())
 				.section("Proxy")
+					.toggle("Use Proxy", HttpOptions::isUseProxy, HttpOptions::setUseProxy)
 					.textInput("Proxy Url", HttpOptions::getProxyUrl, HttpOptions::setProxyUrl)
 					.toggle("On 407: retry with prompted credentials", HttpOptions::isAskForProxyAuth, HttpOptions::setAskForProxyAuth)
 				.endSection()
 				.build();
 	}
+
+	@Override
+	public int getOrder() {
+		return 200;
+	}
+	
+	
 }
