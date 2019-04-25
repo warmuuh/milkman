@@ -22,13 +22,13 @@ class PrivateBinApiTest {
 	}
 
 	
-	@Test
-	void testPasteLookup() throws Exception {
-		PrivateBinApi sut = new PrivateBinApi("https://privatebin.net/?");
-		String content = sut.readPaste("https://privatebin.net/?05a52b2790940344#rtZTv6VVAjzrHzIKV1uHdJbnfygWmA+8eJXJ5PFzy4Y=");
-		
-		
-		System.out.println("content: " + content);
-		assertThat(content).isNotBlank();
-	}
+//	@Test 
+//	void testPasteLookup() throws Exception {
+//		PrivateBinApi sut = new PrivateBinApi("https://privatebin.net/?");
+//		String content = sut.readPaste("https://privatebin.net/?05a52b2790940344#rtZTv6VVAjzrHzIKV1uHdJbnfygWmA+8eJXJ5PFzy4Y=");
+//		
+//		
+//		System.out.println("content: " + content);
+//		assertThat(content).isNotBlank();
+//	}
 }

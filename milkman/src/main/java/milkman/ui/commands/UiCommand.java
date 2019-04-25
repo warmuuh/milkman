@@ -76,4 +76,10 @@ public interface UiCommand {
 	public static class ExportRequest implements UiCommand {
 		RequestContainer request;
 	}
+	
+	@Value
+	public static class ExportCollection implements UiCommand {
+		Collection collection;
+	}
+	
 }

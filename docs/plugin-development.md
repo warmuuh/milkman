@@ -53,6 +53,10 @@ provides a mechanism to synchronize the workspace with some external mechanism
 
 extension point for adding export methods to a request-type.
 
+## Collection Export Plugin
+
+extension point for adding export methods to a collection.
+
 # Persistence
 All requests and RequestAspects (not response-aspects) will be stored in database and serialized using jackson. So you have to make sure that your classes properly serialize/deserialize.
 

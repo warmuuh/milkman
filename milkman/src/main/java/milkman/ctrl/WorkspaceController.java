@@ -42,6 +42,8 @@ import milkman.ui.main.WorkingAreaComponent;
 import milkman.ui.main.dialogs.ExportDialog;
 import milkman.ui.main.dialogs.SaveRequestDialog;
 import milkman.ui.main.dialogs.StringInputDialog;
+import milkman.ui.plugin.CollectionExporterPlugin;
+import milkman.ui.plugin.Exporter;
 import milkman.ui.plugin.RequestExporterPlugin;
 import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.UiPluginManager;
@@ -225,6 +227,8 @@ public class WorkspaceController {
 			renameCollection(((UiCommand.RenameCollection) command).getCollection());
 		} else if (command instanceof UiCommand.ExportRequest) {
 			exportRequest(((UiCommand.ExportRequest) command).getRequest());
+		} else if (command instanceof UiCommand.ExportCollection) {
+			exportCollection(((UiCommand.ExportCollection) command).getCollection());
 		} else {
 			throw new IllegalArgumentException("Unsupported command");
 		}
@@ -232,10 +236,20 @@ public class WorkspaceController {
 	
 	
 	
+	private void exportCollection(Collection collection) {
+		ExportDialog<Collection> dialog = new ExportDialog<>();
+		List<Exporter<Collection>> exportPlugins = plugins.loadCollectionExportPlugins().stream()
+				.map(p -> (Exporter<Collection>)p)
+				.collect(Collectors.toList());
+		
+		dialog.showAndWait(exportPlugins, toaster, collection);		
+	}
+
 	private void exportRequest(RequestContainer request) {
-		ExportDialog dialog = new ExportDialog();
-		List<RequestExporterPlugin> exportPlugins = plugins.loadRequestExportPlugins().stream()
+		ExportDialog<RequestContainer> dialog = new ExportDialog<>();
+		List<Exporter<RequestContainer>> exportPlugins = plugins.loadRequestExportPlugins().stream()
 			.filter(p -> p.canHandle(request))
+			.map(p -> (Exporter<RequestContainer>)p)
 			.collect(Collectors.toList());
 		
 		dialog.showAndWait(exportPlugins, toaster, request);

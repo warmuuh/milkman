@@ -7,13 +7,14 @@ import com.jfoenix.controls.JFXTextField;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
 import lombok.extern.slf4j.Slf4j;
+import milkman.domain.Collection;
 import milkman.domain.RequestContainer;
 import milkman.persistence.UnknownPluginHandler;
 import milkman.ui.main.Toaster;
-import milkman.ui.plugin.RequestExporterPlugin;
+import milkman.ui.plugin.CollectionExporterPlugin;
 
 @Slf4j
-public class PrivateBinExporter implements RequestExporterPlugin {
+public class PrivateBinCollectionExporter implements CollectionExporterPlugin {
 
 	private JFXTextField textField;
 	private PrivateBinApi api = new PrivateBinApi(PrivateBinOptionsPluginProvider.options().getPrivateBinUrl());
@@ -24,13 +25,9 @@ public class PrivateBinExporter implements RequestExporterPlugin {
 		return "Share via PrivateBin";
 	}
 
-	@Override
-	public boolean canHandle(RequestContainer request) {
-		return true;
-	}
 
 	@Override
-	public Node getRoot(RequestContainer request) {
+	public Node getRoot(Collection collection) {
 		textField = new JFXTextField();
 		textField.setEditable(false);
 		burnCheckbox = new JFXCheckBox("Burn after reading");
@@ -44,10 +41,10 @@ public class PrivateBinExporter implements RequestExporterPlugin {
 	}
 
 	@Override
-	public boolean doExport(RequestContainer request, Toaster toaster) {
+	public boolean doExport(Collection collection, Toaster toaster) {
 		ObjectMapper objectMapper = createMapper();
 		try {
-			String content = objectMapper.writeValueAsString(new RequestDataContainer(request));
+			String content = objectMapper.writeValueAsString(new CollectionDataContainer(collection));
 			String pasteUrl = api.createPaste(content, burnCheckbox.isSelected());
 			textField.setText(pasteUrl);
 		} catch (Exception e) {
@@ -61,5 +58,4 @@ public class PrivateBinExporter implements RequestExporterPlugin {
 		mapper.addHandler(new UnknownPluginHandler());
 		return mapper;
 	}
-	
 }

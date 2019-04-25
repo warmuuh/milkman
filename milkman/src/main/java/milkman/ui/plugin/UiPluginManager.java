@@ -46,6 +46,10 @@ public class UiPluginManager {
 		return loadSpiInstances(RequestExporterPlugin.class);
 	}
 	
+	public List<CollectionExporterPlugin> loadCollectionExportPlugins(){
+		return loadSpiInstances(CollectionExporterPlugin.class);
+	}
+	
 	private <T> List<T> loadSpiInstances(Class<T> type) {
 		if (cachedInstances.containsKey(type))
 			return cachedInstances.get(type);

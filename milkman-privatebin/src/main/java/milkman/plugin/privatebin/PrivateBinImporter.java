@@ -5,6 +5,7 @@ import com.jfoenix.controls.JFXTextField;
 
 import javafx.scene.Node;
 import lombok.extern.slf4j.Slf4j;
+import milkman.domain.Collection;
 import milkman.domain.RequestContainer;
 import milkman.domain.Workspace;
 import milkman.persistence.UnknownPluginHandler;
@@ -34,15 +35,31 @@ public class PrivateBinImporter implements ImporterPlugin {
 		ObjectMapper objectMapper = createMapper();
 		try {
 			String json = api.readPaste(urlTxt.getText());
-			RequestContainer request = objectMapper.readValue(json, RequestContainer.class);
-			workspace.getOpenRequests().add(request);
-			workspace.setActiveRequest(request);
+			AbstractDataContainer container = objectMapper.readValue(json, AbstractDataContainer.class);
+			if (container instanceof RequestDataContainer) {
+				handleImportedRequest(workspace, ((RequestDataContainer) container).getRequest(), toaster);
+			} else if (container instanceof CollectionDataContainer) {
+				handleImportedCollection(workspace, ((CollectionDataContainer) container).getCollection(), toaster);
+			} else {
+				toaster.showToast("Unknown data format");
+			}
 			return true;
 		} catch (Exception e) {
 			toaster.showToast("Failed to read request");
 			log.error("Failed to read request", e);
 		}
 		return false;
+	}
+
+	private void handleImportedCollection(Workspace workspace, Collection collection, Toaster toast) {
+		workspace.getCollections().add(collection);
+		toast.showToast("Collection imported: " + collection.getName());
+	}
+
+	private void handleImportedRequest(Workspace workspace, RequestContainer request, Toaster toast) {
+		workspace.getOpenRequests().add(request);
+		workspace.setActiveRequest(request);
+		toast.showToast("Request imported: " + request.getName());
 	}
 
 	private ObjectMapper createMapper() {

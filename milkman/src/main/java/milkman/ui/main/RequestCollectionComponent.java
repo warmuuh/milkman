@@ -96,7 +96,8 @@ public class RequestCollectionComponent {
 			}
 			//necessary to allow re-clicking selected item, otherwise the request wont open
 			//doesnt look too good though as there is no selection.
-			Platform.runLater(() -> collectionContainer.getSelectionModel().clearSelection()); 
+			//TODO: this disables context menu though, better handle expansion manually via on-click event
+//			Platform.runLater(() -> collectionContainer.getSelectionModel().clearSelection()); 
 		});
 	}
 	
@@ -140,7 +141,11 @@ public class RequestCollectionComponent {
 		MenuItem renameEntry = new MenuItem("Rename");
 		renameEntry.setOnAction(e -> onCommand.invoke(new UiCommand.RenameCollection(collection)));
 		
-		ContextMenu ctxMenu = new ContextMenu(renameEntry, deleteEntry);
+		MenuItem exportEntry = new MenuItem("Export");
+		exportEntry.setOnAction(e -> onCommand.invoke(new UiCommand.ExportCollection(collection)));
+		
+		
+		ContextMenu ctxMenu = new ContextMenu(renameEntry, exportEntry, deleteEntry);
 
 		hBox.setOnMouseClicked(e -> {
 			
@@ -185,10 +190,15 @@ public class RequestCollectionComponent {
 		MenuItem renameEntry = new MenuItem("Rename");
 		renameEntry.setOnAction(e -> onCommand.invoke(new UiCommand.RenameRequest(request)));
 
+		
+		MenuItem exportEntry = new MenuItem("Export");
+		exportEntry.setOnAction(e -> onCommand.invoke(new UiCommand.ExportRequest(request)));
+		
+		
 		MenuItem deleteEntry = new MenuItem("Delete");
 		deleteEntry.setOnAction(e -> onCommand.invoke(new UiCommand.DeleteRequest(request, collection)));
 
-		ContextMenu ctxMenu = new ContextMenu(renameEntry, deleteEntry);
+		ContextMenu ctxMenu = new ContextMenu(renameEntry, exportEntry, deleteEntry);
 		VBox vBox = new VBox(new HBox(requestType,button));
 		vBox.getStyleClass().add("request-entry");
 		vBox.setOnMouseClicked(e -> {

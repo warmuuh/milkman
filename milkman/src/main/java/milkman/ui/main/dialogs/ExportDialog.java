@@ -14,36 +14,37 @@ import milkman.domain.RequestContainer;
 import milkman.domain.Workspace;
 import milkman.ui.main.Toaster;
 import milkman.ui.plugin.ImporterPlugin;
+import milkman.ui.plugin.Exporter;
 import milkman.ui.plugin.RequestExporterPlugin;
 import milkman.utils.fxml.FxmlUtil;
 
-public class ExportDialog {
+public class ExportDialog<T> {
 	@FXML VBox exportArea;
-	@FXML JFXComboBox<RequestExporterPlugin> exportSelector;
+	@FXML JFXComboBox<Exporter<T>> exportSelector;
 	@FXML JFXButton exportBtn;
 	
 	
 	private Dialog dialog;
 
-	private RequestExporterPlugin selectedExporter = null;
+	private Exporter<T> selectedExporter = null;
 	private Toaster toaster;
-	private RequestContainer request;
+	private T objToExport;
 	
-	public void showAndWait(List<RequestExporterPlugin> exporters, Toaster toaster, RequestContainer request) {
+	public void showAndWait(List<Exporter<T>> exporters, Toaster toaster, T objToExport) {
 		this.toaster = toaster;
-		this.request = request;
+		this.objToExport = objToExport;
 		JFXDialogLayout content = FxmlUtil.loadAndInitialize("/dialogs/ExportDialog.fxml", this);
 		exportSelector.setPromptText("Select Exporter");
 		exporters.forEach(exportSelector.getItems()::add);
-		exportSelector.setConverter(new StringConverter<RequestExporterPlugin>() {
+		exportSelector.setConverter(new StringConverter<Exporter<T>>() {
 			
 			@Override
-			public String toString(RequestExporterPlugin object) {
+			public String toString(Exporter<T> object) {
 				return object.getName();
 			}
 			
 			@Override
-			public RequestExporterPlugin fromString(String string) {
+			public Exporter<T> fromString(String string) {
 				return null;
 			}
 		});
@@ -51,7 +52,7 @@ public class ExportDialog {
 			if (o != v && v != null) {
 				selectedExporter = v;
 				exportArea.getChildren().clear();
-				exportArea.getChildren().add(v.getRoot(request));
+				exportArea.getChildren().add(v.getRoot(objToExport));
 				exportBtn.setDisable(v.isAdhocExporter());
 			} 
 		});
@@ -66,7 +67,7 @@ public class ExportDialog {
 	
 	@FXML public void onExport() {
 		if (selectedExporter != null) {
-			if (selectedExporter.doExport(request, toaster)) {
+			if (selectedExporter.doExport(objToExport, toaster)) {
 				dialog.close();
 			}
 		}
