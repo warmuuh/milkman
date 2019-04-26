@@ -1,3 +1,6 @@
+.selection {
+    -fx-fill: lightgrey !important;
+}
 
 .plain {
 	-fx-fill: black !important;

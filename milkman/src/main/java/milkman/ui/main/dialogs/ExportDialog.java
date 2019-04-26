@@ -10,12 +10,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Dialog;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
-import milkman.domain.RequestContainer;
-import milkman.domain.Workspace;
 import milkman.ui.main.Toaster;
-import milkman.ui.plugin.ImporterPlugin;
 import milkman.ui.plugin.Exporter;
-import milkman.ui.plugin.RequestExporterPlugin;
+import milkman.ui.plugin.Templater;
 import milkman.utils.fxml.FxmlUtil;
 
 public class ExportDialog<T> {
@@ -29,8 +26,10 @@ public class ExportDialog<T> {
 	private Exporter<T> selectedExporter = null;
 	private Toaster toaster;
 	private T objToExport;
+	private Templater templater;
 	
-	public void showAndWait(List<Exporter<T>> exporters, Toaster toaster, T objToExport) {
+	public void showAndWait(List<Exporter<T>> exporters, Templater templater, Toaster toaster, T objToExport) {
+		this.templater = templater;
 		this.toaster = toaster;
 		this.objToExport = objToExport;
 		JFXDialogLayout content = FxmlUtil.loadAndInitialize("/dialogs/ExportDialog.fxml", this);
@@ -52,7 +51,7 @@ public class ExportDialog<T> {
 			if (o != v && v != null) {
 				selectedExporter = v;
 				exportArea.getChildren().clear();
-				exportArea.getChildren().add(v.getRoot(objToExport));
+				exportArea.getChildren().add(v.getRoot(objToExport, templater));
 				exportBtn.setDisable(v.isAdhocExporter());
 			} 
 		});
@@ -67,7 +66,7 @@ public class ExportDialog<T> {
 	
 	@FXML public void onExport() {
 		if (selectedExporter != null) {
-			if (selectedExporter.doExport(objToExport, toaster)) {
+			if (selectedExporter.doExport(objToExport, templater, toaster)) {
 				dialog.close();
 			}
 		}

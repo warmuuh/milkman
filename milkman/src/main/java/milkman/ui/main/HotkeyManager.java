@@ -10,6 +10,7 @@ import milkman.ui.commands.UiCommand;
 import milkman.ui.commands.UiCommand.NewRequest;
 import milkman.ui.commands.UiCommand.RenameActiveRequest;
 import milkman.ui.commands.UiCommand.RenameRequest;
+import milkman.ui.commands.UiCommand.SaveActiveRequest;
 import milkman.ui.commands.UiCommand.SubmitActiveRequest;
 import milkman.utils.Event;
 
@@ -27,6 +28,9 @@ public class HotkeyManager {
 		
 		scene.getAccelerators().put(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN), 
 				() -> onCommand.invoke(new RenameActiveRequest()));
+		
+		scene.getAccelerators().put(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN), 
+				() -> onCommand.invoke(new SaveActiveRequest()));
 	}
 	
 	

@@ -18,10 +18,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.TabPane.TabClosingPolicy;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.TouchEvent;
 import javafx.scene.layout.Pane;
 import lombok.RequiredArgsConstructor;
@@ -73,10 +76,12 @@ public class WorkingAreaComponent implements Initializable {
 		}
 		
 		tabPane.getSelectionModel().selectedItemProperty().addListener(tabChangeListener);
+		tabPane.requestLayout();
 		log.info("tab repainted");
 	}
 	private Tab createTestTab(RequestContainer r, boolean isActive) {
-		Tab tab = new Tab(r.getName());
+		Tab tab = new Tab();
+		tab.setGraphic(new Label(r.getName()));
 		if (isActive)
 			tab.getStyleClass().add(CSS_CLASS_REQUEST_ACTIVE);
 		
@@ -106,9 +111,14 @@ public class WorkingAreaComponent implements Initializable {
 		});
 		
 		tab.setContextMenu(new ContextMenu(closeEntry, closeRightEntry,closeAllEntry, renameEntry));
-		
 		tab.setUserData(r);
 
+		tab.getGraphic().setOnMouseClicked(e -> {
+			if (e.getButton() == MouseButton.MIDDLE) {
+				onCommand.invoke(new UiCommand.CloseRequest(r, CloseType.CLOSE_THIS));
+				e.consume();
+			}
+		});
 		
 		return tab;
 	}

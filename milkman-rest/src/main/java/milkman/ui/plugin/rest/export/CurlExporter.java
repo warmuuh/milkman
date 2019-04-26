@@ -16,6 +16,7 @@ import javafx.scene.layout.VBox;
 import milkman.domain.RequestContainer;
 import milkman.ui.main.Toaster;
 import milkman.ui.plugin.RequestExporterPlugin;
+import milkman.ui.plugin.Templater;
 import milkman.ui.plugin.rest.domain.HeaderEntry;
 import milkman.ui.plugin.rest.domain.RestBodyAspect;
 import milkman.ui.plugin.rest.domain.RestHeaderAspect;
@@ -39,7 +40,7 @@ public class CurlExporter implements RequestExporterPlugin {
 	}
 
 	@Override
-	public Node getRoot(RequestContainer request) {
+	public Node getRoot(RequestContainer request, Templater templater) {
 		this.request = request;
 		textArea = new TextArea();
 		textArea.setEditable(false);
@@ -58,7 +59,7 @@ public class CurlExporter implements RequestExporterPlugin {
 		windowsTgl.selectedProperty().addListener((obs, o, n) -> {
 			if (n != null) {
 				isWindows = n;
-				refreshCommand();
+				refreshCommand(templater);
 			}
 		});
 
@@ -69,15 +70,15 @@ public class CurlExporter implements RequestExporterPlugin {
 		root.getChildren().add(osSelection);
 		root.getChildren().add(textArea);
 		VBox.setVgrow(textArea, Priority.ALWAYS);
-		refreshCommand();
+		refreshCommand(templater);
 		return 	root;
 	}
 
-	public void refreshCommand() {
-		String curlCmd = toCurl((RestRequestContainer) request);
+	public void refreshCommand(Templater templater) {
+		String curlCmd = toCurl((RestRequestContainer) request, templater);
 		textArea.setText(curlCmd);
 	}
-	private String toCurl(RestRequestContainer request) {
+	private String toCurl(RestRequestContainer request, Templater templater) {
 		
 		String lineBreak = isWindows ? " ^\n  " : " \\\n  ";
 		String quote = isWindows ? "\"" : "'";
@@ -108,7 +109,7 @@ public class CurlExporter implements RequestExporterPlugin {
 		
 		
 		
-		return b.toString();
+		return templater.replaceTags(b.toString());
 	}
 
 	@Override
@@ -117,7 +118,7 @@ public class CurlExporter implements RequestExporterPlugin {
 	}
 
 	@Override
-	public boolean doExport(RequestContainer request, Toaster toaster) {
+	public boolean doExport(RequestContainer request, Templater templater, Toaster toaster) {
 		throw new NotImplementedError("not implemented bc adhoc exporter");
 	}
 

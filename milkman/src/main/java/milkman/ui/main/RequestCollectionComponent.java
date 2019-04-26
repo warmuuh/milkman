@@ -34,6 +34,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeItemBuilder;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -82,28 +83,14 @@ public class RequestCollectionComponent {
 		EventStreams.nonNullValuesOf(searchField.textProperty())
 			.successionEnds(Duration.ofMillis(250))
 			.subscribe(qry -> setFilterPredicate(filteredList, qry));
-//		searchField.textProperty().addListener((obs) -> 
-//			setFilterPredicate(filteredList, searchField.getText())
-//		);
-		collectionContainer.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
-			if (n == null)
-				return;
-			Object userData = n.getValue().getUserData();
-			if (userData instanceof Collection)
-				n.setExpanded(!n.isExpanded());
-			else if (userData instanceof RequestContainer) {
-				onCommand.invoke(new UiCommand.LoadRequest(((RequestContainer) userData).getId()));
-			}
-			//necessary to allow re-clicking selected item, otherwise the request wont open
-			//doesnt look too good though as there is no selection.
-			//TODO: this disables context menu though, better handle expansion manually via on-click event
-//			Platform.runLater(() -> collectionContainer.getSelectionModel().clearSelection()); 
-		});
+
 	}
 	
 	
 	public TreeItem<Node> buildTree(Collection collection){
-		TreeItem<Node> item = new TreeItem<Node>(createCollectionEntry(collection));
+		TreeItem<Node> item = new TreeItem<Node>();
+		HBox collEntry = createCollectionEntry(collection, item);
+		item.setValue(collEntry);
 		item.setExpanded(expansionCache.getOrDefault(collection.getName(), false));
 		item.getValue().setUserData(collection);
 		item.expandedProperty().addListener((obs, o, n) -> {
@@ -118,7 +105,7 @@ public class RequestCollectionComponent {
 	}
 	
 
-	private HBox createCollectionEntry(Collection collection) {
+	private HBox createCollectionEntry(Collection collection, TreeItem<Node> item) {
 		Label collectionName = new Label(collection.getName());
 		HBox.setHgrow(collectionName, Priority.ALWAYS);
 		
@@ -156,7 +143,10 @@ public class RequestCollectionComponent {
 //				boolean oldExpandedState = cell.isExpanded();
 //				expansionCache.put(collection.getName(), !oldExpandedState);
 //			}
-			
+			if (e.getButton() == MouseButton.PRIMARY) {
+				item.setExpanded(!item.isExpanded());
+				e.consume();
+			}
 			if (e.getButton() == MouseButton.SECONDARY) {
 				ctxMenu.show(hBox, e.getScreenX(), e.getScreenY());
 				e.consume();
@@ -205,6 +195,10 @@ public class RequestCollectionComponent {
 //			if (e.getButton() == MouseButton.PRIMARY)
 //				onCommand.invoke(new UiCommand.LoadRequest(request.getId()));
 //			else
+			if (e.getButton() == MouseButton.PRIMARY) {
+				onCommand.invoke(new UiCommand.LoadRequest(request.getId()));
+				e.consume();
+			}
 			if (e.getButton() == MouseButton.SECONDARY) {
 				ctxMenu.show(vBox, e.getScreenX(), e.getScreenY());
 				e.consume();

@@ -20,6 +20,8 @@ import com.jfoenix.controls.JFXComboBox;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -54,6 +56,7 @@ public class ContentEditor extends VBox {
 	private HBox header;
 	
 	private TextField searchField;
+
 	
 	
 	public ContentEditor() {
@@ -64,7 +67,12 @@ public class ContentEditor extends VBox {
 		setupSearch();
 		
 		StackPane.setAlignment(searchField, Pos.TOP_RIGHT);
-		StackPane contentPane = new StackPane(new VirtualizedScrollPane(codeArea), searchField);
+		//bug: virtualizedScrollPane has some issue if it is rendered within a tab that is not yet shown with content that needs a scrollbar
+		//this leads to e.g. tabs not being updated, if triggered programmatically
+		//switching to ALWAYS for scrollbars fixes this issue
+		VirtualizedScrollPane virtualizedScrollPane = new VirtualizedScrollPane(codeArea, ScrollBarPolicy.ALWAYS, ScrollBarPolicy.ALWAYS);
+		
+		StackPane contentPane = new StackPane(virtualizedScrollPane, searchField);
 		VBox.setVgrow(contentPane, Priority.ALWAYS);
 		
 		getChildren().add(contentPane);

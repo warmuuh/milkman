@@ -124,7 +124,7 @@
 	-fx-background-color: white;
 }
 
-.jfx-tab-pane .tab-label {
+.jfx-tab-pane .label {
     -fx-text-fill: #e5e5e5;
     -fx-font-weight: normal;
     -fx-padding: 6 10 6 10;
@@ -138,7 +138,7 @@
 .jfx-tab-pane .headers-region .tab-selected-line {
     -fx-background-color: #2192f2;
 }
-.mm-request-dirty .tab-container > .tab-label   {
+.mm-request-dirty .label   {
 	 -fx-font-weight: bold;
 }
 .mm-request-dirty .tab-container .context-menu  {
@@ -384,6 +384,11 @@
 	-fx-translate-y: 4;
 	-fx-padding: 0 10;
 }
+
+.styled-text-area .text {
+    -fx-fill: #e5e5e5;
+}
+
 
 /**
  * dialogs

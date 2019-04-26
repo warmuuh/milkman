@@ -11,6 +11,7 @@ import milkman.domain.RequestContainer;
 import milkman.persistence.UnknownPluginHandler;
 import milkman.ui.main.Toaster;
 import milkman.ui.plugin.RequestExporterPlugin;
+import milkman.ui.plugin.Templater;
 
 @Slf4j
 public class PrivateBinExporter implements RequestExporterPlugin {
@@ -30,7 +31,7 @@ public class PrivateBinExporter implements RequestExporterPlugin {
 	}
 
 	@Override
-	public Node getRoot(RequestContainer request) {
+	public Node getRoot(RequestContainer request, Templater templater) {
 		textField = new JFXTextField();
 		textField.setEditable(false);
 		burnCheckbox = new JFXCheckBox("Burn after reading");
@@ -44,7 +45,7 @@ public class PrivateBinExporter implements RequestExporterPlugin {
 	}
 
 	@Override
-	public boolean doExport(RequestContainer request, Toaster toaster) {
+	public boolean doExport(RequestContainer request, Templater templater, Toaster toaster) {
 		ObjectMapper objectMapper = createMapper();
 		try {
 			String content = objectMapper.writeValueAsString(new RequestDataContainer(request));

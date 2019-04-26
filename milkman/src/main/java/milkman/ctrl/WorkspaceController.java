@@ -11,6 +11,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -49,6 +50,7 @@ import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.UiPluginManager;
 import milkman.utils.Event;
 import milkman.utils.ObjectUtils;
+import milkman.utils.fxml.FxmlUtil;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_={@Inject})
@@ -117,8 +119,8 @@ public class WorkspaceController {
 		
 		RequestContainer request = openedReqCopy.orElseGet(() -> ObjectUtils.deepClone(findRequest(requestId)));
 		
-		
 		displayRequest(request);
+		
 	}
 	
 	private RequestContainer findRequest(String requestId) {
@@ -157,13 +159,11 @@ public class WorkspaceController {
 	}
 	public void executeRequest(RequestContainer request) {
 		workingAreaView.showSpinner();
-		Optional<Environment> activeEnv = activeWorkspace.getEnvironments().stream().filter(e -> e.isActive()).findAny();
-		List<Environment> globalEnvs = activeWorkspace.getEnvironments().stream().filter(e -> e.isGlobal()).collect(Collectors.toList());
+		
 		RequestTypePlugin plugin = requestTypeManager.getPluginFor(request);
+		val executor = new RequestExecutor(request, plugin, buildTemplater());
 		
-		val executor = new RequestExecutor(request, plugin, new EnvironmentTemplater(activeEnv, globalEnvs));
-		
-		RequestExecutionContext context = new RequestExecutionContext(activeEnv);
+		RequestExecutionContext context = new RequestExecutionContext(activeWorkspace.getEnvironments().stream().filter(e -> e.isActive()).findAny());
 		
 		long startTime = System.currentTimeMillis();
 		executor.setOnScheduled(e -> activeWorkspace.getEnqueuedRequestIds().add(request.getId()));
@@ -186,6 +186,13 @@ public class WorkspaceController {
 		executor.start();
 	}
 
+	private EnvironmentTemplater buildTemplater() {
+		Optional<Environment> activeEnv = activeWorkspace.getEnvironments().stream().filter(e -> e.isActive()).findAny();
+		List<Environment> globalEnvs = activeWorkspace.getEnvironments().stream().filter(e -> e.isGlobal()).collect(Collectors.toList());
+		EnvironmentTemplater templater = new EnvironmentTemplater(activeEnv, globalEnvs);
+		return templater;
+	}
+
 
 	private void addResponseTimeInfo(ResponseContainer response, long responseTime) {
 		response.getStatusInformations().put("Time", responseTime + "ms");
@@ -203,6 +210,8 @@ public class WorkspaceController {
 		} else if (command instanceof UiCommand.SaveRequestCommand) {
 			val saveCmd = ((UiCommand.SaveRequestCommand) command);
 			saveRequest(saveCmd.getRequest());
+		} else if (command instanceof UiCommand.SaveActiveRequest) {
+			saveRequest(activeWorkspace.getActiveRequest());
 		} else if (command instanceof UiCommand.LoadRequest) {
 			val openCmd = ((UiCommand.LoadRequest) command);
 			loadRequestCopy(openCmd.getRequestId(), false);
@@ -242,7 +251,7 @@ public class WorkspaceController {
 				.map(p -> (Exporter<Collection>)p)
 				.collect(Collectors.toList());
 		
-		dialog.showAndWait(exportPlugins, toaster, collection);		
+		dialog.showAndWait(exportPlugins, buildTemplater(), toaster, collection);		
 	}
 
 	private void exportRequest(RequestContainer request) {
@@ -252,7 +261,7 @@ public class WorkspaceController {
 			.map(p -> (Exporter<RequestContainer>)p)
 			.collect(Collectors.toList());
 		
-		dialog.showAndWait(exportPlugins, toaster, request);
+		dialog.showAndWait(exportPlugins, buildTemplater(), toaster, request);
 	}
 
 	private void deleteCollection(Collection collection) {

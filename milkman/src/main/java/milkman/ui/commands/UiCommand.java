@@ -15,7 +15,10 @@ public interface UiCommand {
 	public static class SaveRequestCommand implements UiCommand {
 		RequestContainer request;
 	}
-	
+	@Value
+	public static class SaveActiveRequest implements UiCommand {
+		
+	}
 	
 	@Value
 	public static class SubmitRequest implements UiCommand {

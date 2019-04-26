@@ -15,7 +15,7 @@ public interface Exporter<T> {
 	/**
 	 * returns the root of the UI-controls for setting up the export details 
 	 */
-	public Node getRoot(T request);
+	public Node getRoot(T request, Templater templater);
 	
 	
 	/**
@@ -27,6 +27,6 @@ public interface Exporter<T> {
 	 * 
 	 * returns true, if the dialog should be closed (e.g. if the operation was success, but not necessarily, maybe some details should be shown after export)
 	 */
-	public boolean doExport(T collection, Toaster toaster);
+	public boolean doExport(T collection, Templater templater, Toaster toaster);
 	
 }

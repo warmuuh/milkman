@@ -8,10 +8,10 @@ import javafx.scene.Node;
 import javafx.scene.layout.VBox;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.Collection;
-import milkman.domain.RequestContainer;
 import milkman.persistence.UnknownPluginHandler;
 import milkman.ui.main.Toaster;
 import milkman.ui.plugin.CollectionExporterPlugin;
+import milkman.ui.plugin.Templater;
 
 @Slf4j
 public class PrivateBinCollectionExporter implements CollectionExporterPlugin {
@@ -27,7 +27,7 @@ public class PrivateBinCollectionExporter implements CollectionExporterPlugin {
 
 
 	@Override
-	public Node getRoot(Collection collection) {
+	public Node getRoot(Collection collection, Templater templater) {
 		textField = new JFXTextField();
 		textField.setEditable(false);
 		burnCheckbox = new JFXCheckBox("Burn after reading");
@@ -41,7 +41,7 @@ public class PrivateBinCollectionExporter implements CollectionExporterPlugin {
 	}
 
 	@Override
-	public boolean doExport(Collection collection, Toaster toaster) {
+	public boolean doExport(Collection collection, Templater templater, Toaster toaster) {
 		ObjectMapper objectMapper = createMapper();
 		try {
 			String content = objectMapper.writeValueAsString(new CollectionDataContainer(collection));
