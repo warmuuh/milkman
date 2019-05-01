@@ -56,7 +56,6 @@ public class RequestComponent {
 		
 		plugins.loadRequestAspectPlugins().stream()
 		.flatMap(p -> p.getRequestTabs().stream())
-		.sorted((a,b) -> a.getOrder() - b.getOrder())
 		.forEach(tabController -> {
 			if (tabController.canHandleAspect(request)) {
 				if (tabController instanceof ContentTypeAwareEditor) {

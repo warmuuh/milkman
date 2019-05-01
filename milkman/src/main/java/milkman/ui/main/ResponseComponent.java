@@ -51,7 +51,6 @@ public class ResponseComponent implements Initializable {
 		
 		plugins.loadRequestAspectPlugins().stream()
 			.flatMap(p -> p.getResponseTabs().stream())
-			.sorted((a,b) -> a.getOrder() - b.getOrder())
 			.forEach(tabController -> {
 				if (tabController.canHandleAspect(request, response)) {
 					if (tabController instanceof ContentTypeAwareEditor) {

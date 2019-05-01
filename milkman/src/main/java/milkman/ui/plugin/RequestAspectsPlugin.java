@@ -9,7 +9,7 @@ import milkman.domain.ResponseContainer;
 /**
 * extension point for adding aspects to a request.
 */
-public interface RequestAspectsPlugin {
+public interface RequestAspectsPlugin extends Orderable {
 
     /**
     * returns a list of RequestAspectEditors that this plugin provides

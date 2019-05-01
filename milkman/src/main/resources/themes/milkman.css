@@ -130,6 +130,7 @@
 }
 
 
+
 /**
 * working area > generalRequestEdit
 */
@@ -167,6 +168,16 @@
 	-fx-background-insets: 0px;
 	-fx-background-color: #2C3964; 
 }
+
+/**
+* working area > request aspect area
+*/
+
+#tabs .tab-label {
+    -fx-text-fill: black;
+	-fx-font-weight: normal;
+}
+
 
 /**
 * working area > response area

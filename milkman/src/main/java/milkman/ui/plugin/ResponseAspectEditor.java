@@ -22,11 +22,4 @@ public interface ResponseAspectEditor {
     */
 	boolean canHandleAspect(RequestContainer request, ResponseContainer response);
 
-	/**
-	 * defines the order between aspect tabs, the higher, the more to the right
-	 */
-	public default int getOrder() {
-		return Integer.MAX_VALUE;
-	}
-	
 }

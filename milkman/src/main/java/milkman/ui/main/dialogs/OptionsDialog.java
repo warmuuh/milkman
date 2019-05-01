@@ -30,7 +30,6 @@ public class OptionsDialog {
 	public void showAndWait(List<OptionPageProvider> optionPageProviders) {
 		JFXDialogLayout content = FxmlUtil.loadAndInitialize("/dialogs/OptionsDialog.fxml", this);
 		content.setPrefWidth(600);
-		optionPageProviders.sort((a,b) -> a.getOrder() - b.getOrder());
 		for(OptionPageProvider<?> p : optionPageProviders) {
 			OptionDialogPane pane = p.getOptionsDialog(new OptionDialogBuilder());
 			Tab tab = new Tab("", pane);

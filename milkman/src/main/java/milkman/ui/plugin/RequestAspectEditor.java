@@ -20,11 +20,4 @@ public interface RequestAspectEditor {
     */
 	boolean canHandleAspect(RequestContainer request);
 
-	
-	/**
-	 * defines the order between aspect tabs, the higher, the more to the right
-	 */
-	public default int getOrder() {
-		return Integer.MAX_VALUE;
-	}
 }

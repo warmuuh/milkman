@@ -28,7 +28,7 @@ public class RestPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 
 	@Override
 	public List<ResponseAspectEditor> getResponseTabs() {
-		return Arrays.asList(new ResponseHeaderTabController(), new ResponseBodyTabController());
+		return Arrays.asList( new ResponseBodyTabController(), new ResponseHeaderTabController());
 	}
 
 	@Override
@@ -78,5 +78,12 @@ public class RestPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 		return request instanceof RestRequestContainer;
 	}
 
+	@Override
+	public int getOrder() {
+		return 10;
+	}
+
+	
+	
 	
 }

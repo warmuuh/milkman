@@ -89,7 +89,8 @@ public class WorkspaceController {
 		workspace.getOpenRequests().removeIf(UnknownRequestContainer.class::isInstance);
 		
 		if (workspace.getOpenRequests().isEmpty()) {
-			workspace.getOpenRequests().add(requestTypeManager.createNewRequest(true));
+			requestTypeManager.createNewRequest(true)
+				.ifPresent(workspace.getOpenRequests()::add);
 		}
 		
 		if (workspace.getActiveRequest() instanceof UnknownRequestContainer) {
@@ -150,12 +151,13 @@ public class WorkspaceController {
 	}
 	
 	public void createNewRequest() {
-		RequestContainer request = requestTypeManager.createNewRequest(false);
-		displayRequest(request);
+		requestTypeManager.createNewRequest(false)
+			.ifPresent(this::displayRequest);
+		
 	}
 	public void createNewRequestWithDefault() {
-		RequestContainer request = requestTypeManager.createNewRequest(true);
-		displayRequest(request);
+		requestTypeManager.createNewRequest(true)
+			.ifPresent(this::displayRequest);
 	}
 	public void executeRequest(RequestContainer request) {
 		workingAreaView.showSpinner();
@@ -202,7 +204,7 @@ public class WorkspaceController {
 		log.info("Handling command: " + command);
 		if (command instanceof UiCommand.SubmitRequest) {
 			executeRequest(((UiCommand.SubmitRequest) command).getRequest());
-		} if (command instanceof UiCommand.SubmitActiveRequest) {
+		} else if (command instanceof UiCommand.SubmitActiveRequest) {
 			executeRequest(activeWorkspace.getActiveRequest());
 		} else if (command instanceof UiCommand.SaveRequestAsCommand) {
 			val saveCmd = ((UiCommand.SaveRequestAsCommand) command);
@@ -225,7 +227,7 @@ public class WorkspaceController {
 		} else if (command instanceof UiCommand.RenameRequest) {
 			RenameRequest renameRequest = (UiCommand.RenameRequest) command;
 			renameRequest(renameRequest.getRequest());
-		}  else if (command instanceof UiCommand.RenameActiveRequest) {
+		} else if (command instanceof UiCommand.RenameActiveRequest) {
 			renameRequest(activeWorkspace.getActiveRequest());
 		} else if (command instanceof UiCommand.DeleteRequest) {
 			DeleteRequest deleteRequest = (UiCommand.DeleteRequest) command;

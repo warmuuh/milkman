@@ -5,6 +5,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
@@ -124,14 +125,17 @@ public class RequestProcessor {
 
 	private String escapeUrl(RestRequestContainer request, Templater templater)
 			throws MalformedURLException, URISyntaxException {
-		URL url = new URL(templater.replaceTags(request.getUrl()));
+		String finalUrl = templater.replaceTags(request.getUrl());
+		URL url = new URL(URLDecoder.decode(finalUrl));
 	    URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
 	    return uri.toASCIIString();
 	}
 
 	private RestResponseContainer toResponseContainer(HttpResponse httpResponse) throws IOException {
 		RestResponseContainer response = new RestResponseContainer();
-		String body = IOUtils.toString(httpResponse.getEntity().getContent());
+		String body = "";
+		if (httpResponse.getEntity() != null && httpResponse.getEntity().getContent() != null)
+			body = IOUtils.toString(httpResponse.getEntity().getContent());
 		response.getAspects().add(new RestResponseBodyAspect(body));
 		
 		RestResponseHeaderAspect headers = new RestResponseHeaderAspect();

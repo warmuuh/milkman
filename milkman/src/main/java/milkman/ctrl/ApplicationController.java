@@ -84,7 +84,8 @@ public class ApplicationController {
 	}
 
 	private Workspace createFreshWorkspace(String name, SyncDetails syncDetails, boolean loadWorkspace) {
-		RequestContainer newRequest = requestTypeManager.createNewRequest(true);
+		RequestContainer newRequest = requestTypeManager.createNewRequest(true)
+										.orElseThrow(() -> new RuntimeException("No Default Request could be created"));
 		Workspace workspace = new Workspace(0L, 
 				UUID.randomUUID().toString(),
 				name, 

@@ -49,9 +49,4 @@ public class ResponseBodyTabController implements ResponseAspectEditor, ContentT
 	}
 
 	
-	@Override
-	public int getOrder() {
-		return 100;
-	}
-	
 }

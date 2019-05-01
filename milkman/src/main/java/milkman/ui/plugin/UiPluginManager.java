@@ -14,11 +14,11 @@ public class UiPluginManager {
 	Map<Class, List> cachedInstances = new HashMap<Class, List>();
 	
 	public List<RequestAspectsPlugin> loadRequestAspectPlugins() {
-		return loadSpiInstances(RequestAspectsPlugin.class);
+		return loadOrderedSpiInstances(RequestAspectsPlugin.class);
 	}
 
 	public List<RequestTypePlugin> loadRequestTypePlugins() {
-		return loadSpiInstances(RequestTypePlugin.class);
+		return loadOrderedSpiInstances(RequestTypePlugin.class);
 	}
 
 	public List<ImporterPlugin> loadImporterPlugins() {
@@ -30,7 +30,7 @@ public class UiPluginManager {
 	}
 	
 	public List<OptionPageProvider> loadOptionPages(){
-		return loadSpiInstances(OptionPageProvider.class);
+		return loadOrderedSpiInstances(OptionPageProvider.class);
 	}
 	
 
@@ -39,7 +39,7 @@ public class UiPluginManager {
 	}
 
 	public List<WorkspaceSynchronizer> loadSyncPlugins(){
-		return loadSpiInstances(WorkspaceSynchronizer.class);
+		return loadOrderedSpiInstances(WorkspaceSynchronizer.class);
 	}
 
 	public List<RequestExporterPlugin> loadRequestExportPlugins(){
@@ -59,6 +59,21 @@ public class UiPluginManager {
 		loader.forEach(result::add);
 		
 		cachedInstances.put(type, result);
+		return result;
+	}
+
+	private <T extends Orderable> List<T> loadOrderedSpiInstances(Class<T> type) {
+		if (cachedInstances.containsKey(type))
+			return cachedInstances.get(type);
+		
+		ServiceLoader<T> loader = ServiceLoader.load(type);
+		List<T> result = new LinkedList<T>();
+		loader.forEach(result::add);
+		
+		cachedInstances.put(type, result);
+		
+		result.sort((a,b) -> a.getOrder() - b.getOrder());
+		
 		return result;
 	}
 

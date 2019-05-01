@@ -7,7 +7,7 @@ import milkman.domain.Workspace;
 /**
 * extension point for workspace synchronization methods.
 */
-public interface WorkspaceSynchronizer {
+public interface WorkspaceSynchronizer extends Orderable {
 
 	/**
     * checks, if the workspaces is setup for synchronization with this plugin.

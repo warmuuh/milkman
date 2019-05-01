@@ -39,4 +39,11 @@ public class NoSyncPlugin implements WorkspaceSynchronizer {
 		};
 	}
 
+	@Override
+	public int getOrder() {
+		return 0;
+	}
+
+	
+	
 }

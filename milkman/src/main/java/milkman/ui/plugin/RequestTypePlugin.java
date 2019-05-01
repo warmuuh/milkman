@@ -6,7 +6,7 @@ import milkman.domain.ResponseContainer;
 /**
 * extension point for introducing new types of requests
 */
-public interface RequestTypePlugin {
+public interface RequestTypePlugin extends Orderable {
 
     /**
     * instantiates a new request with some defaults
@@ -34,4 +34,5 @@ public interface RequestTypePlugin {
     * checks, if a given requestContainer can be handled by this plugin
     */
 	boolean canHandle(RequestContainer request);
+	
 }

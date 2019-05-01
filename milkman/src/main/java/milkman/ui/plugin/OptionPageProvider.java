@@ -6,7 +6,7 @@ import milkman.ui.main.options.OptionDialogPane;
 /**
 * extension point for options-pages
 */
-public interface OptionPageProvider<T extends OptionsObject> {
+public interface OptionPageProvider<T extends OptionsObject> extends Orderable {
 
 	/**
     * returns a POJO with all option-values. If setOptions was called before, this
@@ -25,10 +25,4 @@ public interface OptionPageProvider<T extends OptionsObject> {
     */
 	public OptionDialogPane getOptionsDialog(OptionDialogBuilder builder);
 	
-	/**
-	 * defines the order between aspect tabs, the higher, the more to the right
-	 */
-	public default int getOrder() {
-		return Integer.MAX_VALUE;
-	}
 }

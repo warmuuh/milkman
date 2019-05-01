@@ -23,31 +23,35 @@ public class RequestTypeManager {
 	
 	
 	
-	public RequestContainer createNewRequest(boolean useDefault) {
-		RequestTypePlugin requestTypePlugin = getRequestTypePlugin(useDefault);
-		RequestContainer request = requestTypePlugin.createNewRequest();
-		request.setId(UUID.randomUUID().toString());
-		plugins.loadRequestAspectPlugins().forEach(p -> p.initializeRequestAspects(request));
-		return request;
+	public Optional<RequestContainer> createNewRequest(boolean useDefault) {
+		Optional<RequestTypePlugin> requestTypePlugin = getRequestTypePlugin(useDefault);
+		return requestTypePlugin.map(rType -> {
+			RequestContainer request = rType.createNewRequest();
+			request.setId(UUID.randomUUID().toString());
+			plugins.loadRequestAspectPlugins().forEach(p -> p.initializeRequestAspects(request));
+			return request;
+		});
 	}
 
 
 
-	private RequestTypePlugin getRequestTypePlugin(boolean useDefault) {
+	private Optional<RequestTypePlugin> getRequestTypePlugin(boolean useDefault) {
 		List<RequestTypePlugin> requestTypePlugins = plugins.loadRequestTypePlugins();
 		
 		if (requestTypePlugins.size() == 0)
 			throw new IllegalArgumentException("No RequestType plugins found");
 		
 		if (requestTypePlugins.size() == 1 || useDefault)
-			return requestTypePlugins.get(0);
+			return Optional.of(requestTypePlugins.get(0));
 
 		SelectValueDialog dialog = new SelectValueDialog();
 		List<String> reqTypeNames = requestTypePlugins.stream().map(p -> p.getRequestType()).collect(Collectors.toList());
 		dialog.showAndWait("New Request", "Select Request Type", Optional.of(reqTypeNames.get(0)), reqTypeNames);
-//		if (!dialog.isCancelled()) {
-			return requestTypePlugins.stream().filter(p -> p.getRequestType().equals(dialog.getInput())).findAny().get();
-//		}
+		if (!dialog.isCancelled()) {
+			return requestTypePlugins.stream().filter(p -> p.getRequestType().equals(dialog.getInput())).findAny();
+		} else {
+			return Optional.empty();
+		}
 		
 		
 	}
