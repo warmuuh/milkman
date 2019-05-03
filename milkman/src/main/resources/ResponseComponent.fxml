@@ -23,6 +23,8 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 
 
 <VBox xmlns:fx="http://javafx.com/fxml/1"
@@ -34,6 +36,11 @@
 				<HBox fx:id="statusDisplay" AnchorPane.topAnchor="3" AnchorPane.rightAnchor="5" />
 			</AnchorPane>
 			<fx:include fx:id="spinner" source="components/Spinner.fxml"></fx:include>
+			<JFXButton fx:id="cancellation" StackPane.alignment="CENTER">
+				<graphic>
+					<FontAwesomeIconView  glyphName="TIMES" size="1.5em" />
+				</graphic>
+			</JFXButton>
 		</children>
 	</StackPane>
 

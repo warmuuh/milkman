@@ -22,6 +22,7 @@ import milkman.ui.plugin.ContentTypeAwareEditor;
 import milkman.ui.plugin.RequestAspectsPlugin;
 import milkman.ui.plugin.ResponseAspectEditor;
 import milkman.ui.plugin.UiPluginManager;
+import com.jfoenix.controls.JFXButton;
 
 @Singleton
 public class ResponseComponent implements Initializable {
@@ -33,6 +34,8 @@ public class ResponseComponent implements Initializable {
 	@FXML Node spinner;
 
 	@FXML HBox statusDisplay;
+
+	@FXML JFXButton cancellation;
 
 	
 	@Inject
@@ -82,13 +85,16 @@ public class ResponseComponent implements Initializable {
 		tabs.getTabs().clear();
 	}
 	
-	public void showSpinner() {
+	public void showSpinner(Runnable cancellationListener) {
 		statusDisplay.getChildren().clear();
+		cancellation.setVisible(true);
+		cancellation.setOnAction(e -> cancellationListener.run());
 		spinner.setVisible(true);
 	}
 
 
 	public void hideSpinner() {
+		cancellation.setVisible(false);
 		spinner.setVisible(false);
 		
 	}

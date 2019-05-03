@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import milkman.ctrl.RequestExecutor;
 import milkman.ui.main.sync.NoSyncDetails;
 
 @Data
@@ -42,7 +43,7 @@ public class Workspace {
 	private Map<String, ResponseContainer> cachedResponses = new HashMap<String, ResponseContainer>();
 	
 	@JsonIgnore
-	private List<String> enqueuedRequestIds = new LinkedList<String>();
+	private Map<String, RequestExecutor> enqueuedRequestIds = new HashMap<String, RequestExecutor>();
 	
 	public Workspace(long id, String workspaceId, String name, List<Collection> collections,
 			List<RequestContainer> openRequests, RequestContainer activeRequest) {

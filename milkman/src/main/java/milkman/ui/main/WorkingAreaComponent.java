@@ -137,8 +137,8 @@ public class WorkingAreaComponent implements Initializable {
 		responseComponent.clear();
 	}
 	
-	public void showSpinner() {
-		responseComponent.showSpinner();
+	public void showSpinner(Runnable cancellationListener) {
+		responseComponent.showSpinner(cancellationListener);
 	}
 	public void hideSpinner() {
 		responseComponent.hideSpinner();

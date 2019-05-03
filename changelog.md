@@ -53,6 +53,11 @@ version 2.1.2:
   * bug: NPE on "epoints/get all events"
   * bug: already-escaped url parameters are espaced again
 
+version 2.1.3:
+  * perf: highlighting now asynchronous and optimized
+  * feature: requests can now be cancelled
+  
+
 Planned:
   * log-file 
   * Export of environment (privatebin)

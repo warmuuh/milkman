@@ -4,28 +4,35 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
+import org.reactfx.EventStream;
+import org.reactfx.EventStreams;
 import org.reactfx.Subscription;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 
-import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
@@ -45,6 +52,14 @@ public class ContentEditor extends VBox {
 
 	private static final String DEFAULT_CONTENTTYPE = "text/plain";
 
+	private static ExecutorService executor = Executors.newCachedThreadPool( new ThreadFactory() {
+        public Thread newThread(Runnable r) {
+            Thread t = Executors.defaultThreadFactory().newThread(r);
+            t.setDaemon(true);
+            return t;
+        }
+    });
+	
 	CodeArea codeArea;
 
 	GenericBinding<Object, String> contentBinding;
@@ -84,10 +99,34 @@ public class ContentEditor extends VBox {
 		
 		
 		codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
-		Subscription cleanupWhenNoLongerNeedIt = codeArea
-				 .multiPlainChanges()
-				 .successionEnds(Duration.ofMillis(500))
-				 .subscribe(ignore -> highlightCode());
+		EventStream<Object> highLightTrigger = EventStreams.merge(
+				codeArea.multiPlainChanges(), 
+				EventStreams.changesOf(highlighters.getSelectionModel().selectedItemProperty()),
+				EventStreams.eventsOf(format, MouseEvent.MOUSE_CLICKED));
+		
+		//sync highlighting:
+//		Subscription cleanupWhenNoLongerNeedIt = highLightTrigger
+//				 .successionEnds(Duration.ofMillis(500))
+//				 .subscribe(ignore -> {
+//					System.out.println("Triggered highlight via end-of-succession");
+//					 highlightCode();
+//				 });
+		
+		
+		//async highlighting:
+		Subscription cleanupWhenNoLongerNeedIt = highLightTrigger
+			.successionEnds(Duration.ofMillis(500))
+	        .supplyTask(this::highlightCodeAsync)
+	        .awaitLatest(codeArea.multiPlainChanges())
+	        .filterMap(t -> {
+	            if(t.isSuccess()) {
+	                return Optional.of(t.get());
+	            } else {
+	                t.getFailure().printStackTrace();
+	                return Optional.empty();
+	            }
+			})
+	        .subscribe(this::applyHighlighting);
 		
 		
 		val keyCombination = new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN);
@@ -158,7 +197,6 @@ public class ContentEditor extends VBox {
 		});
 		
 		highlighters.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
-			highlightCode();
 			if (n != null)
 				format.setVisible( n.supportFormatting());
 		});
@@ -167,7 +205,7 @@ public class ContentEditor extends VBox {
 		format = new JFXButton("Format");
 		format.setVisible(false);
 		
-		format.setOnAction(e -> formatCode());
+		format.setOnAction(e -> formatCurrentCode());
 		
 		header = new HBox(new Label("Content Type:"), highlighters, format);
 		header.getStyleClass().add("contentEditor-header");
@@ -188,21 +226,65 @@ public class ContentEditor extends VBox {
 		codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText()));
 	}
 	
-	private void formatCode() {
-		if (highlighters.getValue() != null && highlighters.getValue().supportFormatting()) {
-			codeArea.replaceText(highlighters.getValue().formatContent(codeArea.getText()));
-			highlightCode();			
+	private Task<StyleSpans<Collection<String>>> highlightCodeAsync() {
+        String text = codeArea.getText();
+        Task<StyleSpans<Collection<String>>> task = new Task<StyleSpans<Collection<String>>>() {
+            @Override
+            protected StyleSpans<Collection<String>> call() throws Exception {
+                return computeHighlighting(text);
+            }
+        };
+        executor.execute(task);
+        return task;
+	} 
+	
+	private void applyHighlighting(StyleSpans<Collection<String>> highlighting) {
+        codeArea.setStyleSpans(0, highlighting);
+	}
+	
+	private void formatCurrentCode() {
+		StopWatch s = new StopWatch();
+		s.start();
+		try{
+			if (highlighters.getValue() != null && highlighters.getValue().supportFormatting()) {
+				codeArea.replaceText(formatCode(codeArea.getText()));	
+			}
+		} finally {
+			s.stop();
+//			System.out.println("Formatting code and replace: " + s.getTime() + " ms");
 		}
 	}
+	private String formatCode(String code) {
+		StopWatch s = new StopWatch();
+		s.start();
+		try{
+			if (highlighters.getValue() != null && highlighters.getValue().supportFormatting()) {
+				return highlighters.getValue().formatContent(code);
+			} else {
+				return code;
+			}
+		} finally {
+			s.stop();
+//			System.out.println("Formatting code: " + s.getTime() + " ms");
+		}
+	}
+	
 
-	private StyleSpans<? extends Collection<String>> computeHighlighting(String text) {
-		if (highlighters.getValue() != null)
+	private StyleSpans<Collection<String>> computeHighlighting(String text) {
+		StopWatch s = new StopWatch();
+		s.start();
+		try{
+			if (highlighters.getValue() != null)
 			return highlighters.getValue().computeHighlighting(text);
 		else
 			return noHighlight(text);
+		} finally {
+			s.stop();
+//			System.out.println("Highlighting code: " + s.getTime() + " ms");
+		}
 	}
 
-	private StyleSpans<? extends Collection<String>> noHighlight(String text) {
+	private StyleSpans<Collection<String>> noHighlight(String text) {
 		val b = new StyleSpansBuilder<Collection<String>>();
 		b.add(Collections.singleton("plain"), text.length());
 		return b.create();
@@ -224,12 +306,16 @@ public class ContentEditor extends VBox {
 		.filter(p -> p.getContentType().equals(contentType))
 		.findAny().ifPresent(t -> {
 			format.setVisible(t.supportFormatting());
+//			System.out.println("Setting active highlighter: " + t);
 			highlighters.setValue(t);
+//			System.out.println("End Setting active highlighter");
 		});
 	}
 	
 	public void setContentType(String contentType) {
 		setActiveContentType(highlighters.getItems(), contentType);
+		if (CoreApplicationOptionsProvider.options().isAutoformatContent())
+			formatCurrentCode();
 	}
 	
 	public void setContent(Supplier<String> getter, Consumer<String> setter) {		
@@ -240,14 +326,12 @@ public class ContentEditor extends VBox {
 //		codeAreaTextBinding = Var.mapBidirectional(contentBinding,  s -> s, s->s);
 		
 		String curValue = getter.get();
+		
 		codeArea.replaceText(curValue != null ? curValue : "");
 		codeArea.textProperty().addListener((obs, o, n)->{
 			setter.accept(n);
 		});
 		
-		if (CoreApplicationOptionsProvider.options().isAutoformatContent()) {
-			Platform.runLater(this::formatCode);
-		}
 	}
 
 }

@@ -144,8 +144,10 @@ public class WorkspaceController {
 		
 		if (activeWorkspace.getCachedResponses().containsKey(request.getId()))
 			workingAreaView.displayResponseFor(request, activeWorkspace.getCachedResponses().get(request.getId()));
-		else if (activeWorkspace.getEnqueuedRequestIds().contains(request.getId()))
-			workingAreaView.showSpinner();
+		else if (activeWorkspace.getEnqueuedRequestIds().containsKey(request.getId())) {
+			RequestExecutor executor = activeWorkspace.getEnqueuedRequestIds().get(request.getId());
+			workingAreaView.showSpinner(() -> executor.cancel());
+		}
 		else
 			workingAreaView.clearResponse();
 	}
@@ -160,15 +162,22 @@ public class WorkspaceController {
 			.ifPresent(this::displayRequest);
 	}
 	public void executeRequest(RequestContainer request) {
-		workingAreaView.showSpinner();
 		
+		workingAreaView.clearResponse();
+		activeWorkspace.getCachedResponses().remove(request.getId());
 		RequestTypePlugin plugin = requestTypeManager.getPluginFor(request);
 		val executor = new RequestExecutor(request, plugin, buildTemplater());
+		
+		workingAreaView.showSpinner(() -> executor.cancel());
 		
 		RequestExecutionContext context = new RequestExecutionContext(activeWorkspace.getEnvironments().stream().filter(e -> e.isActive()).findAny());
 		
 		long startTime = System.currentTimeMillis();
-		executor.setOnScheduled(e -> activeWorkspace.getEnqueuedRequestIds().add(request.getId()));
+		executor.setOnScheduled(e -> activeWorkspace.getEnqueuedRequestIds().put(request.getId(), executor));
+		executor.setOnCancelled(e -> {
+			workingAreaView.hideSpinner();
+			activeWorkspace.getEnqueuedRequestIds().remove(request.getId());
+		});
 		
 		executor.setOnFailed(e -> {
 			workingAreaView.hideSpinner();
@@ -339,13 +348,17 @@ public class WorkspaceController {
 		switch (type) {
 		case CLOSE_ALL:
 			activeWorkspace.getOpenRequests().clear();
+			activeWorkspace.getCachedResponses().clear();
 			break;
 		case CLOSE_RIGHT:
-				while(activeWorkspace.getOpenRequests().size() > indexOf+1)
-					activeWorkspace.getOpenRequests().remove(activeWorkspace.getOpenRequests().size()-1);
+			while(activeWorkspace.getOpenRequests().size() > indexOf+1) {
+				RequestContainer removed = activeWorkspace.getOpenRequests().remove(activeWorkspace.getOpenRequests().size()-1);
+				activeWorkspace.getCachedResponses().remove(removed.getId());
+			}
 			break;
 		case CLOSE_THIS:
-			activeWorkspace.getOpenRequests().remove(indexOf);
+			RequestContainer removed = activeWorkspace.getOpenRequests().remove(indexOf);
+			activeWorkspace.getCachedResponses().remove(removed.getId());
 			break;
 		default:
 			break;
