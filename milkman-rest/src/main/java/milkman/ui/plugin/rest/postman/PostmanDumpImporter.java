@@ -44,6 +44,9 @@ public class PostmanDumpImporter {
 				environments.add(convertToDomain(postmanEnv));
 			}
 		}
+		if (pmDump.getGlobals() != null && pmDump.getGlobals().size() > 0) {
+			environments.add(convertGlobalsToDomain(pmDump.getGlobals()));
+		}
 		
 		
 		Workspace workspace = new Workspace(0, "", "", collections, Collections.emptyList(), null);
@@ -56,10 +59,17 @@ public class PostmanDumpImporter {
 	
 	private Environment convertToDomain(PostmanDump.PostmanEnvironment postmanEnv) {
 		Environment result = new Environment(postmanEnv.getName());
+		result.setGlobal(postmanEnv.getName().toLowerCase().contains("globals"));
 		postmanEnv.getValues().forEach(e -> result.getEntries().add(new EnvironmentEntry(UUID.randomUUID().toString(), e.getKey(), e.getValue(), e.isEnabled())));
 		return result;
 	}
 
+	private Environment convertGlobalsToDomain(List<PostmanDump.EnvironmentEntry> globals) {
+		Environment result = new Environment("Globals");
+		result.setGlobal(true);
+		globals.forEach(e -> result.getEntries().add(new EnvironmentEntry(UUID.randomUUID().toString(), e.getKey(), e.getValue(), e.isEnabled())));
+		return result;
+	}
 
 
 

@@ -8,6 +8,7 @@ import lombok.Data;
 public class PostmanDump {
 	List<PostmanCollection> collections;
 	List<PostmanEnvironment> environments;
+	List<EnvironmentEntry> globals;
 	
 	@Data
 	public static class PostmanCollection {
