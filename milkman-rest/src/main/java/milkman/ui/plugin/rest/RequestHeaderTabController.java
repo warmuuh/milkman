@@ -22,7 +22,7 @@ public class RequestHeaderTabController implements RequestAspectEditor {
 	public Tab getRoot(RequestContainer request) {
 		RestHeaderAspect headers = request.getAspect(RestHeaderAspect.class).get();
 		JfxTableEditor<HeaderEntry> editor = FxmlUtil.loadAndInitialize("/components/TableEditor.fxml");
-		editor.enableEdition(() -> {
+		editor.enableAddition(() -> {
 			headers.setDirty(true);
 			return new HeaderEntry(UUID.randomUUID().toString(), "", "", true);
 		});

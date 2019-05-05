@@ -21,9 +21,9 @@ public class ResponseHeaderTabController implements ResponseAspectEditor {
 	public Tab getRoot(RequestContainer request, ResponseContainer response) {
 		RestResponseHeaderAspect headers = response.getAspect(RestResponseHeaderAspect.class).get();
 		JfxTableEditor<HeaderEntry> editor = FxmlUtil.loadAndInitialize("/components/TableEditor.fxml");
-		editor.disableEdition();
-		editor.addColumn("Name", HeaderEntry::getName, HeaderEntry::setName);
-		editor.addColumn("Value", HeaderEntry::getValue, HeaderEntry::setValue);
+		editor.disableAddition();
+		editor.addReadOnlyColumn("Name", HeaderEntry::getName);
+		editor.addReadOnlyColumn("Value", HeaderEntry::getValue);
 		
 		editor.setItems(headers.getEntries());
 		

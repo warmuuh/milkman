@@ -56,6 +56,7 @@ version 2.1.2:
 version 2.1.3:
   * perf: highlighting now asynchronous and optimized
   * feature: requests can now be cancelled
+  * feature: response header values can now be selected&copied
   
 
 Planned:

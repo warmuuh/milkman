@@ -17,10 +17,10 @@ public class JdbcResultSetAspectEditor implements ResponseAspectEditor {
 	public Tab getRoot(RequestContainer request, ResponseContainer response) {
 		RowSetResponseAspect rowSetAspect = response.getAspect(RowSetResponseAspect.class).get();
 		JfxTableEditor<List<Object>> editor = FxmlUtil.loadAndInitialize("/components/TableEditor.fxml");
-		editor.disableEdition();
+		editor.disableAddition();
 		
 		for(int i = 0; i < rowSetAspect.getColumnNames().size(); ++i) {
-			editor.addColumn(rowSetAspect.getColumnNames().get(i), getRowValue(i), (r, v) -> {});	
+			editor.addReadOnlyColumn(rowSetAspect.getColumnNames().get(i), getRowValue(i));	
 		}
 		
 		editor.setItems(rowSetAspect.getRows());

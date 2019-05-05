@@ -22,7 +22,7 @@ public class RequestQueryParamTabController implements RequestAspectEditor {
 	public Tab getRoot(RequestContainer request) {
 		RestQueryParamAspect qryParams = request.getAspect(RestQueryParamAspect.class).get();
 		JfxTableEditor<QueryParamEntry> editor = FxmlUtil.loadAndInitialize("/components/TableEditor.fxml");
-		editor.enableEdition(() -> {
+		editor.enableAddition(() -> {
 			updateDirtyState(qryParams, request);
 			return new QueryParamEntry(UUID.randomUUID().toString(), "", "");
 		});

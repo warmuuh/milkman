@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.cells.editors.TextFieldEditorBuilder;
+import com.jfoenix.controls.cells.editors.base.EditorNodeBuilder;
 import com.jfoenix.controls.cells.editors.base.GenericEditableTreeTableCell;
 import com.jfoenix.controls.cells.editors.base.JFXTreeTableCell;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
@@ -16,9 +17,11 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import io.vavr.Function1;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
@@ -30,6 +33,8 @@ import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.control.cell.CheckBoxTreeTableCell;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -52,9 +57,25 @@ public class JfxTableEditor<T> extends StackPane {
 
 	private JFXButton addItemBtn;
 
+	
+	private static class SelectableTextFieldBuilder extends TextFieldEditorBuilder {
+
+		@Override
+		public Region createNode(String value, EventHandler<KeyEvent> keyEventsHandler,
+				ChangeListener<Boolean> focusChangeListener) {
+			Region node = super.createNode(value, keyEventsHandler, focusChangeListener);
+			
+			this.textField.setEditable(false);
+			
+			return node;
+		}
+		
+		
+	}
 
 	public JfxTableEditor() {
 		table.setShowRoot(false);
+		table.setEditable(true);
 		this.getChildren().add(table);
 		addItemBtn = new JFXButton();
 		addItemBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -66,10 +87,22 @@ public class JfxTableEditor<T> extends StackPane {
 		
 	}
 	
+
+	public void addReadOnlyColumn(String name, Function1<T, String> getter) {
+		TreeTableColumn<RecursiveWrapper<T>, String> column = new TreeTableColumn<>(name);
+		column.setCellFactory((TreeTableColumn<RecursiveWrapper<T>, String> param) -> {
+			return new GenericEditableTreeTableCell<RecursiveWrapper<T>, String>(new SelectableTextFieldBuilder());
+		});
+		column.setCellValueFactory(param -> GenericBinding.of(getter, (e, o) -> {}, param.getValue().getValue().getData()));
+		column.setMaxWidth(400);
+		table.getColumns().add(column);
+	}
 	
 	public void addColumn(String name, Function1<T, String> getter, BiConsumer<T, String> setter) {
 		TreeTableColumn<RecursiveWrapper<T>, String> column = new TreeTableColumn<>(name);
-		column.setCellFactory((TreeTableColumn<RecursiveWrapper<T>, String> param) -> new GenericEditableTreeTableCell<RecursiveWrapper<T>, String>(new TextFieldEditorBuilder()));
+		column.setCellFactory((TreeTableColumn<RecursiveWrapper<T>, String> param) -> {
+			return new GenericEditableTreeTableCell<RecursiveWrapper<T>, String>(new TextFieldEditorBuilder());
+		});
 		column.setCellValueFactory(param -> GenericBinding.of(getter, setter, param.getValue().getValue().getData()));
 		column.setMaxWidth(400);
 		table.getColumns().add(column);
@@ -94,15 +127,13 @@ public class JfxTableEditor<T> extends StackPane {
 		table.getColumns().add(column);
 	}
 
-	public void enableEdition(Supplier<T> newItemCreator) {
-		table.setEditable(true);
+	public void enableAddition(Supplier<T> newItemCreator) {
 		addItemBtn.setVisible(true);
 		this.addItemBtn.setOnAction(e -> { 
 			obsWrappedItems.add(new RecursiveWrapper<>(newItemCreator.get()));
 		});
 	}
-	public void disableEdition() {
-		table.setEditable(false);
+	public void disableAddition() {
 		addItemBtn.setVisible(false);
 	}
 	
