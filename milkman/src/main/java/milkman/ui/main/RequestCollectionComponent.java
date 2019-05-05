@@ -1,6 +1,7 @@
 package milkman.ui.main;
 
 import java.time.Duration;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,6 +11,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.reactfx.EventStreams;
 
 import com.jfoenix.controls.JFXButton;
@@ -17,13 +20,16 @@ import com.jfoenix.controls.JFXListCell;
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXToggleButton;
 import com.jfoenix.controls.JFXTreeView;
+import com.sun.javafx.collections.SortableList;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
@@ -45,6 +51,7 @@ import milkman.domain.RequestContainer;
 import milkman.domain.Searchable;
 import milkman.ui.commands.UiCommand;
 import milkman.utils.Event;
+import milkman.utils.PropertyChangeEvent;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_ = { @Inject })
@@ -60,6 +67,8 @@ public class RequestCollectionComponent {
 
 	Map<String, Boolean> expansionCache = new HashMap<>();
 
+	private SettableTreeItem<Node> root;
+	
 	public void display(List<Collection> collections) {
 
 		collectionContainer.setShowRoot(false);
@@ -70,16 +79,37 @@ public class RequestCollectionComponent {
 		}
 
 		
-		val filteredList = new FilteredList<>(FXCollections.observableList(entries, c -> 
-				((Collection)c.getValue().getUserData()).getRequests().stream()
-				.map(r -> r.onDirtyChange)
-				.collect(Collectors.toList())
-				.toArray(new Observable[]{}))
-		);
-		SettableTreeItem<Node> root = new SettableTreeItem<Node>();
+		ObservableList<TreeItem<Node>> observableList = FXCollections.observableList(entries, c -> 
+			{
+				Collection collection = (Collection)c.getValue().getUserData();
+				List<PropertyChangeEvent<Boolean>> reqObs = collection.getRequests().stream()
+					.map(r -> r.onDirtyChange)
+					.collect(Collectors.toList());
+				reqObs.add(collection.onDirtyChange);
+				return reqObs.toArray(new Observable[]{});
+			});
+		
+		
+		SortedList<TreeItem<Node>> sortedList = observableList.sorted((a,b) -> {
+				val ac = (Collection)a.getValue().getUserData();
+				val bc = (Collection)b.getValue().getUserData();
+				System.out.println("Resorting!");
+				return new CompareToBuilder()
+					.append(!ac.isStarred(), !bc.isStarred())
+					.append(ac.getName().toLowerCase(), bc.getName().toLowerCase())
+					.build();
+			});
+		
+		
+		
+		val filteredList = new FilteredList<>(sortedList);
+		
+		root = new SettableTreeItem<Node>();
+		
 		root.setChildren(filteredList);
 		Platform.runLater(() -> setFilterPredicate(filteredList, searchField.getText()));
 		collectionContainer.setRoot(root);
+		
 		EventStreams.nonNullValuesOf(searchField.textProperty())
 			.successionEnds(Duration.ofMillis(250))
 			.subscribe(qry -> setFilterPredicate(filteredList, qry));
@@ -88,7 +118,7 @@ public class RequestCollectionComponent {
 	
 	
 	public TreeItem<Node> buildTree(Collection collection){
-		TreeItem<Node> item = new TreeItem<Node>();
+		SettableTreeItem<Node> item = new SettableTreeItem<Node>();
 		HBox collEntry = createCollectionEntry(collection, item);
 		item.setValue(collEntry);
 		item.setExpanded(expansionCache.getOrDefault(collection.getName(), false));
@@ -96,11 +126,13 @@ public class RequestCollectionComponent {
 		item.expandedProperty().addListener((obs, o, n) -> {
 			expansionCache.put(collection.getName(), n);
 		});
+		List<TreeItem<Node>> children = new LinkedList<TreeItem<Node>>();
 		for (RequestContainer r : collection.getRequests()) {
 			TreeItem<Node> requestTreeItem = new TreeItem<Node>(createRequestEntry(collection, r));
 			requestTreeItem.getValue().setUserData(r);
-			item.getChildren().add(requestTreeItem);
+			children.add(requestTreeItem);
 		}
+		item.setChildren(new FilteredList<TreeItem<Node>>(FXCollections.observableList(children)));
 		return item;
 	}
 	
@@ -116,6 +148,11 @@ public class RequestCollectionComponent {
 		starringBtn.setGraphic(collection.isStarred() ? new FontAwesomeIconView(FontAwesomeIcon.STAR, "1em") : new FontAwesomeIconView(FontAwesomeIcon.STAR_ALT, "1em"));
 		starringBtn.setOnAction( e -> {
 			collection.setStarred(!collection.isStarred());
+			//HACK invoke directly bc we want to trigger sorting (see further up).
+			//this does not change the dirty-state as the 
+			//dirty state in collection is not used any further
+			collection.onDirtyChange.invoke(false, true);   
+
 			starringBtn.setGraphic(collection.isStarred() ? new FontAwesomeIconView(FontAwesomeIcon.STAR, "1em") : new FontAwesomeIconView(FontAwesomeIcon.STAR_ALT, "1em"));
 		});
 		
@@ -160,14 +197,33 @@ public class RequestCollectionComponent {
 		if (searchTerm != null && searchTerm.length() > 0)
 			filteredList.setPredicate(o -> {
 				Object userData = o.getValue().getUserData();
-				if (userData instanceof Collection)
-					if (((Collection) userData).isStarred())
+				if (userData instanceof Collection) {
+					Collection collection = (Collection) userData;
+					if (collection.isStarred() || collection.match(searchTerm)) {
+						((FilteredList<TreeItem<Node>>)o.getChildren()).setPredicate(ro -> true);
 						return true;
-				
-				return ((Searchable)userData).match(searchTerm);
+					}
+					
+					((FilteredList<TreeItem<Node>>)o.getChildren()).setPredicate(ro -> {
+						RequestContainer req = (RequestContainer) ro.getValue().getUserData();
+						return req.match(searchTerm);
+					});
+					
+					return o.getChildren().size() > 0;
+				}
+				return false;
 			});
-		else
-			filteredList.setPredicate(o -> true);
+		else {
+			filteredList.setPredicate(o -> {
+				Object userData = o.getValue().getUserData();
+				if (userData instanceof Collection) {
+					((FilteredList<TreeItem<Node>>)o.getChildren()).setPredicate(ro -> true);
+				}
+				return true;
+			});
+			
+			
+		}
 	}
 
 

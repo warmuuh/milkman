@@ -8,6 +8,9 @@ import lombok.SneakyThrows;
 
 public class SettableTreeItem<T> extends TreeItem<T> {
 
+	
+	
+	
 	@SneakyThrows
 	public void setChildren(ObservableList<TreeItem<T>> children) {
 		Field fc = TreeItem.class.getDeclaredField("children");

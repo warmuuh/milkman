@@ -56,7 +56,9 @@ version 2.1.2:
 version 2.1.3:
   * perf: highlighting now asynchronous and optimized
   * feature: requests can now be cancelled
-  * feature: response header values can now be selected&copied
+  * UX: response header values can now be selected&copied
+  * UX: collections are now sorted by name & search filters request inside collections as well
+  * UX: starring pops collections to top
   
 
 Planned:

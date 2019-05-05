@@ -13,7 +13,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(onlyExplicitlyIncluded = true)
-public class Collection implements Searchable {
+public class Collection extends Dirtyable implements Searchable {
 	private String id;
 	@ToString.Include private String name;
 	private boolean starred;
@@ -21,7 +21,7 @@ public class Collection implements Searchable {
 	
 	@Override
 	public boolean match(String searchString) {
-		return StringUtils.containsIgnoreCase(name, searchString)
-				|| requests.stream().anyMatch(r -> r.match(searchString));
+		return StringUtils.containsIgnoreCase(name, searchString);
+//				|| requests.stream().anyMatch(r -> r.match(searchString));
 	}
 }
