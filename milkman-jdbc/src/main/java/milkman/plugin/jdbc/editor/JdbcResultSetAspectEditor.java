@@ -1,6 +1,11 @@
 package milkman.plugin.jdbc.editor;
 
+import java.io.IOException;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.List;
+
+import org.apache.commons.io.IOUtils;
 
 import io.vavr.Function1;
 import javafx.scene.control.Tab;
@@ -25,12 +30,23 @@ public class JdbcResultSetAspectEditor implements ResponseAspectEditor {
 		
 		editor.setItems(rowSetAspect.getRows());
 		
-		return new Tab("Response Headers", editor);
+		return new Tab("Result", editor);
 	}
 
 	
 	private Function1<List<Object>, String> getRowValue(int columnIdx) {
-		return row -> row.get(columnIdx).toString();
+		return row -> {
+			Object value = row.get(columnIdx);
+			
+			if (value instanceof Blob) {
+				try {
+					value = IOUtils.toString(((Blob) value).getBinaryStream());
+				} catch (IOException | SQLException e) {
+					value = "BLOB";
+				}
+			}
+			return value != null ? value.toString() : "NULL";
+		};
 	}
 	
 	

@@ -100,6 +100,8 @@ public class JqlAspectResponseEditor implements ResponseAspectEditor {
 		String body = response.getAspect(RestResponseBodyAspect.class).map(b -> b.getBody()).orElse("");
 		String jmesRes = executeJmesQuery(qry, body);
 		contentView.setContent(() -> jmesRes, s -> {});
+		//TODO: content View should have a setAutoFormat=true setting
+		contentView.formatCurrentCode();
 	}
 
 	private String executeJmesQuery(String query, String body) {
