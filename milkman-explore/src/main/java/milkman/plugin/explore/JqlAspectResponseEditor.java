@@ -9,8 +9,10 @@ import java.util.Collections;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.jfoenix.controls.JFXButton;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
@@ -100,8 +102,6 @@ public class JqlAspectResponseEditor implements ResponseAspectEditor {
 		String body = response.getAspect(RestResponseBodyAspect.class).map(b -> b.getBody()).orElse("");
 		String jmesRes = executeJmesQuery(qry, body);
 		contentView.setContent(() -> jmesRes, s -> {});
-		//TODO: content View should have a setAutoFormat=true setting
-		contentView.formatCurrentCode();
 	}
 
 	private String executeJmesQuery(String query, String body) {
@@ -109,9 +109,10 @@ public class JqlAspectResponseEditor implements ResponseAspectEditor {
 		try {
 			Expression<JsonNode> expression = jmespath.compile(query);
 			ObjectMapper mapper = new ObjectMapper();
+			mapper.enable(SerializationFeature.INDENT_OUTPUT); //formatting
 			JsonNode input = mapper.readTree(body);
 			JsonNode result = expression.search(input);
-			return result.toString();
+			return mapper.writeValueAsString(result);
 		} catch (ParseException e) {
 			return e.getMessage();
 		} catch (Exception e) {
