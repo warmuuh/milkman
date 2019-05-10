@@ -94,6 +94,7 @@
 								<minVersion>1.8.0</minVersion>
 								<maxVersion>1.9.0</maxVersion>
 								<opts>
+									<opt>-Dprism.dirtyopts=false</opt>
 									<opt>-Djava.endorsed.dirs=./endorsed</opt>
 								</opts>
 							</jre>

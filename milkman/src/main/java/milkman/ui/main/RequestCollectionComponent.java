@@ -1,5 +1,6 @@
 package milkman.ui.main;
 
+import java.awt.Desktop;
 import java.time.Duration;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -52,6 +53,7 @@ import milkman.domain.Searchable;
 import milkman.ui.commands.UiCommand;
 import milkman.utils.Event;
 import milkman.utils.PropertyChangeEvent;
+import milkman.utils.fxml.FxmlUtil;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_ = { @Inject })
@@ -93,7 +95,6 @@ public class RequestCollectionComponent {
 		SortedList<TreeItem<Node>> sortedList = observableList.sorted((a,b) -> {
 				val ac = (Collection)a.getValue().getUserData();
 				val bc = (Collection)b.getValue().getUserData();
-				System.out.println("Resorting!");
 				return new CompareToBuilder()
 					.append(!ac.isStarred(), !bc.isStarred())
 					.append(ac.getName().toLowerCase(), bc.getName().toLowerCase())

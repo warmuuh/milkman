@@ -1,5 +1,7 @@
 package milkman.ui.main;
 
+import java.util.Iterator;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -66,8 +68,9 @@ public class RequestComponent {
 				tabs.getTabs().add(aspectTab);
 			}
 		});
-		
+
 		tabs.getSelectionModel().select(oldSelection);
+		
 	}
 
 	@FXML public void onSubmit() {

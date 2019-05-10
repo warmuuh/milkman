@@ -1,12 +1,10 @@
 package milkman;
 
 
-import org.fxmisc.cssfx.CSSFX;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
-import milkman.ui.main.options.CoreApplicationOptionsProvider.CoreApplicationOptions;
 
 public class MilkmanApplication extends Application {
 	
