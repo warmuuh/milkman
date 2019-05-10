@@ -356,6 +356,15 @@ public class WorkspaceController {
 				activeWorkspace.getCachedResponses().remove(removed.getId());
 			}
 			break;
+		case CLOSE_OTHERS:
+			List<String> toRemove = activeWorkspace.getOpenRequests().stream()
+								.filter(r -> !r.getId().equals(request.getId()))
+								.map(RequestContainer::getId)
+								.collect(Collectors.toList());
+			
+			toRemove.forEach(activeWorkspace.getCachedResponses()::remove);
+			activeWorkspace.getOpenRequests().removeIf(r -> toRemove.contains(r.getId()));
+			break;
 		case CLOSE_THIS:
 			RequestContainer removed = activeWorkspace.getOpenRequests().remove(indexOf);
 			activeWorkspace.getCachedResponses().remove(removed.getId());

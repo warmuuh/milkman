@@ -55,10 +55,13 @@ version 2.1.2:
 
 version 2.1.3:
   * perf: highlighting now asynchronous and optimized
-  * feature: requests can now be cancelled
+  * perf: startup speed improved
+  * requests can now be cancelled
   * UX: response header values can now be selected&copied
   * UX: collections are now sorted by name & search filters request inside collections as well
   * UX: starring pops collections to top
+  * UX: "Close Others" added
+  * XML highlighter/formatter added
   
 
 Planned:

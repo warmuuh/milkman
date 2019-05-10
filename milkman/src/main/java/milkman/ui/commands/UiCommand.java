@@ -45,6 +45,7 @@ public interface UiCommand {
 			CLOSE_THIS,
 			CLOSE_ALL,
 			CLOSE_RIGHT,
+			CLOSE_OTHERS
 		}
 	}
 	

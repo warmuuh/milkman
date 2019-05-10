@@ -104,13 +104,16 @@ public class WorkingAreaComponent implements Initializable {
 		MenuItem closeAllEntry = new MenuItem("Close All");
 		closeAllEntry.setOnAction(a -> onCommand.invoke(new UiCommand.CloseRequest(r, CloseType.CLOSE_ALL)));
 		
+
+		MenuItem closeOtherEntry = new MenuItem("Close Others");
+		closeOtherEntry.setOnAction(a -> onCommand.invoke(new UiCommand.CloseRequest(r, CloseType.CLOSE_OTHERS)));
 		
 		MenuItem renameEntry = new MenuItem("Rename");
 		renameEntry.setOnAction(a -> {
 			onCommand.invoke(new UiCommand.RenameRequest(r));
 		});
 		
-		tab.setContextMenu(new ContextMenu(closeEntry, closeRightEntry,closeAllEntry, renameEntry));
+		tab.setContextMenu(new ContextMenu(closeEntry, closeRightEntry,closeAllEntry, closeOtherEntry, renameEntry));
 		tab.setUserData(r);
 
 		tab.getGraphic().setOnMouseClicked(e -> {

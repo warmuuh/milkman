@@ -2,6 +2,8 @@ package milkman;
 
 
 
+import java.io.IOException;
+
 import javafx.application.Application;
 import javafx.stage.Stage;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
@@ -19,16 +21,18 @@ public class MilkmanApplication extends Application {
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		module.getMainWindow().start(primaryStage); // 1 sec
 		module.getApplicationController().initOptions();
-		module.getMainWindow().start(primaryStage);
 		module.getThemeSwitcher().setTheme(CoreApplicationOptionsProvider.options().getTheme());
-		module.getApplicationController().initApplication();
+		module.getApplicationController().initApplication(); // 1 sec
 		primaryStage.setOnCloseRequest(e -> module.getApplicationController().persistState());
 	}
 
 	
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
+//		System.out.println("Press Enter to Start..."); // for performance measurements
+//		System.in.read();
 		launch(args);
 	}
 

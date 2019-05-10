@@ -49,7 +49,7 @@ public class MainWindow {
 
 			primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/icon.png")));
 			
-			CSSFX.start(primaryStage);
+//			CSSFX.start(primaryStage);
 			
 			
 			primaryStage.show();

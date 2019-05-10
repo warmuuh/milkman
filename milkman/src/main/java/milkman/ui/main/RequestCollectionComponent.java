@@ -45,6 +45,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import milkman.domain.Collection;
@@ -160,33 +161,14 @@ public class RequestCollectionComponent {
 		
 		HBox hBox = new HBox(new FontAwesomeIconView(FontAwesomeIcon.FOLDER_ALT, "1.5em"), collectionName, starringBtn);
 
-		MenuItem deleteEntry = new MenuItem("Delete");
-		deleteEntry.setOnAction(e -> onCommand.invoke(new UiCommand.DeleteCollection(collection)));
 		
-		MenuItem renameEntry = new MenuItem("Rename");
-		renameEntry.setOnAction(e -> onCommand.invoke(new UiCommand.RenameCollection(collection)));
-		
-		MenuItem exportEntry = new MenuItem("Export");
-		exportEntry.setOnAction(e -> onCommand.invoke(new UiCommand.ExportCollection(collection)));
-		
-		
-		ContextMenu ctxMenu = new ContextMenu(renameEntry, exportEntry, deleteEntry);
-
 		hBox.setOnMouseClicked(e -> {
-			
-//			//we have to find out in a hackish way if we gonna expand the cell here or collapse
-//			//because jfxListView does not fire the respective listeners correctly
-//			if (hBox.getParent().getParent().getParent() instanceof JFXListCell) {
-//				JFXListCell cell  = (JFXListCell) hBox.getParent().getParent().getParent();
-//				boolean oldExpandedState = cell.isExpanded();
-//				expansionCache.put(collection.getName(), !oldExpandedState);
-//			}
 			if (e.getButton() == MouseButton.PRIMARY) {
 				item.setExpanded(!item.isExpanded());
 				e.consume();
 			}
 			if (e.getButton() == MouseButton.SECONDARY) {
-				ctxMenu.show(hBox, e.getScreenX(), e.getScreenY());
+				collectionCtxMenu.show(collection, hBox, e.getScreenX(), e.getScreenY());
 				e.consume();
 			}
 		});
@@ -234,18 +216,6 @@ public class RequestCollectionComponent {
 		requestType.getStyleClass().add("request-type");
 		Label button = new Label(request.getName());
 
-		MenuItem renameEntry = new MenuItem("Rename");
-		renameEntry.setOnAction(e -> onCommand.invoke(new UiCommand.RenameRequest(request)));
-
-		
-		MenuItem exportEntry = new MenuItem("Export");
-		exportEntry.setOnAction(e -> onCommand.invoke(new UiCommand.ExportRequest(request)));
-		
-		
-		MenuItem deleteEntry = new MenuItem("Delete");
-		deleteEntry.setOnAction(e -> onCommand.invoke(new UiCommand.DeleteRequest(request, collection)));
-
-		ContextMenu ctxMenu = new ContextMenu(renameEntry, exportEntry, deleteEntry);
 		VBox vBox = new VBox(new HBox(requestType,button));
 		vBox.getStyleClass().add("request-entry");
 		vBox.setOnMouseClicked(e -> {
@@ -257,7 +227,7 @@ public class RequestCollectionComponent {
 				e.consume();
 			}
 			if (e.getButton() == MouseButton.SECONDARY) {
-				ctxMenu.show(vBox, e.getScreenX(), e.getScreenY());
+				reqCtxMenu.show(request, collection, vBox, e.getScreenX(), e.getScreenY());
 				e.consume();
 			}
 				
@@ -268,5 +238,70 @@ public class RequestCollectionComponent {
 	@FXML public void clearSearch() {
 		searchField.clear();
 	}
+	
+	
+	
+	/**
+	 * we create two single instances for ctx menu to be reused for all requests/collections, bc creation of context menu is expensive
+	 * @author peter
+	 *
+	 */
+	@Data
+	public class CollectionContextMenu extends ContextMenu {
+		Collection collection;
+		public CollectionContextMenu() {
+			MenuItem deleteEntry = new MenuItem("Delete");
+			deleteEntry.setOnAction(e -> onCommand.invoke(new UiCommand.DeleteCollection(collection)));
+			this.getItems().add(deleteEntry);
 
+			
+			MenuItem renameEntry = new MenuItem("Rename");
+			renameEntry.setOnAction(e -> onCommand.invoke(new UiCommand.RenameCollection(collection)));
+			this.getItems().add(renameEntry);
+
+			
+			MenuItem exportEntry = new MenuItem("Export");
+			exportEntry.setOnAction(e -> onCommand.invoke(new UiCommand.ExportCollection(collection)));
+			this.getItems().add(exportEntry);
+			
+		}
+		
+		public void show(Collection collection, Node anchor, double screenX, double screenY) {
+			this.collection = collection;
+			super.show(anchor, screenX, screenY);
+		}
+	}
+	private CollectionContextMenu collectionCtxMenu = new CollectionContextMenu();
+
+	/**
+	 * we create two single instances for ctx menu to be reused for all requests/collections, bc creation of context menu is expensive
+	 * @author peter
+	 *
+	 */
+	@Data
+	public class RequestContextMenu extends ContextMenu {
+		RequestContainer request;
+		Collection collection;
+		public RequestContextMenu() {
+			MenuItem renameEntry = new MenuItem("Rename");
+			renameEntry.setOnAction(e -> onCommand.invoke(new UiCommand.RenameRequest(request)));
+			this.getItems().add(renameEntry);
+			
+			MenuItem exportEntry = new MenuItem("Export");
+			exportEntry.setOnAction(e -> onCommand.invoke(new UiCommand.ExportRequest(request)));
+			this.getItems().add(exportEntry);
+			
+			MenuItem deleteEntry = new MenuItem("Delete");
+			deleteEntry.setOnAction(e -> onCommand.invoke(new UiCommand.DeleteRequest(request, collection)));
+			this.getItems().add(deleteEntry);
+		}
+		
+		public void show(RequestContainer request, Collection collection, Node anchor, double screenX, double screenY) {
+			this.request = request;
+			this.collection = collection;
+			super.show(anchor, screenX, screenY);
+		}
+	}
+	private RequestContextMenu reqCtxMenu = new RequestContextMenu();
+	
 }
