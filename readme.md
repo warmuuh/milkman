@@ -61,4 +61,6 @@ This is only the beginning. Following features are already planned:
 
  * javascript runner for pre request actions / testing of responses
  * more exports
- * different request types (e.g. GraphQl Client, Grpc, protobuf etc=
+ * different request types (e.g. GraphQl Client, Grpc, protobuf etc)
+
+latest changes can be seen in the (Changelog)[changelog.md]
