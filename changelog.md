@@ -63,6 +63,8 @@ version 2.1.3:
   * UX: "Close Others" added
   * XML highlighter/formatter added
   
+version 2.2:
+  * Shares via PrivateBin now viewable via browser 
 
 Planned:
   * log-file 

@@ -19,6 +19,17 @@
 	</properties>
 
 	<dependencies>
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.bouncycastle</groupId> -->
+<!-- 			<artifactId>bcprov-jdk15on</artifactId> -->
+<!-- 			<version>1.61</version> -->
+<!-- 		</dependency> -->
+
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.bouncycastle</groupId> -->
+<!-- 			<artifactId>bcpkix-jdk15on</artifactId> -->
+<!-- 			<version>1.61</version> -->
+<!-- 		</dependency> -->
 
 
 		<dependency>
@@ -95,15 +106,15 @@
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
-<!-- 					<descriptors> -->
-<!-- 						<descriptor>src/main/assembly/assembly.xml</descriptor> -->
-<!-- 					</descriptors> -->
+					<!-- <descriptors> -->
+					<!-- <descriptor>src/main/assembly/assembly.xml</descriptor> -->
+					<!-- </descriptors> -->
 					<archive>
 						<manifest>
 							<mainClass>milkman.MilkmanApplication</mainClass>
 						</manifest>
 					</archive>
-					
+
 					<appendAssemblyId>false</appendAssemblyId>
 				</configuration>
 				<executions>
