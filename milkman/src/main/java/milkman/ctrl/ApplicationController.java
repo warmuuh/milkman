@@ -1,6 +1,5 @@
 package milkman.ctrl;
 
-import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -34,11 +33,12 @@ import milkman.ui.main.dialogs.ImportDialog;
 import milkman.ui.main.dialogs.ManageEnvironmentsDialog;
 import milkman.ui.main.dialogs.ManageWorkspacesDialog;
 import milkman.ui.main.dialogs.OptionsDialog;
+import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.ui.main.sync.NoSyncDetails;
 import milkman.ui.plugin.OptionPageProvider;
 import milkman.ui.plugin.OptionsObject;
-import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.UiPluginManager;
+import milkman.update.UpdateChecker;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_={@Inject})
@@ -49,7 +49,7 @@ public class ApplicationController {
 	private final UiPluginManager plugins;
 	private final RequestTypeManager requestTypeManager;
 	private final SynchManager syncManager;
-
+	private final UpdateChecker updateChecker;
 	
 	private final ToolbarComponent toolbarComponent;
 	private final Toaster toaster;
@@ -67,6 +67,9 @@ public class ApplicationController {
 			else
 				loadWorkspace(names.get(0));
 		}
+		
+		if (CoreApplicationOptionsProvider.options().isCheckForUpdates())
+			updateChecker.checkForUpdateAsync();
 	}
 
 
@@ -303,5 +306,5 @@ public class ApplicationController {
 		state.setLoadedWorkspace(workspaceController.getActiveWorkspace().getName());
 		persistence.saveWorkbenchState(state);
 	}
-	
+
 }

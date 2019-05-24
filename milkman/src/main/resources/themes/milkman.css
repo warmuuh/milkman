@@ -64,8 +64,14 @@
 	-fx-font-size: 16;
     -fx-font-weight: bold;
 }
+.options-page > .section-end {
+	-fx-padding: 50 0 0 0;
+}
 .options-page .options-entry {
-	-fx-padding: 20
+	-fx-padding: 5
+}
+.options-page .options-entry .jfx-toggle-button * {
+	-fx-padding: 0;
 }
 
 .options-page .options-entry > .label {
@@ -106,6 +112,10 @@
 
 .jfx-tab-pane .tab-header-area .tab-down-button {
 	-fx-background-color: black;
+}
+
+.jfx-tab-pane .tab-header-area .label {
+    -fx-max-width: 150px
 }
 
 .jfx-tab-pane .label {

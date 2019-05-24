@@ -25,6 +25,8 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
+import org.apache.http.impl.conn.DefaultRoutePlanner;
 import org.apache.http.protocol.RequestContent;
 
 import javafx.application.Platform;
@@ -63,7 +65,8 @@ public class RequestProcessor {
 				builder = builder.setDefaultCredentialsProvider(credsProvider);
 			}
 			
-			builder = builder.setProxy(new HttpHost(url.getHost(), url.getPort()));
+			HttpHost proxyHost = new HttpHost(url.getHost(), url.getPort());
+			builder.setRoutePlanner(new ProxyExclusionRoutePlanner(proxyHost, HttpOptionsPluginProvider.options().getProxyExclusion()));
 		}
 		
 		return builder
@@ -135,7 +138,7 @@ public class RequestProcessor {
 		RestResponseContainer response = new RestResponseContainer();
 		String body = "";
 		if (httpResponse.getEntity() != null && httpResponse.getEntity().getContent() != null)
-			body = IOUtils.toString(httpResponse.getEntity().getContent());
+			body = IOUtils.toString(httpResponse.getEntity().getContent(), "UTF-8");
 		response.getAspects().add(new RestResponseBodyAspect(body));
 		
 		RestResponseHeaderAspect headers = new RestResponseHeaderAspect();

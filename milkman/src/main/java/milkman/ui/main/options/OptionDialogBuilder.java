@@ -79,6 +79,9 @@ public class OptionDialogBuilder  {
 		
 		@Override
 		public OptionSectionBuilder<T> endSection() {
+			HBox hbox = new HBox();
+			hbox.getStyleClass().add("section-end");
+			nodes.add(hbox);
 			return this;
 		}
 		

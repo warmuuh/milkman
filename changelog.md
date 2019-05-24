@@ -63,8 +63,12 @@ version 2.1.3:
   * UX: "Close Others" added
   * XML highlighter/formatter added
   
-version 2.2:
+version 2.1.4:
   * Shares via PrivateBin now viewable via browser 
+  * Default to UTF-8 for responses
+  * error log
+  * proxy exclusion list
+  * update check
 
 Planned:
   * log-file 

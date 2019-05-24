@@ -95,6 +95,7 @@ public class JfxTableEditor<T> extends StackPane {
 		});
 		column.setCellValueFactory(param -> GenericBinding.of(getter, (e, o) -> {}, param.getValue().getValue().getData()));
 		column.setMaxWidth(400);
+		column.setMinWidth(100);
 		table.getColumns().add(column);
 	}
 	
@@ -105,6 +106,7 @@ public class JfxTableEditor<T> extends StackPane {
 		});
 		column.setCellValueFactory(param -> GenericBinding.of(getter, setter, param.getValue().getValue().getData()));
 		column.setMaxWidth(400);
+		column.setMinWidth(100);
 		table.getColumns().add(column);
 	}
 
@@ -114,6 +116,7 @@ public class JfxTableEditor<T> extends StackPane {
 			return GenericBinding.of(getter, setter, param.getValue().getValue().getData());
 		});
 		column.setCellFactory(param -> new BooleanCell<>(column));
+		column.setMinWidth(100);
 		table.getColumns().add(column);
 	}
 
@@ -124,6 +127,7 @@ public class JfxTableEditor<T> extends StackPane {
 	public void addDeleteColumn(String name, Runnable listener) {
 		TreeTableColumn<RecursiveWrapper<T>, String> column = new TreeTableColumn<>(name);
 		column.setCellFactory(c -> new DeleteEntryCell(listener));
+		column.setMinWidth(100);
 		table.getColumns().add(column);
 	}
 

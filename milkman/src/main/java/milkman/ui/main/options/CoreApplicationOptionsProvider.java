@@ -12,6 +12,7 @@ public class CoreApplicationOptionsProvider implements OptionPageProvider<CoreAp
 	@Data
 	public static class CoreApplicationOptions implements OptionsObject {
 		private boolean autoformatContent = false;
+		private boolean checkForUpdates = true;
 		private String theme = "Milkman";
 	} 
 
@@ -41,8 +42,11 @@ public class CoreApplicationOptionsProvider implements OptionPageProvider<CoreAp
 	public OptionDialogPane getOptionsDialog(OptionDialogBuilder builder) {
 		return builder.page("Application", getOptions())
 				.section("General")
-					.toggle("Autoformat Content", CoreApplicationOptions::isAutoformatContent, CoreApplicationOptions::setAutoformatContent)
+					.toggle("Check for Updates", CoreApplicationOptions::isCheckForUpdates, CoreApplicationOptions::setCheckForUpdates)
 					.selection("Theme", CoreApplicationOptions::getTheme, this::setTheme, themeSwitcher.getThemes())
+				.endSection()
+				.section("Code Editor/Viewer")
+					.toggle("Autoformat Content", CoreApplicationOptions::isAutoformatContent, CoreApplicationOptions::setAutoformatContent)
 				.endSection()
 				.build();
 	}

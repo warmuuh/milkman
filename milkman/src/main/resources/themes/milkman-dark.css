@@ -62,6 +62,13 @@
 .options-page {
 	-fx-padding: 20
 }
+.options-page .options-entry {
+	-fx-padding: 5
+}
+
+.options-page .options-entry .jfx-toggle-button * {
+	-fx-padding: 0;
+}
 
 .options-tabs .tab-header-background {
 	-fx-background-color: #4c4b4b;
@@ -80,6 +87,11 @@
 	-fx-font-size: 16;
     -fx-font-weight: bold;
 }
+
+.options-page > .section-end {
+	-fx-padding: 50 0 0 0;
+}
+
 .options-page .options-entry {
 	-fx-padding: 20
 }
@@ -119,9 +131,12 @@
 .jfx-tab-pane .tab-header-background {
 	-fx-background-color: #4c4b4b;
 }
-
 .jfx-tab-pane .tab-header-area .tab-down-button {
 	-fx-background-color: white;
+}
+
+.jfx-tab-pane .tab-header-area .label {
+    -fx-max-width: 150px
 }
 
 .jfx-tab-pane .label {

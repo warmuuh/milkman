@@ -35,7 +35,7 @@
 	fx:id="requestComponent">
 	<HBox fx:id="generalRequestEdit">
 		<HBox fx:id="mainEditingArea" HBox.hgrow="ALWAYS"></HBox>
-		<JFXButton fx:id="submitBtn" style="button-raised" text="submit" onAction="#onSubmit" />
+		<JFXButton fx:id="submitBtn" text="submit" onAction="#onSubmit" />
 		<SplitMenuButton fx:id="saveBtn" text="save" onAction="#onSave"  styleClass="secondary">
 			<items>
 				<MenuItem text="save as..." onAction="#onSaveAs"></MenuItem>
