@@ -74,16 +74,15 @@ public class PostmanDumpImporter {
 
 
 	private Collection convertToDomain(PostmanCollection postmanCollection) {
-		Collection result = new Collection();
-		result.setName(postmanCollection.getName());
-		result.setRequests(new LinkedList<RequestContainer>());
+		List<RequestContainer> requests = new LinkedList<RequestContainer>();
+		
 		if (postmanCollection.getRequests() != null) {
 			for (PostmanRequest request : postmanCollection.getRequests()) {
-				result.getRequests().add(convertToDomain(request));
+				requests.add(convertToDomain(request));
 			}
 		}
 		
-		return result;
+		return new Collection(UUID.randomUUID().toString(), postmanCollection.getName(), false, requests);
 	}
 
 	
