@@ -26,9 +26,11 @@ import milkman.persistence.WorkbenchState;
 import milkman.ui.commands.AppCommand;
 import milkman.ui.commands.AppCommand.RenameEnvironment;
 import milkman.ui.commands.AppCommand.RenameWorkspace;
+import milkman.ui.main.HotkeyManager;
 import milkman.ui.main.Toaster;
 import milkman.ui.main.ToolbarComponent;
 import milkman.ui.main.dialogs.CreateWorkspaceDialog;
+import milkman.ui.main.dialogs.EditEnvironmentDialog;
 import milkman.ui.main.dialogs.ImportDialog;
 import milkman.ui.main.dialogs.ManageEnvironmentsDialog;
 import milkman.ui.main.dialogs.ManageWorkspacesDialog;
@@ -50,7 +52,7 @@ public class ApplicationController {
 	private final RequestTypeManager requestTypeManager;
 	private final SynchManager syncManager;
 	private final UpdateChecker updateChecker;
-	
+	private final HotkeyManager hotkeyManager;
 	private final ToolbarComponent toolbarComponent;
 	private final Toaster toaster;
 	
@@ -129,6 +131,8 @@ public class ApplicationController {
 			renameWorkspace(renameWorkspace.getWorkspaceName(), renameWorkspace.getNewWorkspaceName());
 		} else if (command instanceof AppCommand.ManageEnvironments) {
 			openEnvironmentManagementDialog();
+		} else if (command instanceof AppCommand.EditCurrentEnvironment) {
+			editCurrentEnvironment();
 		} else if (command instanceof AppCommand.CreateNewEnvironment) {
 			createNewEnvironment(((AppCommand.CreateNewEnvironment) command).getEnv());
 		} else if (command instanceof AppCommand.DeleteEnvironment) {
@@ -148,7 +152,6 @@ public class ApplicationController {
 			throw new IllegalArgumentException("Unsupported command: " + command);
 		}
 	}
-
 
 	private void syncWorkspace(Runnable callback) {
 		CompletableFuture<Void> future = syncManager.syncWorkspace(workspaceController.getActiveWorkspace(), toaster);
@@ -243,6 +246,17 @@ public class ApplicationController {
 	}
 
 
+
+	private void editCurrentEnvironment() {
+		Optional<Environment> activeEnv = workspaceController.getActiveWorkspace().getEnvironments().stream()
+												.filter(e -> e.isActive() && !e.isGlobal()).findAny();
+		activeEnv.ifPresent(environment -> {
+			EditEnvironmentDialog envDialog = new EditEnvironmentDialog();
+			envDialog.showAndWait(environment);			
+		});
+	}
+
+
 	private void renameWorkspace(String workspaceName, String newWorkspaceName) {
 		boolean isActiveWorkspace = workspaceController.getActiveWorkspace().getName().equals(workspaceName);
 		if (isActiveWorkspace)
@@ -297,6 +311,7 @@ public class ApplicationController {
 	public void setup() {
 		workspaceController.onCommand.add(this::handleCommand);
 		toolbarComponent.onCommand.add(this::handleCommand);
+		hotkeyManager.onAppCommand.add(this::handleCommand);
 	}
 
 

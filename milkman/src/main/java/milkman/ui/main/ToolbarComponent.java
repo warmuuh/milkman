@@ -95,6 +95,7 @@ public class ToolbarComponent implements Initializable {
 		}
 		environmentSelection.getItems().add(new ChoiceBoxSeparator());
 		environmentSelection.getItems().add(new ChoiceboxEntryImpl("Manage Environments...", false, () ->  onCommand.invoke(new AppCommand.ManageEnvironments())));
+		environmentSelection.getItems().add(new ChoiceboxEntryImpl("Edit current Env...", false, () ->  onCommand.invoke(new AppCommand.EditCurrentEnvironment())));
 		environmentSelection.setValue(activeEntry != null ? activeEntry : noEnvEntry);
 	}
 

@@ -61,6 +61,10 @@ public interface AppCommand {
 	public static class DeleteEnvironment implements AppCommand {
 		Environment env;
 	}
+
+	@Value
+	public static class EditCurrentEnvironment implements AppCommand {
+	}
 	
 	@Value
 	public static class CreateNewEnvironment implements AppCommand {

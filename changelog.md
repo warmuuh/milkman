@@ -74,9 +74,10 @@ version 2.1.5:
   * bug: postman dump import broke github sync
   * UX: Clipboard support for table values (i.e. ctrl-c for headers and sql results)
   * UX: auto-resizing of table columns 
+  * added action to edit current environment directly
 
 Planned:
-  * log-file 
+  * code completion for env variables
   * Export of environment (privatebin)
   * Exports for postman
   * jdbc -> explorer functionality (what tables are there? what columns does a table have?)
