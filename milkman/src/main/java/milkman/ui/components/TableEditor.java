@@ -16,6 +16,13 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
 import milkman.utils.fxml.GenericBinding;
 
+/**
+ * 
+ * @author peter
+ *
+ * @deprecated use JfxTableEditor
+ */
+@Deprecated
 public class TableEditor<T> extends TableView<T> {
 
 	

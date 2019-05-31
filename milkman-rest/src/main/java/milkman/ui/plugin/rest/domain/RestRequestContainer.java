@@ -1,5 +1,7 @@
 package milkman.ui.plugin.rest.domain;
 
+import java.util.UUID;
+
 import org.apache.commons.lang3.StringUtils;
 
 import lombok.AllArgsConstructor;

@@ -70,11 +70,15 @@ version 2.1.4:
   * proxy exclusion list
   * update check
 
+version 2.1.5:
+  * bug: postman dump import broke github sync
+  * UX: Clipboard support for table values (i.e. ctrl-c for headers and sql results)
+  * UX: auto-resizing of table columns 
+
 Planned:
   * log-file 
   * Export of environment (privatebin)
   * Exports for postman
-  * GitHub update check
   * jdbc -> explorer functionality (what tables are there? what columns does a table have?)
   * Use hardwire in plugins
   * javascript runner for pre

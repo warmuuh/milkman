@@ -71,4 +71,10 @@ public class JdbcRequestPlugin implements RequestTypePlugin, RequestAspectsPlugi
 		return request instanceof JdbcRequestContainer;
 	}
 
+	@Override
+	public int getOrder() {
+		return 10;
+	}
+
+
 }

@@ -2,16 +2,17 @@ package milkman.ui.components;
 
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import com.jfoenix.controls.JFXTreeTableView;
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.cells.editors.TextFieldEditorBuilder;
-import com.jfoenix.controls.cells.editors.base.EditorNodeBuilder;
 import com.jfoenix.controls.cells.editors.base.GenericEditableTreeTableCell;
 import com.jfoenix.controls.cells.editors.base.JFXTreeTableCell;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+import com.sun.javafx.scene.control.skin.ResizableJfxTreeTableView;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
@@ -26,21 +27,21 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableRow;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
-import javafx.scene.control.cell.CheckBoxTreeCell;
-import javafx.scene.control.cell.CheckBoxTreeTableCell;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import milkman.utils.fxml.GenericBinding;
-import com.jfoenix.controls.JFXButton;
 
 @Value
 @EqualsAndHashCode(callSuper = true)
@@ -51,12 +52,14 @@ class RecursiveWrapper<T> extends RecursiveTreeObject<RecursiveWrapper<T>>{
 public class JfxTableEditor<T> extends StackPane {
 	
 	
-	private JFXTreeTableView<RecursiveWrapper<T>> table = new JFXTreeTableView<RecursiveWrapper<T>>();
+	private ResizableJfxTreeTableView<RecursiveWrapper<T>> table = new ResizableJfxTreeTableView<RecursiveWrapper<T>>();
 
 	private ObservableList<RecursiveWrapper<T>> obsWrappedItems;
 
 	private JFXButton addItemBtn;
 
+	
+	private Function<T, String> rowToStringConverter = null;
 	
 	private static class SelectableTextFieldBuilder extends TextFieldEditorBuilder {
 
@@ -76,6 +79,7 @@ public class JfxTableEditor<T> extends StackPane {
 	public JfxTableEditor() {
 		table.setShowRoot(false);
 		table.setEditable(true);
+		table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		this.getChildren().add(table);
 		addItemBtn = new JFXButton();
 		addItemBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -85,6 +89,40 @@ public class JfxTableEditor<T> extends StackPane {
 		StackPane.setMargin(addItemBtn, new Insets(0, 20, 20, 0));
 		this.getChildren().add(addItemBtn);
 		
+		final KeyCodeCombination keyCodeCopy = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_ANY);
+	    table.setOnKeyPressed(event -> {
+	        if (keyCodeCopy.match(event)) {
+	            copySelectionToClipboard();
+	        }
+	    });
+		
+	}
+	
+
+	private void copySelectionToClipboard() {
+		if (rowToStringConverter == null)
+			return;
+		StringBuilder b = new StringBuilder();
+		boolean first = true;
+		for (TreeItem<RecursiveWrapper<T>> treeItm : table.getSelectionModel().getSelectedItems()) {
+			if (!first)
+				b.append(System.lineSeparator());
+			first = false;
+			b.append(rowToStringConverter.apply(treeItm.getValue().getData()));	
+		}
+		
+		final ClipboardContent clipboardContent = new ClipboardContent();
+	    clipboardContent.putString(b.toString());
+	    Clipboard.getSystemClipboard().setContent(clipboardContent);
+	}
+
+	/**
+	 * used for converting selected rows to clipboard content
+	 * 
+	 * @param rowToStringConverter
+	 */
+	public void setRowToStringConverter(Function<T, String> rowToStringConverter) {
+		this.rowToStringConverter = rowToStringConverter;
 	}
 	
 
@@ -94,8 +132,10 @@ public class JfxTableEditor<T> extends StackPane {
 			return new GenericEditableTreeTableCell<RecursiveWrapper<T>, String>(new SelectableTextFieldBuilder());
 		});
 		column.setCellValueFactory(param -> GenericBinding.of(getter, (e, o) -> {}, param.getValue().getValue().getData()));
+		
 		column.setMaxWidth(400);
 		column.setMinWidth(100);
+//		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
 		table.getColumns().add(column);
 	}
 	
@@ -108,6 +148,7 @@ public class JfxTableEditor<T> extends StackPane {
 		column.setMaxWidth(400);
 		column.setMinWidth(100);
 		table.getColumns().add(column);
+//		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
 	}
 
 	public void addCheckboxColumn(String name, Function1<T, Boolean> getter, BiConsumer<T, Boolean> setter) {
@@ -118,6 +159,7 @@ public class JfxTableEditor<T> extends StackPane {
 		column.setCellFactory(param -> new BooleanCell<>(column));
 		column.setMinWidth(100);
 		table.getColumns().add(column);
+//		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
 	}
 
 	public void addDeleteColumn(String name) {
@@ -129,6 +171,7 @@ public class JfxTableEditor<T> extends StackPane {
 		column.setCellFactory(c -> new DeleteEntryCell(listener));
 		column.setMinWidth(100);
 		table.getColumns().add(column);
+//		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
 	}
 
 	public void enableAddition(Supplier<T> newItemCreator) {
@@ -167,6 +210,9 @@ public class JfxTableEditor<T> extends StackPane {
 		final TreeItem<RecursiveWrapper<T>> root = new RecursiveTreeItem<>(obsWrappedItems, RecursiveTreeObject::getChildren); 
 		table.setRoot(root);
 		
+		Platform.runLater(() -> {
+			table.resizeColumns();
+		});
 		
 		//register double-click listener for empty rows, to add a new instance
 //		this.setRowFactory(view -> {

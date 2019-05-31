@@ -31,6 +31,8 @@ public class RequestHeaderTabController implements RequestAspectEditor {
 		editor.addColumn("Value", HeaderEntry::getValue,run(HeaderEntry::setValue).andThen(() -> headers.setDirty(true)));
 		editor.addDeleteColumn("Delete", () -> headers.setDirty(true));
 		
+		editor.setRowToStringConverter(this::headerToString);
+		
 		editor.setItems(headers.getEntries());
 		return new Tab("Headers", editor);
 	}
@@ -38,6 +40,13 @@ public class RequestHeaderTabController implements RequestAspectEditor {
 	@Override
 	public boolean canHandleAspect(RequestContainer request) {
 		return request.getAspect(RestHeaderAspect.class).isPresent();
+	}
+	
+	private String headerToString(HeaderEntry header) {
+		String prefix = "";
+		if (!header.isEnabled())
+			prefix = "//";
+		return prefix + header.getName() + ": " + header.getValue();
 	}
 
 }

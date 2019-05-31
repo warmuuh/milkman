@@ -29,7 +29,7 @@ public class JdbcResultSetAspectEditor implements ResponseAspectEditor {
 		}
 		
 		editor.setItems(rowSetAspect.getRows());
-		
+		editor.setRowToStringConverter(this::rowToString);
 		return new Tab("Result", editor);
 	}
 
@@ -37,16 +37,34 @@ public class JdbcResultSetAspectEditor implements ResponseAspectEditor {
 	private Function1<List<Object>, String> getRowValue(int columnIdx) {
 		return row -> {
 			Object value = row.get(columnIdx);
-			
-			if (value instanceof Blob) {
-				try {
-					value = IOUtils.toString(((Blob) value).getBinaryStream());
-				} catch (IOException | SQLException e) {
-					value = "BLOB";
-				}
-			}
-			return value != null ? value.toString() : "NULL";
+			String stringValue = valueToString(value);
+			return stringValue;
 		};
+	}
+
+
+	private String valueToString(Object value) {
+		if (value instanceof Blob) {
+			try {
+				value = IOUtils.toString(((Blob) value).getBinaryStream());
+			} catch (IOException | SQLException e) {
+				value = "BLOB";
+			}
+		}
+		String stringValue = value != null ? value.toString() : "NULL";
+		return stringValue;
+	}
+	
+	private String rowToString(List<Object> row) {
+		StringBuilder b = new StringBuilder();
+		boolean first = true;
+		for (Object value : row) {
+			if (!first)
+				b.append("\t");
+			first = false;
+			b.append(valueToString(value));
+		}
+		return b.toString();
 	}
 	
 	

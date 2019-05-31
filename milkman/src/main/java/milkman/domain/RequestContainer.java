@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -47,6 +48,7 @@ public abstract class RequestContainer extends Dirtyable implements Searchable {
 	public RequestContainer(String name) {
 		super();
 		this.name = name;
+		this.id = UUID.randomUUID().toString();
 	}
 	
 	@JsonIgnore

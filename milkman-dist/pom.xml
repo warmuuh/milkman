@@ -113,6 +113,24 @@
 					</execution>
 				</executions>
 			</plugin>
+<!-- 			<plugin> -->
+<!-- 				<groupId>sh.tak.appbundler</groupId> -->
+<!-- 				<artifactId>appbundle-maven-plugin</artifactId> -->
+<!-- 				<version>1.2.0</version> -->
+<!-- 				<configuration> -->
+<!-- 					<mainClass>milkman.MilkmanApplication</mainClass> -->
+<!-- 					<iconFile>src/bin/milkman.icns</iconFile> -->
+<!-- 					<generateDiskImageFile>true</generateDiskImageFile> -->
+<!-- 				</configuration> -->
+<!-- 				<executions> -->
+<!-- 					<execution> -->
+<!-- 						<phase>package</phase> -->
+<!-- 						<goals> -->
+<!-- 							<goal>bundle</goal> -->
+<!-- 						</goals> -->
+<!-- 					</execution> -->
+<!-- 				</executions> -->
+<!-- 			</plugin> -->
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.6</version>
