@@ -50,6 +50,7 @@ public class RequestComponent {
 		this.currentRequest = request;
 		mainEditingArea.getChildren().clear();
 		RequestTypeEditor mainEditController = reqTypeManager.getRequestEditor(request);
+		plugins.wireUp(mainEditController);
 		mainEditingArea.getChildren().add(mainEditController.getRoot());
 		mainEditController.displayRequest(request);
 		int oldSelection = tabs.getSelectionModel().getSelectedIndex();

@@ -6,11 +6,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import lombok.RequiredArgsConstructor;
+import milkman.ui.components.AutoCompleter;
+
 @Singleton
+@RequiredArgsConstructor(onConstructor_={@Inject})
 public class UiPluginManager {
 
+	private final AutoCompleter completer;
+	
+	
 	Map<Class, List> cachedInstances = new HashMap<Class, List>();
 	
 	public List<RequestAspectsPlugin> loadRequestAspectPlugins() {
@@ -49,6 +57,16 @@ public class UiPluginManager {
 	public List<CollectionExporterPlugin> loadCollectionExportPlugins(){
 		return loadSpiInstances(CollectionExporterPlugin.class);
 	}
+
+	public void wireUp(Object o) {
+		if (o instanceof ContentTypeAwareEditor) {
+			((ContentTypeAwareEditor) o).setContentTypePlugins(loadContentTypePlugins());
+		}
+		
+		if (o instanceof AutoCompletionAware) {
+			((AutoCompletionAware) o).setAutoCompleter(completer);
+		}
+	}
 	
 	private <T> List<T> loadSpiInstances(Class<T> type) {
 		if (cachedInstances.containsKey(type))
@@ -62,6 +80,7 @@ public class UiPluginManager {
 		return result;
 	}
 
+	
 	private <T extends Orderable> List<T> loadOrderedSpiInstances(Class<T> type) {
 		if (cachedInstances.containsKey(type))
 			return cachedInstances.get(type);
