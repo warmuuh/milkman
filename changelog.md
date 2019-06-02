@@ -78,7 +78,6 @@ version 2.1.5:
   * auto completion for env variables, headers
 
 Planned:
-  * code completion for env variables
   * Export of environment (privatebin)
   * Exports for postman
   * jdbc -> explorer functionality (what tables are there? what columns does a table have?)
