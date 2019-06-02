@@ -2,6 +2,7 @@ package milkman.ui.components;
 
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -28,6 +29,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
@@ -143,6 +145,18 @@ public class JfxTableEditor<T> extends StackPane {
 		TreeTableColumn<RecursiveWrapper<T>, String> column = new TreeTableColumn<>(name);
 		column.setCellFactory((TreeTableColumn<RecursiveWrapper<T>, String> param) -> {
 			return new GenericEditableTreeTableCell<RecursiveWrapper<T>, String>(new TextFieldEditorBuilder());
+		});
+		column.setCellValueFactory(param -> GenericBinding.of(getter, setter, param.getValue().getValue().getData()));
+		column.setMaxWidth(400);
+		column.setMinWidth(100);
+		table.getColumns().add(column);
+//		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
+	}
+	
+	public void addColumn(String name, Function1<T, String> getter, BiConsumer<T, String> setter, Consumer<TextField> textFieldInitializer) {
+		TreeTableColumn<RecursiveWrapper<T>, String> column = new TreeTableColumn<>(name);
+		column.setCellFactory((TreeTableColumn<RecursiveWrapper<T>, String> param) -> {
+			return new GenericEditableTreeTableCell<RecursiveWrapper<T>, String>(new InitializingCellBuilder(textFieldInitializer));
 		});
 		column.setCellValueFactory(param -> GenericBinding.of(getter, setter, param.getValue().getValue().getData()));
 		column.setMaxWidth(400);

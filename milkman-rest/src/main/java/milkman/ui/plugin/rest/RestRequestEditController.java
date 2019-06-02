@@ -56,7 +56,7 @@ public class RestRequestEditController implements RequestTypeEditor, AutoComplet
 			a.parseQueryParams(requestUrl.getText());
 			a.linkToUrlTextfield(requestUrl.textProperty());
 		});
-		completer.attachTo(requestUrl);
+		completer.attachVariableCompletionTo(requestUrl);
 	}
 
 

@@ -60,6 +60,7 @@ public class RequestComponent {
 		plugins.loadRequestAspectPlugins().stream()
 		.flatMap(p -> p.getRequestTabs().stream())
 		.forEach(tabController -> {
+			plugins.wireUp(tabController);
 			if (tabController.canHandleAspect(request)) {
 				if (tabController instanceof ContentTypeAwareEditor) {
 					((ContentTypeAwareEditor) tabController).setContentTypePlugins(plugins.loadContentTypePlugins());

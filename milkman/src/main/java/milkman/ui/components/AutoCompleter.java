@@ -6,9 +6,9 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.controlsfx.control.textfield.AutoCompletionBinding.ISuggestionRequest;
+import org.controlsfx.control.textfield.TextFields;
 
 import javafx.scene.control.TextField;
 import javafx.util.Callback;
@@ -23,16 +23,20 @@ public class AutoCompleter {
 	private final Supplier<List<EnvironmentEntry>> activeEnvironmentEntrySupplier;
 	
 	
-	public void attachTo(TextField textField) {
+	public void attachVariableCompletionTo(TextField textField) {
 		new PartialAutoCompletion<>(textField, new Callback<ISuggestionRequest, Collection<String>>() {
 			@Override
 			public Collection<String> call(ISuggestionRequest req) {
 				String userText = req.getUserText();
 				return activeEnvironmentEntrySupplier.get().stream()
-					.filter(e -> e.getName().startsWith(userText))
+					.filter(e -> e.getName().contains(userText))
 					.map(e -> e.getName())
 					.collect(Collectors.toList());
 			}
 		});
+	}
+	
+	public void attachStaticCompletionTo(TextField textField, Collection<String> possibleSuggestions) {
+		TextFields.bindAutoCompletion(textField, possibleSuggestions);
 	}
 }

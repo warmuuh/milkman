@@ -75,7 +75,7 @@ version 2.1.5:
   * UX: Clipboard support for table values (i.e. ctrl-c for headers and sql results)
   * UX: auto-resizing of table columns 
   * added action to edit current environment directly
-  * first autocompletion for environment variables
+  * auto completion for env variables, headers
 
 Planned:
   * code completion for env variables
