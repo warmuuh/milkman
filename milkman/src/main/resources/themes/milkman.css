@@ -87,6 +87,14 @@
  }
 
 /**
+*
+*/
+#importerArea .tab * {
+	-fx-text-fill: black;
+    -fx-font-weight: normal;
+    -fx-font-size: 16;
+}
+/**
 * working area
 */
 

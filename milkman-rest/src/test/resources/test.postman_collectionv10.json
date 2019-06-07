@@ -1,0 +1,55 @@
+{
+	"id": "14477265-f52c-4916-b2c7-47816aebd2ae",
+	"name": "TestServiceCall",
+	"description": "someDescription",
+	"auth": null,
+	"events": null,
+	"variables": null,
+	"order": [
+		"93a26387-96fb-42e1-bc77-3c6088ba3c0f"
+	],
+	"folders_order": [
+	],
+	"folders": [
+	],
+	"requests": [
+		{
+			"id": "93a26387-96fb-42e1-bc77-3c6088ba3c0f",
+			"name": "Calculate Stuff",
+			"url": "localhost:8080\/calculate",
+			"description": "",
+			"data": [
+			],
+			"dataMode": "raw",
+			"headerData": [
+				{
+					"key": "Content-Type",
+					"value": "application\/json",
+					"description": "",
+					"enabled": true
+				},
+				{
+					"key": "Accept",
+					"value": "application\/json",
+					"description": "",
+					"enabled": true
+				}
+			],
+			"method": "POST",
+			"pathVariableData": [
+			],
+			"queryParams": [
+			],
+			"auth": null,
+			"events": null,
+			"folder": null,
+			"currentHelper": null,
+			"helperAttributes": null,
+			"collectionId": "14477265-f52c-4916-b2c7-47816aebd2ae",
+			"rawModeData": "{}",
+			"headers": "Content-Type: application\/json\nAccept: application\/json\n",
+			"pathVariables": [
+			]
+		}
+	]
+}

@@ -37,7 +37,7 @@ public class UpdateChecker {
 	
 	@PostConstruct
 	public void loadCurrentVersion() {
-		
+    	currentVersion = "0";
 		try {
 	        Properties p = new Properties();
 	        InputStream is = getClass().getResourceAsStream("/META-INF/maven/com.github.warmuuh/milkman/pom.properties");
@@ -49,7 +49,6 @@ public class UpdateChecker {
 	        }
 	    } catch (Exception e) {
 	    	log.warn("Failed to load current version, default to 0");
-	    	currentVersion = "0";
 	    }
 	}
 	

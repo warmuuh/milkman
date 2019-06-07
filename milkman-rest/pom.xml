@@ -32,22 +32,38 @@
 
 	<build>
 		<plugins>
-			<!-- <plugin> -->
-			<!-- <groupId>org.jsonschema2pojo</groupId> -->
-			<!-- <artifactId>jsonschema2pojo-maven-plugin</artifactId> -->
-			<!-- <version>1.0.0</version> -->
-			<!-- <configuration> -->
-			<!-- <sourceDirectory>${basedir}/src/main/schema</sourceDirectory> -->
-			<!-- <targetPackage>com.milkman.rest.postman.schema</targetPackage> -->
-			<!-- </configuration> -->
-			<!-- <executions> -->
-			<!-- <execution> -->
-			<!-- <goals> -->
-			<!-- <goal>generate</goal> -->
-			<!-- </goals> -->
-			<!-- </execution> -->
-			<!-- </executions> -->
-			<!-- </plugin> -->
+
+			<plugin>
+				<groupId>org.jsonschema2pojo</groupId>
+				<artifactId>jsonschema2pojo-maven-plugin</artifactId>
+				<version>1.0.1</version>
+				<configuration>
+					<sourceDirectory>${basedir}/src/main/schema</sourceDirectory>
+					<targetPackage>com.milkman.rest.postman.schema</targetPackage>
+				</configuration>
+				<executions>
+					<execution>
+						<id>gen-v1</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<sourceDirectory>${basedir}/src/main/schema/postman-collection-1.0.0.json</sourceDirectory>
+							<targetPackage>com.milkman.rest.postman.schema.v1</targetPackage>
+						</configuration>
+					</execution>
+					<execution>
+						<id>gen-v21</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<sourceDirectory>${basedir}/src/main/schema/postman-collection-2.1.0.json</sourceDirectory>
+							<targetPackage>com.milkman.rest.postman.schema.v21</targetPackage>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>

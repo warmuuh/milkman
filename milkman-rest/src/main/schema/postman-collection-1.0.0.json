@@ -1,0 +1,1288 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "https://schema.getpostman.com/json/draft-07/collection/v1.0.0/",
+	"type": "object",
+	"properties": {
+		"id": {
+			"type": "string",
+			"description": "Every collection is identified by the unique value of this field. The value of this field is usually easiest to generate using a [UID](https://tools.ietf.org/html/rfc4122#section-4.4%29) generator function. If you already have a collection, it is recommended that you maintain the same id since changing the id usually implies that this is a different collection than it was originally."
+		},
+		"name": {
+			"type": "string",
+			"description": "A collection's friendly name is defined by this field. You would want to set this field to a value that would allow you to easily identify this collection among a bunch of other collections, as such outlining its usage or content."
+		},
+		"description": {
+			"type": [
+				"string",
+				"null"
+			],
+			"description": "Provide a long description of this collection using this field. This field supports markdown syntax to better format the description."
+		},
+		"variables": {
+			"oneOf": [
+				{
+					"$ref": "#/definitions/variable-list"
+				},
+				{
+					"type": "null"
+				}
+			]
+		},
+		"order": {
+			"type": "array",
+			"items": {
+				"type": "string"
+			},
+			"uniqueItems": true,
+			"description": "The order array ensures that your requests and folders don't randomly get shuffled up. It holds a sequence of [UUIDs](https://en.wikipedia.org/wiki/Universally_unique_identifier) corresponding to folders and requests.\n *Note that if a folder ID or a request ID (if the request is not already part of a folder) is not included in the order array, the request or the folder will not show up in the collection.*"
+		},
+		"folders_order": {
+			"type": "array",
+			"items": {
+				"type": "string"
+			},
+			"uniqueItems": true,
+			"description": "The folders order array ensures that your requests and folders don't randomly get shuffled up. It holds a sequence of [UUIDs](https://en.wikipedia.org/wiki/Universally_unique_identifier) corresponding to folders and requests.\n *Note that if a folder ID or a request ID (if the request is not already part of a folder) is not included in the order array, the request or the folder will not show up in the collection.*"
+		},
+		"folders": {
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/folder"
+			},
+			"description": "Folders are the way to go if you want to group your requests and to keep things organised. Folders can also be useful in sequentially requesting a part of the entire collection by using [Postman Collection Runner](https://www.getpostman.com/docs/jetpacks_running_collections) or [Newman](https://github.com/postmanlabs/newman) on a particular folder."
+		},
+		"timestamp": {
+			"type": "number",
+			"multipleOf": 1
+		},
+		"requests": {
+			"type": "array",
+			"description": "",
+			"items": {
+				"$ref": "#/definitions/request"
+			}
+		},
+		"events": {
+			"$ref": "#/definitions/event-list"
+		},
+		"auth": {
+			"oneOf": [
+				{
+					"type": "null"
+				},
+				{
+					"$ref": "#/definitions/auth"
+				}
+			]
+		},
+		"protocolProfileBehavior": {
+			"$ref": "#/definitions/protocol-profile-behavior"
+		}
+	},
+	"required": [
+		"id",
+		"name",
+		"order",
+		"requests"
+	],
+	"definitions": {
+		"auth-attribute": {
+			"type": "object",
+			"title": "Auth",
+			"$id": "#/definitions/auth-attribute",
+			"description": "Represents an attribute for any authorization method provided by Postman. For example `username` and `password` are set as auth attributes for Basic Authentication method.",
+			"properties": {
+				"key": {
+					"type": "string"
+				},
+				"value": {
+				},
+				"type": {
+					"type": "string"
+				}
+			},
+			"required": [
+				"key"
+			]
+		},
+		"auth": {
+			"type": "object",
+			"title": "Auth",
+			"$id": "#/definitions/auth",
+			"description": "Represents authentication helpers provided by Postman",
+			"properties": {
+				"type": {
+					"type": "string",
+					"enum": [
+						"apikey",
+						"awsv4",
+						"basic",
+						"bearer",
+						"digest",
+						"hawk",
+						"noauth",
+						"oauth1",
+						"oauth2",
+						"ntlm"
+					]
+				},
+				"noauth": {
+				},
+				"apikey": {
+					"type": "array",
+					"title": "API Key Authentication",
+					"description": "The attributes for API Key Authentication",
+					"items": {
+						"$ref": "#/definitions/auth-attribute"
+					}
+				},
+				"awsv4": {
+					"type": "array",
+					"title": "AWS Signature v4",
+					"description": "The attributes for [AWS Auth](http://docs.aws.amazon.com/AmazonS3/latest/dev/RESTAuthentication.html).",
+					"items": {
+						"$ref": "#/definitions/auth-attribute"
+					}
+				},
+				"basic": {
+					"type": "array",
+					"title": "Basic Authentication",
+					"description": "The attributes for [Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication).",
+					"items": {
+						"$ref": "#/definitions/auth-attribute"
+					}
+				},
+				"bearer": {
+					"type": "array",
+					"title": "Bearer Token Authentication",
+					"description": "The helper attributes for [Bearer Token Authentication](https://tools.ietf.org/html/rfc6750)",
+					"items": {
+						"$ref": "#/definitions/auth-attribute"
+					}
+				},
+				"digest": {
+					"type": "array",
+					"title": "Digest Authentication",
+					"description": "The attributes for [Digest Authentication](https://en.wikipedia.org/wiki/Digest_access_authentication).",
+					"items": {
+						"$ref": "#/definitions/auth-attribute"
+					}
+				},
+				"hawk": {
+					"type": "array",
+					"title": "Hawk Authentication",
+					"description": "The attributes for [Hawk Authentication](https://github.com/hueniverse/hawk)",
+					"items": {
+						"$ref": "#/definitions/auth-attribute"
+					}
+				},
+				"ntlm": {
+					"type": "array",
+					"title": "NTLM Authentication",
+					"description": "The attributes for [NTLM Authentication](https://msdn.microsoft.com/en-us/library/cc237488.aspx)",
+					"items": {
+						"$ref": "#/definitions/auth-attribute"
+					}
+				},
+				"oauth1": {
+					"type": "array",
+					"title": "OAuth1",
+					"description": "The attributes for [OAuth2](https://oauth.net/1/)",
+					"items": {
+						"$ref": "#/definitions/auth-attribute"
+					}
+				},
+				"oauth2": {
+					"type": "array",
+					"title": "OAuth2",
+					"description": "Helper attributes for [OAuth2](https://oauth.net/2/)",
+					"items": {
+						"$ref": "#/definitions/auth-attribute"
+					}
+				}
+			},
+			"required": [
+				"type"
+			]
+		},
+		"current-helper": {
+			"$id": "#/definitions/current-helper",
+			"title": "Current auth helper",
+			"type": [
+				"string",
+				"null"
+			],
+			"description": "Postman can associate helpers with a request, which help with activities such as OAuth, Basic Authentication, etc. The type of helper associated with this request is stored in this field."
+		},
+		"description": {
+			"$schema": "http://json-schema.org/draft-07/schema#",
+			"$id": "#/definitions/description",
+			"description": "A Description can be a raw text, or be an object, which holds the description along with its format.",
+			"oneOf": [
+				{
+					"type": "object",
+					"title": "Description",
+					"properties": {
+						"content": {
+							"type": "string",
+							"description": "The content of the description goes here, as a raw string."
+						},
+						"type": {
+							"type": "string",
+							"description": "Holds the mime type of the raw description content. E.g: 'text/markdown' or 'text/html'.\nThe type is used to correctly render the description when generating documentation, or in the Postman app."
+						},
+						"version": {
+							"description": "Description can have versions associated with it, which should be put in this property."
+						}
+					}
+				},
+				{
+					"type": "string"
+				},
+				{
+					"type": "null"
+				}
+			]
+		},
+		"event-list": {
+			"$schema": "http://json-schema.org/draft-07/schema#",
+			"$id": "#/definitions/event-list",
+			"title": "Event List",
+			"description": "Postman allows you to configure scripts to run when specific events occur. These scripts are stored here, and can be referenced in the collection by their ID.",
+			"oneOf": [
+				{
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/event"
+					}
+				},
+				{
+					"type": "null"
+				}
+			]
+		},
+		"event": {
+			"$schema": "http://json-schema.org/draft-07/schema#",
+			"$id": "#/definitions/event",
+			"title": "Event",
+			"description": "Defines a script associated with an associated event name",
+			"type": "object",
+			"properties": {
+				"id": {
+					"type": "string",
+					"description": "A unique identifier for the enclosing event."
+				},
+				"listen": {
+					"type": "string",
+					"description": "Can be set to `test` or `prerequest` for test scripts or pre-request scripts respectively."
+				},
+				"script": {
+					"$ref": "#/definitions/script"
+				},
+				"disabled": {
+					"type": "boolean",
+					"default": false,
+					"description": "Indicates whether the event is disabled. If absent, the event is assumed to be enabled."
+				}
+			},
+			"required": [
+				"listen"
+			]
+		},
+		"folder": {
+			"$schema": "http://json-schema.org/draft-07/schema#",
+			"$id": "#/definitions/folder",
+			"title": "Folder",
+			"description": "One of the primary goals of Postman is to organize the development of APIs. To this end, it is necessary to be able to group requests together. This can be achived using 'Folders'. A folder just is an ordered set of requests.",
+			"type": "object",
+			"properties": {
+				"id": {
+					"type": "string",
+					"description": "In order to be able to uniquely identify different folders within a collection, Postman assigns each folder a unique ID (a [UUID](https://en.wikipedia.org/wiki/Globally_unique_identifier)). This field contains that value."
+				},
+				"name": {
+					"type": "string",
+					"description": "A folder's friendly name is defined by this field. You would want to set this field to a value that would allow you to easily identify this folder."
+				},
+				"description": {
+					"type": "string",
+					"description": "Essays about the folder go into this field!"
+				},
+				"order": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"uniqueItems": true,
+					"description": "Postman preserves the order of your requests within each folder. This field holds a sequence of [UUIDs](https://en.wikipedia.org/wiki/Globally_unique_identifier), where each ID corresponds to a particular Postman request."
+				},
+				"folders_order": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"uniqueItems": true,
+					"description": "Postman preserves the order of your folders within each folder. This field holds a sequence of [UUIDs](https://en.wikipedia.org/wiki/Globally_unique_identifier), where each ID corresponds to a particular collection folder."
+				},
+				"collection_id": {
+					"type": "string",
+					"description": "Postman folders are always a part of a collection. That collection's unique ID (which is a [UUID](https://en.wikipedia.org/wiki/Globally_unique_identifier)) is stored in this field."
+				},
+				"collection": {
+					"type": "string",
+					"description": "Postman folders are always a part of a collection. That collection's unique ID (which is a [UUID](https://en.wikipedia.org/wiki/Globally_unique_identifier)) is stored in this field."
+				},
+				"variables": {
+					"$ref": "#/definitions/variable-list"
+				},
+				"events": {
+					"$ref": "#/definitions/event-list"
+				},
+				"auth": {
+					"oneOf": [
+						{
+							"type": "null"
+						},
+						{
+							"$ref": "#/definitions/auth"
+						}
+					]
+				},
+				"protocolProfileBehavior": {
+					"$ref": "#/definitions/protocol-profile-behavior"
+				}
+			},
+			"required": [
+				"id",
+				"name",
+				"description",
+				"order"
+			]
+		},
+		"helper-attributes": {
+			"$schema": "http://json-schema.org/draft-07/schema#",
+			"$id": "#/definitions/helper-attributes",
+			"description": "A helper may require a number of parameters to actually be helpful. The parameters used by the helper can be stored in this field, as an object. E.g when using Basic Authentication, the username and password will be stored here.",
+			"oneOf": [
+				{
+					"type": "null"
+				},
+				{
+					"type": "string"
+				},
+				{
+					"type": "object",
+					"additionalProperties": false,
+					"properties": {
+					}
+				},
+				{
+					"type": "object",
+					"title": "API Key Authentication",
+					"description": "The attributes for API Key Authentication. e.g. key, value, in.",
+					"properties": {
+						"id": {
+							"type": "string",
+							"enum": [
+								"apikey"
+							],
+							"description": "This field contains the type of the helper. In this case, it is ``apikey``"
+						}
+					},
+					"additionalProperties": true,
+					"required": [
+						"id"
+					]
+				},
+				{
+					"type": "object",
+					"title": "AWS Signature v4",
+					"description": "The attributes for [AWS Auth](http://docs.aws.amazon.com/AmazonS3/latest/dev/RESTAuthentication.html). e.g. accessKey, secretKey, region, service.",
+					"properties": {
+						"id": {
+							"type": "string",
+							"const": "awsSigV4",
+							"description": "This field contains the type of the helper. In this case, it is ``awsSigV4``"
+						}
+					},
+					"additionalProperties": true,
+					"required": [
+						"id"
+					]
+				},
+				{
+					"type": "object",
+					"title": "Digest Authentication",
+					"description": "The attributes for [Digest Authentication](https://en.wikipedia.org/wiki/Digest_access_authentication). e.g. username, password, realm, nonce, nonceCount, algorithm, qop, opaque, clientNonce.",
+					"properties": {
+						"id": {
+							"type": "string",
+							"const": "digest",
+							"description": "This field contains the type of the helper. In this case, it is ``digest``"
+						}
+					},
+					"additionalProperties": true,
+					"required": [
+						"id"
+					]
+				},
+				{
+					"type": "object",
+					"title": "Hawk Authentication",
+					"description": "The attributes for [Hawk Authentication](https://github.com/hueniverse/hawk). e.g. authId, authKey, algorith, user, nonce, extraData, appId, delegation, timestamp.",
+					"properties": {
+						"id": {
+							"type": "string",
+							"const": "hawk",
+							"description": "This field contains the type of the Postman helper. In this case, it is ``hawk``"
+						}
+					},
+					"additionalProperties": true,
+					"required": [
+						"id"
+					]
+				},
+				{
+					"type": "object",
+					"title": "NTLM Authentication",
+					"description": "The attributes for [NTLM Authentication](https://msdn.microsoft.com/en-us/library/cc237488.aspx). e.g. username, password, domain, workstation.",
+					"properties": {
+						"id": {
+							"type": "string",
+							"const": "ntlm",
+							"description": "This field contains the type of the helper. In this case, it is ``ntlm``"
+						}
+					},
+					"required": [
+						"id"
+					]
+				},
+				{
+					"type": "object",
+					"title": "Basic Authentication",
+					"description": "The attributes for [Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication). e.g. username, password.",
+					"properties": {
+						"id": {
+							"type": "string",
+							"const": "basic",
+							"description": "This field contains the type of the helper. In this case, it is ``basic``"
+						}
+					},
+					"additionalProperties": true,
+					"required": [
+						"id"
+					]
+				},
+				{
+					"type": "object",
+					"title": "Bearer Token Authentication",
+					"description": "The attributes for [Bearer Token Authentication](https://tools.ietf.org/html/rfc6750). e.g. token.",
+					"properties": {
+						"id": {
+							"type": "string",
+							"const": "bearer",
+							"description": "This field contains the type of the helper. In this case, it is ``bearer``"
+						}
+					},
+					"additionalProperties": true,
+					"required": [
+						"id"
+					]
+				},
+				{
+					"type": "object",
+					"title": "OAuth1",
+					"description": "The attributes for [OAuth1](https://oauth.net/1/). e.g. consumerKey, consumerSecret, token, tokenSecret, signatureMethod, timestamp, nonce, version, realm, encodeOAuthSign.",
+					"properties": {
+						"id": {
+							"type": "string",
+							"const": "oAuth1",
+							"description": "This field contains the type of the helper. In this case, it is ``oAuth1``"
+						}
+					},
+					"additionalProperties": true,
+					"required": [
+						"id"
+					]
+				},
+				{
+					"type": "object",
+					"title": "OAuth2",
+					"description": "The attributes for [OAuth2](https://oauth.net/2/). e.g. accessToken, addTokenTo.",
+					"properties": {
+						"id": {
+							"type": "string",
+							"const": "oAuth2",
+							"description": "This field contains the type of the helper. In this case, it is ``oAuth2``"
+						}
+					},
+					"additionalProperties": true,
+					"required": [
+						"id"
+					]
+				}
+			]
+		},
+		"preRequestScript": {
+			"$schema": "http://json-schema.org/draft-07/schema#",
+			"$id": "#/definitions/preRequestScript",
+			"type": [
+				"string",
+				"null"
+			],
+			"description": "In some use cases, it's necessary to run a bit of code or perform some tasks before sending a request. Postman implements this feature by the use of this field. Any code written to this field is run before running a request."
+		},
+		"protocol-profile-behavior": {
+			"$schema": "http://json-schema.org/draft-07/schema#",
+			"type": "object",
+			"title": "Protocol Profile Behavior",
+			"$id": "#/definitions/protocol-profile-behavior",
+			"description": "Set of configurations used to alter the usual behavior of sending the request"
+		},
+		"request": {
+			"$schema": "http://json-schema.org/draft-07/schema#",
+			"$id": "#/definitions/request",
+			"title": "Request",
+			"description": "A request represents an HTTP request.",
+			"type": "object",
+			"properties": {
+				"folder": {
+					"type": [
+						"string",
+						"null"
+					],
+					"description": "Postman requests may or may not be a part of a folder. If this request belongs to a folder, that folder's unique ID (which is a [UUID](https://en.wikipedia.org/wiki/Globally_unique_identifier)) is stored in this field."
+				},
+				"id": {
+					"type": "string",
+					"description": "Postman can store a number of requests in each collection. In order to preserve the order of each request, we need to be able to identify requests uniquely. This field is a UUID assigned to each request."
+				},
+				"name": {
+					"type": "string",
+					"description": "Sometimes, you just need to call your request 'Bob'. Postman will let you do that, and store the name you give in this field."
+				},
+				"dataMode": {
+					"type": "string",
+					"enum": [
+						"raw",
+						"urlencoded",
+						"params",
+						"binary",
+						"graphql"
+					],
+					"description": "A request can have a specific data mode, and Postman supports these."
+				},
+				"dataDisabled": {
+					"type": "boolean",
+					"default": false,
+					"description": "When set to true, prevents request body from being sent."
+				},
+				"data": {
+					"oneOf": [
+						{
+							"type": "array",
+							"description": "Data is an array of key-values that the request goes with. POST data, PUT data, etc goes here.",
+							"items": {
+								"oneOf": [
+									{
+										"type": "object",
+										"properties": {
+											"key": {
+												"type": "string"
+											},
+											"description": {
+												"type": "string"
+											},
+											"value": {
+												"type": "string"
+											},
+											"enabled": {
+												"type": "boolean"
+											},
+											"contentType": {
+												"type": "string",
+												"description": "Override Content-Type header of this form data entity."
+											},
+											"type": {
+												"const": "text"
+											}
+										}
+									},
+									{
+										"type": "object",
+										"properties": {
+											"key": {
+												"type": "string"
+											},
+											"description": {
+												"type": "string"
+											},
+											"value": {
+												"type": [
+													"null",
+													"string",
+													"array"
+												]
+											},
+											"enabled": {
+												"type": "boolean"
+											},
+											"contentType": {
+												"type": "string",
+												"description": "Override Content-Type header of this form data entity."
+											},
+											"type": {
+												"const": "file"
+											}
+										}
+									}
+								]
+							}
+						},
+						{
+							"type": "null"
+						}
+					]
+				},
+				"descriptionFormat": {
+					"type": [
+						"string",
+						"null"
+					],
+					"enum": [
+						"html",
+						"markdown",
+						null
+					],
+					"description": "A request can have an associated description text. Since description is meant to be long, it can be in either ``html`` or ``markdown`` formats. This field specifies that format."
+				},
+				"description": {
+					"type": [
+						"string",
+						"null"
+					],
+					"description": "The description of this request. Can be as long as you want. Postman also supports two formats for your description, ``markdown`` and ``html``."
+				},
+				"headers": {
+					"type": "string",
+					"description": "No HTTP request is complete without its headers, and the same is true for a Postman request. This field contains all the HTTP Headers in a raw string format."
+				},
+				"method": {
+					"description": "The Standard HTTP method associated with this request.",
+					"type": "string",
+					"enum": [
+						"GET",
+						"PUT",
+						"POST",
+						"PATCH",
+						"DELETE",
+						"COPY",
+						"HEAD",
+						"OPTIONS",
+						"LINK",
+						"UNLINK",
+						"PURGE",
+						"LOCK",
+						"UNLOCK",
+						"PROPFIND",
+						"VIEW"
+					]
+				},
+				"auth": {
+					"oneOf": [
+						{
+							"type": "null"
+						},
+						{
+							"$ref": "#/definitions/auth"
+						}
+					]
+				},
+				"currentHelper": {
+					"$ref": "#/definitions/current-helper"
+				},
+				"helperAttributes": {
+					"$ref": "#/definitions/helper-attributes"
+				},
+				"pathVariables": {
+					"type": "array",
+					"items": {
+						"type": "object"
+					},
+					"description": "A Postman request allows you to use Path Variables in a request, e.g: ``/search/:bookId``. This field stores these variables."
+				},
+				"url": {
+					"type": "string",
+					"description": "Contains the complete URL for this request, along with the path variables, if any."
+				},
+				"events": {
+					"$ref": "#/definitions/event-list"
+				},
+				"preRequestScript": {
+					"$ref": "#/definitions/preRequestScript"
+				},
+				"tests": {
+					"$ref": "#/definitions/tests"
+				},
+				"variables": {
+					"$ref": "#/definitions/variable-list"
+				},
+				"time": {
+					"type": "number",
+					"multipleOf": 1,
+					"description": "The timestamp for this request."
+				},
+				"responses": {
+					"type": "array",
+					"description": "A Postman request can have multiple responses associated with it. These responses are stored in this field.",
+					"items": {
+						"$schema": "http://json-schema.org/draft-07/schema#",
+						"$id": "response",
+						"title": "Response",
+						"description": "A response represents an HTTP response.",
+						"properties": {
+							"request": {
+								"type": [
+									"string",
+									"object",
+									"null"
+								],
+								"description": "A response is associated with a request. This fields contains the UUID of the request corresponding to this response."
+							},
+							"id": {
+								"type": "string",
+								"description": "In order to unambiguously identify a response, Postman assigns a UUID to it, and stores it in this field."
+							},
+							"name": {
+								"type": "string",
+								"description": "A response can have a friendly name, which goes here."
+							},
+							"status": {
+								"type": "string",
+								"description": ""
+							},
+							"responseCode": {
+								"type": "object",
+								"title": "ResponseCode",
+								"properties": {
+									"code": {
+										"type": "number",
+										"description": "The numeric HTTP response code."
+									},
+									"name": {
+										"type": "string",
+										"description": "The textual HTTP response code."
+									},
+									"detail": {
+										"type": "string",
+										"description": "Detailed explanation of the response code."
+									}
+								},
+								"required": [
+									"code",
+									"name"
+								]
+							},
+							"time": {
+								"type": [
+									"null",
+									"string",
+									"number"
+								],
+								"description": "The time taken by this particular HTTP transaction to complete is stored in this field. For manually created responses, this field can be set to ``null``."
+							},
+							"timings": {
+								"title": "Response Timings",
+								"description": "Set of timing information related to request and response in milliseconds",
+								"type": [
+									"object",
+									"null"
+								]
+							},
+							"headers": {
+								"type": "array",
+								"title": "Header",
+								"items": {
+									"type": "object",
+									"properties": {
+										"name": {
+											"type": "string",
+											"description": "Some headers can have names associated with them, which are stored in this field."
+										},
+										"key": {
+											"type": "string",
+											"description": "The left hand side (LHS) or 'key' of the header."
+										},
+										"value": {
+											"type": "string",
+											"description": "Value of the header, or the right hand side (RHS)."
+										},
+										"description": {
+											"type": "string",
+											"description": "An optional description about the header."
+										}
+									},
+									"required": [
+										"key",
+										"value"
+									]
+								}
+							},
+							"cookies": {
+								"type": "array",
+								"title": "Cookie",
+								"items": {
+									"type": "object",
+									"properties": {
+										"domain": {
+											"type": "string",
+											"description": "The domain for which this cookie is valid."
+										},
+										"expirationDate": {
+											"type": "number",
+											"description": "The timestamp of the time when the cookie expires."
+										},
+										"hostOnly": {
+											"type": "boolean",
+											"description": "Indicates if this cookie is Host Only."
+										},
+										"httpOnly": {
+											"type": "boolean",
+											"description": "Indicates if this cookie is HTTP Only."
+										},
+										"name": {
+											"type": "string",
+											"description": "This is the name of the Cookie."
+										},
+										"path": {
+											"type": "string",
+											"description": "The path associated with the Cookie."
+										},
+										"secure": {
+											"type": "boolean",
+											"description": "Indicates if the 'secure' flag is set on the Cookie."
+										},
+										"session": {
+											"type": "boolean",
+											"description": "True if the cookie is a session cookie."
+										},
+										"storeId": {
+											"type": "string",
+											"description": "The ID of the cookie store containing this cookie."
+										},
+										"value": {
+											"type": "string",
+											"description": "The value of the Cookie."
+										},
+										"expires": {
+											"type": "string",
+											"description": "Human readable expiration time."
+										}
+									},
+									"required": [
+										"domain",
+										"expirationDate",
+										"hostOnly",
+										"httpOnly",
+										"name",
+										"path",
+										"secure",
+										"session",
+										"storeId",
+										"value",
+										"expires"
+									]
+								}
+							},
+							"mime": {
+								"type": "string",
+								"description": "Mimetype of the response."
+							},
+							"text": {
+								"type": [
+									"null",
+									"string"
+								],
+								"description": "The raw text of the response."
+							},
+							"language": {
+								"type": "string",
+								"enum": [
+									"html",
+									"javascript",
+									"xml",
+									"Text"
+								],
+								"description": "The language associated with the response."
+							},
+							"rawDataType": {
+								"type": "string",
+								"description": "The data type of the raw response."
+							}
+						},
+						"required": [
+							"id",
+							"responseCode",
+							"request"
+						]
+					}
+				},
+				"rawModeData": {
+					"type": [
+						"string",
+						"null",
+						"array"
+					],
+					"description": "Contains the raw data (parameters) that Postman sends to the server"
+				},
+				"graphqlModeData": {
+					"type": "object",
+					"description": "This field contains the GraphQL request body"
+				},
+				"collectionId": {
+					"type": "string",
+					"description": "This field contains the unique ID of the collection to which this request belongs."
+				},
+				"collection": {
+					"type": "string",
+					"description": "This field contains the unique ID of the collection to which this request belongs."
+				},
+				"queryParams": {
+					"type": "array",
+					"items": {
+						"$schema": "http://json-schema.org/draft-07/schema#",
+						"$id": "urlparam",
+						"title": "UrlParam",
+						"description": "A response represents an HTTP response.",
+						"properties": {
+							"key": {
+								"type": [
+									"string",
+									"null"
+								],
+								"description": "The key of a URL parameter."
+							},
+							"value": {
+								"type": [
+									"string",
+									"null"
+								],
+								"description": "The value of a URL parameter"
+							},
+							"description": {
+								"type": "string",
+								"description": "You can associate descriptions with URL parameters, which are stored in this field."
+							}
+						}
+					}
+				},
+				"headerData": {
+					"type": "array",
+					"items": {
+						"$schema": "http://json-schema.org/draft-07/schema#",
+						"$id": "header",
+						"title": "Header",
+						"description": "A response represents an HTTP response.",
+						"properties": {
+							"key": {
+								"type": "string",
+								"description": "Name of the header goes here. e.g: `Content-Type`"
+							},
+							"value": {
+								"type": "string",
+								"description": "The value of the header"
+							},
+							"description": {
+								"type": "string",
+								"description": "You can associate descriptions with headers too."
+							}
+						}
+					}
+				},
+				"pathVariableData": {
+					"type": "array",
+					"items": {
+						"$schema": "http://json-schema.org/draft-07/schema#",
+						"$id": "pathvariable",
+						"title": "PathVariable",
+						"description": "A request URL may contain one or more path variables (e.g: `:varname`)",
+						"properties": {
+							"key": {
+								"type": "string",
+								"description": "The identifier of a path variable goes here."
+							},
+							"value": {
+								"type": "string",
+								"description": "The value of the path variable will be substituted in place of the key."
+							},
+							"description": {
+								"type": "string",
+								"description": "Extra description about a path variable may be added in this field."
+							}
+						}
+					}
+				},
+				"protocolProfileBehavior": {
+					"$ref": "#/definitions/protocol-profile-behavior"
+				}
+			},
+			"anyOf": [
+				{
+					"required": [
+						"id",
+						"method",
+						"url",
+						"headers",
+						"name",
+						"collectionId"
+					]
+				},
+				{
+					"required": [
+						"id",
+						"method",
+						"url",
+						"headers",
+						"name",
+						"collection"
+					]
+				}
+			]
+		},
+		"script": {
+			"$schema": "http://json-schema.org/draft-07/schema#",
+			"$id": "#/definitions/script",
+			"title": "Script",
+			"type": "object",
+			"description": "A script is a snippet of Javascript code that can be used to to perform setup or teardown operations on a particular response.",
+			"properties": {
+				"id": {
+					"description": "A unique, user defined identifier that can  be used to refer to this script from requests.",
+					"type": "string"
+				},
+				"type": {
+					"description": "Type of the script. E.g: 'text/javascript'",
+					"type": "string"
+				},
+				"exec": {
+					"oneOf": [
+						{
+							"type": "array",
+							"description": "This is an array of strings, where each line represents a single line of code. Having lines separate makes it possible to easily track changes made to scripts.",
+							"items": {
+								"type": "string"
+							}
+						},
+						{
+							"type": "string"
+						}
+					]
+				},
+				"src": {
+					"$ref": "#/definitions/url"
+				},
+				"name": {
+					"type": "string",
+					"description": "Script name"
+				}
+			}
+		},
+		"tests": {
+			"$schema": "http://json-schema.org/draft-07/schema#",
+			"$id": "#/definitions/tests",
+			"type": [
+				"string",
+				"null"
+			],
+			"description": "Postman allows you to define a script that is run after executing the request, which may act on the response. Such a script is stored in this field."
+		},
+		"url": {
+			"$schema": "http://json-schema.org/draft-07/schema#",
+			"description": "If object, contains the complete broken-down URL for this request. If string, contains the literal request URL.",
+			"$id": "#/definitions/url",
+			"title": "Url",
+			"oneOf": [
+				{
+					"type": "object",
+					"properties": {
+						"raw": {
+							"type": "string",
+							"description": "The string representation of the request URL, including the protocol, host, path, hash, query parameter(s) and path variable(s)."
+						},
+						"protocol": {
+							"type": "string",
+							"description": "The protocol associated with the request, E.g: 'http'"
+						},
+						"host": {
+							"title": "Host",
+							"description": "The host for the URL, E.g: api.yourdomain.com. Can be stored as a string or as an array of strings.",
+							"oneOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "array",
+									"items": {
+										"type": "string"
+									},
+									"description": "The host, split into subdomain strings."
+								}
+							]
+						},
+						"path": {
+							"oneOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "array",
+									"description": "The complete path of the current url, broken down into segments. A segment could be a string, or a path variable.",
+									"items": {
+										"oneOf": [
+											{
+												"type": "string"
+											},
+											{
+												"type": "object",
+												"properties": {
+													"type": {
+														"type": "string"
+													},
+													"value": {
+														"type": "string"
+													}
+												}
+											}
+										]
+									}
+								}
+							]
+						},
+						"port": {
+							"type": "string",
+							"description": "The port number present in this URL. An empty value implies 80/443 depending on whether the protocol field contains http/https."
+						},
+						"query": {
+							"type": "array",
+							"description": "An array of QueryParams, which is basically the query string part of the URL, parsed into separate variables",
+							"items": {
+								"type": "object",
+								"title": "QueryParam",
+								"properties": {
+									"key": {
+										"type": [
+											"string",
+											"null"
+										]
+									},
+									"value": {
+										"type": [
+											"string",
+											"null"
+										]
+									},
+									"disabled": {
+										"type": "boolean",
+										"default": false,
+										"description": "If set to true, the current query parameter will not be sent with the request."
+									},
+									"description": {
+										"$ref": "#/definitions/description"
+									}
+								}
+							}
+						},
+						"hash": {
+							"description": "Contains the URL fragment (if any). Usually this is not transmitted over the network, but it could be useful to store this in some cases.",
+							"type": "string"
+						},
+						"variable": {
+							"type": "array",
+							"description": "Postman supports path variables with the syntax `/path/:variableName/to/somewhere`. These variables are stored in this field.",
+							"items": {
+								"$ref": "#/definitions/variable"
+							}
+						}
+					}
+				},
+				{
+					"type": "string"
+				}
+			]
+		},
+		"variable-list": {
+			"$schema": "http://json-schema.org/draft-07/schema#",
+			"$id": "#/definitions/variable-list",
+			"title": "Variable List",
+			"description": "Collection variables allow you to define a set of variables, that are a *part of the collection*, as opposed to environments, which are separate entities.\n*Note: Collection variables must not contain any sensitive information.*",
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/variable"
+			}
+		},
+		"variable": {
+			"$schema": "http://json-schema.org/draft-07/schema#",
+			"$id": "#/definitions/variable",
+			"title": "Variable",
+			"description": "Using variables in your Postman requests eliminates the need to duplicate requests, which can save a lot of time. Variables can be defined, and referenced to from any part of a request.",
+			"type": "object",
+			"properties": {
+				"id": {
+					"description": "A variable ID is a unique user-defined value that identifies the variable within a collection. In traditional terms, this would be a variable name.",
+					"type": "string"
+				},
+				"key": {
+					"description": "A variable key is a human friendly value that identifies the variable within a collection. In traditional terms, this would be a variable name.",
+					"type": "string"
+				},
+				"value": {
+					"description": "The value that a variable holds in this collection. Ultimately, the variables will be replaced by this value, when say running a set of requests from a collection"
+				},
+				"type": {
+					"description": "A variable may have multiple types. This field specifies the type of the variable.",
+					"type": "string",
+					"enum": [
+						"string",
+						"boolean",
+						"any",
+						"number"
+					]
+				},
+				"name": {
+					"type": "string",
+					"description": "Variable name"
+				},
+				"description": {
+					"$ref": "#/definitions/description"
+				},
+				"system": {
+					"type": "boolean",
+					"default": false,
+					"description": "When set to true, indicates that this variable has been set by Postman"
+				},
+				"disabled": {
+					"type": "boolean",
+					"default": false
+				}
+			},
+			"anyOf": [
+				{
+					"required": [
+						"id"
+					]
+				},
+				{
+					"required": [
+						"key"
+					]
+				},
+				{
+					"required": [
+						"id",
+						"key"
+					]
+				}
+			]
+		}
+	}
+}
