@@ -77,9 +77,13 @@ version 2.1.5:
   * added action to edit current environment directly
   * auto completion for env variables, headers
 
+version 2.2.0
+  * generic postman import for dumps, collections (v1, v2.1), environments
+  * postman export
+ 
+   
 Planned:
   * Export of environment (privatebin)
-  * Exports for postman
   * jdbc -> explorer functionality (what tables are there? what columns does a table have?)
   * Use hardwire in plugins
   * javascript runner for pre
