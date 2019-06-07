@@ -60,6 +60,7 @@
 						<configuration>
 							<sourceDirectory>${basedir}/src/main/schema/postman-collection-2.1.0.json</sourceDirectory>
 							<targetPackage>com.milkman.rest.postman.schema.v21</targetPackage>
+							<initializeCollections>false</initializeCollections><!-- for export and bc of merged anyof -->
 						</configuration>
 					</execution>
 				</executions>
