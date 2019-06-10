@@ -79,7 +79,7 @@ public class WorkspaceController {
 		loadCollections(activeWorkspace);
 		closeUnknownRequestContainers(activeWorkspace);
 		//refresh from store, if no changes
-		if (!activeWorkspace.getActiveRequest().isDirty()) {
+		if (!activeWorkspace.getActiveRequest().isDirty() && activeWorkspace.getActiveRequest().isInStorage()) {
 			loadRequestCopy(activeWorkspace.getActiveRequest().getId(), true);
 		}
 	}

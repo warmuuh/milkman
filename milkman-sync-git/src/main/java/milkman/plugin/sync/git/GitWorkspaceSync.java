@@ -1,13 +1,13 @@
 package milkman.plugin.sync.git;
 
+import static milkman.plugin.sync.git.JGitUtil.initWith;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.errors.CanceledException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidConfigurationException;
@@ -17,7 +17,6 @@ import org.eclipse.jgit.api.errors.RefNotAdvertisedException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
-import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,13 +24,11 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import de.danielbechler.diff.node.DiffNode;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import milkman.domain.Collection;
 import milkman.domain.Environment;
 import milkman.domain.Workspace;
 import milkman.persistence.UnknownPluginHandler;
 import milkman.ui.plugin.WorkspaceSynchronizer;
-
 /**
  * some simplistic diff-sync way of synchronizing workspace with remote
  * 
@@ -99,8 +96,7 @@ public class GitWorkspaceSync implements WorkspaceSynchronizer {
 			repo.commit()
 				.setMessage("milkman sync")
 				.call();
-			repo.push()
-				.setCredentialsProvider(creds(syncDetails))
+			initWith(repo.push(), syncDetails)
 				.call();
 		}
 		
@@ -124,9 +120,8 @@ public class GitWorkspaceSync implements WorkspaceSynchronizer {
 		Git repo;
 		if (!syncDir.exists()) {
 			syncDir.mkdirs();
-			repo = Git.cloneRepository()
+			repo = initWith(Git.cloneRepository(), syncDetails)
 				.setURI(syncDetails.getGitUrl())
-				.setCredentialsProvider(creds(syncDetails))
 				.setDirectory(syncDir)
 				.setCloneAllBranches(true)
 				.setBranch("master")
@@ -135,16 +130,12 @@ public class GitWorkspaceSync implements WorkspaceSynchronizer {
 			
 		} else {
 			repo = Git.open(syncDir);
-			repo.pull()
-				.setCredentialsProvider(creds(syncDetails))
+			initWith(repo.pull(), syncDetails)
 				.call();
 		}
 		return repo;
 	}
 
-	private UsernamePasswordCredentialsProvider creds(GitSyncDetails syncDetails) {
-		return new UsernamePasswordCredentialsProvider(syncDetails.getUsername(), syncDetails.getPasswordOrToken());
-	}
 
 	@Override
 	public SynchronizationDetailFactory getDetailFactory() {

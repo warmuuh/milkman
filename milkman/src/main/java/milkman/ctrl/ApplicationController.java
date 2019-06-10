@@ -100,8 +100,10 @@ public class ApplicationController {
 		workspace.setSyncDetails(syncDetails);
 		
 		//initial pull of shared repo
-		if (syncDetails.isSyncActive())
-			syncManager.syncWorkspace(workspace, toaster);
+		if (syncDetails.isSyncActive()) {
+			syncWorkspace(() -> {}, workspace);
+			
+		}
 		
 		persistence.persistWorkspace(workspace);
 		if (loadWorkspace)
@@ -154,7 +156,12 @@ public class ApplicationController {
 	}
 
 	private void syncWorkspace(Runnable callback) {
-		CompletableFuture<Void> future = syncManager.syncWorkspace(workspaceController.getActiveWorkspace(), toaster);
+		syncWorkspace(callback, workspaceController.getActiveWorkspace());
+	}
+
+	private void syncWorkspace(Runnable callback, Workspace workspace) {
+		CompletableFuture<Void> future = syncManager.syncWorkspace(workspace);
+		toaster.showToast("Sync started");
 		future.whenComplete((r, e) -> {
 			callback.run();
 			if (e != null) {

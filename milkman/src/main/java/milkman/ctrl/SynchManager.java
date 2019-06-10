@@ -22,7 +22,7 @@ public class SynchManager {
 
 	private final UiPluginManager plugins;
 
-	public CompletableFuture<Void> syncWorkspace(Workspace workspace, Toaster toaster) {
+	public CompletableFuture<Void> syncWorkspace(Workspace workspace) {
 		if (!workspace.getSyncDetails().isSyncActive()) {
 			CompletableFuture<Void> future = new CompletableFuture<Void>();
 			future.completeExceptionally(new RuntimeException("Sync not active"));
@@ -31,7 +31,7 @@ public class SynchManager {
 		
 		for (WorkspaceSynchronizer synchronizer : plugins.loadSyncPlugins()) {
 			if (synchronizer.supportSyncOf(workspace)) {
-				return triggerSynchronization(workspace, synchronizer, toaster);
+				return triggerSynchronization(workspace, synchronizer);
 			}
 		}
 		
@@ -41,7 +41,7 @@ public class SynchManager {
 	}
 
 	
-	private CompletableFuture<Void> triggerSynchronization(Workspace workspace, WorkspaceSynchronizer synchronizer, Toaster toaster) {
+	private CompletableFuture<Void> triggerSynchronization(Workspace workspace, WorkspaceSynchronizer synchronizer) {
 		CompletableFuture<Void> future = new CompletableFuture<Void>();
 		SyncServiceTask task = new SyncServiceTask(workspace, synchronizer);
 		
