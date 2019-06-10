@@ -80,6 +80,7 @@ version 2.1.5:
 version 2.2.0
   * generic postman import for dumps, collections (v1, v2.1), environments
   * postman export
+  * enabled ssh credentials for git sync
   * jsch replaced with sshd for jgit (to support new ed25519 keys)
  
    

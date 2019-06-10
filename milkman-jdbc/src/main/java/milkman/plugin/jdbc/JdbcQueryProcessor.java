@@ -20,7 +20,7 @@ import milkman.plugin.jdbc.domain.RowSetResponseAspect;
 import milkman.ui.plugin.Templater;
 
 @Slf4j
-public class JdbcQueryProcessor {
+public class JdbcQueryProcessor extends AbstractJdbcProcessor {
 
 	@SneakyThrows
 	public ResponseContainer executeRequest(RequestContainer request, Templater templater) {
@@ -47,7 +47,7 @@ public class JdbcQueryProcessor {
 		RowSetResponseAspect rowSetAspect = new RowSetResponseAspect();
 		
 		if (isResultSet) {
-			extractRows(statement, rowSetAspect);
+			extractRows(statement.getResultSet(), rowSetAspect);
 			response.getStatusInformations().put("Selected Rows", ""+ rowSetAspect.getRows().size());
 		} else {
 			response.getStatusInformations().put("Affected Rows", ""+statement.getUpdateCount());	
@@ -58,23 +58,6 @@ public class JdbcQueryProcessor {
 		return response;
 	}
 
-	private void extractRows(Statement statement, RowSetResponseAspect rowSetAspect) throws SQLException {
-		ResultSet resultSet = statement.getResultSet();
-		ResultSetMetaData metaData = resultSet.getMetaData();		
-		
-		List<String> columnNames = new LinkedList<String>();
-		for(int i = 1; i <= metaData.getColumnCount(); ++i) { // column idx starts at 1
-			columnNames.add(metaData.getColumnName(i));
-		}
-		rowSetAspect.setColumnNames(columnNames);
-		
-		while(resultSet.next()) {
-			List<Object> row = new LinkedList<Object>();
-			for(int i = 1; i <= metaData.getColumnCount(); ++i) {// column idx starts at 1
-				row.add(resultSet.getObject(i));
-			}
-			rowSetAspect.addRow(row);
-		}
-	}
+
 
 }

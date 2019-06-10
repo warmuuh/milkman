@@ -1,5 +1,10 @@
 package milkman.ui.plugin;
 
+import java.util.Collections;
+import java.util.List;
+
+import javax.naming.OperationNotSupportedException;
+
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 
@@ -35,4 +40,17 @@ public interface RequestTypePlugin extends Orderable {
     */
 	boolean canHandle(RequestContainer request);
 	
+	/**
+	 * provides a list of custom commands
+	 */
+	default List<CustomCommand> getCustomCommands()  {
+		return Collections.emptyList();
+	}
+	
+	/**
+	 * Executes a custom command
+	 */
+	default ResponseContainer executeCustomCommand(String commandId, RequestContainer request, Templater templater)   {
+		throw new IllegalArgumentException("No Custom commands implemented");
+	}
 }

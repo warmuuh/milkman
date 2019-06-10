@@ -164,28 +164,33 @@
     -fx-text-fill: white;
 }
 
-#generalRequestEdit  .split-menu-button > .label,
-#generalRequestEdit  .split-menu-button > .label:armed,
-#generalRequestEdit  .split-menu-button > .label:hover,
-#generalRequestEdit  .split-menu-button > .label:focus {
+#generalRequestEdit .empty-menu > .arrow-button,
+#generalRequestEdit .empty-menu > .arrow-button > .arrow {
+	-fx-padding: 0;
+}
+
+
+#generalRequestEdit #saveBtn {
+	-fx-background-color: #2C3964; 
+    -fx-text-fill: white;
+}
+
+#generalRequestEdit .split-menu-button > .label {
 	-fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
 	
 	-fx-background-radius: 3px 0px 0px 3px;
 	-fx-background-insets: 0px;
-	-fx-background-color: #2C3964; 
 	-fx-text-fill: white;
 }
-#generalRequestEdit  .split-menu-button .arrow-button,
-#generalRequestEdit  .split-menu-button .arrow-button:armed,
-#generalRequestEdit  .split-menu-button .arrow-button:hover,
-#generalRequestEdit  .split-menu-button .arrow-button:focus {
+#generalRequestEdit .split-menu-button .arrow-button {
 	-fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
 	-fx-text-fill: white;
 	-fx-inner-border: TRANSPARENT;
 	-fx-background-radius: 0px 3px 3px 0px;
 	-fx-background-insets: 0px;
-	-fx-background-color: #2C3964; 
+	 
 }
+
 
 /**
 * working area > request aspect area

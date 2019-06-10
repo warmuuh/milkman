@@ -34,6 +34,7 @@ import milkman.ui.commands.UiCommand.CloseRequest;
 import milkman.ui.commands.UiCommand.CloseRequest.CloseType;
 import milkman.ui.commands.UiCommand.DeleteRequest;
 import milkman.ui.commands.UiCommand.RenameRequest;
+import milkman.ui.commands.UiCommand.SubmitCustomCommand;
 import milkman.ui.commands.UiCommand.SubmitRequest;
 import milkman.ui.main.HotkeyManager;
 import milkman.ui.main.RequestCollectionComponent;
@@ -44,6 +45,7 @@ import milkman.ui.main.dialogs.ExportDialog;
 import milkman.ui.main.dialogs.SaveRequestDialog;
 import milkman.ui.main.dialogs.StringInputDialog;
 import milkman.ui.plugin.CollectionExporterPlugin;
+import milkman.ui.plugin.CustomCommand;
 import milkman.ui.plugin.Exporter;
 import milkman.ui.plugin.RequestExporterPlugin;
 import milkman.ui.plugin.RequestTypePlugin;
@@ -162,11 +164,14 @@ public class WorkspaceController {
 			.ifPresent(this::displayRequest);
 	}
 	public void executeRequest(RequestContainer request) {
-		
+		executeRequest(request, Optional.empty());
+	}
+
+	public void executeRequest(RequestContainer request, Optional<CustomCommand> command) {
 		workingAreaView.clearResponse();
 		activeWorkspace.getCachedResponses().remove(request.getId());
 		RequestTypePlugin plugin = requestTypeManager.getPluginFor(request);
-		val executor = new RequestExecutor(request, plugin, buildTemplater());
+		val executor = new RequestExecutor(request, plugin, buildTemplater(), command);
 		
 		workingAreaView.showSpinner(() -> executor.cancel());
 		
@@ -213,7 +218,10 @@ public class WorkspaceController {
 		log.info("Handling command: " + command);
 		if (command instanceof UiCommand.SubmitRequest) {
 			executeRequest(((UiCommand.SubmitRequest) command).getRequest());
-		} else if (command instanceof UiCommand.SubmitActiveRequest) {
+		} else if (command instanceof UiCommand.SubmitCustomCommand) {
+			SubmitCustomCommand customCmd = (UiCommand.SubmitCustomCommand) command;
+			executeRequest(customCmd.getRequest(), Optional.of(customCmd.getCommand()));
+		}else if (command instanceof UiCommand.SubmitActiveRequest) {
 			executeRequest(activeWorkspace.getActiveRequest());
 		} else if (command instanceof UiCommand.SaveRequestAsCommand) {
 			val saveCmd = ((UiCommand.SaveRequestAsCommand) command);

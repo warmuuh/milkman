@@ -3,6 +3,7 @@ package milkman.ui.commands;
 import lombok.Value;
 import milkman.domain.Collection;
 import milkman.domain.RequestContainer;
+import milkman.ui.plugin.CustomCommand;
 
 public interface UiCommand {
 
@@ -24,6 +25,12 @@ public interface UiCommand {
 	public static class SubmitRequest implements UiCommand {
 		RequestContainer request;
 	}
+	@Value
+	public static class SubmitCustomCommand implements UiCommand {
+		RequestContainer request;
+		CustomCommand command;
+	}
+	
 	@Value
 	public static class SubmitActiveRequest implements UiCommand {
 	}

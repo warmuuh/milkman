@@ -1,12 +1,15 @@
 package milkman.ui.main;
 
 import java.util.Iterator;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.HBox;
@@ -16,6 +19,7 @@ import milkman.domain.RequestAspect;
 import milkman.domain.RequestContainer;
 import milkman.ui.commands.UiCommand;
 import milkman.ui.plugin.ContentTypeAwareEditor;
+import milkman.ui.plugin.CustomCommand;
 import milkman.ui.plugin.RequestAspectEditor;
 import milkman.ui.plugin.RequestAspectsPlugin;
 import milkman.ui.plugin.RequestTypeEditor;
@@ -30,11 +34,12 @@ public class RequestComponent {
 
 	@FXML JFXTabPane tabs;
 	@FXML HBox mainEditingArea;
+	@FXML SplitMenuButton saveBtn;
 
 	
 	public final Event<UiCommand> onCommand = new Event<UiCommand>();
 	@Getter private RequestContainer currentRequest;
-	@FXML JFXButton submitBtn;
+	@FXML SplitMenuButton submitBtn;
 	private RequestTypeManager reqTypeManager;
 	private UiPluginManager plugins; 
 	
@@ -57,6 +62,20 @@ public class RequestComponent {
 		
 		tabs.getTabs().clear();
 		
+		submitBtn.getItems().clear();
+		List<CustomCommand> customCommands = reqTypeManager.getPluginFor(currentRequest).getCustomCommands();
+		customCommands.forEach(cc -> {
+			MenuItem itm = new MenuItem(cc.getCommandText());
+			itm.setOnAction(e -> onCommand.invoke(new UiCommand.SubmitCustomCommand(currentRequest, cc)));
+			submitBtn.getItems().add(itm);
+		});
+		if (customCommands.isEmpty()) {
+			submitBtn.getStyleClass().add("empty-menu");
+		} else {
+			submitBtn.getStyleClass().remove("empty-menu");
+//			submitBtn.getStyleClass().clear();
+		}
+			
 		plugins.loadRequestAspectPlugins().stream()
 		.flatMap(p -> p.getRequestTabs().stream())
 		.forEach(tabController -> {

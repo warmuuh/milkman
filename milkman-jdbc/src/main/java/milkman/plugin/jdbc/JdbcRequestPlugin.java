@@ -11,6 +11,7 @@ import milkman.plugin.jdbc.domain.JdbcSqlAspect;
 import milkman.plugin.jdbc.editor.JdbcRequestEditor;
 import milkman.plugin.jdbc.editor.JdbcResultSetAspectEditor;
 import milkman.plugin.jdbc.editor.SqlAspectEditor;
+import milkman.ui.plugin.CustomCommand;
 import milkman.ui.plugin.RequestAspectEditor;
 import milkman.ui.plugin.RequestAspectsPlugin;
 import milkman.ui.plugin.RequestTypeEditor;
@@ -20,8 +21,9 @@ import milkman.ui.plugin.Templater;
 
 public class JdbcRequestPlugin implements RequestTypePlugin, RequestAspectsPlugin {
 
-	
+
 	JdbcQueryProcessor processor = new JdbcQueryProcessor();
+	JdbcMetaProcessor metaProcessor = new JdbcMetaProcessor();
 	
 	@Override
 	public RequestContainer createNewRequest() {
@@ -75,6 +77,21 @@ public class JdbcRequestPlugin implements RequestTypePlugin, RequestAspectsPlugi
 	public int getOrder() {
 		return 20;
 	}
+
+	@Override
+	public List<CustomCommand> getCustomCommands() {
+		return Collections.singletonList(new CustomCommand("SHOW_TABLES", "Show Tables"));
+	}
+
+	@Override
+	public ResponseContainer executeCustomCommand(String commandId, RequestContainer request, Templater templater) {
+		if (commandId.equals("SHOW_TABLES")) {
+			return metaProcessor.showAllTables(request, templater);
+		}
+		throw new IllegalArgumentException("Custom command " + commandId + " not supported.");
+	}
+	
+	
 
 
 }
