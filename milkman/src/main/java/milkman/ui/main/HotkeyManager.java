@@ -9,6 +9,7 @@ import javafx.scene.input.KeyCombination;
 import milkman.ui.commands.AppCommand;
 import milkman.ui.commands.AppCommand.EditCurrentEnvironment;
 import milkman.ui.commands.UiCommand;
+import milkman.ui.commands.UiCommand.CancelActiveRequest;
 import milkman.ui.commands.UiCommand.NewRequest;
 import milkman.ui.commands.UiCommand.RenameActiveRequest;
 import milkman.ui.commands.UiCommand.RenameRequest;
@@ -38,6 +39,10 @@ public class HotkeyManager {
 
 		scene.getAccelerators().put(new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN), 
 				() -> onAppCommand.invoke(new EditCurrentEnvironment()));
+		
+
+		scene.getAccelerators().put(new KeyCodeCombination(KeyCode.ESCAPE), 
+				() -> onCommand.invoke(new CancelActiveRequest()));
 	}
 	
 	

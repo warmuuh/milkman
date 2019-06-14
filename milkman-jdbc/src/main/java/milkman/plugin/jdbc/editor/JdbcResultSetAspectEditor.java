@@ -3,12 +3,19 @@ package milkman.plugin.jdbc.editor;
 import java.io.IOException;
 import java.sql.Blob;
 import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 
+import com.jfoenix.controls.JFXButton;
+
 import io.vavr.Function1;
 import javafx.scene.control.Tab;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 import milkman.plugin.jdbc.domain.RowSetResponseAspect;
@@ -18,22 +25,104 @@ import milkman.utils.fxml.FxmlUtil;
 
 public class JdbcResultSetAspectEditor implements ResponseAspectEditor {
 
+	private JfxTableEditor<List<Object>> editor;
+
+	private boolean contentIsTransposed = false;
+
+	private RowSetResponseAspect transposedContent;
+
 	@Override
 	public Tab getRoot(RequestContainer request, ResponseContainer response) {
-		RowSetResponseAspect rowSetAspect = response.getAspect(RowSetResponseAspect.class).get();
-		JfxTableEditor<List<Object>> editor = FxmlUtil.loadAndInitialize("/components/TableEditor.fxml");
+		editor = FxmlUtil.loadAndInitialize("/components/TableEditor.fxml");
 		editor.disableAddition();
+		editor.setRowToStringConverter(this::rowToString);
 		
+		RowSetResponseAspect rowSetAspect = response.getAspect(RowSetResponseAspect.class).get();
+
+		initEditor(rowSetAspect);
+		
+		HBox tableToolbar = setupToolbar(rowSetAspect);
+		VBox vBox = new VBox(tableToolbar, editor);
+
+		return new Tab("Result", vBox);
+	}
+
+
+	private void initEditor(RowSetResponseAspect rowSetAspect) {
 		for(int i = 0; i < rowSetAspect.getColumnNames().size(); ++i) {
 			editor.addReadOnlyColumn(rowSetAspect.getColumnNames().get(i), getRowValue(i));	
 		}
-		
 		editor.setItems(rowSetAspect.getRows());
-		editor.setRowToStringConverter(this::rowToString);
-		return new Tab("Result", editor);
+	}
+
+
+	private HBox setupToolbar(RowSetResponseAspect rowSetAspect) {
+		JFXButton copyResultBtn = new JFXButton("Copy to Clipboard");
+		copyResultBtn.setOnAction(e -> this.copyResultToClipboard(rowSetAspect));
+		
+		JFXButton transposeBtn = new JFXButton("Transpose");
+		transposeBtn.setOnAction(e -> this.transpose(rowSetAspect));
+		
+		
+		HBox tableToolbar = new HBox(copyResultBtn, transposeBtn);
+		tableToolbar.getStyleClass().add("response-header");
+		
+		return tableToolbar;
 	}
 
 	
+	private void transpose(RowSetResponseAspect rowSetAspect) {
+		editor.clearContent();
+		if (contentIsTransposed) {
+			initEditor(rowSetAspect);
+		} else {
+			if (transposedContent == null) {
+				transposedContent = createTransposedContent(rowSetAspect);
+			}
+			initEditor(transposedContent);
+		}
+		contentIsTransposed = !contentIsTransposed;
+	}
+
+
+	private RowSetResponseAspect createTransposedContent(RowSetResponseAspect rowSetAspect) {
+		List<String> columnNames = new LinkedList<String>();
+		List<List<Object>> rows = new LinkedList<List<Object>>();
+		
+		columnNames.add("Key");
+		for(int idx = 1; idx <= rowSetAspect.getRows().size(); ++idx) {
+			columnNames.add("item " + idx);
+		}
+		
+		for(int curRow = 0; curRow < rowSetAspect.getColumnNames().size(); ++curRow) {
+			LinkedList<Object> curRowL = new LinkedList<Object>();
+			rows.add(curRowL);
+			curRowL.add(rowSetAspect.getColumnNames().get(curRow));
+			for(int curCol = 0; curCol < rowSetAspect.getRows().size(); ++curCol) {
+				curRowL.add(rowSetAspect.getRows().get(curCol).get(curRow));
+			}
+		}
+		RowSetResponseAspect result = new RowSetResponseAspect();
+		result.setColumnNames(columnNames);
+		result.setRows(rows);
+		return result;
+	}
+
+
+	private void copyResultToClipboard(RowSetResponseAspect rowSetAspect) {
+		RowSetResponseAspect source = contentIsTransposed ? transposedContent : rowSetAspect;
+		StringBuilder b = new StringBuilder();
+		b.append(rowToString(source.getColumnNames()));
+		for (List<Object> row : source.getRows()) {
+			b.append(System.lineSeparator());
+			b.append(rowToString(row));
+		}
+		final ClipboardContent clipboardContent = new ClipboardContent();
+	    clipboardContent.putString(b.toString());
+	    Clipboard.getSystemClipboard().setContent(clipboardContent);
+	}
+
+
 	private Function1<List<Object>, String> getRowValue(int columnIdx) {
 		return row -> {
 			Object value = row.get(columnIdx);
@@ -55,7 +144,7 @@ public class JdbcResultSetAspectEditor implements ResponseAspectEditor {
 		return stringValue;
 	}
 	
-	private String rowToString(List<Object> row) {
+	private String rowToString(List<? extends Object> row) {
 		StringBuilder b = new StringBuilder();
 		boolean first = true;
 		for (Object value : row) {

@@ -251,6 +251,9 @@ public class JfxTableEditor<T> extends StackPane {
 		
 	}
 	
+	public void clearContent() {
+		table.getColumns().clear();
+	}
 
 
 

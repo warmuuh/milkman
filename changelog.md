@@ -88,6 +88,8 @@ version 2.2.0
 version 2.2.1
   * added Drag&Drop support for requests
   * improved auto completion
+  * 'copy as csv' for jdbc results
+  * added transpose function for jdbc results
    
 Planned:
   * Export of environment (privatebin)

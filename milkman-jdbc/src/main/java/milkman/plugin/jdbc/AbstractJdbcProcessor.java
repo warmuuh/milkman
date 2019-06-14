@@ -19,12 +19,16 @@ public class AbstractJdbcProcessor {
 		}
 		rowSetAspect.setColumnNames(columnNames);
 		
-		while(resultSet.next()) {
+		while(resultSet.next() && !maxRowLimitReached(rowSetAspect)) {
 			List<Object> row = new LinkedList<Object>();
 			for(int i = 1; i <= metaData.getColumnCount(); ++i) {// column idx starts at 1
 				row.add(resultSet.getObject(i));
 			}
 			rowSetAspect.addRow(row);
 		}
+	}
+
+	private boolean maxRowLimitReached(RowSetResponseAspect rowSetAspect) {
+		return rowSetAspect.getRows().size() > JdbcOptionsProvider.options().getMaxRowFetchLimit();
 	}
 }

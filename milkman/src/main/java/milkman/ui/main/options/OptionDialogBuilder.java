@@ -7,6 +7,7 @@ import java.util.function.BiConsumer;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXToggleButton;
+import com.jfoenix.validation.IntegerValidator;
 
 import io.vavr.Function1;
 import javafx.scene.Node;
@@ -21,6 +22,8 @@ public class OptionDialogBuilder  {
 	public interface OptionPaneBuilder<T> {
 		OptionPaneBuilder<T> toggle(String name, Function1<T, Boolean> getter, BiConsumer<T, Boolean> setter);
 		OptionPaneBuilder<T> textInput(String name, Function1<T, String> getter, BiConsumer<T, String> setter);
+		OptionPaneBuilder<T> numberInput(String name, Function1<T, Integer> getter, BiConsumer<T, Integer> setter);
+
 		OptionPaneBuilder<T> selection(String name, Function1<T, String> getter, BiConsumer<T, String> setter, List<String> possibleValues);
 		OptionSectionBuilder<T> endSection();
 	}
@@ -74,7 +77,26 @@ public class OptionDialogBuilder  {
 			nodes.add(hbox);
 			return this;
 		}
+		
+		@Override
+		public OptionPaneBuilder<T> numberInput(String name, Function1<T, Integer> getter, BiConsumer<T, Integer> setter) {
 
+			Label lbl = new Label(name);
+			JFXTextField text = new JFXTextField();
+			text.setValidators(new IntegerValidator("Not an integer"));
+			
+			BiConsumer<T, String> setFn = (obj, val) -> {
+				if (text.validate())
+					setter.accept(obj, Integer.parseInt(val));
+			};
+			GenericBinding<T,String> binding = GenericBinding.of(getter.andThen(Object::toString), setFn, optionsObject);
+			bindings.add(binding);
+			text.textProperty().bindBidirectional(binding);
+			HBox hbox = new HBox(lbl, text);
+			hbox.getStyleClass().add("options-entry");
+			nodes.add(hbox);
+			return this;
+		}
 		
 		
 		@Override

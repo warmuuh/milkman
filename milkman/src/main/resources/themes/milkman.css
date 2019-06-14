@@ -281,6 +281,15 @@
 */
 
 /**
+* response area
+*/
+.response-header {
+    -fx-background-color: white;
+	-fx-padding: 5 0 5 0;
+}
+
+
+/**
  * components
  */
 

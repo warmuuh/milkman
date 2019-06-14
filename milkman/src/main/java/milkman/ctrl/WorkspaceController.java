@@ -69,6 +69,7 @@ public class WorkspaceController {
 	private final UiPluginManager plugins;
 	@Getter private Workspace activeWorkspace;
 	public final Event<AppCommand> onCommand = new Event<AppCommand>();
+	private RequestExecutor executor;
 	
 	public void loadWorkspace(Workspace workspace) {
 		this.activeWorkspace = workspace;
@@ -166,12 +167,18 @@ public class WorkspaceController {
 	public void executeRequest(RequestContainer request) {
 		executeRequest(request, Optional.empty());
 	}
+	
+	public void cancelCurrentRequest() {
+		if (executor != null) {
+			executor.cancel();
+		}
+	}
 
 	public void executeRequest(RequestContainer request, Optional<CustomCommand> command) {
 		workingAreaView.clearResponse();
 		activeWorkspace.getCachedResponses().remove(request.getId());
 		RequestTypePlugin plugin = requestTypeManager.getPluginFor(request);
-		val executor = new RequestExecutor(request, plugin, buildTemplater(), command);
+		executor = new RequestExecutor(request, plugin, buildTemplater(), command);
 		
 		workingAreaView.showSpinner(() -> executor.cancel());
 		
@@ -182,12 +189,14 @@ public class WorkspaceController {
 		executor.setOnCancelled(e -> {
 			workingAreaView.hideSpinner();
 			activeWorkspace.getEnqueuedRequestIds().remove(request.getId());
+			executor = null;
 		});
 		
 		executor.setOnFailed(e -> {
 			workingAreaView.hideSpinner();
 			activeWorkspace.getEnqueuedRequestIds().remove(request.getId());
 			toaster.showToast(executor.getMessage());
+			executor = null;
 		});
 		executor.setOnSucceeded(e -> {
 			ResponseContainer response = executor.getValue();
@@ -197,6 +206,7 @@ public class WorkspaceController {
 			activeWorkspace.getCachedResponses().put(request.getId(), response);
 			log.info("Received response");
 			workingAreaView.displayResponseFor(request, response);	
+			executor = null;
 		});
 		
 		executor.start();
@@ -218,6 +228,8 @@ public class WorkspaceController {
 		log.info("Handling command: " + command);
 		if (command instanceof UiCommand.SubmitRequest) {
 			executeRequest(((UiCommand.SubmitRequest) command).getRequest());
+		} else if (command instanceof UiCommand.CancelActiveRequest) {
+			cancelCurrentRequest();
 		} else if (command instanceof UiCommand.SubmitCustomCommand) {
 			SubmitCustomCommand customCmd = (UiCommand.SubmitCustomCommand) command;
 			executeRequest(customCmd.getRequest(), Optional.of(customCmd.getCommand()));
