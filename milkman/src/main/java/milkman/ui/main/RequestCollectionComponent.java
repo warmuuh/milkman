@@ -55,6 +55,7 @@ import milkman.ui.commands.UiCommand;
 import milkman.utils.Event;
 import milkman.utils.PropertyChangeEvent;
 import milkman.utils.fxml.FxmlUtil;
+import milkman.utils.javafx.DnDCellFactory;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_ = { @Inject })
@@ -75,7 +76,7 @@ public class RequestCollectionComponent {
 	public void display(List<Collection> collections) {
 
 		collectionContainer.setShowRoot(false);
-		
+		collectionContainer.setCellFactory(new DnDCellFactory());
 		List<TreeItem<Node>> entries = new LinkedList<>();
 		for (Collection collection : collections) {
 			entries.add(buildTree(collection));
@@ -104,7 +105,7 @@ public class RequestCollectionComponent {
 		
 		
 		
-		val filteredList = new FilteredList<>(sortedList);
+		val filteredList = new FilteredList<>(observableList);
 		
 		root = new SettableTreeItem<Node>();
 		

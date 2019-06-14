@@ -14,7 +14,7 @@ import lombok.Value;
 
 public class PartialAutoCompletion<T> extends AutoCompletionTextFieldBinding<T> {
 
-	public static Pattern PATTERN = Pattern.compile("\\{\\{([^\\}]*)(\\}\\})?");
+	public static Pattern PATTERN = Pattern.compile("\\{\\{([^\\}/\\\\]*)(\\}\\})?");
 	private TextField textField;
 
 	public PartialAutoCompletion(TextField textField, Callback<ISuggestionRequest, Collection<T>> suggestionProvider) {

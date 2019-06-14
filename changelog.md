@@ -85,6 +85,9 @@ version 2.2.0
   * added custom commands for plugins
     * SHOW TABLES command for jdbc plugin
  
+version 2.2.1
+  * added Drag&Drop support for requests
+  * improved auto completion
    
 Planned:
   * Export of environment (privatebin)
