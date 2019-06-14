@@ -170,6 +170,7 @@ public class ApplicationController {
 				toaster.showToast("Sync Successfull");
 				Platform.runLater(() -> {
 					workspaceController.reloadActiveWorkspace();
+					toolbarComponent.initEnvironmentDropdown(workspaceController.getActiveWorkspace().getEnvironments());
 				});
 			}
 		});
