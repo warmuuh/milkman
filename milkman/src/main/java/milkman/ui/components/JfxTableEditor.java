@@ -13,7 +13,6 @@ import com.jfoenix.controls.cells.editors.TextFieldEditorBuilder;
 import com.jfoenix.controls.cells.editors.base.GenericEditableTreeTableCell;
 import com.jfoenix.controls.cells.editors.base.JFXTreeTableCell;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
-import com.sun.javafx.scene.control.skin.ResizableJfxTreeTableView;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
@@ -44,6 +43,7 @@ import javafx.scene.layout.StackPane;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import milkman.utils.fxml.GenericBinding;
+import milkman.utils.javafx.ResizableJfxTreeTableView;
 
 @Value
 @EqualsAndHashCode(callSuper = true)

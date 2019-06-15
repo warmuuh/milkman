@@ -3,7 +3,6 @@ package milkman.utils;
 
 import io.vavr.collection.List;
 import lombok.SneakyThrows;
-import lombok.var;
 
 public class Event0 {
 

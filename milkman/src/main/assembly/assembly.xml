@@ -11,11 +11,13 @@
 		<dependencySet>
 			<outputDirectory>/</outputDirectory>
 			<useProjectArtifact>true</useProjectArtifact>
-			<unpack>false</unpack>
+			<unpack>true</unpack>
 			<scope>compile</scope>
-			<excludes><exclude></exclude></excludes>
+			<excludes>
+				<exclude>org.openjfx:*</exclude>
+			</excludes>
 		</dependencySet>
 	</dependencySets>
-	
+
 
 </assembly>

@@ -30,6 +30,16 @@
 		<!-- <artifactId>bcpkix-jdk15on</artifactId> -->
 		<!-- <version>1.61</version> -->
 		<!-- </dependency> -->
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-controls</artifactId>
+			<version>11.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-fxml</artifactId>
+			<version>11.0.2</version>
+		</dependency>
 
 
 		<dependency>
@@ -53,19 +63,19 @@
 		<dependency>
 			<groupId>de.jensd</groupId>
 			<artifactId>fontawesomefx-fontawesome</artifactId>
-			<version>4.7.0-5</version>
+			<version>4.7.0-9.1.2</version>
 		</dependency>
 		<dependency>
 			<groupId>de.jensd</groupId>
 			<artifactId>fontawesomefx-commons</artifactId>
-			<version>8.15</version>
+			<version>9.1.2</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.fxmisc.cssfx</groupId>
-			<artifactId>cssfx</artifactId>
-			<version>1.0.0</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.fxmisc.cssfx</groupId> -->
+<!-- 			<artifactId>cssfx</artifactId> -->
+<!-- 			<version>1.0.0</version> -->
+<!-- 		</dependency> -->
 
 		<dependency>
 			<groupId>org.dizitart</groupId>
@@ -75,9 +85,8 @@
 		<dependency>
 			<groupId>com.jfoenix</groupId>
 			<artifactId>jfoenix</artifactId>
-			<version>8.0.8</version>
+			<version>9.0.9</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
@@ -110,12 +119,13 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.6</version>
 				<configuration>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					<!-- <descriptors> -->
-					<!-- <descriptor>src/main/assembly/assembly.xml</descriptor> -->
-					<!-- </descriptors> -->
+<!-- 					<descriptorRefs> -->
+<!-- 						<descriptorRef>jar-with-dependencies</descriptorRef> -->
+<!-- 					</descriptorRefs> -->
+					
+					<descriptors>
+						<descriptor>src/main/assembly/assembly.xml</descriptor>
+					</descriptors>
 					<archive>
 						<manifest>
 							<mainClass>milkman.MilkmanApplication</mainClass>

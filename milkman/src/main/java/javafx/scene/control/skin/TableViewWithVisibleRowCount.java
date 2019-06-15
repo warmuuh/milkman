@@ -1,16 +1,15 @@
-package milkman.utils.fxml;
+package javafx.scene.control.skin;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.logging.Logger;
 
-import com.sun.javafx.scene.control.skin.TableViewSkin;
-import com.sun.javafx.scene.control.skin.VirtualFlow;
-
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.control.Skin;
 import javafx.scene.control.TableView;
+import javafx.scene.control.skin.TableViewSkin;
+import javafx.scene.control.skin.VirtualFlow;
 
 /**
  * TableView with visibleRowCountProperty.
@@ -38,17 +37,14 @@ public class TableViewWithVisibleRowCount<T> extends TableView<T> {
 
         public TableViewSkinX(TableViewWithVisibleRowCount<T> tableView) {
             super(tableView);
-            registerChangeListener(tableView.visibleRowCountProperty(), "VISIBLE_ROW_COUNT");
-            handleControlPropertyChanged("VISIBLE_ROW_COUNT");
+            registerChangeListener(tableView.visibleRowCountProperty(), obs -> onVisibleRowCountChange());
+            onVisibleRowCountChange();
         }
 
-        @Override
-        protected void handleControlPropertyChanged(String p) {
-            super.handleControlPropertyChanged(p);
-            if ("VISIBLE_ROW_COUNT".equals(p)) {
-                needCellsReconfigured = true;
-                getSkinnable().requestLayout();
-            }
+        protected void onVisibleRowCountChange() {
+        	//TODO: jdk11: not accessible anymore
+//            needCellsReconfigured = true;
+            getSkinnable().requestLayout();
         }
 
         /**
@@ -67,8 +63,8 @@ public class TableViewWithVisibleRowCount<T> extends TableView<T> {
          */
         protected double getFlowPrefHeight(int rows) {
             double height = 0;
-            if (flow instanceof MyFlow) {
-                height = ((MyFlow) flow).getPrefLength(rows);
+            if (getVirtualFlow() instanceof MyFlow) {
+                height = ((MyFlow) getVirtualFlow()).getPrefLength(rows);
             }
             else {
                 for (int i = 0; i < rows && i < getItemCount(); i++) {

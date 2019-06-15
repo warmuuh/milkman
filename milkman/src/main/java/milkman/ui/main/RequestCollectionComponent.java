@@ -1,8 +1,6 @@
 package milkman.ui.main;
 
-import java.awt.Desktop;
 import java.time.Duration;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,16 +10,11 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.reactfx.EventStreams;
 
 import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXListCell;
-import com.jfoenix.controls.JFXListView;
-import com.jfoenix.controls.JFXToggleButton;
 import com.jfoenix.controls.JFXTreeView;
-import com.sun.javafx.collections.SortableList;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
@@ -36,12 +29,9 @@ import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.SettableTreeItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeItemBuilder;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -50,12 +40,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 import milkman.domain.Collection;
 import milkman.domain.RequestContainer;
-import milkman.domain.Searchable;
 import milkman.ui.commands.UiCommand;
 import milkman.utils.Event;
 import milkman.utils.PropertyChangeEvent;
-import milkman.utils.fxml.FxmlUtil;
 import milkman.utils.javafx.DnDCellFactory;
+import milkman.utils.javafx.SettableTreeItem;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_ = { @Inject })

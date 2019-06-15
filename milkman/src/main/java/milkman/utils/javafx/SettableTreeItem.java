@@ -1,9 +1,10 @@
-package javafx.scene.control;
+package milkman.utils.javafx;
 
 import java.lang.reflect.Field;
 
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.scene.control.TreeItem;
 import lombok.SneakyThrows;
 
 public class SettableTreeItem<T> extends TreeItem<T> {

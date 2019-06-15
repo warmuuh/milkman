@@ -3,8 +3,6 @@ package milkman.ui.main;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.fxmisc.cssfx.CSSFX;
-
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -49,7 +47,7 @@ public class MainWindow {
 
 			primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/icon.png")));
 			
-			CSSFX.start(primaryStage);
+//			CSSFX.start(primaryStage);
 			
 			
 			primaryStage.show();

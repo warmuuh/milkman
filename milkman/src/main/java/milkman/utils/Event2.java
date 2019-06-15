@@ -7,7 +7,6 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import lombok.Data;
 import lombok.SneakyThrows;
-import lombok.var;
 
 public class Event2<T1, T2> implements Observable {
 

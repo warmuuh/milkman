@@ -1,25 +1,13 @@
 package milkman.utils.fxml;
 
-import java.util.List;
-
 import com.jfoenix.controls.JFXAlert;
-import com.jfoenix.controls.JFXDialog;
-import com.jfoenix.controls.JFXDialog.DialogTransition;
 import com.jfoenix.controls.JFXDialogLayout;
-import com.sun.tools.javac.util.JCDiagnostic.DiagnosticType;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import lombok.SneakyThrows;
-import milkman.ui.components.TableEditor;
 
 public class FxmlUtil {
 
