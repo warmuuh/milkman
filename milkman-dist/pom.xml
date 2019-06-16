@@ -229,7 +229,7 @@
 						</goals>
 						<configuration>
 							<modulePath>
-								<path>d:/swork/milkman-jdk11/javafx-jmods-11.0.2</path>
+								<path>${env.JAVAFX_MODS}</path>
 							</modulePath>
 							<baseJdk>version=11,vendor=openjdk,platform=win-x64</baseJdk>
 							<outputDirectory>
