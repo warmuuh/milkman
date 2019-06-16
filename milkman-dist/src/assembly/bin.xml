@@ -7,19 +7,27 @@
 	</formats>
 	<baseDirectory>milkman-${project.version}</baseDirectory>
 	<!-- <includeBaseDirectory>false</includeBaseDirectory> -->
+	
 	<fileSets>
 		<fileSet>
-			<directory>src/bin</directory>
-			<outputDirectory>/</outputDirectory>
+			<directory>src\bin</directory>
+			<outputDirectory>\</outputDirectory>
 			<includes>
 				<include>*.*</include>
 			</includes>
 		</fileSet>
 		<fileSet>
 			<directory>target</directory>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>\</outputDirectory>
 			<includes>
 				<include>*.exe</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>target\jre-win64</directory>
+			<outputDirectory>\jre-win64</outputDirectory>
+			<includes>
+				<include>**\*</include>
 			</includes>
 		</fileSet>
 	</fileSets>

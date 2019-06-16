@@ -91,11 +91,20 @@
 								<preCp>plugins/*;milkman.jar</preCp>
 							</classPath>
 							<jre>
-								<minVersion>1.8.0</minVersion>
-								<maxVersion>1.9.0</maxVersion>
+								<path>.\jre-win64\</path>
+<!-- 								<minVersion>11</minVersion> -->
+<!-- 								<maxVersion>1.9.0</maxVersion> -->
 								<opts>
 									<opt>-Dprism.dirtyopts=false</opt>
-									<opt>-Djava.endorsed.dirs=./endorsed</opt>
+<!-- 									<opt>-Djava.endorsed.dirs=./endorsed</opt> --><!--  not yet supported with modules -->
+									<opt>--add-exports javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED</opt>
+									<opt>--add-exports javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED</opt>
+									<opt>--add-exports javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED</opt>
+									<opt>--add-exports javafx.base/com.sun.javafx.event=ALL-UNNAMED</opt>
+									<opt>--add-opens javafx.controls/javafx.scene.control.skin=ALL-UNNAMED</opt>
+									<opt>--add-opens javafx.controls/javafx.scene.control=ALL-UNNAMED</opt>
+									<opt>--add-opens javafx.graphics/javafx.scene.text=ALL-UNNAMED</opt>
+									<opt>--add-opens javafx.graphics/com.sun.javafx.text=ALL-UNNAMED</opt>
 								</opts>
 							</jre>
 							<versionInfo>
@@ -131,6 +140,105 @@
 			<!-- </execution> -->
 			<!-- </executions> -->
 			<!-- </plugin> -->
+			
+			<!-- <plugin> -->
+			<!-- <groupId>org.apache.maven.plugins</groupId> -->
+			<!-- <artifactId>maven-jlink-plugin</artifactId> -->
+			<!-- <version>3.0.0-alpha-1</version> -->
+			<!-- <executions> -->
+			<!-- <execution> -->
+			<!-- <id>jlink-phase</id> -->
+			<!-- <goals><goal>jlink</goal></goals> -->
+			<!-- <phase>package</phase> -->
+			<!-- <configuration> -->
+			<!-- <modulePath>d:/swork/milkman-jdk11/javafx-jmods-11.0.2</modulePath> -->
+			<!-- <addModules> -->
+			<!-- <addModule>java.base</addModule> -->
+			<!-- <addModule>java.compiler</addModule> -->
+			<!-- <addModule>java.datatransfer</addModule> -->
+			<!-- <addModule>java.desktop</addModule> -->
+			<!-- <addModule>java.logging</addModule> -->
+			<!-- <addModule>java.management</addModule> -->
+			<!-- <addModule>java.naming</addModule> -->
+			<!-- <addModule>java.scripting</addModule> -->
+			<!-- <addModule>java.sql</addModule> -->
+			<!-- <addModule>java.xml</addModule> -->
+			<!-- <addModule>jdk.jsobject</addModule> -->
+			<!-- <addModule>jdk.unsupported</addModule> -->
+			<!-- <addModule>jdk.unsupported.desktop</addModule> -->
+			<!-- <addModule>jdk.xml.dom</addModule> -->
+			<!-- <addModule>javafx.controls</addModule> -->
+			<!-- <addModule>javafx.fxml</addModule> -->
+			<!-- </addModules> -->
+			<!-- <mainClass>milkman.MilkmanApplication</mainClass> -->
+			<!-- <stripDebug>true</stripDebug> -->
+			<!-- <compress>2</compress> -->
+			<!-- <noHeaderFiles>true</noHeaderFiles> -->
+			<!-- <noManPages>true</noManPages> -->
+			<!-- </configuration> -->
+			<!-- </execution> -->
+			<!-- </executions> -->
+			<!-- <dependencies> -->
+			<!-- <dependency> -->
+			<!-- <groupId>org.ow2.asm</groupId> -->
+			<!-- <artifactId>asm</artifactId> -->
+			<!-- <version>7.1</version> -->
+			<!-- </dependency> -->
+			<!-- </dependencies> -->
+			<!-- </plugin> -->
+			<plugin>
+				<groupId>org.moditect</groupId>
+				<artifactId>moditect-maven-plugin</artifactId>
+				<version>1.0.0.Beta2</version>
+				<configuration>
+					<compression>2</compression>
+					<stripDebug>true</stripDebug>
+
+					<modules>
+						<module>java.base</module>
+						<module>java.compiler</module>
+						<module>java.datatransfer</module>
+						<module>java.desktop</module>
+						<module>java.logging</module>
+						<module>java.management</module>
+						<module>java.naming</module>
+						<module>java.scripting</module>
+						<module>java.sql</module>
+						<module>java.xml</module>
+						<module>jdk.jsobject</module>
+						<module>jdk.unsupported</module>
+						<module>jdk.unsupported.desktop</module>
+						<module>jdk.xml.dom</module>
+						<module>javafx.controls</module>
+						<module>javafx.fxml</module>
+					</modules>
+					<excludedResources>
+						<pattern>glob:/com.example/**</pattern>
+					</excludedResources>
+					<!-- <launcher> -->
+					<!-- <name>helloWorld</name> -->
+					<!-- <module>com.example.module1</module> -->
+					<!-- </launcher> -->
+				</configuration>
+				<executions>
+					<execution>
+						<id>create-runtime-image-win64</id>
+						<phase>package</phase>
+						<goals>
+							<goal>create-runtime-image</goal>
+						</goals>
+						<configuration>
+							<modulePath>
+								<path>d:/swork/milkman-jdk11/javafx-jmods-11.0.2</path>
+							</modulePath>
+							<baseJdk>version=11,vendor=openjdk,platform=win-x64</baseJdk>
+							<outputDirectory>
+								${project.build.directory}/jre-win64
+							</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.6</version>
@@ -163,15 +271,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.openjfx</groupId>
-				<artifactId>javafx-maven-plugin</artifactId>
-				<version>0.0.2</version>
-				<configuration>
-					<mainClass>milkman.MilkmanApplication</mainClass>
-				</configuration>
-			</plugin>
-
 			<plugin>
 				<groupId>de.jutzig</groupId>
 				<artifactId>github-release-plugin</artifactId>
