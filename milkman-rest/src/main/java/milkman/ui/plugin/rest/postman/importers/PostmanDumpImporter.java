@@ -105,6 +105,8 @@ public class PostmanDumpImporter {
 		RestBodyAspect body = new RestBodyAspect();
 		if (request.getRawModeData() != null)
 			body.setBody(request.getRawModeData());
+		else if (request.getData() != null && request.getData() instanceof String)
+			body.setBody(request.getData().toString());
 		container.addAspect(body);
 		
 		return container;
