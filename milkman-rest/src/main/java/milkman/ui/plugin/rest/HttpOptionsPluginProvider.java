@@ -14,6 +14,7 @@ public class HttpOptionsPluginProvider implements OptionPageProvider<HttpOptions
 		private String proxyUrl = "";
 		private String proxyExclusion = "127.0.0.1|localhost";
 		private boolean askForProxyAuth = false;
+		private boolean certificateValidation = false;
 	}
 
 	
@@ -40,6 +41,9 @@ public class HttpOptionsPluginProvider implements OptionPageProvider<HttpOptions
 					.toggle("On 407: retry with prompted credentials", HttpOptions::isAskForProxyAuth, HttpOptions::setAskForProxyAuth)
 					.textInput("Proxy Url", HttpOptions::getProxyUrl, HttpOptions::setProxyUrl)
 					.textInput("Exclude", HttpOptions::getProxyExclusion, HttpOptions::setProxyExclusion)
+				.endSection()
+				.section("Security")
+					.toggle("Validate Certificates", HttpOptions::isCertificateValidation, HttpOptions::setCertificateValidation)
 				.endSection()
 				.build();
 	}

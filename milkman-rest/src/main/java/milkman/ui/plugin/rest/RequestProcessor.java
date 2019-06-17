@@ -6,6 +6,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
@@ -21,6 +26,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -28,6 +34,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.apache.http.impl.conn.DefaultRoutePlanner;
 import org.apache.http.protocol.RequestContent;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.ssl.TrustStrategy;
 
 import javafx.application.Platform;
 import lombok.SneakyThrows;
@@ -69,10 +77,26 @@ public class RequestProcessor {
 			builder.setRoutePlanner(new ProxyExclusionRoutePlanner(proxyHost, HttpOptionsPluginProvider.options().getProxyExclusion()));
 		}
 		
+		if (!HttpOptionsPluginProvider.options().isCertificateValidation()) {
+			disableSsl(builder);
+		}
+		
 		return builder
 				.build();
 	}
 
+	private void disableSsl(HttpClientBuilder builder)
+			throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
+		builder.setSSLContext(SSLContextBuilder.create().loadTrustMaterial(new TrustStrategy() {
+            @Override
+            public boolean isTrusted(X509Certificate[] chain,
+                String authType) throws CertificateException {
+                return true;
+            }
+        }).build());
+		
+		builder.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
+	}
 	@SneakyThrows
 	public RestResponseContainer executeRequest(RestRequestContainer request, Templater templater) {
 		HttpUriRequest httpRequest = toHttpRequest(request, templater);
