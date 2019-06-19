@@ -290,8 +290,36 @@
 
 
 /**
+* plugins, todo: move towards a more generic css style  + split out layouting, for the rest of the application
+* would ease theme development
+*/
+
+.generic-content-pane {
+	-fx-background-color: white;
+	-fx-padding: 20;
+}
+
+.generic-section {
+	-fx-padding: 0 0 20 0;
+}
+
+
+.primary-button {
+	-fx-background-color: #2192f2;
+    -fx-text-fill: white;
+}
+
+.secondary-button {
+	-fx-background-color: #2C3964; 
+    -fx-text-fill: white;
+}
+
+
+/**
  * components
  */
+ 
+ 
 
 /* plus button */
 .btn-add-entry {

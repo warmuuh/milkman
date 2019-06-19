@@ -7,9 +7,11 @@ import org.fxmisc.cssfx.CSSFX;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -44,8 +46,10 @@ public class MainWindow {
 			hotkeys.registerGlobalHotkeys(mainScene);
 			
 			primaryStage.setScene(mainScene);
-			primaryStage.setWidth(1000);
-			primaryStage.setHeight(800);
+	        Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
+
+			primaryStage.setWidth(Math.min(1000, bounds.getWidth()));
+			primaryStage.setHeight(Math.min(800, bounds.getHeight()));
 
 			primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/icon.png")));
 			

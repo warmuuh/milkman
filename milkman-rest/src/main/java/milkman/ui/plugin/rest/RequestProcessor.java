@@ -123,7 +123,7 @@ public class RequestProcessor {
 			latch.await();
 		}
 		
-		RestResponseContainer response = toResponseContainer(responseHolder.get());
+		RestResponseContainer response = toResponseContainer(httpRequest.getURI().toString(), responseHolder.get());
 		return response;
 	}
 
@@ -158,8 +158,8 @@ public class RequestProcessor {
 	    return uri.toASCIIString();
 	}
 
-	private RestResponseContainer toResponseContainer(HttpResponse httpResponse) throws IOException {
-		RestResponseContainer response = new RestResponseContainer();
+	private RestResponseContainer toResponseContainer(String url, HttpResponse httpResponse) throws IOException {
+		RestResponseContainer response = new RestResponseContainer(url);
 		String body = "";
 		if (httpResponse.getEntity() != null && httpResponse.getEntity().getContent() != null)
 			body = IOUtils.toString(httpResponse.getEntity().getContent(), "UTF-8");
