@@ -51,6 +51,11 @@ public class RequestHeaderTabController implements RequestAspectEditor, AutoComp
 		editor.setRowToStringConverter(this::headerToString);
 		
 		editor.setItems(headers.getEntries());
+		
+		headers.onInvalidate.clear();
+		headers.onInvalidate.add(() -> editor.setItems(headers.getEntries()));
+		
+		
 		return new Tab("Headers", editor);
 	}
 

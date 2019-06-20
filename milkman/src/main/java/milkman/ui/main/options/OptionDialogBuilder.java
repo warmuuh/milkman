@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 
 import com.jfoenix.controls.JFXComboBox;
+import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXToggleButton;
 import com.jfoenix.validation.IntegerValidator;
@@ -21,6 +22,7 @@ public class OptionDialogBuilder  {
 
 	public interface OptionPaneBuilder<T> {
 		OptionPaneBuilder<T> toggle(String name, Function1<T, Boolean> getter, BiConsumer<T, Boolean> setter);
+		OptionPaneBuilder<T> passwordInput(String name, Function1<T, String> getter, BiConsumer<T, String> setter);
 		OptionPaneBuilder<T> textInput(String name, Function1<T, String> getter, BiConsumer<T, String> setter);
 		OptionPaneBuilder<T> numberInput(String name, Function1<T, Integer> getter, BiConsumer<T, Integer> setter);
 
@@ -69,6 +71,21 @@ public class OptionDialogBuilder  {
 
 			Label lbl = new Label(name);
 			JFXTextField text = new JFXTextField();
+			GenericBinding<T,String> binding = GenericBinding.of(getter, setter, optionsObject);
+			bindings.add(binding);
+			text.textProperty().bindBidirectional(binding);
+			HBox hbox = new HBox(lbl, text);
+			hbox.getStyleClass().add("options-entry");
+			nodes.add(hbox);
+			return this;
+		}
+		
+
+		@Override
+		public OptionPaneBuilder<T> passwordInput(String name, Function1<T, String> getter, BiConsumer<T, String> setter) {
+
+			Label lbl = new Label(name);
+			JFXPasswordField text = new JFXPasswordField();
 			GenericBinding<T,String> binding = GenericBinding.of(getter, setter, optionsObject);
 			bindings.add(binding);
 			text.textProperty().bindBidirectional(binding);

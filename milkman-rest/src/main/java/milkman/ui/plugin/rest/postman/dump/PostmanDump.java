@@ -23,6 +23,7 @@ public class PostmanDump {
 		String method;
 		List<HeaderDataEntry> headerData;
 		String rawModeData;
+		Object data; //can be an array or a string
 	}
 	
 	@Data
