@@ -95,22 +95,16 @@
 								<!-- <minVersion>11</minVersion> -->
 								<!-- <maxVersion>1.9.0</maxVersion> -->
 								<opts>
-									<opt>-Dprism.dirtyopts=false</opt>
 									<!-- <opt>-Djava.endorsed.dirs=./endorsed</opt> --><!-- not yet supported with modules -->
-									<opt>--add-exports
-										javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED</opt>
-									<opt>--add-exports
-										javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED</opt>
-									<opt>--add-exports
-										javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED</opt>
-									<opt>--add-exports javafx.base/com.sun.javafx.event=ALL-UNNAMED</opt>
-									<opt>--add-opens
-										javafx.controls/javafx.scene.control.skin=ALL-UNNAMED</opt>
-									<opt>--add-opens
-										javafx.controls/javafx.scene.control=ALL-UNNAMED</opt>
-									<opt>--add-opens javafx.graphics/javafx.scene.text=ALL-UNNAMED</opt>
-									<opt>--add-opens
-										javafx.graphics/com.sun.javafx.text=ALL-UNNAMED</opt>
+									<opt><![CDATA[--add-exports javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED]]></opt>
+									<opt><![CDATA[--add-exports javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED]]></opt>
+									<opt><![CDATA[--add-exports javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED]]></opt>
+									<opt><![CDATA[--add-exports javafx.base/com.sun.javafx.event=ALL-UNNAMED]]></opt>
+									<opt><![CDATA[--add-opens javafx.controls/javafx.scene.control.skin=ALL-UNNAMED]]></opt>
+									<opt><![CDATA[--add-opens javafx.controls/javafx.scene.control=ALL-UNNAMED]]></opt>
+									<opt><![CDATA[--add-opens javafx.graphics/javafx.scene.text=ALL-UNNAMED]]></opt>
+									<opt><![CDATA[--add-opens javafx.graphics/com.sun.javafx.text=ALL-UNNAMED]]></opt>
+									<opt>-Dprism.dirtyopts=false</opt>
 								</opts>
 							</jre>
 							<versionInfo>
@@ -197,38 +191,38 @@
 				<artifactId>mvn-jlink-wrapper</artifactId>
 				<version>1.0.2</version>
 				<executions>
-<!-- 					<execution> -->
-<!-- 						<id>cache-jdk-8</id> -->
-<!-- 						<goals> -->
-<!-- 							<goal>cache-jdk</goal> -->
-<!-- 						</goals> -->
-<!-- 						<phase>prepare-package</phase> -->
-<!-- 						<configuration> -->
-<!-- 							<jdkPathProperty>jlink.jdk.path</jdkPathProperty> -->
-<!-- 							<jdkCachePath>${project.build.directory}${file.separator}jdkCache${file.separator}win</jdkCachePath> -->
+					<!-- <execution> -->
+					<!-- <id>cache-jdk-8</id> -->
+					<!-- <goals> -->
+					<!-- <goal>cache-jdk</goal> -->
+					<!-- </goals> -->
+					<!-- <phase>prepare-package</phase> -->
+					<!-- <configuration> -->
+					<!-- <jdkPathProperty>jlink.jdk.path</jdkPathProperty> -->
+					<!-- <jdkCachePath>${project.build.directory}${file.separator}jdkCache${file.separator}win</jdkCachePath> -->
 
-<!-- 							<provider>ADOPT</provider> -->
-<!-- 							<providerConfig> -->
-<!-- 								<release>jdk-11.0.3+7</release> -->
-<!-- 								<arch>x64</arch> -->
-<!-- 								<type>jdk</type> -->
-<!-- 								<impl>hotspot</impl> -->
-<!-- 								<os>windows</os> -->
-<!-- 							</providerConfig> -->
+					<!-- <provider>ADOPT</provider> -->
+					<!-- <providerConfig> -->
+					<!-- <release>jdk-11.0.3+7</release> -->
+					<!-- <arch>x64</arch> -->
+					<!-- <type>jdk</type> -->
+					<!-- <impl>hotspot</impl> -->
+					<!-- <os>windows</os> -->
+					<!-- </providerConfig> -->
 
-<!-- 						</configuration> -->
-<!-- 					</execution> -->
+					<!-- </configuration> -->
+					<!-- </execution> -->
 					<execution>
-			            <id>call-jlink</id>
-			            <goals>
-			                <goal>jlink</goal>
-			            </goals>
-			            <phase>package</phase>
-			            <configuration>
-			                <output>${project.build.directory}${file.separator}jre-win64</output>
-<!-- 			                <modulePath>${env.JAVAFX_MODS}</modulePath> -->
-			                <addModules>
-		                    	<addModule>java.base</addModule> 
+						<id>call-jlink</id>
+						<goals>
+							<goal>jlink</goal>
+						</goals>
+						<phase>package</phase>
+						<configuration>
+							<output>${project.build.directory}${file.separator}jre-win64</output>
+							<!-- <modulePath>${env.JAVAFX_MODS}</modulePath> -->
+							<addModules>
+								<addModule>java.base</addModule>
 								<addModule>java.compiler</addModule>
 								<addModule>java.datatransfer</addModule>
 								<addModule>java.desktop</addModule>
@@ -239,84 +233,84 @@
 								<addModule>java.sql</addModule>
 								<addModule>java.xml</addModule>
 								<addModule>jdk.jsobject</addModule>
+								<addModule>jdk.crypto.ec</addModule>
 								<addModule>jdk.unsupported</addModule>
 								<addModule>jdk.unsupported.desktop</addModule>
 								<addModule>jdk.xml.dom</addModule>
 								<addModule>javafx.controls</addModule>
 								<addModule>javafx.fxml</addModule>
-			                </addModules>
-			                <options>
-			                    <option>--compress=2</option>
-			                    <option>--no-header-files</option>
-			                    <option>--no-man-pages</option>
-			                </options>
-			                <provider>BELLSOFT</provider><!--  liberica contains javafx -->
+							</addModules>
+							<options>
+								<option>--compress=2</option>
+								<option>--no-header-files</option>
+								<option>--no-man-pages</option>
+							</options>
+							<provider>BELLSOFT</provider><!-- liberica contains javafx -->
 							<providerConfig>
-								<version>jdk11.0.3</version>
-								<arch>x64</arch>
+								<version>11.0.3</version>
+								<arch>amd64</arch>
 								<type>jdk</type>
 								<os>windows</os>
 							</providerConfig>
-			            </configuration>
-			        </execution>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
-<!-- 			<plugin> -->
-<!-- 				<groupId>org.moditect</groupId> -->
-<!-- 				<artifactId>moditect-maven-plugin</artifactId> -->
-<!-- 				<version>1.0.0.Beta2</version> -->
-<!-- 				<configuration> -->
-<!-- 					<compression>2</compression> -->
-<!-- 					<stripDebug>true</stripDebug> -->
+			<!-- <plugin> -->
+			<!-- <groupId>org.moditect</groupId> -->
+			<!-- <artifactId>moditect-maven-plugin</artifactId> -->
+			<!-- <version>1.0.0.Beta2</version> -->
+			<!-- <configuration> -->
+			<!-- <compression>2</compression> -->
+			<!-- <stripDebug>true</stripDebug> -->
 
-<!-- 					<modules> -->
-<!-- 						<module>java.base</module> -->
-<!-- 						<module>java.compiler</module> -->
-<!-- 						<module>java.datatransfer</module> -->
-<!-- 						<module>java.desktop</module> -->
-<!-- 						<module>java.logging</module> -->
-<!-- 						<module>java.management</module> -->
-<!-- 						<module>java.naming</module> -->
-<!-- 						<module>java.scripting</module> -->
-<!-- 						<module>java.sql</module> -->
-<!-- 						<module>java.xml</module> -->
-<!-- 						<module>jdk.jsobject</module> -->
-<!-- 						<module>jdk.unsupported</module> -->
-<!-- 						<module>jdk.unsupported.desktop</module> -->
-<!-- 						<module>jdk.xml.dom</module> -->
-<!-- 						<module>javafx.controls</module> -->
-<!-- 						<module>javafx.fxml</module> -->
-<!-- 					</modules> -->
-<!-- 					<excludedResources> -->
-<!-- 						<pattern>glob:/com.example/**</pattern> -->
-<!-- 					</excludedResources> -->
-<!-- 					<launcher> -->
-<!-- 					<name>helloWorld</name> -->
-<!-- 					<module>com.example.module1</module> -->
-<!-- 					</launcher> -->
-<!-- 				</configuration> -->
-<!-- 				<executions> -->
-<!-- 					<execution> -->
-<!-- 						<id>create-runtime-image-win64</id> -->
-<!-- 						<phase>package</phase> -->
-<!-- 						<goals> -->
-<!-- 							<goal>create-runtime-image</goal> -->
-<!-- 						</goals> -->
-<!-- 						<configuration> -->
-<!-- 							<modulePath> -->
-<!-- 								<path>${env.JAVAFX_MODS}</path> -->
-<!-- 							</modulePath> -->
-<!-- 							<baseJdk>version=11,vendor=openjdk,platform=win-x64</baseJdk> -->
-<!-- 							<outputDirectory> -->
-<!-- 								${project.build.directory}/jre-win64 -->
-<!-- 							</outputDirectory> -->
-<!-- 						</configuration> -->
-<!-- 					</execution> -->
-<!-- 				</executions> -->
-<!-- 			</plugin> -->
+			<!-- <modules> -->
+			<!-- <module>java.base</module> -->
+			<!-- <module>java.compiler</module> -->
+			<!-- <module>java.datatransfer</module> -->
+			<!-- <module>java.desktop</module> -->
+			<!-- <module>java.logging</module> -->
+			<!-- <module>java.management</module> -->
+			<!-- <module>java.naming</module> -->
+			<!-- <module>java.scripting</module> -->
+			<!-- <module>java.sql</module> -->
+			<!-- <module>java.xml</module> -->
+			<!-- <module>jdk.jsobject</module> -->
+			<!-- <module>jdk.unsupported</module> -->
+			<!-- <module>jdk.unsupported.desktop</module> -->
+			<!-- <module>jdk.xml.dom</module> -->
+			<!-- <module>javafx.controls</module> -->
+			<!-- <module>javafx.fxml</module> -->
+			<!-- </modules> -->
+			<!-- <excludedResources> -->
+			<!-- <pattern>glob:/com.example/**</pattern> -->
+			<!-- </excludedResources> -->
+			<!-- <launcher> -->
+			<!-- <name>helloWorld</name> -->
+			<!-- <module>com.example.module1</module> -->
+			<!-- </launcher> -->
+			<!-- </configuration> -->
+			<!-- <executions> -->
+			<!-- <execution> -->
+			<!-- <id>create-runtime-image-win64</id> -->
+			<!-- <phase>package</phase> -->
+			<!-- <goals> -->
+			<!-- <goal>create-runtime-image</goal> -->
+			<!-- </goals> -->
+			<!-- <configuration> -->
+			<!-- <modulePath> -->
+			<!-- <path>${env.JAVAFX_MODS}</path> -->
+			<!-- </modulePath> -->
+			<!-- <baseJdk>version=11,vendor=openjdk,platform=win-x64</baseJdk> -->
+			<!-- <outputDirectory> -->
+			<!-- ${project.build.directory}/jre-win64 -->
+			<!-- </outputDirectory> -->
+			<!-- </configuration> -->
+			<!-- </execution> -->
+			<!-- </executions> -->
+			<!-- </plugin> -->
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.6</version>
 				<executions>
 					<execution>
 						<id>distro-assembly</id>
