@@ -84,7 +84,7 @@
 							<headerType>gui</headerType>
 							<outfile>target/milkman.exe</outfile>
 							<errTitle>Milkman</errTitle>
-							<icon>src/bin/milkman.ico</icon>
+							<icon>src/bin/win/milkman.ico</icon>
 							<classPath>
 								<mainClass>milkman.MilkmanApplication</mainClass>
 								<addDependencies>false</addDependencies>
@@ -141,51 +141,7 @@
 			<!-- </executions> -->
 			<!-- </plugin> -->
 
-			<!-- <plugin> -->
-			<!-- <groupId>org.apache.maven.plugins</groupId> -->
-			<!-- <artifactId>maven-jlink-plugin</artifactId> -->
-			<!-- <version>3.0.0-alpha-1</version> -->
-			<!-- <executions> -->
-			<!-- <execution> -->
-			<!-- <id>jlink-phase</id> -->
-			<!-- <goals><goal>jlink</goal></goals> -->
-			<!-- <phase>package</phase> -->
-			<!-- <configuration> -->
-			<!-- <modulePath>d:/swork/milkman-jdk11/javafx-jmods-11.0.2</modulePath> -->
-			<!-- <addModules> -->
-			<!-- <addModule>java.base</addModule> -->
-			<!-- <addModule>java.compiler</addModule> -->
-			<!-- <addModule>java.datatransfer</addModule> -->
-			<!-- <addModule>java.desktop</addModule> -->
-			<!-- <addModule>java.logging</addModule> -->
-			<!-- <addModule>java.management</addModule> -->
-			<!-- <addModule>java.naming</addModule> -->
-			<!-- <addModule>java.scripting</addModule> -->
-			<!-- <addModule>java.sql</addModule> -->
-			<!-- <addModule>java.xml</addModule> -->
-			<!-- <addModule>jdk.jsobject</addModule> -->
-			<!-- <addModule>jdk.unsupported</addModule> -->
-			<!-- <addModule>jdk.unsupported.desktop</addModule> -->
-			<!-- <addModule>jdk.xml.dom</addModule> -->
-			<!-- <addModule>javafx.controls</addModule> -->
-			<!-- <addModule>javafx.fxml</addModule> -->
-			<!-- </addModules> -->
-			<!-- <mainClass>milkman.MilkmanApplication</mainClass> -->
-			<!-- <stripDebug>true</stripDebug> -->
-			<!-- <compress>2</compress> -->
-			<!-- <noHeaderFiles>true</noHeaderFiles> -->
-			<!-- <noManPages>true</noManPages> -->
-			<!-- </configuration> -->
-			<!-- </execution> -->
-			<!-- </executions> -->
-			<!-- <dependencies> -->
-			<!-- <dependency> -->
-			<!-- <groupId>org.ow2.asm</groupId> -->
-			<!-- <artifactId>asm</artifactId> -->
-			<!-- <version>7.1</version> -->
-			<!-- </dependency> -->
-			<!-- </dependencies> -->
-			<!-- </plugin> -->
+		
 			<plugin>
 				<groupId>com.igormaznitsa</groupId>
 				<artifactId>mvn-jlink-wrapper</artifactId>
