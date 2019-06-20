@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.github.warmuuh</groupId>
 		<artifactId>milkman-parent</artifactId>
-		<version>2.2.2-SNAPSHOT</version>
+		<version>3.0.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>milkman-dist</artifactId>
 
@@ -22,27 +22,27 @@
 		<dependency>
 			<groupId>com.github.warmuuh</groupId>
 			<artifactId>milkman-sync-git</artifactId>
-			<version>2.2.2-SNAPSHOT</version>
+			<version>3.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.warmuuh</groupId>
 			<artifactId>milkman</artifactId>
-			<version>2.2.2-SNAPSHOT</version>
+			<version>3.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.warmuuh</groupId>
 			<artifactId>milkman-note</artifactId>
-			<version>2.2.2-SNAPSHOT</version>
+			<version>3.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.warmuuh</groupId>
 			<artifactId>milkman-jdbc</artifactId>
-			<version>2.2.2-SNAPSHOT</version>
+			<version>3.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.warmuuh</groupId>
 			<artifactId>milkman-rest</artifactId>
-			<version>2.2.2-SNAPSHOT</version>
+			<version>3.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hsqldb</groupId>
@@ -53,17 +53,17 @@
 		<dependency>
 			<groupId>com.github.warmuuh</groupId>
 			<artifactId>milkman-scripting</artifactId>
-			<version>2.2.2-SNAPSHOT</version>
+			<version>3.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.warmuuh</groupId>
 			<artifactId>milkman-explore</artifactId>
-			<version>2.2.2-SNAPSHOT</version>
+			<version>3.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.warmuuh</groupId>
 			<artifactId>milkman-privatebin</artifactId>
-			<version>2.2.2-SNAPSHOT</version>
+			<version>3.0.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
@@ -190,61 +190,43 @@
 				<groupId>com.igormaznitsa</groupId>
 				<artifactId>mvn-jlink-wrapper</artifactId>
 				<version>1.0.2</version>
+				<configuration>
+					<!-- <modulePath>${env.JAVAFX_MODS}</modulePath> -->
+					<addModules>
+						<addModule>java.base</addModule>
+						<addModule>java.compiler</addModule>
+						<addModule>java.datatransfer</addModule>
+						<addModule>java.desktop</addModule>
+						<addModule>java.logging</addModule>
+						<addModule>java.management</addModule>
+						<addModule>java.naming</addModule>
+						<addModule>java.scripting</addModule>
+						<addModule>java.sql</addModule>
+						<addModule>java.xml</addModule>
+						<addModule>jdk.jsobject</addModule>
+						<addModule>jdk.crypto.ec</addModule>
+						<addModule>jdk.unsupported</addModule>
+						<addModule>jdk.unsupported.desktop</addModule>
+						<addModule>jdk.xml.dom</addModule>
+						<addModule>javafx.controls</addModule>
+						<addModule>javafx.fxml</addModule>
+					</addModules>
+					<options>
+						<option>--compress=2</option>
+						<option>--no-header-files</option>
+						<option>--no-man-pages</option>
+					</options>
+				</configuration>
 				<executions>
-					<!-- <execution> -->
-					<!-- <id>cache-jdk-8</id> -->
-					<!-- <goals> -->
-					<!-- <goal>cache-jdk</goal> -->
-					<!-- </goals> -->
-					<!-- <phase>prepare-package</phase> -->
-					<!-- <configuration> -->
-					<!-- <jdkPathProperty>jlink.jdk.path</jdkPathProperty> -->
-					<!-- <jdkCachePath>${project.build.directory}${file.separator}jdkCache${file.separator}win</jdkCachePath> -->
-
-					<!-- <provider>ADOPT</provider> -->
-					<!-- <providerConfig> -->
-					<!-- <release>jdk-11.0.3+7</release> -->
-					<!-- <arch>x64</arch> -->
-					<!-- <type>jdk</type> -->
-					<!-- <impl>hotspot</impl> -->
-					<!-- <os>windows</os> -->
-					<!-- </providerConfig> -->
-
-					<!-- </configuration> -->
-					<!-- </execution> -->
 					<execution>
-						<id>call-jlink</id>
+						<id>call-jlink-win</id>
 						<goals>
 							<goal>jlink</goal>
 						</goals>
 						<phase>package</phase>
 						<configuration>
 							<output>${project.build.directory}${file.separator}jre-win64</output>
-							<!-- <modulePath>${env.JAVAFX_MODS}</modulePath> -->
-							<addModules>
-								<addModule>java.base</addModule>
-								<addModule>java.compiler</addModule>
-								<addModule>java.datatransfer</addModule>
-								<addModule>java.desktop</addModule>
-								<addModule>java.logging</addModule>
-								<addModule>java.management</addModule>
-								<addModule>java.naming</addModule>
-								<addModule>java.scripting</addModule>
-								<addModule>java.sql</addModule>
-								<addModule>java.xml</addModule>
-								<addModule>jdk.jsobject</addModule>
-								<addModule>jdk.crypto.ec</addModule>
-								<addModule>jdk.unsupported</addModule>
-								<addModule>jdk.unsupported.desktop</addModule>
-								<addModule>jdk.xml.dom</addModule>
-								<addModule>javafx.controls</addModule>
-								<addModule>javafx.fxml</addModule>
-							</addModules>
-							<options>
-								<option>--compress=2</option>
-								<option>--no-header-files</option>
-								<option>--no-man-pages</option>
-							</options>
+							
 							<provider>BELLSOFT</provider><!-- liberica contains javafx -->
 							<providerConfig>
 								<version>11.0.3</version>
@@ -254,74 +236,84 @@
 							</providerConfig>
 						</configuration>
 					</execution>
+					<execution>
+						<id>call-jlink-linux</id>
+						<goals>
+							<goal>jlink</goal>
+						</goals>
+						<phase>package</phase>
+						<configuration>
+							<output>${project.build.directory}${file.separator}jre-linux64</output>
+							
+							<provider>BELLSOFT</provider><!-- liberica contains javafx -->
+							<providerConfig>
+								<version>11.0.3</version>
+								<arch>amd64</arch>
+								<type>jdk</type>
+								<os>linux</os>
+							</providerConfig>
+						</configuration>
+					</execution>
+					<execution>
+						<id>call-jlink-macos</id>
+						<goals>
+							<goal>jlink</goal>
+						</goals>
+						<phase>package</phase>
+						<configuration>
+							<output>${project.build.directory}${file.separator}jre-macos64</output>
+							
+							<provider>BELLSOFT</provider><!-- liberica contains javafx -->
+							<providerConfig>
+								<version>11.0.3</version>
+								<arch>amd64</arch>
+								<type>jdk</type>
+								<os>macos</os>
+							</providerConfig>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
-			<!-- <plugin> -->
-			<!-- <groupId>org.moditect</groupId> -->
-			<!-- <artifactId>moditect-maven-plugin</artifactId> -->
-			<!-- <version>1.0.0.Beta2</version> -->
-			<!-- <configuration> -->
-			<!-- <compression>2</compression> -->
-			<!-- <stripDebug>true</stripDebug> -->
-
-			<!-- <modules> -->
-			<!-- <module>java.base</module> -->
-			<!-- <module>java.compiler</module> -->
-			<!-- <module>java.datatransfer</module> -->
-			<!-- <module>java.desktop</module> -->
-			<!-- <module>java.logging</module> -->
-			<!-- <module>java.management</module> -->
-			<!-- <module>java.naming</module> -->
-			<!-- <module>java.scripting</module> -->
-			<!-- <module>java.sql</module> -->
-			<!-- <module>java.xml</module> -->
-			<!-- <module>jdk.jsobject</module> -->
-			<!-- <module>jdk.unsupported</module> -->
-			<!-- <module>jdk.unsupported.desktop</module> -->
-			<!-- <module>jdk.xml.dom</module> -->
-			<!-- <module>javafx.controls</module> -->
-			<!-- <module>javafx.fxml</module> -->
-			<!-- </modules> -->
-			<!-- <excludedResources> -->
-			<!-- <pattern>glob:/com.example/**</pattern> -->
-			<!-- </excludedResources> -->
-			<!-- <launcher> -->
-			<!-- <name>helloWorld</name> -->
-			<!-- <module>com.example.module1</module> -->
-			<!-- </launcher> -->
-			<!-- </configuration> -->
-			<!-- <executions> -->
-			<!-- <execution> -->
-			<!-- <id>create-runtime-image-win64</id> -->
-			<!-- <phase>package</phase> -->
-			<!-- <goals> -->
-			<!-- <goal>create-runtime-image</goal> -->
-			<!-- </goals> -->
-			<!-- <configuration> -->
-			<!-- <modulePath> -->
-			<!-- <path>${env.JAVAFX_MODS}</path> -->
-			<!-- </modulePath> -->
-			<!-- <baseJdk>version=11,vendor=openjdk,platform=win-x64</baseJdk> -->
-			<!-- <outputDirectory> -->
-			<!-- ${project.build.directory}/jre-win64 -->
-			<!-- </outputDirectory> -->
-			<!-- </configuration> -->
-			<!-- </execution> -->
-			<!-- </executions> -->
-			<!-- </plugin> -->
+			
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>distro-assembly</id>
+						<id>distro-assembly-win</id>
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>
 						<configuration>
-							<finalName>${project.artifactId}</finalName>
+							<finalName>${project.artifactId}-win64</finalName>
 							<descriptors>
-								<descriptor>src/assembly/bin.xml</descriptor>
+								<descriptor>src/assembly/bin-win.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+					<execution>
+						<id>distro-assembly-linux</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<finalName>${project.artifactId}-linux64</finalName>
+							<descriptors>
+								<descriptor>src/assembly/bin-linux.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+					<execution>
+						<id>distro-assembly-macos</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<finalName>${project.artifactId}-macos64</finalName>
+							<descriptors>
+								<descriptor>src/assembly/bin-macos.xml</descriptor>
 							</descriptors>
 						</configuration>
 					</execution>

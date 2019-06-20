@@ -10,22 +10,15 @@
 	
 	<fileSets>
 		<fileSet>
-			<directory>src\bin</directory>
+			<directory>src\bin\macos</directory>
 			<outputDirectory>\</outputDirectory>
 			<includes>
 				<include>*.*</include>
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>target</directory>
-			<outputDirectory>\</outputDirectory>
-			<includes>
-				<include>*.exe</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>target\jre-win64</directory>
-			<outputDirectory>\jre-win64</outputDirectory>
+			<directory>target\jre-macos64</directory>
+			<outputDirectory>\jre-macos64</outputDirectory>
 			<includes>
 				<include>**\*</include>
 			</includes>
