@@ -182,11 +182,12 @@ public class ApplicationController {
 		List<OptionPageProvider> optionProviders = plugins.loadOptionPages();
 		dialog.showAndWait(optionProviders);
 		
-		persistOptions(optionProviders);
+		persistOptions();
 	}
 
 
-	private void persistOptions(List<OptionPageProvider> optionProviders) {
+	private void persistOptions() {
+		List<OptionPageProvider> optionProviders = plugins.loadOptionPages();
 		List<OptionEntry> optEntries = optionProviders.stream()
 			.map(p -> new OptionEntry(0L, p.getClass().getName(), p.getOptions()))
 			.collect(Collectors.toList());
@@ -328,6 +329,7 @@ public class ApplicationController {
 		WorkbenchState state = persistence.loadWorkbenchState();
 		state.setLoadedWorkspace(workspaceController.getActiveWorkspace().getName());
 		persistence.saveWorkbenchState(state);
+		persistOptions();
 	}
 
 }

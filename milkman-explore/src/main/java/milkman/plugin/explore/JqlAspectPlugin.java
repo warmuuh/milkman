@@ -34,4 +34,10 @@ public class JqlAspectPlugin implements RequestAspectsPlugin {
 	
 	}
 
+	@Override
+	public int getOrder() {
+		return 35;
+	}
+
+	
 }
