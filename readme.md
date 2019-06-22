@@ -9,7 +9,7 @@ everything being a plugin, other things are possible, like database-requests or 
 
 # Changes
 
-latest changes can be seen in the (Changelog)[changelog.md]
+latest changes can be seen in the [Changelog](changelog.md)
 
 # Features
 
