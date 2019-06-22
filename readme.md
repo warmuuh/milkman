@@ -7,6 +7,10 @@ Milkman is heavily inspired by Postman. But I got sick of all those electron-bas
 Therefore i created a JavaFx-based workbench for crafting requests / responses. It is not limited to e.g. http (or more specificaly rest) requests. Due to nearly
 everything being a plugin, other things are possible, like database-requests or GRPC, GraphQl, etc...
 
+# Changes
+
+latest changes can be seen in the (Changelog)[changelog.md]
+
 # Features
 
  * **Everything is a plugin:** Request-types (e.g. Http Request), request-aspects (e.g. Headers, Body, etc), editors for request aspects (e.g. table-based editors for headers), importers, whatever it is, you can extend it. The core application only handles Workspaces with Environments, Collections, Requests and their aspects.
