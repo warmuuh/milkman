@@ -58,4 +58,11 @@ public class ScriptingAspectPlugin implements RequestAspectsPlugin {
 		}
 	}
 
+	@Override
+	public int getOrder() {
+		return 30;
+	}
+	
+	
+
 }

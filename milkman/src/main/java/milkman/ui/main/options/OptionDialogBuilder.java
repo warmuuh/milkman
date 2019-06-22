@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
@@ -25,6 +26,7 @@ public class OptionDialogBuilder  {
 		OptionPaneBuilder<T> passwordInput(String name, Function1<T, String> getter, BiConsumer<T, String> setter);
 		OptionPaneBuilder<T> textInput(String name, Function1<T, String> getter, BiConsumer<T, String> setter);
 		OptionPaneBuilder<T> numberInput(String name, Function1<T, Integer> getter, BiConsumer<T, Integer> setter);
+		OptionPaneBuilder<T> button(String name, Runnable runnable);
 
 		OptionPaneBuilder<T> selection(String name, Function1<T, String> getter, BiConsumer<T, String> setter, List<String> possibleValues);
 		OptionSectionBuilder<T> endSection();
@@ -143,6 +145,17 @@ public class OptionDialogBuilder  {
 			text.valueProperty().bindBidirectional(binding);
 			text.getItems().addAll(possibleValues);
 			HBox hbox = new HBox(lbl, text);
+			hbox.getStyleClass().add("options-entry");
+			nodes.add(hbox);
+			return this;
+		}
+
+		@Override
+		public OptionPaneBuilder<T> button(String name, Runnable runnable) {
+			JFXButton btn = new JFXButton(name);
+			btn.setOnAction(e -> runnable.run());
+			btn.getStyleClass().add("secondary-button");
+			HBox hbox = new HBox(btn);
 			hbox.getStyleClass().add("options-entry");
 			nodes.add(hbox);
 			return this;
