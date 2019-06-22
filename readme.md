@@ -1,3 +1,4 @@
+![Travis Build](https://api.travis-ci.org/warmuuh/milkman.svg?branch=master)
 # ![Milkman Logo](img/milk-bottle.png) Milkman - An Extensible Request/Response Workbench
 
 Milkman is heavily inspired by Postman. But I got sick of all those electron-based applications that need ages and loads of memory to start up.
