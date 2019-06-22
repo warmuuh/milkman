@@ -90,7 +90,14 @@ version 2.2.1
   * improved auto completion
   * 'copy as csv' for jdbc results
   * added transpose function for jdbc results
-   
+
+version 2.2.2
+  * option to disable SSL verification
+  * plugins can now use password fields in option
+  
+Upcoming
+  * JDK11 bundled distribution
+ 
 Planned:
   * Export of environment (privatebin)
   * jdbc -> explorer functionality (what tables are there? what columns does a table have?)
