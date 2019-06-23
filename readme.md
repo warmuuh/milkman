@@ -47,6 +47,9 @@ Adds capability to share requests via [PrivateBin](http://PrivateBin.net), inclu
 
 Download latest version in [Release Section](https://github.com/warmuuh/milkman/releases).
 
+Version 2.2.2 is latest version running on Java8.
+Version 3.0.0-beta and ongoing is first version with packaged JRE and running on Java11.
+
 # Showcase
 
 ![Milkman White](img/screenshot.png)
