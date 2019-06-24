@@ -166,6 +166,7 @@
 						<addModule>jdk.xml.dom</addModule>
 						<addModule>javafx.controls</addModule>
 						<addModule>javafx.fxml</addModule>
+						<addModule>jdk.scripting.nashorn</addModule>
 					</addModules>
 					<options>
 						<option>--compress=2</option>
