@@ -13,5 +13,12 @@ class GithubReleaseCheckerTest {
 		
 		assertTrue(new GithubReleaseChecker("warmuuh", "hardwire").hasNewerRelease("0.0.1"));
 	}
+	
+
+	@Test
+	void testUnusualVersion() throws IOException {
+		
+		assertTrue(new GithubReleaseChecker("warmuuh", "hardwire").hasNewerRelease("0.0.1.beta"));
+	}
 
 }
