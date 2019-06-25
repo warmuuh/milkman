@@ -94,7 +94,7 @@ public class RequestCollectionComponent {
 		
 		
 		
-		val filteredList = new FilteredList<>(observableList);
+		val filteredList = new FilteredList<>(sortedList);
 		
 		root = new SettableTreeItem<Node>();
 		

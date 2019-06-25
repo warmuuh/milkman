@@ -30,6 +30,7 @@ public class AutoCompleter {
 				String userText = req.getUserText();
 				return activeEnvironmentEntrySupplier.get().stream()
 					.filter(e -> e.getName().contains(userText))
+					.filter(e -> e.getName().isBlank())
 					.map(e -> e.getName())
 					.collect(Collectors.toList());
 			}
