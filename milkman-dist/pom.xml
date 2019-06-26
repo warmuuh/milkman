@@ -167,6 +167,7 @@
 						<addModule>javafx.controls</addModule>
 						<addModule>javafx.fxml</addModule>
 						<addModule>jdk.scripting.nashorn</addModule>
+						<addModule>java.security.jgss</addModule>
 					</addModules>
 					<options>
 						<option>--compress=2</option>
