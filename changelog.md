@@ -11,9 +11,10 @@
 
 # Changelog
 
-version 3.0.1
-  * nashorn added to JRE
+version 3.1.0
+  * nashorn, java security added to JRE
   * bugfix for collection view sorting
+  * bugfix for autocompletion
 
 version 3.0.0
   * JDK11 bundled distribution
