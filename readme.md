@@ -7,6 +7,15 @@ Milkman is heavily inspired by Postman. But I got sick of all those electron-bas
 Therefore i created a JavaFx-based workbench for crafting requests / responses. It is not limited to e.g. http (or more specificaly rest) requests. Due to nearly
 everything being a plugin, other things are possible, like database-requests or GRPC, GraphQl, etc...
 
+
+# Download
+
+Download latest version in [Release Section](https://github.com/warmuuh/milkman/releases) **and download plugin archive as well, if you want to use any of those plugins**.
+Version 2.2.2 is latest version running on Java8.
+Version 3.0.0 and ongoing is first version with packaged JRE and running on Java11.
+
+
+
 # Changes
 
 latest changes can be seen in the [Changelog](changelog.md)
@@ -42,13 +51,6 @@ This plugin allows to synchronize workspaces via Git (using Differential Synchro
 ### PrivateBin Sharing Plugin
 Adds capability to share requests via [PrivateBin](http://PrivateBin.net), including `Burn After Reading` feature
 
-
-# Download
-
-Download latest version in [Release Section](https://github.com/warmuuh/milkman/releases).
-
-Version 2.2.2 is latest version running on Java8.
-Version 3.0.0 and ongoing is first version with packaged JRE and running on Java11.
 
 # Showcase
 
