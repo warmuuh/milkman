@@ -31,7 +31,7 @@ public class RequestHeaderTabController implements RequestAspectEditor, AutoComp
 	@SneakyThrows
 	public Tab getRoot(RequestContainer request) {
 		RestHeaderAspect headers = request.getAspect(RestHeaderAspect.class).get();
-		JfxTableEditor<HeaderEntry> editor = FxmlUtil.loadAndInitialize("/components/TableEditor.fxml");
+		JfxTableEditor<HeaderEntry> editor = new JfxTableEditor<HeaderEntry>();
 		editor.enableAddition(() -> {
 			headers.setDirty(true);
 			return new HeaderEntry(UUID.randomUUID().toString(), "", "", true);

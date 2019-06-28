@@ -43,8 +43,10 @@ import milkman.domain.RequestContainer;
 import milkman.ui.commands.UiCommand;
 import milkman.utils.Event;
 import milkman.utils.PropertyChangeEvent;
+import milkman.utils.fxml.FxmlBuilder;
 import milkman.utils.javafx.DnDCellFactory;
 import milkman.utils.javafx.SettableTreeItem;
+import static milkman.utils.fxml.FxmlBuilder.*;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_ = { @Inject })
@@ -293,5 +295,31 @@ public class RequestCollectionComponent {
 		}
 	}
 	private RequestContextMenu reqCtxMenu = new RequestContextMenu();
+	
+	
+	
+	public static class RequestCollectionComponentFxml extends VboxExt {
+		
+		public RequestCollectionComponentFxml(RequestCollectionComponent controller) {
+			this.setMinWidth(200);
+			this.setMaxWidth(400);
+			
+			var searchArea = add(hbox("searchArea"));
+			
+			var searchAreaField = searchArea.add(hbox("searchAreaField"), true);
+			
+			searchAreaField.add(label(icon(FontAwesomeIcon.SEARCH)));
+			
+			controller.searchField = searchAreaField.add(text("searchField", "search..."), true);
+			
+			searchAreaField.add(button(icon(FontAwesomeIcon.TIMES_CIRCLE_ALT), controller::clearSearch));
+			
+			controller.collectionContainer = new JFXTreeView<Node>();
+			controller.collectionContainer.setId("collectionContainer");
+			add(controller.collectionContainer, true);
+			
+		}
+	}
+	
 	
 }

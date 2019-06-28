@@ -234,7 +234,7 @@
  	-fx-background-radius: 40px;
 }
 
-#searchAreaField .jfx-text-field{
+#searchAreaField .jfx-text-field {
 	-fx-padding: 4 10 4 10;
 }
 #searchAreaField .label .icon {

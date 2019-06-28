@@ -39,17 +39,17 @@
 <!-- 	</ToolBar> -->
 	<HBox fx:id="searchArea">
 		<HBox fx:id="searchAreaField" HBox.hgrow="ALWAYS">
-		<Label>
-			<graphic>
-				 	<FontAwesomeIconView  glyphName="SEARCH" size="1.5em" styleClass="icon"/>
-			</graphic>
-		</Label>
-		<JFXTextField  promptText="search..." fx:id="searchField" HBox.hgrow="ALWAYS"/>
-		<JFXButton onAction="#clearSearch">
-			<graphic>
-			 	<FontAwesomeIconView  glyphName="TIMES_CIRCLE_ALT" size="1.5em" styleClass="icon"/>
-			</graphic>
-		</JFXButton>
+			<Label>
+				<graphic>
+					 	<FontAwesomeIconView  glyphName="SEARCH" size="1.5em" styleClass="icon"/>
+				</graphic>
+			</Label>
+			<JFXTextField  promptText="search..." fx:id="searchField" HBox.hgrow="ALWAYS"/>
+			<JFXButton onAction="#clearSearch">
+				<graphic>
+				 	<FontAwesomeIconView  glyphName="TIMES_CIRCLE_ALT" size="1.5em" styleClass="icon"/>
+				</graphic>
+			</JFXButton>
 		</HBox>
 	</HBox>
 <!-- 	<Label text="Request Collections" /> -->

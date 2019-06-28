@@ -33,7 +33,7 @@ public class JdbcResultSetAspectEditor implements ResponseAspectEditor {
 
 	@Override
 	public Tab getRoot(RequestContainer request, ResponseContainer response) {
-		editor = FxmlUtil.loadAndInitialize("/components/TableEditor.fxml");
+		editor = new JfxTableEditor<List<Object>>();
 		editor.disableAddition();
 		editor.setRowToStringConverter(this::rowToString);
 		

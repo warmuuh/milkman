@@ -1,5 +1,9 @@
 package milkman.ui.main;
 
+import static milkman.utils.fxml.FxmlBuilder.button;
+import static milkman.utils.fxml.FxmlBuilder.hbox;
+import static milkman.utils.fxml.FxmlBuilder.icon;
+
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -7,34 +11,30 @@ import java.util.ResourceBundle;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXToggleButton;
-import com.jfoenix.skins.JFXTabPaneSkin;
+import com.jfoenix.controls.JFXTabPane;
 
-import javafx.application.Platform;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.beans.value.ChangeListener;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
+import javafx.geometry.Orientation;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.TouchEvent;
-import javafx.scene.layout.Pane;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 import milkman.ui.commands.UiCommand;
 import milkman.ui.commands.UiCommand.CloseRequest.CloseType;
+import milkman.ui.main.RequestComponent.RequestComponentFxml;
+import milkman.ui.main.ResponseComponent.ResponseComponentFxml;
 import milkman.utils.Event;
-import com.jfoenix.controls.JFXTabPane;
+import milkman.utils.fxml.FxmlBuilder.HboxExt;
+import milkman.utils.fxml.FxmlBuilder.VboxExt;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_={@Inject})
@@ -162,4 +162,30 @@ public class WorkingAreaComponent implements Initializable {
 		//might be because we dont really use the content of the tabs
 		tabPane.setDisableAnimation(true);
 	}
+	
+	public static class WorkingAreaComponentFxml extends VboxExt {
+		public WorkingAreaComponentFxml(WorkingAreaComponent controller) {
+			HboxExt reqArea = add(hbox("openRequestArea"));
+			
+			JFXTabPane pane = new JFXTabPane();
+			pane.setId("tabPane");
+			controller.tabPane = reqArea.add(pane, true);
+			
+			
+			reqArea.add(button(icon(FontAwesomeIcon.PLUS), controller::onNewRequestClick))
+				.setPrefWidth(40);
+			
+			
+			
+			SplitPane splitPane = add(new SplitPane(), true);
+			splitPane.setOrientation(Orientation.VERTICAL);
+			
+			splitPane.getItems().add(new RequestComponentFxml(controller.restRequestComponent));
+			splitPane.getItems().add(new ResponseComponentFxml(controller.responseComponent));
+			
+			
+			controller.initialize(null, null);
+		}
+	}
+	
 }

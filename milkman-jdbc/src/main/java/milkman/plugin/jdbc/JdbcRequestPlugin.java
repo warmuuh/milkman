@@ -75,7 +75,7 @@ public class JdbcRequestPlugin implements RequestTypePlugin, RequestAspectsPlugi
 
 	@Override
 	public int getOrder() {
-		return 20;
+		return 17;
 	}
 
 	@Override

@@ -26,8 +26,12 @@ import milkman.ui.plugin.RequestTypeEditor;
 import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.UiPluginManager;
 import milkman.utils.Event;
+import milkman.utils.fxml.FxmlBuilder.HboxExt;
+import milkman.utils.fxml.FxmlBuilder.VboxExt;
+
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTabPane;
+import static milkman.utils.fxml.FxmlBuilder.*;
 
 @Singleton
 public class RequestComponent {
@@ -117,4 +121,40 @@ public class RequestComponent {
 		onCommand.invoke(new UiCommand.ExportRequest(currentRequest));
 	}
 
+	
+	public static class RequestComponentFxml extends VboxExt {
+	
+		public RequestComponentFxml(RequestComponent controller) {
+			setId("requestComponent");
+			HboxExt reqEdit = add(hbox("generalRequestEdit"));
+			controller.mainEditingArea = reqEdit.add(hbox("mainEditingArea"), true);
+			
+			controller.submitBtn = reqEdit.add(new SplitMenuButton());
+			controller.submitBtn.setId("submitBtn");
+			controller.submitBtn.setText("submit");
+			controller.submitBtn.setOnAction(e -> controller.onSubmit());
+			
+			
+			controller.saveBtn = reqEdit.add(new SplitMenuButton());
+			controller.saveBtn.setId("saveBtn");
+			controller.saveBtn.setText("save");
+			controller.saveBtn.setOnAction(e -> controller.onSave());
+			controller.saveBtn.getStyleClass().add("secondary");
+			
+			MenuItem saveAs = new MenuItem("save as...");
+			saveAs.setOnAction(e -> controller.onSaveAs());
+			controller.saveBtn.getItems().add(saveAs);
+			
+			MenuItem export = new MenuItem("export...");
+			export.setOnAction(e -> controller.onExport());
+			controller.saveBtn.getItems().add(export);
+			
+			JFXTabPane tabPane = add(new JFXTabPane());
+			tabPane.setId("tabs");
+			controller.tabs = tabPane;
+			tabPane.setPrefHeight(300);
+			
+		}
+	}
+	
 }

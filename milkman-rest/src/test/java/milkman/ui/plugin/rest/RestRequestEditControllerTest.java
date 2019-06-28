@@ -12,9 +12,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import milkman.ui.components.AutoCompleter;
 import milkman.ui.plugin.rest.domain.RestRequestContainer;
 
 import static org.testfx.assertions.api.Assertions.*;
+
+import java.util.Collections;
+
 import static org.assertj.core.api.Assertions.*;
 
 @ExtendWith(ApplicationExtension.class)
@@ -27,6 +31,8 @@ class RestRequestEditControllerTest {
 	@Start
 	public void setupStage(Stage stage) {
 		RestRequestEditController sut = new RestRequestEditController();
+		
+		sut.setAutoCompleter(new AutoCompleter(() -> Collections.emptyList()));
 		Node root = sut.getRoot();
 		stage.setScene(new Scene(new Pane(root)));
 

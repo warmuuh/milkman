@@ -63,20 +63,7 @@ public class JfxTableEditor<T> extends StackPane {
 	
 	private Function<T, String> rowToStringConverter = null;
 	
-	private static class SelectableTextFieldBuilder extends TextFieldEditorBuilder {
 
-		@Override
-		public Region createNode(String value, EventHandler<KeyEvent> keyEventsHandler,
-				ChangeListener<Boolean> focusChangeListener) {
-			Region node = super.createNode(value, keyEventsHandler, focusChangeListener);
-			
-			this.textField.setEditable(false);
-			
-			return node;
-		}
-		
-		
-	}
 
 	public JfxTableEditor() {
 		table.setShowRoot(false);
@@ -144,7 +131,7 @@ public class JfxTableEditor<T> extends StackPane {
 	public void addColumn(String name, Function1<T, String> getter, BiConsumer<T, String> setter) {
 		TreeTableColumn<RecursiveWrapper<T>, String> column = new TreeTableColumn<>(name);
 		column.setCellFactory((TreeTableColumn<RecursiveWrapper<T>, String> param) -> {
-			return new GenericEditableTreeTableCell<RecursiveWrapper<T>, String>(new TextFieldEditorBuilder());
+			return new GenericEditableTreeTableCell<RecursiveWrapper<T>, String>(new TextFieldEditorBuilderPatch());
 		});
 		column.setCellValueFactory(param -> GenericBinding.of(getter, setter, param.getValue().getValue().getData()));
 		column.setMaxWidth(400);
@@ -329,4 +316,35 @@ public class JfxTableEditor<T> extends StackPane {
             }
         }
     }
+	
+	
+	public static class TextFieldEditorBuilderPatch extends TextFieldEditorBuilder {
+
+	    @Override
+	    public void updateItem(String item, boolean empty) {
+	        Platform.runLater(() -> {
+	        	if (textField != null) { //added nullcheck
+		            textField.selectAll();
+		            textField.requestFocus();
+	        	}
+	        });
+	    }
+	}
+	
+	public static class SelectableTextFieldBuilder extends JfxTableEditor.TextFieldEditorBuilderPatch {
+
+		@Override
+		public Region createNode(String value, EventHandler<KeyEvent> keyEventsHandler,
+				ChangeListener<Boolean> focusChangeListener) {
+			Region node = super.createNode(value, keyEventsHandler, focusChangeListener);
+			
+			this.textField.setEditable(false);
+			
+			return node;
+		}
+		
+		
+	}
+	
+	
 }

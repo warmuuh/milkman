@@ -10,9 +10,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
 import lombok.RequiredArgsConstructor;
+import milkman.ui.components.JfxTableEditor.TextFieldEditorBuilderPatch;
 
 @RequiredArgsConstructor
-public class InitializingCellBuilder extends TextFieldEditorBuilder {
+public class InitializingCellBuilder extends TextFieldEditorBuilderPatch {
 
 	private final Consumer<TextField> initializer;
 	

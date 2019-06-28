@@ -1,12 +1,13 @@
 package milkman.ui.plugin.rest;
 
-import java.util.Collections;
-
 import com.jfoenix.controls.JFXComboBox;
+import com.jfoenix.controls.JFXTextField;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import lombok.SneakyThrows;
 import milkman.domain.RequestContainer;
 import milkman.ui.components.AutoCompleter;
@@ -14,8 +15,7 @@ import milkman.ui.plugin.AutoCompletionAware;
 import milkman.ui.plugin.RequestTypeEditor;
 import milkman.ui.plugin.rest.domain.RestQueryParamAspect;
 import milkman.ui.plugin.rest.domain.RestRequestContainer;
-import milkman.utils.controlfx.PartialAutoCompletion;
-import milkman.utils.fxml.FxmlUtil;
+import milkman.utils.fxml.FxmlBuilder.HboxExt;
 import milkman.utils.fxml.GenericBinding;
 
 public class RestRequestEditController implements RequestTypeEditor, AutoCompletionAware {
@@ -31,7 +31,7 @@ public class RestRequestEditController implements RequestTypeEditor, AutoComplet
 	@Override
 	@SneakyThrows
 	public Node getRoot() {
-		Node root = FxmlUtil.loadAndInitialize("/rest/MainEditorArea.fxml", this);
+		Node root = new RestRequestEditControllerFxml(this);
 		return root;
 	}
 
@@ -66,4 +66,26 @@ public class RestRequestEditController implements RequestTypeEditor, AutoComplet
 		
 	}
 
+	
+	public static class RestRequestEditControllerFxml extends HboxExt {
+		public RestRequestEditControllerFxml(RestRequestEditController controller) {
+			HBox.setHgrow(this, Priority.ALWAYS);
+			var methods = new JFXComboBox<String>();
+			add(methods);
+			methods.setId("httpMethods");
+			controller.httpMethod = methods;
+			methods.setValue("GET");
+			methods.getItems().add("GET");
+			methods.getItems().add("POST");
+			methods.getItems().add("PUT");
+			methods.getItems().add("DELETE");
+			methods.getItems().add("PATCH");
+			methods.getItems().add("HEAD");
+			methods.getItems().add("OPTIONS");
+			
+			controller.requestUrl = add(new JFXTextField(), true);
+			controller.requestUrl.setId("requestUrl");
+		}
+	}
+	
 }

@@ -11,6 +11,11 @@
 
 # Changelog
 
+version 3.2.0 - upcomming
+  * Performance improvements: binary css, replaced fxml with java
+  * minor fixes for exceptions
+  * fixed jdbc plugin order
+
 version 3.1.0
   * nashorn, java security added to JRE
   * bugfix for collection view sorting

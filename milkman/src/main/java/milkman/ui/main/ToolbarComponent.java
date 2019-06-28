@@ -12,7 +12,9 @@ import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
+import javafx.scene.control.ToolBar;
 import javafx.scene.layout.HBox;
 import lombok.Value;
 import lombok.val;
@@ -22,6 +24,9 @@ import milkman.ui.commands.AppCommand;
 import milkman.utils.Event;
 import com.jfoenix.controls.JFXButton;
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+
+import static milkman.utils.fxml.FxmlBuilder.*;
 @Singleton
 public class ToolbarComponent implements Initializable {
 
@@ -155,5 +160,32 @@ public class ToolbarComponent implements Initializable {
 			syncBtn.setText("Sync");
 		}));
 	}
+	
+	public static class ToolbarComponentFxml extends ToolBar {
+		public ToolbarComponentFxml(ToolbarComponent controller) {
+			this.setId("toolbar");
+			this.getItems().add(new Label("Workspace:"));
+
+			controller.workspaceSelection = choiceBox("workspaceSelection");
+			this.getItems().add(controller.workspaceSelection);
+			
+			controller.syncBtn = button("syncButton", "Sync", controller::onSync);
+			this.getItems().add(controller.syncBtn);
+			
+			this.getItems().add( button("Import", controller::onImport));
+			
+
+			this.getItems().add(new Label("Environment:"));
+			
+			controller.environmentSelection = choiceBox("environmentSelection");
+			this.getItems().add(controller.environmentSelection);
+			
+			this.getItems().add( button(icon(FontAwesomeIcon.WRENCH), controller::onOptions));
+			
+			
+			controller.initialize(null, null);
+		}
+	}
+	
 	
 }

@@ -1,18 +1,13 @@
 package milkman.ui.plugin.rest;
 
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.Tab;
 import lombok.SneakyThrows;
 import milkman.domain.RequestContainer;
-import milkman.domain.ResponseAspect;
 import milkman.domain.ResponseContainer;
 import milkman.ui.components.JfxTableEditor;
 import milkman.ui.plugin.ResponseAspectEditor;
 import milkman.ui.plugin.rest.domain.HeaderEntry;
-import milkman.ui.plugin.rest.domain.RestHeaderAspect;
 import milkman.ui.plugin.rest.domain.RestResponseHeaderAspect;
-import milkman.utils.fxml.FxmlUtil;
 
 public class ResponseHeaderTabController implements ResponseAspectEditor {
 
@@ -20,7 +15,7 @@ public class ResponseHeaderTabController implements ResponseAspectEditor {
 	@SneakyThrows
 	public Tab getRoot(RequestContainer request, ResponseContainer response) {
 		RestResponseHeaderAspect headers = response.getAspect(RestResponseHeaderAspect.class).get();
-		JfxTableEditor<HeaderEntry> editor = FxmlUtil.loadAndInitialize("/components/TableEditor.fxml");
+		JfxTableEditor<HeaderEntry> editor = new JfxTableEditor<HeaderEntry>();
 		editor.disableAddition();
 		editor.addReadOnlyColumn("Name", HeaderEntry::getName);
 		editor.addReadOnlyColumn("Value", HeaderEntry::getValue);
