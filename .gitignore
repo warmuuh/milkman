@@ -5,3 +5,4 @@ target/
 /.apt_generated_tests/
 database.db
 errors.log
+.factorypath
