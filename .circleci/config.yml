@@ -39,3 +39,11 @@ jobs:
 
       # run tests!
       - run: mvn package
+      - store_artifacts:
+          path: /milkman-dist/target/milkman-dist-linux64-bin.zip
+      - store_artifacts:
+          path: /milkman-dist/target/milkman-dist-macos64-bin.zip
+      - store_artifacts:
+          path: /milkman-dist/target/milkman-dist-win64-bin.zip
+      - store_artifacts:
+          path: /milkman-dist/target/milkman-dist-plugins-bin.zip
