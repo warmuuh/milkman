@@ -10,11 +10,16 @@ everything being a plugin, other things are possible, like database-requests or 
 
 # Download
 
-Download latest version in [Release Section](https://github.com/warmuuh/milkman/releases) **and download plugin archive as well, if you want to use any of those plugins**.
-Version 2.2.2 is latest version running on Java8.
-Version 3.0.0 and ongoing is first version with packaged JRE and running on Java11.
+ * Download latest version in [Release Section](https://github.com/warmuuh/milkman/releases). 
+   Version 2.2.2 is latest version running on Java8. 
+   Version 3.0.0 and ongoing is first version with packaged JRE and running on Java11.
+ * Download plugin archive as well, if you want to use any of those plugins
 
+For downloading the nightly build:
 
+ * Login to circleci.com (e.g. via github-authentication)
+ * Go to [Milkman Builds](https://circleci.com/gh/warmuuh/milkman/tree/master)
+ * Choose latest build and Download the build from the artifacts tab
 
 # Changes
 
