@@ -48,8 +48,7 @@ public class JqlAspectResponseEditor implements ResponseAspectEditor {
 		Tab tab = new Tab("Explore");
 		
 
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/components/ContentEditor.fxml"));
-		ContentEditor contentView = loader.load();
+		ContentEditor contentView = new ContentEditor();
 		contentView.setEditable(false);
 		contentView.setContentTypePlugins(Collections.singletonList(new JsonContentType()));
 		contentView.setContentType("application/json");

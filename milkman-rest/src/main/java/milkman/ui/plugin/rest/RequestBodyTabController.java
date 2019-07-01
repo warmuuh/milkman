@@ -22,8 +22,7 @@ public class RequestBodyTabController implements RequestAspectEditor, ContentTyp
 	@SneakyThrows
 	public Tab getRoot(RequestContainer request) {
 		RestBodyAspect body = request.getAspect(RestBodyAspect.class).get();
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/components/ContentEditor.fxml"));
-		ContentEditor root = loader.load();
+		ContentEditor root = new ContentEditor();
 		root.setEditable(true);
 		root.setContent(body::getBody, run(body::setBody).andThen(() -> body.setDirty(true)));
 		if (plugins != null)

@@ -23,8 +23,7 @@ public class SqlAspectEditor implements RequestAspectEditor {
 		val sqlAspect = request.getAspect(JdbcSqlAspect.class)
 				.orElseThrow(() -> new IllegalArgumentException("Jdbc Sql Aspect missing"));
 		
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/components/ContentEditor.fxml"));
-		ContentEditor root = loader.load();
+		ContentEditor root = new ContentEditor();
 		root.setEditable(true);
 		root.setContent(sqlAspect::getSql, run(sqlAspect::setSql).andThen(() -> sqlAspect.setDirty(true)));
 		root.setContentTypePlugins(Collections.singletonList(new SqlContentType()));

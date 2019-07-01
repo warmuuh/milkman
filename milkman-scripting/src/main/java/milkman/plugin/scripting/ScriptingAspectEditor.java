@@ -17,8 +17,7 @@ public class ScriptingAspectEditor implements RequestAspectEditor {
 	@SneakyThrows
 	public Tab getRoot(RequestContainer request) {
 		val script = request.getAspect(ScriptingAspect.class).get();
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/components/ContentEditor.fxml"));
-		ContentEditor root = loader.load();
+		ContentEditor root = new ContentEditor();
 		root.setEditable(true);
 		root.setContent(script::getPostRequestScript, script::setPostRequestScript);
 		root.setContentTypePlugins(Collections.singletonList(new JavascriptContentType()));

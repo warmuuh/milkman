@@ -45,12 +45,6 @@
 	</HBox>
 	<JFXTabPane  VBox.vgrow="ALWAYS" fx:id="tabs" prefHeight="300">
 		<tabs>
-<!-- 			<Tab text="Headers"> -->
-<!-- 				<fx:include source="components/HeaderComponent.fxml" /> -->
-<!-- 			</Tab> -->
-<!-- 			<Tab text="Body"> -->
-<!-- 				<fx:include source="components/ContentEditor.fxml" /> -->
-<!-- 			</Tab> -->
 		</tabs>
 	</JFXTabPane>
 

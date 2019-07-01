@@ -23,8 +23,7 @@ public class ResponseBodyTabController implements ResponseAspectEditor, ContentT
 	@SneakyThrows
 	public Tab getRoot(RequestContainer request, ResponseContainer response) {
 		val body = response.getAspect(RestResponseBodyAspect.class).get();
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/components/ContentEditor.fxml"));
-		ContentEditor root = loader.load();
+		ContentEditor root = new ContentEditor();
 		root.setEditable(false);
 		root.setContent(body::getBody, body::setBody);
 		if (plugins != null)
