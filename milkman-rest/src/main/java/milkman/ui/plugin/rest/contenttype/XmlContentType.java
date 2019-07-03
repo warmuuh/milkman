@@ -50,7 +50,7 @@ public class XmlContentType implements ContentTypePlugin {
 
 	@Override
 	public String getContentType() {
-		return "application/xml";
+		return "/xml"; //matches application/xml and text/xml
 	}
 
 	@Override

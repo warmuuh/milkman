@@ -9,6 +9,7 @@ import java.util.UUID;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ClassPathUtils;
 
+import javafx.application.Platform;
 import javafx.scene.control.Tab;
 import lombok.SneakyThrows;
 import milkman.domain.RequestContainer;
@@ -33,7 +34,7 @@ public class RequestHeaderTabController implements RequestAspectEditor, AutoComp
 		RestHeaderAspect headers = request.getAspect(RestHeaderAspect.class).get();
 		JfxTableEditor<HeaderEntry> editor = new JfxTableEditor<HeaderEntry>();
 		editor.enableAddition(() -> {
-			headers.setDirty(true);
+			Platform.runLater( () -> headers.setDirty(true));
 			return new HeaderEntry(UUID.randomUUID().toString(), "", "", true);
 		});
 		editor.addCheckboxColumn("Enabled", HeaderEntry::isEnabled, run(HeaderEntry::setEnabled).andThen(() -> headers.setDirty(true)));

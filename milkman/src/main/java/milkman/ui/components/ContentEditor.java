@@ -303,7 +303,7 @@ public class ContentEditor extends VBox {
 
 	private void setActiveContentType(List<ContentTypePlugin> plugins, String contentType) {
 		plugins.stream()
-		.filter(p -> p.getContentType().equals(contentType))
+		.filter(p -> contentType.contains(p.getContentType()))
 		.findAny().ifPresent(t -> {
 			format.setVisible(t.supportFormatting());
 //			System.out.println("Setting active highlighter: " + t);
