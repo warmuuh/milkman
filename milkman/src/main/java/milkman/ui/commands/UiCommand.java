@@ -1,7 +1,9 @@
 package milkman.ui.commands;
 
+import lombok.Data;
 import lombok.Value;
 import milkman.domain.Collection;
+import milkman.domain.Folder;
 import milkman.domain.RequestContainer;
 import milkman.ui.plugin.CustomCommand;
 
@@ -95,5 +97,28 @@ public interface UiCommand {
 	public static class ExportCollection implements UiCommand {
 		Collection collection;
 	}
+
+	@Data
+	public static class AddFolder implements UiCommand {
+		private final Collection collection;
+		private final Folder folder;
+		
+		public AddFolder(Collection collection) {
+			this.collection = collection;
+			this.folder = null;
+		}
+		
+		public AddFolder(Folder folder) {
+			this.collection = null;
+			this.folder = folder;
+		}
+		
+	}
 	
+
+	@Value
+	public static class DeleteFolder implements UiCommand {
+		Collection collection;
+		Folder folder;
+	}
 }

@@ -2,6 +2,7 @@ package milkman.ui.plugin.rest.postman.importers;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -73,7 +74,7 @@ public class PostmanImporterV21 {
 			requests.addAll(convertToDomain(container));	
 		}
 
-		return new Collection(UUID.randomUUID().toString(), pmCollection.getInfo().getName(), false, requests);
+		return new Collection(UUID.randomUUID().toString(), pmCollection.getInfo().getName(), false, requests, new LinkedList<>());
 	}
 	
 	

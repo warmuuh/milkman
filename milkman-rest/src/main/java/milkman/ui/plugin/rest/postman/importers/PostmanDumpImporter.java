@@ -85,7 +85,7 @@ public class PostmanDumpImporter {
 			}
 		}
 		
-		return new Collection(UUID.randomUUID().toString(), postmanCollection.getName(), false, requests);
+		return new Collection(UUID.randomUUID().toString(), postmanCollection.getName(), false, requests, new LinkedList<>());
 	}
 
 	

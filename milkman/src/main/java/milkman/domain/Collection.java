@@ -1,5 +1,6 @@
 package milkman.domain;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -18,10 +19,11 @@ public class Collection extends Dirtyable implements Searchable {
 	@ToString.Include private String name;
 	private boolean starred;
 	private List<RequestContainer> requests;
+	private List<Folder> folders = new LinkedList<Folder>(); //initialize bc of deserialization
 	
 	@Override
 	public boolean match(String searchString) {
 		return StringUtils.containsIgnoreCase(name, searchString);
-//				|| requests.stream().anyMatch(r -> r.match(searchString));
 	}
+	
 }

@@ -1,6 +1,7 @@
 package milkman.ui.plugin.rest.postman.exporters;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -33,7 +34,7 @@ class PostmanExporterV21Test {
 		headerEntry.setValue("application/json");
 		headerAspect.setEntries(Arrays.asList(headerEntry));
 		request.addAspect(headerAspect);
-		String exportedData = sut.export(new Collection(UUID.randomUUID().toString(), "test", false, Arrays.asList(request)));
+		String exportedData = sut.export(new Collection(UUID.randomUUID().toString(), "test", false, Arrays.asList(request), new LinkedList<>()));
 		System.out.println(exportedData);
 	}
 
