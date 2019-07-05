@@ -122,14 +122,16 @@ public class RequestCollectionComponent {
 			expansionCache.put(collection.getName(), n);
 		});
 		
+		List<RequestContainer> collectionRequests = new LinkedList<>(collection.getRequests());
+		
 		List<TreeItem<Node>> children = new LinkedList<TreeItem<Node>>();
 		for (Folder f : collection.getFolders()) {
-			SettableTreeItem<Node> folderItm = buildTreeForFolder(collection, f);
+			SettableTreeItem<Node> folderItm = buildTreeForFolder(collection, f, collectionRequests);
 			children.add(folderItm);
 		}
 		
 		
-		for (RequestContainer r : collection.getRequests()) {
+		for (RequestContainer r : collectionRequests) {
 			TreeItem<Node> requestTreeItem = new TreeItem<Node>(createRequestEntry(collection, r));
 			requestTreeItem.getValue().setUserData(r);
 			children.add(requestTreeItem);
@@ -139,18 +141,29 @@ public class RequestCollectionComponent {
 	}
 
 
-	private SettableTreeItem<Node> buildTreeForFolder(Collection collection, Folder f) {
+	/**
+	 * builds tree for folders and removes contained requests from the collectionRequest list
+	 */
+	private SettableTreeItem<Node> buildTreeForFolder(Collection collection, Folder f, List<RequestContainer> collectionRequests) {
 		SettableTreeItem<Node> folderItm = new SettableTreeItem<Node>();
 		folderItm.setValue(createFolderEntry(f, collection, folderItm));
 		folderItm.getValue().setUserData(f);
 		
 //		List<TreeItem<Node>> children = new LinkedList<TreeItem<Node>>();
 		for (Folder childFolder : f.getFolders()) {
-			var childFolderNode = buildTreeForFolder(collection, childFolder);
+			var childFolderNode = buildTreeForFolder(collection, childFolder, collectionRequests);
 //			children.add(childFolderNode);
 			folderItm.getChildren().add(childFolderNode);
 		}
-		
+		for (String reqId : f.getRequests()) {
+			RequestContainer req = collectionRequests.stream().filter(r -> r.getId().equals(reqId)).findAny().orElse(null);
+			if (req != null) {
+				TreeItem<Node> requestTreeItem = new TreeItem<Node>(createRequestEntry(collection, req));
+				requestTreeItem.getValue().setUserData(req);
+				folderItm.getChildren().add(requestTreeItem);
+				collectionRequests.remove(req);
+			}
+		}
 //		folderItm.setChildren(FXCollections.observableList(children));
 		return folderItm;
 	}

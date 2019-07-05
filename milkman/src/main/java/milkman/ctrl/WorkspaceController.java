@@ -288,8 +288,11 @@ public class WorkspaceController {
 	
 	private void deleteFolderFromCollection(Collection collection, Folder folder) {
 		
+		deleteAllRequestsFromFolder(collection, folder);
+		
+		
 		if (collection.getFolders().contains(folder)) {
-			collection.getFolders().remove(folder); //todo: also remove requests
+			collection.getFolders().remove(folder);
 			loadCollections(activeWorkspace);
 		} else {
 			Folder parentFolder = null;
@@ -300,11 +303,22 @@ public class WorkspaceController {
 				}
 			}
 			if (parentFolder != null) {
-				parentFolder.getFolders().remove(folder); //todo: also remove requests
+				parentFolder.getFolders().remove(folder);
 				loadCollections(activeWorkspace);
 			}
 		}
 		
+	}
+
+	private void deleteAllRequestsFromFolder(Collection collection, Folder folder) {
+		folder.getRequests().forEach(rid -> {
+			var request = collection.getRequests().stream().filter(req -> req.getId().equals(rid)).findAny();
+			request.ifPresent(req -> {
+				closeRequest(req, CloseType.CLOSE_THIS);
+				collection.getRequests().remove(req);
+			});
+		});
+		folder.getFolders().forEach(child -> deleteAllRequestsFromFolder(collection, child));
 	}
 
 	private Folder findParentFolder(Folder folder, Folder curF) {
