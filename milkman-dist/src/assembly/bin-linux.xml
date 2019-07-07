@@ -10,17 +10,17 @@
 	
 	<fileSets>
 		<fileSet>
-			<directory>src\bin\linux</directory>
-			<outputDirectory>\</outputDirectory>
+			<directory>src/bin/linux</directory>
+			<outputDirectory>/</outputDirectory>
 			<includes>
 				<include>*.*</include>
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>target\jre-linux64</directory>
-			<outputDirectory>\jre-linux64</outputDirectory>
+			<directory>target/jre-linux64</directory>
+			<outputDirectory>/jre-linux64</outputDirectory>
 			<includes>
-				<include>**\*</include>
+				<include>**/*</include>
 			</includes>
 		</fileSet>
 	</fileSets>

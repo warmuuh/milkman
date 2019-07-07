@@ -10,17 +10,17 @@
 	
 	<fileSets>
 		<fileSet>
-			<directory>src\bin\macos</directory>
-			<outputDirectory>\</outputDirectory>
+			<directory>src/bin/macos</directory>
+			<outputDirectory>/</outputDirectory>
 			<includes>
 				<include>*.*</include>
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>target\jre-macos64</directory>
-			<outputDirectory>\jre-macos64</outputDirectory>
+			<directory>target/jre-macos64</directory>
+			<outputDirectory>/jre-macos64</outputDirectory>
 			<includes>
-				<include>**\*</include>
+				<include>**/*</include>
 			</includes>
 		</fileSet>
 	</fileSets>
