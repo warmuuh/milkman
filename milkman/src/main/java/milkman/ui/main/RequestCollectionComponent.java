@@ -39,6 +39,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import milkman.domain.Collection;
+import milkman.domain.Folder;
 import milkman.domain.RequestContainer;
 import milkman.ui.commands.UiCommand;
 import milkman.utils.Event;
@@ -115,19 +116,60 @@ public class RequestCollectionComponent {
 		SettableTreeItem<Node> item = new SettableTreeItem<Node>();
 		HBox collEntry = createCollectionEntry(collection, item);
 		item.setValue(collEntry);
-		item.setExpanded(expansionCache.getOrDefault(collection.getName(), false));
 		item.getValue().setUserData(collection);
+		item.setExpanded(expansionCache.getOrDefault(collection.getId(), false));
 		item.expandedProperty().addListener((obs, o, n) -> {
-			expansionCache.put(collection.getName(), n);
+			expansionCache.put(collection.getId(), n);
 		});
+		
+		List<RequestContainer> collectionRequests = new LinkedList<>(collection.getRequests());
+		
 		List<TreeItem<Node>> children = new LinkedList<TreeItem<Node>>();
-		for (RequestContainer r : collection.getRequests()) {
+		for (Folder f : collection.getFolders()) {
+			SettableTreeItem<Node> folderItm = buildTreeForFolder(collection, f, collectionRequests);
+			children.add(folderItm);
+		}
+		
+		
+		for (RequestContainer r : collectionRequests) {
 			TreeItem<Node> requestTreeItem = new TreeItem<Node>(createRequestEntry(collection, r));
 			requestTreeItem.getValue().setUserData(r);
 			children.add(requestTreeItem);
 		}
 		item.setChildren(new FilteredList<TreeItem<Node>>(FXCollections.observableList(children)));
 		return item;
+	}
+
+
+	/**
+	 * builds tree for folders and removes contained requests from the collectionRequest list
+	 */
+	private SettableTreeItem<Node> buildTreeForFolder(Collection collection, Folder f, List<RequestContainer> collectionRequests) {
+		SettableTreeItem<Node> folderItm = new SettableTreeItem<Node>();
+		folderItm.setValue(createFolderEntry(f, collection, folderItm));
+		folderItm.getValue().setUserData(f);
+		folderItm.setExpanded(expansionCache.getOrDefault(f.getId(), false));
+		folderItm.expandedProperty().addListener((obs, o, n) -> {
+			expansionCache.put(f.getId(), n);
+		});
+
+//		List<TreeItem<Node>> children = new LinkedList<TreeItem<Node>>();
+		for (Folder childFolder : f.getFolders()) {
+			var childFolderNode = buildTreeForFolder(collection, childFolder, collectionRequests);
+//			children.add(childFolderNode);
+			folderItm.getChildren().add(childFolderNode);
+		}
+		for (String reqId : f.getRequests()) {
+			RequestContainer req = collectionRequests.stream().filter(r -> r.getId().equals(reqId)).findAny().orElse(null);
+			if (req != null) {
+				TreeItem<Node> requestTreeItem = new TreeItem<Node>(createRequestEntry(collection, req));
+				requestTreeItem.getValue().setUserData(req);
+				folderItm.getChildren().add(requestTreeItem);
+				collectionRequests.remove(req);
+			}
+		}
+//		folderItm.setChildren(FXCollections.observableList(children));
+		return folderItm;
 	}
 	
 
@@ -227,6 +269,27 @@ public class RequestCollectionComponent {
 		return vBox;
 	}
 
+	
+	private Node createFolderEntry(Folder folder, Collection collection, TreeItem<Node> item) {
+		Label folderName = new Label(folder.getName());
+		HBox.setHgrow(folderName, Priority.ALWAYS);
+		
+		
+		HBox hBox = new HBox(new FontAwesomeIconView(FontAwesomeIcon.FOLDER, "1.5em"), folderName);
+		hBox.setOnMouseClicked(e -> {
+			if (e.getButton() == MouseButton.PRIMARY) {
+				item.setExpanded(!item.isExpanded());
+				e.consume();
+			}
+			if (e.getButton() == MouseButton.SECONDARY) {
+				folderCtxMenu.show(folder, collection, hBox, e.getScreenX(), e.getScreenY());
+				e.consume();
+			}
+		});
+		return hBox;
+	}
+	
+	
 	@FXML public void clearSearch() {
 		searchField.clear();
 	}
@@ -234,7 +297,7 @@ public class RequestCollectionComponent {
 	
 	
 	/**
-	 * we create two single instances for ctx menu to be reused for all requests/collections, bc creation of context menu is expensive
+	 * we create single instances for ctx menu to be reused for all requests/collections/folders, bc creation of context menu is expensive
 	 * @author peter
 	 *
 	 */
@@ -242,11 +305,10 @@ public class RequestCollectionComponent {
 	public class CollectionContextMenu extends ContextMenu {
 		Collection collection;
 		public CollectionContextMenu() {
-			MenuItem deleteEntry = new MenuItem("Delete");
-			deleteEntry.setOnAction(e -> onCommand.invoke(new UiCommand.DeleteCollection(collection)));
-			this.getItems().add(deleteEntry);
+			MenuItem addFolderEntry = new MenuItem("Add Folder...");
+			addFolderEntry.setOnAction(e -> onCommand.invoke(new UiCommand.AddFolder(collection)));
+			this.getItems().add(addFolderEntry);
 
-			
 			MenuItem renameEntry = new MenuItem("Rename");
 			renameEntry.setOnAction(e -> onCommand.invoke(new UiCommand.RenameCollection(collection)));
 			this.getItems().add(renameEntry);
@@ -255,6 +317,11 @@ public class RequestCollectionComponent {
 			MenuItem exportEntry = new MenuItem("Export");
 			exportEntry.setOnAction(e -> onCommand.invoke(new UiCommand.ExportCollection(collection)));
 			this.getItems().add(exportEntry);
+
+			MenuItem deleteEntry = new MenuItem("Delete");
+			deleteEntry.setOnAction(e -> onCommand.invoke(new UiCommand.DeleteCollection(collection)));
+			this.getItems().add(deleteEntry);
+
 			
 		}
 		
@@ -296,6 +363,31 @@ public class RequestCollectionComponent {
 	}
 	private RequestContextMenu reqCtxMenu = new RequestContextMenu();
 	
+	
+	
+	@Data
+	public class FolderContextMenu extends ContextMenu {
+		Folder folder;
+		Collection collection;
+		public FolderContextMenu() {
+
+			MenuItem addFolderEntry = new MenuItem("Add Folder");
+			addFolderEntry.setOnAction(e -> onCommand.invoke(new UiCommand.AddFolder(folder)));
+			this.getItems().add(addFolderEntry);
+			
+			MenuItem deleteEntry = new MenuItem("Delete");
+			deleteEntry.setOnAction(e -> onCommand.invoke(new UiCommand.DeleteFolder(collection, folder)));
+			this.getItems().add(deleteEntry);
+		}
+		
+		public void show(Folder folder, Collection collection, Node anchor, double screenX, double screenY) {
+			this.folder = folder;
+			this.collection = collection;
+			super.show(anchor, screenX, screenY);
+		}
+	}
+	private FolderContextMenu folderCtxMenu = new FolderContextMenu();
+
 	
 	
 	public static class RequestCollectionComponentFxml extends VboxExt {

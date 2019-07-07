@@ -1,7 +1,6 @@
 package milkman.ui.plugin.rest.postman.importers;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -18,6 +17,7 @@ import co.poynt.postman.model.PostmanEnvironment;
 import milkman.domain.Collection;
 import milkman.domain.Environment;
 import milkman.domain.Environment.EnvironmentEntry;
+import milkman.domain.Folder;
 import milkman.domain.RequestContainer;
 import milkman.ui.plugin.rest.domain.HeaderEntry;
 import milkman.ui.plugin.rest.domain.RestBodyAspect;
@@ -67,22 +67,25 @@ public class PostmanImporterV21 {
 	}
 
 	private Collection convertToDomain(PostmanCollection210 pmCollection) {
-		//flattening folders:
 		List<RequestContainer> requests = new LinkedList<>();
+		List<Folder> folders = new LinkedList<>();
 		for(ItemGroup container : pmCollection.getItem()) {
-			requests.addAll(convertToDomain(container));	
+			convertToDomain(container, requests, folders, null);	
 		}
 
-		return new Collection(UUID.randomUUID().toString(), pmCollection.getInfo().getName(), false, requests);
+		return new Collection(UUID.randomUUID().toString(), pmCollection.getInfo().getName(), false, requests, folders);
 	}
 	
 	
-	private List<RequestContainer> convertToDomain(ItemGroup pmItem) {
-		List<RequestContainer> result = new LinkedList<RequestContainer>();
+	private void convertToDomain(ItemGroup pmItem, List<RequestContainer> requests, List<Folder> folders, Folder curFolder) {
 		
 		if (pmItem.getItem() != null) {
-			pmItem.getItem().stream().map(this::convertToDomain).forEach(result::addAll);
+			//it is a folder
+			Folder folder = new Folder(UUID.randomUUID().toString(), pmItem.getName(), new LinkedList<>(), new LinkedList<>());
+			folders.add(folder);
+			pmItem.getItem().forEach(itm -> convertToDomain(itm, requests, folders, folder));
 		} else {
+			//it is a request
 			RestRequestContainer request = new RestRequestContainer(pmItem.getName(), pmItem.getRequest().getUrl().getRaw(), pmItem.getRequest().getMethod().toString());
 			
 			//TODO: this should happen automatically...
@@ -100,11 +103,11 @@ public class PostmanImporterV21 {
 				body.setBody(pmItem.getRequest().getBody().getRaw());
 			}
 			request.addAspect(body);
-			result.add(request);
+			requests.add(request);
+			if (curFolder != null)
+				curFolder.getRequests().add(request.getId());
+			
 		}
-		
-		
-		return result;
 	}
 
 }

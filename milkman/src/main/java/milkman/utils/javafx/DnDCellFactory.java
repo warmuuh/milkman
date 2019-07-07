@@ -23,6 +23,7 @@ import javafx.scene.input.TransferMode;
 import javafx.util.Callback;
 import lombok.SneakyThrows;
 import milkman.domain.Collection;
+import milkman.domain.Folder;
 import milkman.domain.RequestContainer;
 import milkman.persistence.UnknownPluginHandler;
 
@@ -106,38 +107,88 @@ public class DnDCellFactory implements Callback<TreeView<Node>, TreeCell<Node>> 
 			if (!db.hasContent(JAVA_FORMAT)) return;
 
 			TreeItem<Node> thisItem = treeCell.getTreeItem();
-			TreeItem<Node> droppedItemParent = draggedItem.getParent();
-
-			// remove from previous location
-			Collection collection = (Collection) droppedItemParent.getValue().getUserData();
 			RequestContainer draggedRequest = (RequestContainer) draggedItem.getValue().getUserData();
-			collection.getRequests().remove(draggedRequest);
-			getRootList(droppedItemParent.getChildren()).remove(draggedItem);
+			// remove from previous location
+			removeFromPreviousContainer(draggedRequest);
 			
-			
-			// dropping on collection makes it the first children
-			if (thisItem.getValue().getUserData() instanceof Collection) {
-				Collection targetCollection = (Collection) thisItem.getValue().getUserData();
-				targetCollection.getRequests().add(0, draggedRequest);
-				getRootList(thisItem.getChildren()).add(0, draggedItem);
-				treeView.getSelectionModel().select(draggedItem);
-			}
-			else {
-			    // add to new location
-			    int indexInParent = getRootList(thisItem.getParent().getChildren()).indexOf(thisItem);
-			    getRootList(thisItem.getParent().getChildren()).add(indexInParent + 1, draggedItem);
-			    
-//			    RequestContainer thisRequest = (RequestContainer) thisItem.getValue().getUserData();
-			    Collection thisCollection = (Collection) thisItem.getParent().getValue().getUserData();
-			    thisCollection.getRequests().add(indexInParent +1, draggedRequest);
-			    
-			}
+			addToNewLocation(treeView, thisItem, draggedRequest);
 			treeView.getSelectionModel().select(draggedItem);
 			event.setDropCompleted(success);
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
     }
+
+
+	private void removeFromPreviousContainer(RequestContainer draggedRequest) {
+		TreeItem<Node> droppedItemParent = draggedItem.getParent();
+		
+		//if request was in a folder, remove ref from there
+		if (droppedItemParent.getValue().getUserData() instanceof Folder) {
+			Folder f = (Folder) droppedItemParent.getValue().getUserData();
+			f.getRequests().remove(draggedRequest.getId());
+		}
+		
+		//remove from view
+		getRootList(droppedItemParent.getChildren()).remove(draggedItem);
+		
+		//walk up until we find the collection
+		Collection collection = findCollectionInParents(droppedItemParent);
+	
+		//remove from model
+		collection.getRequests().remove(draggedRequest);
+		
+	}
+
+	private Collection findCollectionInParents(TreeItem<Node> node) {
+		Collection collection = null;
+		while(collection == null || node == null) {
+			if (node.getValue().getUserData() instanceof Collection) {
+				collection = (Collection) node.getValue().getUserData();
+			}
+			node = node.getParent();
+		}
+		return collection;
+	}
+	
+	
+	private void addToNewLocation(TreeView<Node> treeView, TreeItem<Node> dropTarget, RequestContainer draggedRequest) {
+		// dropping on collection makes it the first children
+		if (dropTarget.getValue().getUserData() instanceof Collection) {
+			Collection targetCollection = (Collection) dropTarget.getValue().getUserData();
+			var folderOffset = targetCollection.getFolders().size();
+			targetCollection.getRequests().add(folderOffset, draggedRequest);
+			getRootList(dropTarget.getChildren()).add(folderOffset, draggedItem);
+			treeView.getSelectionModel().select(draggedItem);
+		} else if (dropTarget.getValue().getUserData() instanceof Folder) {
+			//dropping it onto folder makes it first request in folder
+			Folder f = (Folder) dropTarget.getValue().getUserData();
+			Collection collection = findCollectionInParents(dropTarget);
+			collection.getRequests().add(draggedRequest);
+			var folderOffset = f.getFolders().size();
+			f.getRequests().add(0, draggedRequest.getId());
+			getRootList(dropTarget.getChildren()).add(folderOffset, draggedItem);
+			treeView.getSelectionModel().select(draggedItem);
+		}
+		else {
+		    // add to new location
+		    int indexInParent = getRootList(dropTarget.getParent().getChildren()).indexOf(dropTarget);
+		    getRootList(dropTarget.getParent().getChildren()).add(indexInParent + 1, draggedItem);
+		    
+		    //dropped onto a request within a collection
+		    if (dropTarget.getParent().getValue().getUserData() instanceof Collection) {
+		    	Collection thisCollection = (Collection) dropTarget.getParent().getValue().getUserData();
+		    	thisCollection.getRequests().add(indexInParent +1, draggedRequest);
+		    } else if (dropTarget.getParent().getValue().getUserData() instanceof Folder) {
+			    //dropped onto a request within a folder
+				Collection collection = findCollectionInParents(dropTarget);
+				collection.getRequests().add(draggedRequest);
+				Folder f = (Folder) dropTarget.getParent().getValue().getUserData();
+				var folderOffset = f.getFolders().size();
+				f.getRequests().add(indexInParent - folderOffset +1, draggedRequest.getId());
+		    }
+		}
+	}
 
     private ObservableList<TreeItem<Node>> getRootList(ObservableList<TreeItem<Node>> children) {
     	if (children instanceof TransformationList)

@@ -22,6 +22,7 @@ import lombok.val;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.Collection;
 import milkman.domain.Environment;
+import milkman.domain.Folder;
 import milkman.domain.RequestContainer;
 import milkman.domain.RequestContainer.UnknownRequestContainer;
 import milkman.domain.RequestExecutionContext;
@@ -263,6 +264,15 @@ public class WorkspaceController {
 			deleteRequest(deleteRequest.getCollection(), deleteRequest.getRequest());
 		} else if (command instanceof UiCommand.DeleteCollection) {
 			deleteCollection(((UiCommand.DeleteCollection) command).getCollection());
+		} else if (command instanceof UiCommand.AddFolder) {
+			var addFolderCmd = (UiCommand.AddFolder) command;
+			if (addFolderCmd.getCollection() != null)
+				addFolderToCollection(addFolderCmd.getCollection());
+			else
+				addFolderToFolder(addFolderCmd.getFolder());
+		} else if (command instanceof UiCommand.DeleteFolder) {
+			var deleteFolder = (UiCommand.DeleteFolder) command;
+			deleteFolderFromCollection(deleteFolder.getCollection(), deleteFolder.getFolder());
 		} else if (command instanceof UiCommand.RenameCollection) {
 			renameCollection(((UiCommand.RenameCollection) command).getCollection());
 		} else if (command instanceof UiCommand.ExportRequest) {
@@ -276,6 +286,76 @@ public class WorkspaceController {
 	
 	
 	
+	private void deleteFolderFromCollection(Collection collection, Folder folder) {
+		
+		deleteAllRequestsFromFolder(collection, folder);
+		
+		
+		if (collection.getFolders().contains(folder)) {
+			collection.getFolders().remove(folder);
+			loadCollections(activeWorkspace);
+		} else {
+			Folder parentFolder = null;
+			for (Folder curF : collection.getFolders()) {
+				parentFolder = findParentFolder(folder, curF);
+				if (parentFolder != null) {
+					break;
+				}
+			}
+			if (parentFolder != null) {
+				parentFolder.getFolders().remove(folder);
+				loadCollections(activeWorkspace);
+			}
+		}
+		
+	}
+
+	private void deleteAllRequestsFromFolder(Collection collection, Folder folder) {
+		folder.getRequests().forEach(rid -> {
+			var request = collection.getRequests().stream().filter(req -> req.getId().equals(rid)).findAny();
+			request.ifPresent(req -> {
+				closeRequest(req, CloseType.CLOSE_THIS);
+				collection.getRequests().remove(req);
+			});
+		});
+		folder.getFolders().forEach(child -> deleteAllRequestsFromFolder(collection, child));
+	}
+
+	private Folder findParentFolder(Folder folder, Folder curF) {
+		if (curF.getFolders().contains(folder))
+			return curF;
+		
+		for (Folder childF : curF.getFolders()) {
+			Folder foundParent = findParentFolder(folder, childF);
+			if (foundParent != null)
+				return foundParent;
+		}
+		return null;
+	}
+	
+	
+	private void addFolderToFolder(Folder folder) {
+		StringInputDialog dialog = new StringInputDialog();
+		dialog.showAndWait("Add Folder", "New Folder Name", "");
+		
+		if (dialog.wasChanged() && !dialog.isCancelled()) {
+			Folder newFolder = new Folder(UUID.randomUUID().toString(), dialog.getInput(), new LinkedList<>(), new LinkedList<>());
+			folder.getFolders().add(newFolder);
+			loadCollections(activeWorkspace);
+		}
+	}
+
+	private void addFolderToCollection(Collection collection) {
+		StringInputDialog dialog = new StringInputDialog();
+		dialog.showAndWait("Add Folder", "New Folder Name", "");
+		
+		if (dialog.wasChanged() && !dialog.isCancelled()) {
+			Folder folder = new Folder(UUID.randomUUID().toString(), dialog.getInput(), new LinkedList<>(), new LinkedList<>());
+			collection.getFolders().add(folder);
+			loadCollections(activeWorkspace);
+		}
+	}
+
 	private void exportCollection(Collection collection) {
 		ExportDialog<Collection> dialog = new ExportDialog<>();
 		List<Exporter<Collection>> exportPlugins = plugins.loadCollectionExportPlugins().stream()
@@ -311,9 +391,8 @@ public class WorkspaceController {
 		dialog.showAndWait("Rename Collection", "New Collection name", collection.getName());
 		if (dialog.wasChanged() && !dialog.isCancelled()) {
 			collection.setName(dialog.getInput());
+			loadCollections(activeWorkspace);
 		}
-		
-		loadCollections(activeWorkspace);
 		
 	}
 
@@ -447,7 +526,7 @@ public class WorkspaceController {
 	}
 
 	private Collection createNewCollection(String collectionName) {
-		Collection c = new Collection(UUID.randomUUID().toString(), collectionName, false, new LinkedList<>());
+		Collection c = new Collection(UUID.randomUUID().toString(), collectionName, false, new LinkedList<>(), new LinkedList<>());
 		activeWorkspace.getCollections().add(c);
 		return c;
 	}

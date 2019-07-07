@@ -42,9 +42,9 @@ class RequestCollectionComponentTest {
 	@Test
 	void testBindingsWorkingAfterGC(FxRobot robot) throws InterruptedException {
 		requests.display(Arrays.asList(
-					new Collection("1", "B request", false, Collections.emptyList()), // last
-					new Collection("2", "A request", false, Collections.emptyList()), // second because 'A'
-					new Collection("3", "C request", true, Collections.emptyList()) // first because starred
+					new Collection("1", "B request", false, Collections.emptyList(), Collections.emptyList()), // last
+					new Collection("2", "A request", false, Collections.emptyList(), Collections.emptyList()), // second because 'A'
+					new Collection("3", "C request", true, Collections.emptyList(), Collections.emptyList()) // first because starred
 				));
 		
 		Thread.sleep(100);
@@ -59,7 +59,7 @@ class RequestCollectionComponentTest {
 	@Test
 	void shouldExpandItemsOnClick(FxRobot robot) throws InterruptedException {
 		requests.display(Arrays.asList(
-				new Collection("2", "A request", false, Collections.emptyList())
+				new Collection("2", "A request", false, Collections.emptyList(), Collections.emptyList())
 				//new Collection("1", "A request", false, Collections.singletonList(new TestRequestContainer("test1")))
 				));
 

@@ -33,6 +33,7 @@ import milkman.ui.plugin.rest.domain.RestBodyAspect;
 import milkman.ui.plugin.rest.domain.RestHeaderAspect;
 import milkman.ui.plugin.rest.domain.RestRequestContainer;
 
+//TODO: needs to support folder-export as well
 public class PostmanExporterV21 {
 
 	@SneakyThrows

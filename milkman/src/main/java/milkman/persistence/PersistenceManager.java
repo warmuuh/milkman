@@ -105,9 +105,6 @@ public class PersistenceManager {
 		        .filePath("database.db")
 		        .nitriteMapper(nitriteMapper)
 		        .openOrCreate("milkman", "bringthemilk"));
-
-		
-//		assureInitialization();
 	}
 
 	@SneakyThrows

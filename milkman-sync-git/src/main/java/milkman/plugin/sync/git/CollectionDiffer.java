@@ -129,6 +129,7 @@ public class CollectionDiffer {
 		DiffNode diffNode = diffBuilder
 				.identity().ofCollectionItems(DataHolder.class, "collections").via(new PropertyBasedIdentityStrategy("id"))
 						   .ofCollectionItems(Collection.class, "requests").via(new PropertyBasedIdentityStrategy("id"))
+						   .ofCollectionItems(Collection.class, "folders").via(new PropertyBasedIdentityStrategy("id"))
 				.and()
 				.comparison()
 					.ofPrimitiveTypes().toTreatDefaultValuesAs(PrimitiveDefaultValueMode.ASSIGNED)

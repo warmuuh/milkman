@@ -14,7 +14,10 @@
 version 3.2.0 - upcomming
   * Performance improvements: binary css, replaced fxml with java
   * minor fixes for exceptions
+  * fixed bug for adding headers
+  * switched to xml formatter for text/xml format
   * fixed jdbc plugin order
+  * added sub-folders for collections
 
 version 3.1.0
   * nashorn, java security added to JRE

@@ -3,6 +3,7 @@ package milkman.plugin.sync.git;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -63,10 +64,10 @@ public class DiffTest {
 		String colId = UUID.randomUUID().toString();
 		
 		List<Collection> base = new LinkedList<Collection>();
-		base.add(new Collection(colId, "collection1", false, new LinkedList<>()));
+		base.add(new Collection(colId, "collection1", false, new LinkedList<>(), Collections.emptyList()));
 		
 		List<Collection> working = new LinkedList<Collection>();
-		working.add(new Collection(colId, "collection2", false, new LinkedList<>()));
+		working.add(new Collection(colId, "collection2", false, new LinkedList<>(), Collections.emptyList()));
 		
 		CollectionDiffer collectionDiffer = new CollectionDiffer();
 		DiffNode diffNode = collectionDiffer.compare(working, base);
@@ -86,11 +87,11 @@ public class DiffTest {
 		String colId2 = UUID.randomUUID().toString();
 		
 		List<Collection> base = new LinkedList<Collection>();
-		base.add(new Collection(colId, "collection1", false, new LinkedList<>()));
+		base.add(new Collection(colId, "collection1", false, new LinkedList<>(), Collections.emptyList()));
 		
 		List<Collection> working = new LinkedList<Collection>();
-		working.add(new Collection(colId, "collection1", false, new LinkedList<>()));
-		working.add(new Collection(colId2, "collection2", false, new LinkedList<>()));
+		working.add(new Collection(colId, "collection1", false, new LinkedList<>(), Collections.emptyList()));
+		working.add(new Collection(colId2, "collection2", false, new LinkedList<>(), Collections.emptyList()));
 		
 		CollectionDiffer collectionDiffer = new CollectionDiffer();
 		DiffNode diffNode = collectionDiffer.compare(working, base);
@@ -112,10 +113,10 @@ public class DiffTest {
 		String colId = UUID.randomUUID().toString();
 		
 		List<Collection> base = new LinkedList<Collection>();
-		base.add(new Collection(colId, "collection1", true, new LinkedList<>()));
+		base.add(new Collection(colId, "collection1", true, new LinkedList<>(), Collections.emptyList()));
 		
 		List<Collection> working = new LinkedList<Collection>();
-		working.add(new Collection(colId, "collection1", false, new LinkedList<>()));
+		working.add(new Collection(colId, "collection1", false, new LinkedList<>(), Collections.emptyList()));
 		
 		CollectionDiffer collectionDiffer = new CollectionDiffer();
 		DiffNode diffNode = collectionDiffer.compare(working, base);

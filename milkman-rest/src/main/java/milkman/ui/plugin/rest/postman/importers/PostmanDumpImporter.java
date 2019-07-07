@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import milkman.domain.Collection;
 import milkman.domain.Environment;
 import milkman.domain.Environment.EnvironmentEntry;
+import milkman.domain.Folder;
 import milkman.domain.RequestContainer;
 import milkman.domain.Workspace;
 import milkman.ui.plugin.rest.domain.HeaderEntry;
@@ -22,6 +23,7 @@ import milkman.ui.plugin.rest.domain.RestHeaderAspect;
 import milkman.ui.plugin.rest.domain.RestRequestContainer;
 import milkman.ui.plugin.rest.postman.dump.PostmanDump;
 import milkman.ui.plugin.rest.postman.dump.PostmanDump.PostmanCollection;
+import milkman.ui.plugin.rest.postman.dump.PostmanDump.PostmanFolder;
 import milkman.ui.plugin.rest.postman.dump.PostmanDump.PostmanRequest;
 
 public class PostmanDumpImporter {
@@ -78,22 +80,51 @@ public class PostmanDumpImporter {
 
 	private Collection convertToDomain(PostmanCollection postmanCollection) {
 		List<RequestContainer> requests = new LinkedList<RequestContainer>();
-		
 		if (postmanCollection.getRequests() != null) {
 			for (PostmanRequest request : postmanCollection.getRequests()) {
 				requests.add(convertToDomain(request));
 			}
 		}
 		
-		return new Collection(UUID.randomUUID().toString(), postmanCollection.getName(), false, requests);
+
+		List<Folder> folders = new LinkedList<Folder>();
+		if (postmanCollection.getFolders() != null) {
+			for (PostmanFolder postmanFolder : postmanCollection.getFolders()) {
+				folders.add(convertToDomain(postmanFolder));
+			}
+		}
+		folders.sort((a,b) -> postmanCollection.getFoldersOrder().indexOf(a.getId()) - postmanCollection.getFoldersOrder().indexOf(b.getId()));
+
+		
+		return new Collection(UUID.randomUUID().toString(), postmanCollection.getName(), false, requests, folders);
 	}
 
 	
+	private Folder convertToDomain(PostmanFolder postmanFolder) {
+
+		List<String> requests = new LinkedList<String>();
+		if (postmanFolder.getRequests() != null)
+			requests.addAll(postmanFolder.getRequests());
+		
+		
+		List<Folder> subfolders = new LinkedList<Folder>();
+		if (postmanFolder.getFolders() != null) {
+			for (PostmanFolder postmanSubFolder : postmanFolder.getFolders()) {
+				subfolders.add(convertToDomain(postmanSubFolder));
+			}
+		}
+		
+		subfolders.sort((a,b) -> postmanFolder.getFoldersOrder().indexOf(a.getId()) - postmanFolder.getFoldersOrder().indexOf(b.getId()));
+		
+		return new Folder(postmanFolder.getId(), postmanFolder.getName(), subfolders, requests);
+	}
+
+
+
+
 	private RequestContainer convertToDomain(PostmanDump.PostmanRequest request) {
 		RestRequestContainer container = new RestRequestContainer(request.getName(), request.getUrl(), request.getMethod());
-
-		//TODO: this should happen automatically...
-		container.setId(UUID.randomUUID().toString());
+		container.setId(request.getId());
 		container.setInStorage(true);
 		
 		
