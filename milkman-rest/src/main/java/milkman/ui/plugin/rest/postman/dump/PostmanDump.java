@@ -2,6 +2,8 @@ package milkman.ui.plugin.rest.postman.dump;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Data;
 
 @Data
@@ -14,10 +16,30 @@ public class PostmanDump {
 	public static class PostmanCollection {
 		String name;
 		List<PostmanRequest> requests;
+		
+		List<PostmanFolder> folders;
+		
+		@JsonProperty("folders_order")
+		List<String> foldersOrder;
+	}
+	
+	@Data
+	public static class PostmanFolder {
+		String id;
+		String name;
+		
+		@JsonProperty("order")
+		List<String> requests;
+		
+		List<PostmanFolder> folders;
+		
+		@JsonProperty("folders_order")
+		List<String> foldersOrder;
 	}
 	
 	@Data
 	public static class PostmanRequest {
+		String id;
 		String name;
 		String url;
 		String method;
