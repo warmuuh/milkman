@@ -41,6 +41,7 @@ import lombok.val;
 import milkman.domain.Collection;
 import milkman.domain.Folder;
 import milkman.domain.RequestContainer;
+import milkman.domain.Searchable;
 import milkman.ui.commands.UiCommand;
 import milkman.utils.Event;
 import milkman.utils.PropertyChangeEvent;
@@ -153,6 +154,7 @@ public class RequestCollectionComponent {
 			expansionCache.put(f.getId(), n);
 		});
 
+		
 //		List<TreeItem<Node>> children = new LinkedList<TreeItem<Node>>();
 		for (Folder childFolder : f.getFolders()) {
 			var childFolderNode = buildTreeForFolder(collection, childFolder, collectionRequests);
@@ -164,11 +166,17 @@ public class RequestCollectionComponent {
 			if (req != null) {
 				TreeItem<Node> requestTreeItem = new TreeItem<Node>(createRequestEntry(collection, req));
 				requestTreeItem.getValue().setUserData(req);
+//				children.add(requestTreeItem);
 				folderItm.getChildren().add(requestTreeItem);
 				collectionRequests.remove(req);
 			}
 		}
-//		folderItm.setChildren(FXCollections.observableList(children));
+		
+		//TODO: cannot set children on folders for some reason as they will get GC'ed instantly!??!
+		//that means, we can't use FilteredList properly and search in folders
+		//does not work that nicely
+//		folderItm.setChildren(new FilteredList<TreeItem<Node>>(FXCollections.observableList(children)));
+
 		return folderItm;
 	}
 	
@@ -222,8 +230,17 @@ public class RequestCollectionComponent {
 					}
 					
 					((FilteredList<TreeItem<Node>>)o.getChildren()).setPredicate(ro -> {
-						RequestContainer req = (RequestContainer) ro.getValue().getUserData();
-						return req.match(searchTerm);
+						if (ro.getValue().getUserData() instanceof Folder) {
+							//as we cant use filtered lists in folders (See line 193)
+							//we have to do cheap version here and check all contaiend folders&requests, if they
+							//contain a matching request and show the whole folder
+							if (findMatchingRequestInFolderStructure(ro, searchTerm))
+								return true;
+						} else if (ro.getValue().getUserData() instanceof RequestContainer) {
+							RequestContainer req = (RequestContainer) ro.getValue().getUserData();
+							return req.match(searchTerm);
+						}
+						return false;
 					});
 					
 					return o.getChildren().size() > 0;
@@ -245,6 +262,18 @@ public class RequestCollectionComponent {
 
 
 	
+	private boolean findMatchingRequestInFolderStructure(TreeItem<Node> ro, String searchTerm) {
+		if (ro.getValue().getUserData() instanceof Searchable) {
+			Searchable s = (Searchable) ro.getValue().getUserData();
+			if (s.match(searchTerm))
+				return true;
+		}
+		
+		return ro.getChildren().stream()
+				.anyMatch(c -> findMatchingRequestInFolderStructure(c, searchTerm));
+	}
+
+
 	private Node createRequestEntry(Collection collection, RequestContainer request) {
 		Label requestType = new Label(request.getType());
 		requestType.getStyleClass().add("request-type");
