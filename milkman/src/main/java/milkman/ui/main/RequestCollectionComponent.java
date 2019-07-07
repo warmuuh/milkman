@@ -116,10 +116,10 @@ public class RequestCollectionComponent {
 		SettableTreeItem<Node> item = new SettableTreeItem<Node>();
 		HBox collEntry = createCollectionEntry(collection, item);
 		item.setValue(collEntry);
-		item.setExpanded(expansionCache.getOrDefault(collection.getName(), false));
 		item.getValue().setUserData(collection);
+		item.setExpanded(expansionCache.getOrDefault(collection.getId(), false));
 		item.expandedProperty().addListener((obs, o, n) -> {
-			expansionCache.put(collection.getName(), n);
+			expansionCache.put(collection.getId(), n);
 		});
 		
 		List<RequestContainer> collectionRequests = new LinkedList<>(collection.getRequests());
@@ -148,7 +148,11 @@ public class RequestCollectionComponent {
 		SettableTreeItem<Node> folderItm = new SettableTreeItem<Node>();
 		folderItm.setValue(createFolderEntry(f, collection, folderItm));
 		folderItm.getValue().setUserData(f);
-		
+		folderItm.setExpanded(expansionCache.getOrDefault(f.getId(), false));
+		folderItm.expandedProperty().addListener((obs, o, n) -> {
+			expansionCache.put(f.getId(), n);
+		});
+
 //		List<TreeItem<Node>> children = new LinkedList<TreeItem<Node>>();
 		for (Folder childFolder : f.getFolders()) {
 			var childFolderNode = buildTreeForFolder(collection, childFolder, collectionRequests);
