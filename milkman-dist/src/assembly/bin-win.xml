@@ -10,7 +10,7 @@
 	
 	<fileSets>
 		<fileSet>
-			<directory>src/bin/windows</directory>
+			<directory>src/bin/win</directory>
 			<outputDirectory>/</outputDirectory>
 			<includes>
 				<include>*.*</include>
