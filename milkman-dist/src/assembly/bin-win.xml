@@ -12,6 +12,7 @@
 		<fileSet>
 			<directory>src/bin/win</directory>
 			<outputDirectory>/</outputDirectory>
+			<lineEnding>windows</lineEnding>
 			<includes>
 				<include>*.*</include>
 			</includes>

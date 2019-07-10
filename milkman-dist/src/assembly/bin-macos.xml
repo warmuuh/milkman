@@ -12,6 +12,7 @@
 		<fileSet>
 			<directory>src/bin/macos</directory>
 			<outputDirectory>/</outputDirectory>
+			<lineEnding>unix</lineEnding>
 			<includes>
 				<include>*.*</include>
 			</includes>
