@@ -71,5 +71,5 @@ Some common components are provided by milkman to make development of plugins ea
 milkman uses TestFX for testing. A [sample test](https://github.com/warmuuh/milkman/blob/master/milkman-note/src/test/java/milkman/plugin/note/NotesAspectEditorTest.java) can be seen in the notes plugin.
 
 # Gotchas
-JavaFX uses a lot of weak references. That means, if you dont keep references to e.g. bindings or controllers even (if they are not referred to by e.g. FXML-onActions), they get garbage-collected and the bindings simply dont work.
+JavaFX uses a lot of weak references. That means, if you don't keep references to e.g. bindings or controllers even (if they are not referred to by e.g. FXML-onActions), they get garbage-collected and the bindings simply don't work.
 You can use `setUserData` in some cases to have a strong reference of the UI element to e.g. the controller, so they both get garbage-collected at the same time.
