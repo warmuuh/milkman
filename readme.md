@@ -4,7 +4,7 @@
 # ![Milkman Logo](img/milk-bottle.png) Milkman - An Extensible Request/Response Workbench
 
 Milkman is heavily inspired by Postman. But I got sick of all those electron-based applications that need ages and loads of memory to start up.
-Therefore i created a JavaFx-based workbench for crafting requests / responses. It is not limited to e.g. http (or more specificaly rest) requests. Due to nearly
+Therefore i created a JavaFx-based workbench for crafting requests / responses. It is not limited to e.g. http (or more specifically rest) requests. Due to nearly
 everything being a plugin, other things are possible, like database-requests or GRPC, GraphQl, etc...
 
 
