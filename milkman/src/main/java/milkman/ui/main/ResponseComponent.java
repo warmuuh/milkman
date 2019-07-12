@@ -51,6 +51,8 @@ public class ResponseComponent implements Initializable {
 
 	@FXML JFXButton cancellation;
 
+	private int oldSelection = -1;
+
 	
 	@Inject
 	public ResponseComponent(UiPluginManager plugins) {
@@ -59,8 +61,7 @@ public class ResponseComponent implements Initializable {
 
 
 	public void display(RequestContainer request, ResponseContainer response) {
-		int oldSelection = tabs.getSelectionModel().getSelectedIndex();
-		clear();
+//		clear();
 		hideSpinner();
 
 		addStatusInformation(response.getStatusInformations());
@@ -95,6 +96,7 @@ public class ResponseComponent implements Initializable {
 
 
 	public void clear() {
+		oldSelection = tabs.getSelectionModel().getSelectedIndex();
 		statusDisplay.getChildren().clear();
 		tabs.getTabs().clear();
 	}

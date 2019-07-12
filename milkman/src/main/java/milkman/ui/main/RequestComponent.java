@@ -63,7 +63,7 @@ public class RequestComponent {
 		mainEditingArea.getChildren().add(mainEditController.getRoot());
 		mainEditController.displayRequest(request);
 		int oldSelection = tabs.getSelectionModel().getSelectedIndex();
-		
+
 		tabs.getTabs().clear();
 		
 		submitBtn.getItems().clear();
