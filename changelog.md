@@ -11,7 +11,14 @@
 
 # Changelog
 
-version 3.2.0 - upcomming
+version 3.2.1
+  * added option to not follow redirects
+  * sticky response-tabs (dont reset to first tab anymore)
+  * fixed issues with duplicate environment variable keys
+  * enhanced macos/linux artifacts (executable scripts, install.sh for linux, lineendings)
+  * use os-specific appdata folder, if current folder is not writable
+
+version 3.2.0 
   * Performance improvements: binary css, replaced fxml with java
   * minor fixes for exceptions
   * fixed bug for adding headers
