@@ -65,7 +65,6 @@ public class RequestProcessor {
 		HttpClientBuilder builder = HttpClients.custom()
 				.addInterceptorFirst(new RequestContent());
 		
-		
 		if (HttpOptionsPluginProvider.options().isUseProxy()) {
 			URL url = new URL(HttpOptionsPluginProvider.options().getProxyUrl());
 			
@@ -81,6 +80,10 @@ public class RequestProcessor {
 		
 		if (!HttpOptionsPluginProvider.options().isCertificateValidation()) {
 			disableSsl(builder);
+		}
+		
+		if (!HttpOptionsPluginProvider.options().isFollowRedirects()) {
+			builder.disableRedirectHandling();
 		}
 		
 		return builder

@@ -15,6 +15,7 @@ public class HttpOptionsPluginProvider implements OptionPageProvider<HttpOptions
 		private String proxyExclusion = "127.0.0.1|localhost";
 		private boolean askForProxyAuth = false;
 		private boolean certificateValidation = false;
+		private boolean followRedirects = false;
 	}
 
 	
@@ -42,8 +43,9 @@ public class HttpOptionsPluginProvider implements OptionPageProvider<HttpOptions
 					.textInput("Proxy Url", HttpOptions::getProxyUrl, HttpOptions::setProxyUrl)
 					.textInput("Exclude", HttpOptions::getProxyExclusion, HttpOptions::setProxyExclusion)
 				.endSection()
-				.section("Security")
+				.section("Requests")
 					.toggle("Validate Certificates", HttpOptions::isCertificateValidation, HttpOptions::setCertificateValidation)
+					.toggle("Follow Redirects", HttpOptions::isFollowRedirects, HttpOptions::setFollowRedirects)
 				.endSection()
 				.build();
 	}
