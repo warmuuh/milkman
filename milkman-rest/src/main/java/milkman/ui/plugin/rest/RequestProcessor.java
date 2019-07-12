@@ -51,6 +51,8 @@ import milkman.ui.plugin.rest.domain.RestResponseHeaderAspect;
 
 public class RequestProcessor {
 
+	private static final String USER_AGENT_HEADER = "User-Agent";
+
 	public RequestProcessor() {
 		
 	}
@@ -137,7 +139,7 @@ public class RequestProcessor {
 	private HttpUriRequest toHttpRequest(RestRequestContainer request, Templater templater) {
 		RequestBuilder builder = RequestBuilder.create(request.getHttpMethod());
 		builder.setUri(escapeUrl(request, templater));
-		builder.setHeader("user-agent", "milkman");
+		
 
 		for (RequestAspect aspect : request.getAspects()) {
 			if (aspect instanceof RestRequestAspect) {
@@ -145,7 +147,8 @@ public class RequestProcessor {
 			}
 		}
 		
-		
+		if (builder.getFirstHeader(USER_AGENT_HEADER) == null)
+			builder.setHeader(USER_AGENT_HEADER, "Milkman");
 
 		return builder.build();
 	}
