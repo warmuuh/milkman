@@ -149,7 +149,7 @@ public class RequestComponent {
 			export.setOnAction(e -> controller.onExport());
 			controller.saveBtn.getItems().add(export);
 			
-			JFXTabPane tabPane = add(new JFXTabPane());
+			JFXTabPane tabPane = add(new JFXTabPane(), true);
 			tabPane.setId("tabs");
 			controller.tabs = tabPane;
 			tabPane.setPrefHeight(300);
