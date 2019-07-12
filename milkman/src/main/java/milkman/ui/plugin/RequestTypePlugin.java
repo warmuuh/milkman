@@ -3,8 +3,6 @@ package milkman.ui.plugin;
 import java.util.Collections;
 import java.util.List;
 
-import javax.naming.OperationNotSupportedException;
-
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 

@@ -3,7 +3,6 @@ package milkman.ui.contenttype;
 import java.util.Collection;
 import java.util.Collections;
 
-import javax.naming.OperationNotSupportedException;
 
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
@@ -27,7 +26,7 @@ public class PlainContentTypePlugin implements ContentTypePlugin {
 	@Override
 	@SneakyThrows
 	public String formatContent(String text) {
-		throw new OperationNotSupportedException();
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
