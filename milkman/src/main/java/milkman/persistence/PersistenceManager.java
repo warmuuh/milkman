@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.val;
 import lombok.extern.slf4j.Slf4j;
+import milkman.PlatformUtil;
 import milkman.domain.Workspace;
 
 @Singleton
@@ -100,11 +101,18 @@ public class PersistenceManager {
 		JacksonMapper nitriteMapper = new JacksonMapper();
 		ObjectMapper mapper = nitriteMapper.getObjectMapper();
 		mapper.addHandler(new UnknownPluginHandler());
-		db = CompletableFuture.supplyAsync(() -> Nitrite.builder()
+		db = CompletableFuture.supplyAsync(() -> createOrOpenDb(nitriteMapper));
+	}
+	
+	private Nitrite createOrOpenDb(JacksonMapper nitriteMapper) {
+		var createdDb = Nitrite.builder()
 		        .compressed()
-		        .filePath("database.db")
+		        .filePath(PlatformUtil.getWritableLocationForFile("database.db"))
 		        .nitriteMapper(nitriteMapper)
-		        .openOrCreate("milkman", "bringthemilk"));
+		        .openOrCreate("milkman", "bringthemilk");
+		if (createdDb == null)
+			throw new RuntimeException("Cannot create database. Permissions?");
+		return createdDb;
 	}
 
 	@SneakyThrows

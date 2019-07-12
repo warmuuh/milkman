@@ -4,13 +4,15 @@ package milkman;
 
 import java.io.IOException;
 
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import milkman.logback.LogbackConfiguration;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
 
 @Slf4j
@@ -56,11 +58,7 @@ public class MilkmanApplication extends Application {
 
 	@SneakyThrows
 	private static void showFatalError(Throwable t) {
-		try {
-			log.error("Failed to start application", t);
-		} catch (Throwable x){
-			/*we try to log but if it fails (due to permissions maybe), we cant do anything*/
-		}
+		log.error("Failed to start application", t);
 		Alert alert = new ExceptionDialog(t);
 		alert.showAndWait();
 		Platform.exit();
