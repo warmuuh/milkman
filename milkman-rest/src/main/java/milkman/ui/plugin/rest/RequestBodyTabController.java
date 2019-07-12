@@ -4,16 +4,17 @@ import static milkman.utils.FunctionalUtils.run;
 
 import java.util.List;
 
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Tab;
 import lombok.SneakyThrows;
-import milkman.domain.RequestAspect;
 import milkman.domain.RequestContainer;
 import milkman.ui.components.ContentEditor;
 import milkman.ui.plugin.ContentTypeAwareEditor;
 import milkman.ui.plugin.ContentTypePlugin;
 import milkman.ui.plugin.RequestAspectEditor;
 import milkman.ui.plugin.rest.domain.RestBodyAspect;
+import milkman.ui.plugin.rest.domain.RestHeaderAspect;
+
+
 public class RequestBodyTabController implements RequestAspectEditor, ContentTypeAwareEditor {
 
 	private List<ContentTypePlugin> plugins;
@@ -28,7 +29,17 @@ public class RequestBodyTabController implements RequestAspectEditor, ContentTyp
 		if (plugins != null)
 			root.setContentTypePlugins(plugins);
 		
+		setContentTypeIfPresent(root, request);
+		
 		return new Tab("Body", root);
+	}
+
+	private void setContentTypeIfPresent(ContentEditor root, RequestContainer request) {
+		request.getAspect(RestHeaderAspect.class).flatMap(headers -> 
+			headers.getEntries().stream().filter(h -> h.getName().equalsIgnoreCase("Content-Type")).findAny()
+		)
+		.map(h -> h.getValue())
+		.ifPresent(root::setContentType);
 	}
 
 	@Override
