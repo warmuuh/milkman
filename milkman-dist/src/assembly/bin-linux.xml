@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
 	<id>bin</id>
 	<formats>
-		<format>zip</format>
+		<format>tgz</format>
 	</formats>
 	<baseDirectory>milkman-${project.version}</baseDirectory>
 	<!-- <includeBaseDirectory>false</includeBaseDirectory> -->
@@ -13,8 +13,17 @@
 			<directory>src/bin/linux</directory>
 			<outputDirectory>/</outputDirectory>
 			<lineEnding>unix</lineEnding>
+			<excludes>
+				<exclude>*.sh</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>src/bin/linux</directory>
+			<outputDirectory>/</outputDirectory>
+			<lineEnding>unix</lineEnding>
+			<fileMode>744</fileMode>
 			<includes>
-				<include>*.*</include>
+				<include>*.sh</include>
 			</includes>
 		</fileSet>
 		<fileSet>

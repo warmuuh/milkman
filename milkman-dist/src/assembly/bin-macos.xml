@@ -13,8 +13,17 @@
 			<directory>src/bin/macos</directory>
 			<outputDirectory>/</outputDirectory>
 			<lineEnding>unix</lineEnding>
+			<excludes>
+				<exclude>*.sh</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>src/bin/macos</directory>
+			<outputDirectory>/</outputDirectory>
+			<lineEnding>unix</lineEnding>
+			<fileMode>744</fileMode>
 			<includes>
-				<include>*.*</include>
+				<include>*.sh</include>
 			</includes>
 		</fileSet>
 		<fileSet>
