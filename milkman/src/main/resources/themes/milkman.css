@@ -3,6 +3,9 @@
 	-fx-faint-focus-color: transparent;
 }
 
+.handCursor {
+	-fx-cursor: hand
+}
 
 /**
  * toolbar

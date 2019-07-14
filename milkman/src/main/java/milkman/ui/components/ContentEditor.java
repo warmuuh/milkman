@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.function.Consumer;
+import java.util.function.IntFunction;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang3.time.StopWatch;
@@ -26,6 +27,7 @@ import com.jfoenix.controls.JFXComboBox;
 
 import javafx.concurrent.Task;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
@@ -37,6 +39,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Polygon;
 import javafx.util.StringConverter;
 import lombok.val;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
@@ -97,6 +101,7 @@ public class ContentEditor extends VBox {
 	private void setupCodeArea() {
 		codeArea = new CodeArea();
 		
+		setupLineFolding();
 		
 		codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
 		EventStream<Object> highLightTrigger = EventStreams.merge(
@@ -135,6 +140,25 @@ public class ContentEditor extends VBox {
 				focusSearch();
 			}
 		});
+	}
+
+
+	private void setupLineFolding() {
+		IntFunction<Node> lineNr = LineNumberFactory.get(codeArea);
+		IntFunction<Node> plusBtn = line -> {
+			Polygon triangle = new Polygon(0.0, 0.0, 10.0, 5.0, 0.0, 10.0);
+	        triangle.setFill(Color.GREEN);
+	        return triangle;
+//			return new FontAwesomeIconView(FontAwesomeIcon.PLUS);
+		};
+		IntFunction<Node> graphicFactory = line -> {
+            HBox hbox = new HBox(
+            		lineNr.apply(line),
+            		plusBtn.apply(line));
+            hbox.setAlignment(Pos.CENTER_LEFT);
+            return hbox;
+        };
+        codeArea.setParagraphGraphicFactory(graphicFactory);
 	}
 
 
