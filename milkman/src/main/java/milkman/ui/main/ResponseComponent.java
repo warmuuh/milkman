@@ -61,7 +61,7 @@ public class ResponseComponent implements Initializable {
 
 
 	public void display(RequestContainer request, ResponseContainer response) {
-//		clear();
+		clearInternal();
 		hideSpinner();
 
 		addStatusInformation(response.getStatusInformations());
@@ -94,11 +94,14 @@ public class ResponseComponent implements Initializable {
 		}
 	}
 
+	private void clearInternal(){
+		statusDisplay.getChildren().clear();
+		tabs.getTabs().clear();
+	}
 
 	public void clear() {
 		oldSelection = tabs.getSelectionModel().getSelectedIndex();
-		statusDisplay.getChildren().clear();
-		tabs.getTabs().clear();
+		clearInternal();
 	}
 	
 	public void showSpinner(Runnable cancellationListener) {
