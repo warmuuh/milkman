@@ -6,3 +6,5 @@ target/
 database.db
 errors.log
 .factorypath
+*.iml
+.idea/
