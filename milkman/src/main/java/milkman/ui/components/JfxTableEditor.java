@@ -265,15 +265,15 @@ public class JfxTableEditor<T> extends StackPane {
 		        btn.setOnAction(event -> {
 
 					Platform.runLater( () -> {
-//						table.getRoot().getChildren().remove(getTreeTableRow().getIndex());
+//						table.build().getChildren().remove(getTreeTableRow().getIndex());
 						obsWrappedItems.remove(getTreeTableRow().getIndex());
-//						table.getRoot().getValue().setChildren(obsWrappedItems);
-//						table.setRoot(table.getRoot());
+//						table.build().getValue().setChildren(obsWrappedItems);
+//						table.setRoot(table.build());
 //						table.refresh();
 						if (listener != null)
 			        		listener.run();
 					});
-//                        T element = getTreeTableView().getRoot().getChildren().get(getTreeTableRow().getIndex()).getValue();
+//                        T element = getTreeTableView().build().getChildren().get(getTreeTableRow().getIndex()).getValue();
 //                        getItems().remove(element);
 		        	
 		        });

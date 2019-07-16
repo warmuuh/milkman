@@ -3,8 +3,10 @@ package milkman.ui.components;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Stack;
 import java.util.function.IntFunction;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.fxmisc.richtext.LineNumberFactory;
 
@@ -177,6 +179,63 @@ public class CodeFoldingContentEditor extends ContentEditor {
 
 		public int getStartLine() {
 			return isRoot ? -1 : super.getStartLine();
+		}
+
+	}
+
+	public static class CodeFoldingBuilder {
+    	private final String text;
+    	private final String palceholder;
+    	private final Stack<CollapsableRange> rangeStack;
+    	private int curIdx = 0;
+
+		public CodeFoldingBuilder(String text, String palceholder) {
+			this.text = text;
+			this.palceholder = palceholder;
+			rangeStack = new Stack<>();
+			rangeStack.add(new CollapsableRange(null, true));
+		}
+
+		/**
+		 * will add everything from current idx to given idx as text node and add a new collapsable to the stack
+		 * @param nextIdx
+		 */
+		public void startRange(int nextIdx){
+			ContentRange prev = addLeftOverTextToCurrentRange(nextIdx);
+
+			CollapsableRange newCollapsable = new CollapsableRange(prev, false);
+			rangeStack.peek().addChildren(newCollapsable);
+			rangeStack.add(newCollapsable);
+		}
+
+		private ContentRange addLeftOverTextToCurrentRange(int nextIdx) {
+			ContentRange prev = null;
+			if (rangeStack.peek().getChildren().size() > 0)
+				prev = rangeStack.peek().getChildren().get( rangeStack.peek().getChildren().size() -1);
+
+			if (curIdx < nextIdx) {
+				prev = new TextRange(prev, text.substring(curIdx, nextIdx));
+				rangeStack.peek().addChildren(prev);
+			}
+			curIdx = nextIdx;
+			return prev;
+		}
+
+		/**
+		 * will close the current collapsable and pop it from stack
+		 * @param nextIdx
+		 */
+		public void endRange(int nextIdx){
+			ContentRange prev = addLeftOverTextToCurrentRange(nextIdx);
+
+			//just as a guard, dont pop the root
+			if (rangeStack.size() > 1)
+				rangeStack.pop();
+		}
+
+		public CollapsableRange build(){
+			ContentRange prev = addLeftOverTextToCurrentRange(text.length());
+			return rangeStack.get(0);
 		}
 
 	}
