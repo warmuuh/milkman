@@ -68,11 +68,11 @@ public class ContentEditor extends VBox {
 
 	private GenericBinding<Object, String> contentBinding;
 
-	private JFXComboBox<ContentTypePlugin> highlighters;
+	protected JFXComboBox<ContentTypePlugin> highlighters;
 
 	private JFXButton format;
 
-	private HBox header;
+	protected HBox header;
 
 	private TextField searchField;
 

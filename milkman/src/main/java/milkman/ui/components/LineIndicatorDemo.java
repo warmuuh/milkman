@@ -66,7 +66,7 @@ public class LineIndicatorDemo extends Application {
 	public void start(Stage primaryStage) {
 		codeArea = new CodeFoldingContentEditor();
 
-		codeArea.setContentTypePlugins(Arrays.asList(new JsonFoldingTypePlugin()));
+		codeArea.setContentTypePlugins(Arrays.asList(new NoFoldingContentType(), new JsonFoldingTypePlugin()));
 
 		codeArea.setContentType("application/testjson");
 		codeArea.setEditable(false);
@@ -232,6 +232,35 @@ public class LineIndicatorDemo extends Application {
 				}
 			}
 			return rootRange;
+		}
+
+	}
+
+	private static class NoFoldingContentType implements ContentTypePlugin {
+
+		@Override
+		public boolean supportFormatting() {
+			return false;
+		}
+
+		@Override
+		public String getName() {
+			return "nofolding";
+		}
+
+		@Override
+		public String getContentType() {
+			return "application/nofolding";
+		}
+
+		@Override
+		public String formatContent(String text) {
+			return text;
+		}
+
+		@Override
+		public StyleSpans<Collection<String>> computeHighlighting(String text) {
+			return new StyleSpansBuilder().add(Collections.emptyList(), text.length()).create();
 		}
 
 	}

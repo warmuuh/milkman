@@ -6,6 +6,8 @@ import java.util.Optional;
 import java.util.Stack;
 import java.util.function.IntFunction;
 
+import com.jfoenix.controls.JFXButton;
+import javafx.scene.control.Button;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.fxmisc.richtext.LineNumberFactory;
@@ -17,15 +19,96 @@ import javafx.scene.Node;
 import javafx.scene.layout.HBox;
 import lombok.Data;
 
+/**
+ * this editor supports code folding
+ *
+ * this should only be used for non-editable code Areas as it modifies the text and this might
+ * result in unwanted changes to bound values
+ */
 public class CodeFoldingContentEditor extends ContentEditor {
+	private ContentRange rootRange;
 
-	
-	
-	ContentRange rootRange;
+	private Button collapseAll;
+	private Button expandAll;
 
-	
-	
-    @Override
+	private Button collapseOne;
+	private Button expandOne;
+
+	private int currentFoldingLevel;
+	private int maxFoldingLevel;
+
+	public CodeFoldingContentEditor() {
+
+		collapseAll = new JFXButton();
+		collapseAll.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.COMPRESS));
+		collapseAll.setOnAction(e -> {
+			setCollapseRecursively(rootRange, 0, 0);
+			currentFoldingLevel = 0;
+			redrawText();
+		});
+
+
+		expandAll = new JFXButton();
+		expandAll.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.EXPAND));
+		expandAll.setOnAction(e -> {
+			setCollapseRecursively(rootRange, maxFoldingLevel, 0);
+			currentFoldingLevel = maxFoldingLevel;
+			redrawText();
+		});
+
+		collapseOne = new JFXButton();
+		collapseOne.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PLUS));
+		collapseOne.setOnAction(e -> {
+			int nextLevel = Math.min(currentFoldingLevel +1, maxFoldingLevel);
+			setCollapseRecursively(rootRange, nextLevel, 0);
+			currentFoldingLevel = nextLevel;
+			redrawText();
+		});
+
+
+		expandOne = new JFXButton();
+		expandOne.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.MINUS));
+		expandOne.setOnAction(e -> {
+			int nextLevel = Math.max(currentFoldingLevel -1, 0);
+			setCollapseRecursively(rootRange, nextLevel, 0);
+			currentFoldingLevel = nextLevel;
+			redrawText();
+		});
+
+		header.getChildren().add(collapseAll);
+		header.getChildren().add(expandAll);
+		header.getChildren().add(collapseOne);
+		header.getChildren().add(expandOne);
+
+		highlighters.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
+			if (n != null){
+				collapseAll.setVisible(n.supportFolding());
+				expandAll.setVisible(n.supportFolding());
+				collapseOne.setVisible(n.supportFolding());
+				expandOne.setVisible(n.supportFolding());
+				//trigger redraw bc of folding
+				replaceText(codeArea.getText());
+			}
+		});
+
+	}
+
+	private void setCollapseRecursively(ContentRange node, int collapseAllBelowLevel, int curLevel) {
+		if (node == null)
+			return;
+
+		if (node instanceof CollapsableRange){
+			CollapsableRange collapsable = (CollapsableRange) node;
+			if (!collapsable.isRoot())
+				collapsable.setCollapsed(curLevel > collapseAllBelowLevel);
+
+			for (ContentRange child : collapsable.getChildren()) {
+				setCollapseRecursively(child, collapseAllBelowLevel, curLevel + 1);
+			}
+		}
+	}
+
+	@Override
 	protected void setupParagraphGraphics() {
     	 IntFunction<Node> numberFactory = LineNumberFactory.get(codeArea);
          IntFunction<Node> arrowFactory = new FoldOperatorFactory();
@@ -48,12 +131,30 @@ public class CodeFoldingContentEditor extends ContentEditor {
     	if (getCurrentContenttypePlugin().supportFolding())
     	{
     		rootRange = getCurrentContenttypePlugin().computeFolding(text);
+			maxFoldingLevel = computeMaxFoldingLevel(rootRange);
+			currentFoldingLevel = maxFoldingLevel; //start with expanded tree
         	redrawText();
     	} else {
     		super.replaceText(text);
     	}
     }
-    
+
+	private int computeMaxFoldingLevel(ContentRange node) {
+		if (node instanceof CollapsableRange){
+			CollapsableRange collapsable = (CollapsableRange) node;
+
+
+			int childLvl = collapsable.getChildren()
+					.stream()
+					.mapToInt(this::computeMaxFoldingLevel)
+					.max().orElse(0);
+
+			return childLvl + (collapsable.isRoot() ? 0 : 1); //dont count in root
+		}
+
+		return 0;
+	}
+
 
 	private Optional<CollapsableRange> lookupCollapsableRangeInStartLineIdx(int lineNumber, ContentRange curContentRange){
     	if(!(curContentRange instanceof CollapsableRange)) {
@@ -83,8 +184,6 @@ public class CodeFoldingContentEditor extends ContentEditor {
 
         @Override
         public Node apply(int lineNumber) {
-//        	FontAwesomeIconView empty = new FontAwesomeIconView(FontAwesomeIcon.PLUS_SQUARE);
-//        	empty.setVisible(false);
         	return lookupCollapsableRangeInStartLineIdx(lineNumber, rootRange)
         		.map(r -> {
         			FontAwesomeIconView view; 
