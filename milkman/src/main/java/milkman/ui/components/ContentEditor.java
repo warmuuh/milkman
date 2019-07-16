@@ -56,84 +56,74 @@ public class ContentEditor extends VBox {
 
 	private static final String DEFAULT_CONTENTTYPE = "text/plain";
 
-	private static ExecutorService executor = Executors.newCachedThreadPool( new ThreadFactory() {
-        public Thread newThread(Runnable r) {
-            Thread t = Executors.defaultThreadFactory().newThread(r);
-            t.setDaemon(true);
-            return t;
-        }
-    });
-	
-	CodeArea codeArea;
+	private static ExecutorService executor = Executors.newCachedThreadPool(new ThreadFactory() {
+		public Thread newThread(Runnable r) {
+			Thread t = Executors.defaultThreadFactory().newThread(r);
+			t.setDaemon(true);
+			return t;
+		}
+	});
 
-	GenericBinding<Object, String> contentBinding;
+	protected CodeArea codeArea;
+
+	private GenericBinding<Object, String> contentBinding;
 
 	private JFXComboBox<ContentTypePlugin> highlighters;
 
-	JFXButton format;
+	private JFXButton format;
 
 	private HBox header;
-	
+
 	private TextField searchField;
 
-	
-	
 	public ContentEditor() {
 		getStyleClass().add("contentEditor");
-		
+
 		setupHeader();
 		setupCodeArea();
 		setupSearch();
-		
+
 		StackPane.setAlignment(searchField, Pos.TOP_RIGHT);
-		//bug: virtualizedScrollPane has some issue if it is rendered within a tab that is not yet shown with content that needs a scrollbar
-		//this leads to e.g. tabs not being updated, if triggered programmatically
-		//switching to ALWAYS for scrollbars fixes this issue
-		VirtualizedScrollPane virtualizedScrollPane = new VirtualizedScrollPane(codeArea, ScrollBarPolicy.ALWAYS, ScrollBarPolicy.ALWAYS);
-		
+		// bug: virtualizedScrollPane has some issue if it is rendered within a tab that
+		// is not yet shown with content that needs a scrollbar
+		// this leads to e.g. tabs not being updated, if triggered programmatically
+		// switching to ALWAYS for scrollbars fixes this issue
+		VirtualizedScrollPane virtualizedScrollPane = new VirtualizedScrollPane(codeArea, ScrollBarPolicy.ALWAYS,
+				ScrollBarPolicy.ALWAYS);
+
 		StackPane contentPane = new StackPane(virtualizedScrollPane, searchField);
 		VBox.setVgrow(contentPane, Priority.ALWAYS);
-		
+
 		getChildren().add(contentPane);
 	}
 
-
 	private void setupCodeArea() {
 		codeArea = new CodeArea();
-		
-		setupLineFolding();
-		
-		codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
-		EventStream<Object> highLightTrigger = EventStreams.merge(
-				codeArea.multiPlainChanges(), 
+
+		setupParagraphGraphics();
+		EventStream<Object> highLightTrigger = EventStreams.merge(codeArea.multiPlainChanges(),
 				EventStreams.changesOf(highlighters.getSelectionModel().selectedItemProperty()),
 				EventStreams.eventsOf(format, MouseEvent.MOUSE_CLICKED));
-		
-		//sync highlighting:
+
+		// sync highlighting:
 //		Subscription cleanupWhenNoLongerNeedIt = highLightTrigger
 //				 .successionEnds(Duration.ofMillis(500))
 //				 .subscribe(ignore -> {
 //					System.out.println("Triggered highlight via end-of-succession");
 //					 highlightCode();
 //				 });
-		
-		
-		//async highlighting:
-		Subscription cleanupWhenNoLongerNeedIt = highLightTrigger
-			.successionEnds(Duration.ofMillis(500))
-	        .supplyTask(this::highlightCodeAsync)
-	        .awaitLatest(codeArea.multiPlainChanges())
-	        .filterMap(t -> {
-	            if(t.isSuccess()) {
-	                return Optional.of(t.get());
-	            } else {
-	                t.getFailure().printStackTrace();
-	                return Optional.empty();
-	            }
-			})
-	        .subscribe(this::applyHighlighting);
-		
-		
+
+		// async highlighting:
+		Subscription cleanupWhenNoLongerNeedIt = highLightTrigger.successionEnds(Duration.ofMillis(500))
+				.supplyTask(this::highlightCodeAsync).awaitLatest(codeArea.multiPlainChanges()).filterMap(t -> {
+					if (t.isSuccess()) {
+						return Optional.of(t.get());
+					} else {
+						t.getFailure().printStackTrace();
+						return Optional.empty();
+					}
+				}).subscribe(this::applyHighlighting);
+
 		val keyCombination = new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN);
 		codeArea.setOnKeyPressed(e -> {
 			if (keyCombination.match(e)) {
@@ -142,25 +132,9 @@ public class ContentEditor extends VBox {
 		});
 	}
 
-
-	private void setupLineFolding() {
-		IntFunction<Node> lineNr = LineNumberFactory.get(codeArea);
-		IntFunction<Node> plusBtn = line -> {
-			Polygon triangle = new Polygon(0.0, 0.0, 10.0, 5.0, 0.0, 10.0);
-	        triangle.setFill(Color.GREEN);
-	        return triangle;
-//			return new FontAwesomeIconView(FontAwesomeIcon.PLUS);
-		};
-		IntFunction<Node> graphicFactory = line -> {
-            HBox hbox = new HBox(
-            		lineNr.apply(line),
-            		plusBtn.apply(line));
-            hbox.setAlignment(Pos.CENTER_LEFT);
-            return hbox;
-        };
-        codeArea.setParagraphGraphicFactory(graphicFactory);
+	protected void setupParagraphGraphics() {
+		codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
 	}
-
 
 	private void setupSearch() {
 		searchField = new TextField();
@@ -174,7 +148,7 @@ public class ContentEditor extends VBox {
 				hideSearch();
 			}
 		});
-		
+
 		searchField.setVisible(false);
 		searchField.setPromptText("Search");
 		searchField.setMaxWidth(200);
@@ -182,30 +156,27 @@ public class ContentEditor extends VBox {
 			if (searchField.getText().length() > 0) {
 				int sIdx = codeArea.getText().indexOf(searchField.getText(), codeArea.getCaretPosition());
 				if (sIdx < 0) {
-					//wrap search:
+					// wrap search:
 					sIdx = codeArea.getText().substring(0, codeArea.getCaretPosition()).indexOf(searchField.getText());
 				}
 				if (sIdx >= 0) {
 					codeArea.selectRange(sIdx, sIdx + searchField.getText().length());
 					codeArea.requestFollowCaret();
 				}
-				
+
 			}
 		});
 	}
-
 
 	private void hideSearch() {
 		searchField.setVisible(false);
 		codeArea.requestFocus();
 	}
 
-
 	private void focusSearch() {
 		searchField.setVisible(true);
 		searchField.requestFocus();
 	}
-
 
 	private void setupHeader() {
 		highlighters = new JFXComboBox<ContentTypePlugin>();
@@ -214,30 +185,29 @@ public class ContentEditor extends VBox {
 			public String toString(ContentTypePlugin object) {
 				return object.getName();
 			}
+
 			@Override
 			public ContentTypePlugin fromString(String string) {
 				return null;
 			}
 		});
-		
+
 		highlighters.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
 			if (n != null)
-				format.setVisible( n.supportFormatting());
+				format.setVisible(n.supportFormatting());
 		});
-		
-		
+
 		format = new JFXButton("Format");
 		format.setVisible(false);
-		
+
 		format.setOnAction(e -> formatCurrentCode());
-		
+
 		header = new HBox(new Label("Content Type:"), highlighters, format);
 		header.getStyleClass().add("contentEditor-header");
-		
+
 		getChildren().add(header);
 	}
 
-	
 	public void setHeaderVisibility(boolean isVisible) {
 		if (isVisible && !getChildren().contains(header)) {
 			getChildren().add(header);
@@ -245,45 +215,42 @@ public class ContentEditor extends VBox {
 			getChildren().remove(header);
 		}
 	}
-	
-	private void highlightCode() {
-		codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText()));
-	}
-	
+
 	private Task<StyleSpans<Collection<String>>> highlightCodeAsync() {
-        String text = codeArea.getText();
-        Task<StyleSpans<Collection<String>>> task = new Task<StyleSpans<Collection<String>>>() {
-            @Override
-            protected StyleSpans<Collection<String>> call() throws Exception {
-                return computeHighlighting(text);
-            }
-        };
-        executor.execute(task);
-        return task;
-	} 
-	
-	private void applyHighlighting(StyleSpans<Collection<String>> highlighting) {
-        codeArea.setStyleSpans(0, highlighting);
+		String text = codeArea.getText();
+		Task<StyleSpans<Collection<String>>> task = new Task<StyleSpans<Collection<String>>>() {
+			@Override
+			protected StyleSpans<Collection<String>> call() throws Exception {
+				return computeHighlighting(text);
+			}
+		};
+		executor.execute(task);
+		return task;
 	}
-	
+
+	private void applyHighlighting(StyleSpans<Collection<String>> highlighting) {
+		codeArea.setStyleSpans(0, highlighting);
+	}
+
 	private void formatCurrentCode() {
 		StopWatch s = new StopWatch();
 		s.start();
-		try{
-			if (highlighters.getValue() != null && highlighters.getValue().supportFormatting()) {
-				codeArea.replaceText(formatCode(codeArea.getText()));	
+		try {
+			if (getCurrentContenttypePlugin() != null && getCurrentContenttypePlugin().supportFormatting()) {
+				codeArea.replaceText(formatCode(codeArea.getText()));
 			}
 		} finally {
 			s.stop();
 //			System.out.println("Formatting code and replace: " + s.getTime() + " ms");
 		}
 	}
+
 	private String formatCode(String code) {
 		StopWatch s = new StopWatch();
 		s.start();
-		try{
-			if (highlighters.getValue() != null && highlighters.getValue().supportFormatting()) {
-				return highlighters.getValue().formatContent(code);
+		try {
+			if (getCurrentContenttypePlugin() != null && getCurrentContenttypePlugin().supportFormatting()) {
+				return getCurrentContenttypePlugin().formatContent(code);
 			} else {
 				return code;
 			}
@@ -292,16 +259,19 @@ public class ContentEditor extends VBox {
 //			System.out.println("Formatting code: " + s.getTime() + " ms");
 		}
 	}
-	
+
+	protected ContentTypePlugin getCurrentContenttypePlugin() {
+		return highlighters.getValue();
+	}
 
 	private StyleSpans<Collection<String>> computeHighlighting(String text) {
 		StopWatch s = new StopWatch();
 		s.start();
-		try{
-			if (highlighters.getValue() != null)
-			return highlighters.getValue().computeHighlighting(text);
-		else
-			return noHighlight(text);
+		try {
+			if (getCurrentContenttypePlugin() != null)
+				return getCurrentContenttypePlugin().computeHighlighting(text);
+			else
+				return noHighlight(text);
 		} finally {
 			s.stop();
 //			System.out.println("Highlighting code: " + s.getTime() + " ms");
@@ -317,45 +287,50 @@ public class ContentEditor extends VBox {
 	public void setEditable(boolean editable) {
 		codeArea.setEditable(editable);
 	}
-	
+
 	public void setContentTypePlugins(List<ContentTypePlugin> plugins) {
 		highlighters.getItems().addAll(plugins);
-		//set plain highlighter as default:
+		// set plain highlighter as default:
 		String contentType = DEFAULT_CONTENTTYPE;
 		setActiveContentType(plugins, contentType);
 	}
 
 	private void setActiveContentType(List<ContentTypePlugin> plugins, String contentType) {
-		plugins.stream()
-		.filter(p -> contentType.contains(p.getContentType()))
-		.findAny().ifPresent(t -> {
+		plugins.stream().filter(p -> contentType.contains(p.getContentType())).findAny().ifPresent(t -> {
 			format.setVisible(t.supportFormatting());
 //			System.out.println("Setting active highlighter: " + t);
 			highlighters.setValue(t);
 //			System.out.println("End Setting active highlighter");
 		});
 	}
-	
+
 	public void setContentType(String contentType) {
 		setActiveContentType(highlighters.getItems(), contentType);
 		if (CoreApplicationOptionsProvider.options().isAutoformatContent())
 			formatCurrentCode();
 	}
-	
-	public void setContent(Supplier<String> getter, Consumer<String> setter) {		
+
+	public void setContent(Supplier<String> getter, Consumer<String> setter) {
 //		if (contentBinding != null) {
 //			Bindings.unbindBidirectional(codeAreaTextBinding, contentBinding);
 //		}
 //		contentBinding = GenericBinding.of(o -> getter.get(), (o,v) -> setter.accept(v), null);
 //		codeAreaTextBinding = Var.mapBidirectional(contentBinding,  s -> s, s->s);
-		
+
 		String curValue = getter.get();
-		
-		codeArea.replaceText(curValue != null ? curValue : "");
-		codeArea.textProperty().addListener((obs, o, n)->{
-			setter.accept(n);
+
+		replaceText(curValue);
+
+		codeArea.textProperty().addListener((obs, o, n) -> {
+			if (codeArea.isEditable()) {
+				setter.accept(n);
+			}
 		});
-		
+
+	}
+
+	protected void replaceText(String newText) {
+		codeArea.replaceText(newText != null ? newText : "");
 	}
 
 }

@@ -4,6 +4,8 @@ import java.util.Collection;
 
 import org.fxmisc.richtext.model.StyleSpans;
 
+import milkman.ui.components.CodeFoldingContentEditor.ContentRange;
+
 /**
 * extension point for content types used by the content-editor
 */
@@ -36,4 +38,21 @@ public interface ContentTypePlugin {
     * see milkman-syntax.css for style-classes that you can use in your highlighting.
     */
 	StyleSpans<Collection<String>> computeHighlighting(String text);
+	
+	
+	/**
+	 * returns true if code folding is supported
+	 */
+	default boolean supportFolding() {
+		return false;
+	};
+	
+	/**
+	 * returns hierarchical folding information
+	 * @param text
+	 * @return
+	 */
+	default ContentRange computeFolding(String text) {
+		throw new UnsupportedOperationException();
+	}
 }
