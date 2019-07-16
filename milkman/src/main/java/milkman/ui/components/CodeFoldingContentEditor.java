@@ -140,13 +140,17 @@ public class CodeFoldingContentEditor extends ContentEditor {
 	@Data
 	public static class CollapsableRange extends ContentRange {
 		private final boolean isRoot;
+		private final int collapsedLines;
+		private String collapsedText;
 		private boolean collapsed;
 
 		private List<ContentRange> children = new LinkedList<>();
 
-		public CollapsableRange(ContentRange prevRange, boolean isRoot) {
+		public CollapsableRange(ContentRange prevRange, boolean isRoot, String collapsedText) {
 			super(prevRange);
 			this.isRoot = isRoot;
+			this.collapsedText = collapsedText;
+			this.collapsedLines = StringUtils.countMatches(collapsedText, '\n');
 		}
 
 		public void setCollapsed(boolean value) {
@@ -159,7 +163,7 @@ public class CodeFoldingContentEditor extends ContentEditor {
 
 		public void appendToString(StringBuilder b) {
 			if (collapsed) {
-				b.append("...\n");
+				b.append(collapsedText);
 			} else {
 				for (ContentRange range : children) {
 					range.appendToString(b);
@@ -169,7 +173,7 @@ public class CodeFoldingContentEditor extends ContentEditor {
 
 		public int getContainedLines() {
 			if (collapsed)
-				return 1;
+				return collapsedLines;
 			int sum = 0;
 			for (ContentRange range : children) {
 				sum += range.getContainedLines();
@@ -185,25 +189,23 @@ public class CodeFoldingContentEditor extends ContentEditor {
 
 	public static class CodeFoldingBuilder {
     	private final String text;
-    	private final String palceholder;
     	private final Stack<CollapsableRange> rangeStack;
     	private int curIdx = 0;
 
-		public CodeFoldingBuilder(String text, String palceholder) {
+		public CodeFoldingBuilder(String text) {
 			this.text = text;
-			this.palceholder = palceholder;
 			rangeStack = new Stack<>();
-			rangeStack.add(new CollapsableRange(null, true));
+			rangeStack.add(new CollapsableRange(null, true, ""));
 		}
 
 		/**
 		 * will add everything from current idx to given idx as text node and add a new collapsable to the stack
 		 * @param nextIdx
 		 */
-		public void startRange(int nextIdx){
+		public void startRange(int nextIdx, String placeholder){
 			ContentRange prev = addLeftOverTextToCurrentRange(nextIdx);
 
-			CollapsableRange newCollapsable = new CollapsableRange(prev, false);
+			CollapsableRange newCollapsable = new CollapsableRange(prev, false, placeholder);
 			rangeStack.peek().addChildren(newCollapsable);
 			rangeStack.add(newCollapsable);
 		}

@@ -125,20 +125,30 @@ public class LineIndicatorDemo extends Application {
 		}
 
 		protected CollapsableRange parseText(String text) {
-			CodeFoldingBuilder folding = new CodeFoldingBuilder(text, "...");
+			CodeFoldingBuilder folding = new CodeFoldingBuilder(text);
 
 			char[] chars = text.toCharArray();
+			int indentation = 0;
+			
 			for(int idx = 0; idx < chars.length; ++idx){
 				char c = chars[idx];
 				if(c == '{'){
-					folding.startRange(idx);
+					folding.startRange(idx, indent("{\n  …\n}", indentation));
+					indentation += 2;
 				} else if (c == '}') {
+					indentation -= 2;
 					idx += 1;
 					folding.endRange(idx);
 				}
 			}
 
 			return folding.build();
+		}
+
+		private String indent(String s, int indentation) {
+			if (indentation == 0)
+				return s;
+			return s.replaceAll("(?m)^", StringUtils.repeat(' ', indentation)).trim(); //trim bc we dont want the beginning to be indented
 		}
 
 	}
@@ -194,7 +204,7 @@ public class LineIndicatorDemo extends Application {
 				curRange.addChildren(range1);
 
 				var split2Lines = StringUtils.countMatches(splits[1], '\n');
-				var nestedRange = new CollapsableRange(range1, false);
+				var nestedRange = new CollapsableRange(range1, false, "...\n");
 				nestedRange.addChildren(new TextRange(range1, "(" + splits[1] + ")\n"));
 				curRange.addChildren(nestedRange);
 
@@ -204,14 +214,14 @@ public class LineIndicatorDemo extends Application {
 		}
 
 		protected CollapsableRange parseText(String text) {
-			CollapsableRange rootRange = new CollapsableRange(null, true);
+			CollapsableRange rootRange = new CollapsableRange(null, true, "...\n");
 			String[] splits = StringUtils.splitByWholeSeparator(text, "\n\n");
 			ContentRange prevRange = null;
 
 			for (int i = 0; i < splits.length; i++) {
 				String split = splits[i];
 
-				var curRange = new CollapsableRange(prevRange, false);
+				var curRange = new CollapsableRange(prevRange, false, "...\n");
 				parseParagraph(curRange, prevRange, split + "\n");
 				rootRange.addChildren(curRange);
 				prevRange = curRange;
