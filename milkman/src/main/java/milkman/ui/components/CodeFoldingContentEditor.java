@@ -316,6 +316,14 @@ public class CodeFoldingContentEditor extends ContentEditor {
 			if (rangeStack.peek().getChildren().size() > 0)
 				prev = rangeStack.peek().getChildren().get( rangeStack.peek().getChildren().size() -1);
 
+			if (prev == null && rangeStack.size() > 1) { // might be the first in this collapsable. if so, link to previous collapsable
+				var grandParent = rangeStack.elementAt(rangeStack.size() - 2);
+				if (grandParent.getChildren().size() > 1){
+					//get former sibling
+					prev = grandParent.getChildren().get(grandParent.getChildren().size() -2);
+				}
+			}
+
 			if (curIdx < nextIdx) {
 				prev = new TextRange(prev, text.substring(curIdx, nextIdx));
 				rangeStack.peek().addChildren(prev);
