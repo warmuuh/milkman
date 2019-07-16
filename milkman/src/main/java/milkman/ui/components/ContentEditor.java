@@ -246,6 +246,9 @@ public class ContentEditor extends VBox {
 	}
 
 	private String formatCode(String code) {
+		if (code == null || code.equals(""))
+			return "";
+
 		StopWatch s = new StopWatch();
 		s.start();
 		try {
