@@ -36,20 +36,7 @@ public class LineIndicatorDemo extends Application {
 
 
 
-	public static final String JSON_TEXT = "{\n" +
-			"  \"paymentInstrument\" : {\n" +
-			"    \"type\" : \"PayPalAccount\",\n" +
-			"    \"description\" : \"r...n@outlook.com\"\n" +
-			"  },\n" +
-			"  \"changePaymentUrl\" : \"https://fundinginstrument.ebay.com.au/piapp/ebayplus/upfwallet\",\n" +
-			"  \"membershipDetails\" : {\n" +
-			"    \"nextPaymentDueDate\" : \"2019-11-14T07:11:03.000Z\",\n" +
-			"    \"potentialCancellationDate\" : \"2019-11-14T07:11:03.000Z\",\n" +
-			"    \"daysRemainingInTrial\" : 121,\n" +
-			"    \"memberSince\" : \"2019-07-16T07:11:03.000Z\",\n" +
-			"    \"cancelled\" : false\n" +
-			"  }\n" +
-			"}";
+	public static final String JSON_TEXT = "";
 
 
 

@@ -8,6 +8,7 @@ import lombok.SneakyThrows;
 import lombok.val;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
+import milkman.ui.components.CodeFoldingContentEditor;
 import milkman.ui.components.ContentEditor;
 import milkman.ui.plugin.ContentTypeAwareEditor;
 import milkman.ui.plugin.ContentTypePlugin;
@@ -23,7 +24,7 @@ public class ResponseBodyTabController implements ResponseAspectEditor, ContentT
 	@SneakyThrows
 	public Tab getRoot(RequestContainer request, ResponseContainer response) {
 		val body = response.getAspect(RestResponseBodyAspect.class).get();
-		ContentEditor root = new ContentEditor();
+		ContentEditor root = new CodeFoldingContentEditor();
 		root.setEditable(false);
 		root.setContent(body::getBody, body::setBody);
 		if (plugins != null)

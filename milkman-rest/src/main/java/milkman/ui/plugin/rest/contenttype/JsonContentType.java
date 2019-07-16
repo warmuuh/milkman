@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import milkman.ui.components.CodeFoldingContentEditor;
+import org.apache.commons.lang3.StringUtils;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 
@@ -92,4 +94,40 @@ public class JsonContentType implements ContentTypePlugin {
         return spansBuilder.create();
 	}
 
+	@Override
+	public boolean supportFolding() {
+		return true;
+	}
+
+	@Override
+	public CodeFoldingContentEditor.ContentRange computeFolding(String text) {
+		return parseText(text);
+	}
+
+	protected CodeFoldingContentEditor.CollapsableRange parseText(String text) {
+		CodeFoldingContentEditor.CodeFoldingBuilder folding = new CodeFoldingContentEditor.CodeFoldingBuilder(text);
+
+		char[] chars = text.toCharArray();
+		int indentation = 0;
+
+		for(int idx = 0; idx < chars.length; ++idx){
+			char c = chars[idx];
+			if(c == '{'){
+				folding.startRange(idx, indent("{\n  …\n}", indentation));
+				indentation += 2;
+			} else if (c == '}') {
+				indentation -= 2;
+				idx += 1;
+				folding.endRange(idx);
+			}
+		}
+
+		return folding.build();
+	}
+
+	private String indent(String s, int indentation) {
+		if (indentation == 0)
+			return s;
+		return s.replaceAll("(?m)^", StringUtils.repeat(' ', indentation)).trim(); //trim bc we dont want the beginning to be indented
+	}
 }

@@ -37,12 +37,14 @@ public class CodeFoldingContentEditor extends ContentEditor {
 	private int currentFoldingLevel;
 	private int maxFoldingLevel;
 
+	private int minFoldingLevel = 1;
+
 	public CodeFoldingContentEditor() {
 
 		collapseAll = new JFXButton();
 		collapseAll.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.COMPRESS));
 		collapseAll.setOnAction(e -> {
-			setCollapseRecursively(rootRange, 0, 0);
+			setCollapseRecursively(rootRange, minFoldingLevel, 0);
 			currentFoldingLevel = 0;
 			redrawText();
 		});
@@ -69,7 +71,7 @@ public class CodeFoldingContentEditor extends ContentEditor {
 		expandOne = new JFXButton();
 		expandOne.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.MINUS));
 		expandOne.setOnAction(e -> {
-			int nextLevel = Math.max(currentFoldingLevel -1, 0);
+			int nextLevel = Math.max(currentFoldingLevel -1, minFoldingLevel);
 			setCollapseRecursively(rootRange, nextLevel, 0);
 			currentFoldingLevel = nextLevel;
 			redrawText();
@@ -128,7 +130,7 @@ public class CodeFoldingContentEditor extends ContentEditor {
 
     
     protected void replaceText(String text) {
-    	if (getCurrentContenttypePlugin().supportFolding())
+    	if (getCurrentContenttypePlugin() != null && getCurrentContenttypePlugin().supportFolding())
     	{
     		rootRange = getCurrentContenttypePlugin().computeFolding(text);
 			maxFoldingLevel = computeMaxFoldingLevel(rootRange);
