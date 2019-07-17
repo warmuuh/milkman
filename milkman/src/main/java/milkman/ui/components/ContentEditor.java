@@ -29,6 +29,7 @@ import javafx.concurrent.Task;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -75,6 +76,7 @@ public class ContentEditor extends VBox {
 	protected HBox header;
 
 	private TextField searchField;
+	protected final VirtualizedScrollPane scrollPane;
 
 	public ContentEditor() {
 		getStyleClass().add("contentEditor");
@@ -84,14 +86,14 @@ public class ContentEditor extends VBox {
 		setupSearch();
 
 		StackPane.setAlignment(searchField, Pos.TOP_RIGHT);
-		// bug: virtualizedScrollPane has some issue if it is rendered within a tab that
+		// bug: scrollPane has some issue if it is rendered within a tab that
 		// is not yet shown with content that needs a scrollbar
 		// this leads to e.g. tabs not being updated, if triggered programmatically
 		// switching to ALWAYS for scrollbars fixes this issue
-		VirtualizedScrollPane virtualizedScrollPane = new VirtualizedScrollPane(codeArea, ScrollBarPolicy.ALWAYS,
+		scrollPane = new VirtualizedScrollPane(codeArea, ScrollBarPolicy.ALWAYS,
 				ScrollBarPolicy.ALWAYS);
 
-		StackPane contentPane = new StackPane(virtualizedScrollPane, searchField);
+		StackPane contentPane = new StackPane(scrollPane, searchField);
 		VBox.setVgrow(contentPane, Priority.ALWAYS);
 
 		getChildren().add(contentPane);
@@ -245,7 +247,7 @@ public class ContentEditor extends VBox {
 		}
 	}
 
-	private String formatCode(String code) {
+	protected String formatCode(String code) {
 		if (code == null || code.equals(""))
 			return "";
 

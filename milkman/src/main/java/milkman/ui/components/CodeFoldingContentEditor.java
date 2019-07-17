@@ -37,7 +37,9 @@ public class CodeFoldingContentEditor extends ContentEditor {
 	private int currentFoldingLevel;
 	private int maxFoldingLevel;
 
-	private int minFoldingLevel = 1;
+	private int minFoldingLevel = 0;
+
+	private String originalText = "";
 
 	public CodeFoldingContentEditor() {
 
@@ -130,6 +132,7 @@ public class CodeFoldingContentEditor extends ContentEditor {
 
     
     protected void replaceText(String text) {
+		originalText = text;
     	if (getCurrentContenttypePlugin() != null && getCurrentContenttypePlugin().supportFolding())
     	{
     		rootRange = getCurrentContenttypePlugin().computeFolding(text);
@@ -177,11 +180,27 @@ public class CodeFoldingContentEditor extends ContentEditor {
     }
 
     private void redrawText() {
-    	StringBuilder b = new StringBuilder();
-    	rootRange.appendToString(b);
-    	codeArea.replaceText(b.toString());
+		int caretPos = 0;
+		if (codeArea.getText() != null && codeArea.getText().length() > 0)
+			caretPos = codeArea.hit(50,10).getInsertionIndex();
+
+		StringBuilder b = new StringBuilder();
+		rootRange.appendToString(b);
+		String replacement = b.toString();
+		codeArea.replaceText(replacement);
+
+		//reset window scroll to previous position
+		codeArea.moveTo(caretPos);
+		codeArea.requestFollowCaret();
 	}
-    
+
+
+	@Override
+	protected String formatCode(String code) {
+		//the code from the codeArea is collapsed and therefore not parsable. we use saved copy.
+		return super.formatCode(originalText);
+	}
+
 	private class FoldOperatorFactory implements IntFunction<Node> {
 
         @Override

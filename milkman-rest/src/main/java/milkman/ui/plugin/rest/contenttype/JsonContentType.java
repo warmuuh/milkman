@@ -113,7 +113,7 @@ public class JsonContentType implements ContentTypePlugin {
 		for(int idx = 0; idx < chars.length; ++idx){
 			char c = chars[idx];
 			if(c == '{'){
-				folding.startRange(idx, indent("{\n  …\n}", indentation));
+				folding.startRange(idx, indent("{\n  ...\n}", indentation));
 				indentation += 2;
 			} else if (c == '}') {
 				indentation -= 2;
