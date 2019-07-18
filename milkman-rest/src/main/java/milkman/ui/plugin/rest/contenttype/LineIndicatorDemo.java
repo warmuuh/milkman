@@ -12,6 +12,7 @@ import milkman.ui.components.CodeFoldingContentEditor.CodeFoldingBuilder;
 import milkman.ui.components.CodeFoldingContentEditor.CollapsableRange;
 import milkman.ui.components.CodeFoldingContentEditor.ContentRange;
 import milkman.ui.components.CodeFoldingContentEditor.TextRange;
+import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.ui.plugin.ContentTypePlugin;
 
 import org.apache.commons.io.IOUtils;
@@ -49,15 +50,18 @@ public class LineIndicatorDemo extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
+		CoreApplicationOptionsProvider.options().setAutoformatContent(true);
 		codeArea = new CodeFoldingContentEditor();
 
 		codeArea.setContentTypePlugins(Arrays.asList(new JsonContentType()));
 
-		codeArea.setContentType("application/json");
 		codeArea.setEditable(false);
 		ContentBean bean = new ContentBean(JSON_TEXT);
 
+		//will calculate folding twice: once for unformatted, once for formatted code.
+		//FIXME: should be only calculated once
 		codeArea.setContent(bean::getText, bean::setText);
+		codeArea.setContentType("application/json");
 
 		var scene = new Scene(new StackPane(codeArea), 600, 400);
 		scene.getStylesheets().add("/themes/milkman.css");

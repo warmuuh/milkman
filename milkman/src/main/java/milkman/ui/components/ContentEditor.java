@@ -234,7 +234,7 @@ public class ContentEditor extends VBox {
 		codeArea.setStyleSpans(0, highlighting);
 	}
 
-	private void formatCurrentCode() {
+	protected void formatCurrentCode() {
 		StopWatch s = new StopWatch();
 		s.start();
 		try {

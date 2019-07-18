@@ -171,7 +171,7 @@ public class CodeFoldingContentEditor extends ContentEditor {
     private void redrawText() {
         foldOperatorFactory.updateLineToRangeCache(rootRange);
         int caretPos = 0;
-        if (codeArea.getText() != null && codeArea.getText().length() > 0)
+        if (codeArea.getText() != null && codeArea.getText().length() > 0 && codeArea.getWidth() > 0)
             caretPos = codeArea.hit(50, 10).getInsertionIndex();
 
         StringBuilder b = new StringBuilder();
@@ -185,10 +185,10 @@ public class CodeFoldingContentEditor extends ContentEditor {
     }
 
 
-    @Override
-    protected String formatCode(String code) {
-        //the code from the codeArea is collapsed and therefore not parsable. we use saved copy.
-        return super.formatCode(originalText);
+    protected void formatCurrentCode() {
+        if (getCurrentContenttypePlugin() != null && getCurrentContenttypePlugin().supportFormatting()) {
+            replaceText(formatCode(originalText));
+        }
     }
 
     private class FoldOperatorFactory implements IntFunction<Node> {
