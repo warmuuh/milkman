@@ -14,6 +14,7 @@
 version 3.3.0 - upcoming
   * code folding for application/json
   * fixed postman collection v2.1 import bug
+  * improved exploration plugin with history
 
 version 3.2.1
   * added option to not follow redirects

@@ -6,12 +6,16 @@ import java.util.List;
 import milkman.domain.RequestContainer;
 import milkman.domain.RequestExecutionContext;
 import milkman.domain.ResponseContainer;
+import milkman.ui.components.AutoCompleter;
+import milkman.ui.plugin.AutoCompletionAware;
 import milkman.ui.plugin.RequestAspectEditor;
 import milkman.ui.plugin.RequestAspectsPlugin;
 import milkman.ui.plugin.ResponseAspectEditor;
 import milkman.ui.plugin.rest.domain.RestRequestContainer;
 
-public class JqlAspectPlugin implements RequestAspectsPlugin {
+public class JqlAspectPlugin implements RequestAspectsPlugin,AutoCompletionAware {
+
+	private AutoCompleter completer;
 
 	@Override
 	public List<RequestAspectEditor> getRequestTabs() {
@@ -20,7 +24,7 @@ public class JqlAspectPlugin implements RequestAspectsPlugin {
 
 	@Override
 	public List<ResponseAspectEditor> getResponseTabs() {
-		return Collections.singletonList(new JqlAspectResponseEditor());
+		return Collections.singletonList(new JqlAspectResponseEditor(completer));
 	}
 
 	@Override
@@ -37,6 +41,12 @@ public class JqlAspectPlugin implements RequestAspectsPlugin {
 	@Override
 	public int getOrder() {
 		return 35;
+	}
+
+	@Override
+	public void setAutoCompleter(AutoCompleter completer) {
+		this.completer = completer;
+		
 	}
 
 	

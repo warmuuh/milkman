@@ -80,7 +80,7 @@ public class GenericBinding<O, T> extends ObjectPropertyBase<T> {
 	
 	public EventStream<T> toStream(){
 		//this instead of EventStream.nonNullValues bc we want to omit initial (artificial) value
-		return EventStreams.changesOf(this).filterMap(c -> Optional.of(c.getNewValue()));
+		return EventStreams.changesOf(this).filterMap(c -> Optional.ofNullable(c.getNewValue()));
 	}
 
 }

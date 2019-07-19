@@ -2,6 +2,7 @@ package milkman.ui.components;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -39,5 +40,9 @@ public class AutoCompleter {
 	
 	public void attachStaticCompletionTo(TextField textField, Collection<String> possibleSuggestions) {
 		TextFields.bindAutoCompletion(textField, possibleSuggestions);
+	}
+	
+	public void attachDynamicCompletionTo(TextField textField, Function<String, Collection<String>> possibleSuggestions) {
+		TextFields.bindAutoCompletion(textField, req -> possibleSuggestions.apply(req.getUserText()));
 	}
 }

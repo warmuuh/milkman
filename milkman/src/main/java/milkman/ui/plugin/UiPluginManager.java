@@ -75,6 +75,7 @@ public class UiPluginManager {
 		ServiceLoader<T> loader = ServiceLoader.load(type);
 		List<T> result = new LinkedList<T>();
 		loader.forEach(result::add);
+		result.forEach(this::wireUp);
 		
 		cachedInstances.put(type, result);
 		return result;
@@ -88,6 +89,8 @@ public class UiPluginManager {
 		ServiceLoader<T> loader = ServiceLoader.load(type);
 		List<T> result = new LinkedList<T>();
 		loader.forEach(result::add);
+		
+		result.forEach(this::wireUp);
 		
 		cachedInstances.put(type, result);
 		

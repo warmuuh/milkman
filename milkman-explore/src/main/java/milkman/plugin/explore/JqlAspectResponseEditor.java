@@ -6,6 +6,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -14,6 +17,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXComboBox;
+import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.JFXTooltip;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
@@ -22,16 +28,21 @@ import io.burt.jmespath.JmesPath;
 import io.burt.jmespath.jackson.JacksonRuntime;
 import io.burt.jmespath.parser.ParseException;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
+import milkman.ui.components.AutoCompleter;
 import milkman.ui.components.ContentEditor;
+import milkman.ui.plugin.AutoCompletionAware;
 import milkman.ui.plugin.ResponseAspectEditor;
 import milkman.ui.plugin.rest.contenttype.JsonContentType;
 import milkman.ui.plugin.rest.domain.RestResponseBodyAspect;
@@ -39,8 +50,15 @@ import milkman.ui.plugin.rest.domain.RestResponseHeaderAspect;
 import milkman.utils.fxml.GenericBinding;
 
 @Slf4j
+@RequiredArgsConstructor
 public class JqlAspectResponseEditor implements ResponseAspectEditor {
 	
+	private final AutoCompleter completer;
+
+	private Label compilationWarning;
+	private JFXTooltip compilationTooltip;
+	private TextField qryInput;
+
 	@Override
 	@SneakyThrows
 	public Tab getRoot(RequestContainer request, ResponseContainer response) {
@@ -61,7 +79,15 @@ public class JqlAspectResponseEditor implements ResponseAspectEditor {
 				JqlQueryAspect::setQuery, 
 				qryAspect); 
 
-		TextField qryInput = new TextField();
+		
+		qryInput = new JFXTextField();
+		completer.attachDynamicCompletionTo(qryInput, input -> {
+			return qryAspect.getQueryHistory().stream()
+					.filter(qry -> input.isBlank() || StringUtils.containsIgnoreCase(qry, input))
+					.collect(Collectors.toList());
+		});
+//		qryInput.setEditable(true);
+//		qryInput.getItems().addAll(qryAspect.getQueryHistory());
 //		qryInput.textProperty().addListener((obs, o, n) -> {
 //			if (n == null)
 //				return;
@@ -69,19 +95,29 @@ public class JqlAspectResponseEditor implements ResponseAspectEditor {
 //			String jmesRes = executeJmesQuery(n, body);
 //			contentView.setContent(() -> jmesRes, s -> {});
 //		});
+		//the included textfield does not commit value to parent until it looses focus
+		//we have to "bind" commiting to textchange for interactivity
+//		qryInput.getEditor().textProperty().addListener((obs, oldText, newText) -> {
+//			qryInput.commitValue();
+//	    });
 		qryInput.textProperty().bindBidirectional(binding);
 		qryInput.setUserData(binding);
 		
 		
-		if (StringUtils.isNotBlank(qryAspect.getQuery())) {
-			evaluateExpression(response, contentView, qryAspect.getQuery());
-		}
-		
-		binding.toStream().successionEnds(Duration.ofMillis(250))
-			.subscribe(qry -> evaluateExpression(response, contentView, qry));
+		binding.toStream().successionEnds(Duration.ofMillis(500))
+			.subscribe(qry -> evaluateExpression(request, response, contentView, qry));
 		
 		
 		HBox.setHgrow(qryInput, Priority.ALWAYS);
+		
+		if (compilationWarning == null) {
+			compilationWarning = new Label();
+			compilationWarning.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.EXCLAMATION_TRIANGLE, "1em"));
+			compilationWarning.setVisible(false);
+			compilationTooltip = new JFXTooltip();
+			JFXTooltip.setVisibleDuration(javafx.util.Duration.millis(10000));
+			JFXTooltip.install(compilationWarning, compilationTooltip, Pos.BOTTOM_CENTER);
+		}
 		
 		JFXButton helpBtn = new JFXButton();
 		helpBtn.setOnAction(e -> {
@@ -93,17 +129,59 @@ public class JqlAspectResponseEditor implements ResponseAspectEditor {
 			
 		});
 		helpBtn.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.QUESTION_CIRCLE, "1.5em"));
-		tab.setContent(new VBox(new HBox(qryInput, helpBtn), contentView));
+		tab.setContent(new VBox(new HBox(qryInput, compilationWarning, helpBtn), contentView));
+		
+		//initial evaluation
+		evaluateExpression(request, response, contentView, qryAspect.getQuery());
+		
+		
 		return tab;
 	}
 
-	private void evaluateExpression(ResponseContainer response, ContentEditor contentView, String qry) {
-		String body = response.getAspect(RestResponseBodyAspect.class).map(b -> b.getBody()).orElse("");
-		String jmesRes = executeJmesQuery(qry, body);
-		contentView.setContent(() -> jmesRes, s -> {});
+	private void evaluateExpression(RequestContainer request, ResponseContainer response, ContentEditor contentView, String qry) {
+		var aspect = response.getAspect(RestResponseBodyAspect.class);
+		String body = aspect.map(b -> b.getBody()).orElse("");
+		
+		String executeQry = qry;
+		if (StringUtils.isBlank(qry))
+			executeQry = "@";
+		
+		executeJmesQuery(executeQry, body).ifPresent( jmesRes -> {
+			addToQueryHistory(qry, jmesRes, request);
+			contentView.setContent(() -> jmesRes, s -> {});
+		});
 	}
 
-	private String executeJmesQuery(String query, String body) {
+	private void addToQueryHistory(String qry, String qryResult, RequestContainer request) {
+		if (StringUtils.isBlank(qryResult) || qryResult.equalsIgnoreCase("null"))
+			return;
+		if (StringUtils.isBlank(qry) || qry.equals("@"))
+			return;
+		
+		request.getAspect(JqlQueryAspect.class).ifPresent(aspect -> {
+			if (aspect.getQueryHistory().contains(qry)) {
+				aspect.getQueryHistory().remove(qry);
+			}
+			aspect.getQueryHistory().add(qry);
+			
+			if (aspect.getQueryHistory().size() > 10) {
+				aspect.getQueryHistory().remove(0);
+			}
+			
+			
+			//and update ui:
+//			qryInput.getItems().clear();
+//			qryInput.getItems().addAll(aspect.getQueryHistory());
+		});
+		
+	}
+
+	private void setCompilationWarning(Optional<String> error) {
+		compilationWarning.setVisible(error.isPresent());
+		error.ifPresent(compilationTooltip::setText);
+	}
+	
+	private Optional<String> executeJmesQuery(String query, String body) {
 		JmesPath<JsonNode> jmespath = new JacksonRuntime();
 		try {
 			Expression<JsonNode> expression = jmespath.compile(query);
@@ -111,12 +189,14 @@ public class JqlAspectResponseEditor implements ResponseAspectEditor {
 			mapper.enable(SerializationFeature.INDENT_OUTPUT); //formatting
 			JsonNode input = mapper.readTree(body);
 			JsonNode result = expression.search(input);
-			return mapper.writeValueAsString(result);
+			setCompilationWarning(Optional.empty());
+			return Optional.ofNullable(mapper.writeValueAsString(result));
 		} catch (ParseException e) {
-			return e.getMessage();
+			setCompilationWarning(Optional.of(e.getMessage()));
+			return Optional.empty();
 		} catch (Exception e) {
-			log.error("Failed to parse body", e);
-			return e.getMessage();
+			setCompilationWarning(Optional.of(e.getMessage()));
+			return Optional.empty();
 		}
 	}
 
