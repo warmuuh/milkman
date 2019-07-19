@@ -103,6 +103,11 @@
 				<scope>import</scope>
 				<type>pom</type>
 			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>2.9.9.1</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
