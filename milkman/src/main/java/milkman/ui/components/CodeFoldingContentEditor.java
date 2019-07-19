@@ -95,7 +95,7 @@ public class CodeFoldingContentEditor extends ContentEditor {
                 collapseOne.setVisible(n.supportFolding());
                 expandOne.setVisible(n.supportFolding());
                 //trigger redraw bc of folding
-                replaceText(codeArea.getText());
+                replaceText(originalText);
             }
         });
 
@@ -147,6 +147,7 @@ public class CodeFoldingContentEditor extends ContentEditor {
             currentFoldingLevel = maxFoldingLevel; //start with expanded tree
             redrawText();
         } else {
+        	foldOperatorFactory.clear();
             super.replaceText(text);
         }
     }
@@ -196,11 +197,15 @@ public class CodeFoldingContentEditor extends ContentEditor {
         Map<Integer, CollapsableRange> lineToContentLookup = new HashMap<>();
 
         public void updateLineToRangeCache(ContentRange node) {
-            lineToContentLookup.clear();
+            clear();
             updateLineToRangeCacheInternal(node);
         }
 
-        private void updateLineToRangeCacheInternal(ContentRange node) {
+        public void clear() {
+            lineToContentLookup.clear();
+		}
+
+		private void updateLineToRangeCacheInternal(ContentRange node) {
             if (node == null)
                 return;
 

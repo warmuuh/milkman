@@ -12,6 +12,7 @@ import milkman.ui.components.CodeFoldingContentEditor.CodeFoldingBuilder;
 import milkman.ui.components.CodeFoldingContentEditor.CollapsableRange;
 import milkman.ui.components.CodeFoldingContentEditor.ContentRange;
 import milkman.ui.components.CodeFoldingContentEditor.TextRange;
+import milkman.ui.contenttype.PlainContentTypePlugin;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.ui.plugin.ContentTypePlugin;
 
@@ -53,7 +54,7 @@ public class LineIndicatorDemo extends Application {
 		CoreApplicationOptionsProvider.options().setAutoformatContent(true);
 		codeArea = new CodeFoldingContentEditor();
 
-		codeArea.setContentTypePlugins(Arrays.asList(new JsonContentType()));
+		codeArea.setContentTypePlugins(Arrays.asList(new PlainContentTypePlugin(), new JsonContentType()));
 
 		codeArea.setEditable(false);
 		ContentBean bean = new ContentBean(JSON_TEXT);
