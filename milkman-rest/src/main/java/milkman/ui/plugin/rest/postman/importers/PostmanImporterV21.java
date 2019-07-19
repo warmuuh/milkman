@@ -1,16 +1,25 @@
 package milkman.ui.plugin.rest.postman.importers;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.deser.ValueInstantiator;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.milkman.rest.postman.schema.v21.ItemGroup;
 import com.milkman.rest.postman.schema.v21.PostmanCollection210;
+import com.milkman.rest.postman.schema.v21.Url;
 
 import co.poynt.postman.model.PostmanEnvValue;
 import co.poynt.postman.model.PostmanEnvironment;
@@ -27,6 +36,10 @@ import milkman.ui.plugin.rest.domain.RestRequestContainer;
 public class PostmanImporterV21 {
 
 	
+	
+
+	
+
 	public Collection importCollection(String json) throws Exception {
 		PostmanCollection210 pmCollection = readJson(json, PostmanCollection210.class);
 		
@@ -62,6 +75,7 @@ public class PostmanImporterV21 {
 	private <T> T readJson(String json, Class<T> type) throws IOException, JsonParseException, JsonMappingException {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+		mapper.registerModule(new Postman21Module());
 		T pmCollection = mapper.readValue(json, type);
 		return pmCollection;
 	}
@@ -109,5 +123,45 @@ public class PostmanImporterV21 {
 			
 		}
 	}
+	
+	public static class Postman21Module extends SimpleModule {
+		
+		public Postman21Module() {
+			super("postman", new Version(2, 1, 0, ""));
+			this.addValueInstantiator(Url.class, new UrlInstantiator());
+		}
+
+		/**
+		 * the URL can be a string or an object, we have to support both here
+		 */
+		public class UrlInstantiator extends ValueInstantiator {
+			
+			@Override
+			public boolean canCreateUsingDefault() {
+				return true;
+			}
+
+			@Override
+			public Object createUsingDefault(DeserializationContext ctxt) throws IOException {
+				return new Url();
+			}
+
+			@Override
+			public boolean canCreateFromString() {
+				return true;
+			}
+
+			@Override
+			public Object createFromString(DeserializationContext ctxt, String value) throws IOException {
+				Url result = new Url();
+				result.setRaw(value);
+				return result;
+			}
+			
+		}
+		
+	}
+	
+	
 
 }

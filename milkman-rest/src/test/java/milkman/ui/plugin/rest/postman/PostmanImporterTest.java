@@ -32,6 +32,14 @@ class PostmanImporterTest {
 		assertThat(env.getName()).isEqualTo("test");
 	}
 	
+	@Test
+	void shouldConvertStringUrlsProperly() throws IOException, Exception {
+		PostmanImporterV21 sut = new PostmanImporterV21();
+		String json = IOUtils.toString(getClass().getResourceAsStream("/testStringUrl.postman_collection.json"));
+
+		Collection collection  = sut.importCollection(json);
+		assertThat(collection.getName()).isEqualTo("Service");
+	}
 	
 
 	@Test
