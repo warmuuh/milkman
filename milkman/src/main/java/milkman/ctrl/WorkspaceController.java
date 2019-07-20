@@ -72,6 +72,8 @@ public class WorkspaceController {
 	public final Event<AppCommand> onCommand = new Event<AppCommand>();
 	private RequestExecutor executor;
 	
+	private List<String> requestDisplayHistory = new LinkedList<>();
+	
 	public void loadWorkspace(Workspace workspace) {
 		this.activeWorkspace = workspace;
 		loadCollections(workspace);
@@ -138,6 +140,7 @@ public class WorkspaceController {
 	
 	public void displayRequest(RequestContainer request) {
 		log.info("Diplaying request: " + request);
+		addToDisplayHistory(request);
 		if (!activeWorkspace.getOpenRequests().contains(request))
 			activeWorkspace.getOpenRequests().add(request);
 		activeWorkspace.setActiveRequest(request);
@@ -154,6 +157,11 @@ public class WorkspaceController {
 		}
 		else
 			workingAreaView.clearResponse();
+	}
+
+	protected void addToDisplayHistory(RequestContainer request) {
+		requestDisplayHistory.remove(request.getId());
+		requestDisplayHistory.add(request.getId());
 	}
 	
 	public void createNewRequest() {
@@ -474,10 +482,21 @@ public class WorkspaceController {
 		if(activeWorkspace.getOpenRequests().isEmpty()) {
 			createNewRequestWithDefault();
 		} else {
-			RequestContainer newRequestToDisplay = activeWorkspace.getOpenRequests()
-					.get(Math.min(indexOf, activeWorkspace.getOpenRequests().size()-1));
+			RequestContainer newRequestToDisplay = getLastOpenedRequest(indexOf);
 			displayRequest(newRequestToDisplay);
 		}
+	}
+
+	protected RequestContainer getLastOpenedRequest(int indexOfClosedRequest) {
+		//pruge all closed requests:
+		requestDisplayHistory.retainAll(activeWorkspace.getOpenRequests().stream().map(r -> r.getId()).collect(Collectors.toList()));
+
+		if (requestDisplayHistory.isEmpty())
+			return activeWorkspace.getOpenRequests()
+					.get(Math.min(indexOfClosedRequest, activeWorkspace.getOpenRequests().size()-1));
+
+		String lastOpenedReqId = requestDisplayHistory.get(requestDisplayHistory.size() -1);
+		return activeWorkspace.getOpenRequests().stream().filter(r -> r.getId().equals(lastOpenedReqId)).findAny().orElse(null);
 	}
 
 
