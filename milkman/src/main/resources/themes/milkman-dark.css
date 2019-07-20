@@ -3,6 +3,10 @@
 	-fx-faint-focus-color: transparent;
 }
 
+.handCursor {
+	-fx-cursor: hand
+}
+
 /**
  * jfoenix overwrites
  */
