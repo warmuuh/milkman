@@ -19,6 +19,7 @@ public class ResponseHeaderTabController implements ResponseAspectEditor {
 		editor.disableAddition();
 		editor.addReadOnlyColumn("Name", HeaderEntry::getName);
 		editor.addReadOnlyColumn("Value", HeaderEntry::getValue);
+		editor.setRowToStringConverter(this::headerToString);
 		
 		editor.setItems(headers.getEntries());
 		
@@ -30,4 +31,7 @@ public class ResponseHeaderTabController implements ResponseAspectEditor {
 		return response.getAspect(RestResponseHeaderAspect.class).isPresent();
 	}
 
+	private String headerToString(HeaderEntry header) {
+		return header.getName() + ": " + header.getValue();
+	}
 }

@@ -15,6 +15,7 @@ version 3.3.0 - upcoming
   * code folding for application/json
   * fixed postman collection v2.1 import bug
   * improved exploration plugin with history
+  * headers can now be copied from response and pasted into request section
 
 version 3.2.1
   * added option to not follow redirects

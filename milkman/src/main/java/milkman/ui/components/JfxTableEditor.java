@@ -7,6 +7,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.cells.editors.TextFieldEditorBuilder;
@@ -34,6 +36,7 @@ import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.DataFormat;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -42,6 +45,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
 import milkman.utils.fxml.GenericBinding;
 import milkman.utils.javafx.ResizableJfxTreeTableView;
 
@@ -51,6 +55,7 @@ class RecursiveWrapper<T> extends RecursiveTreeObject<RecursiveWrapper<T>>{
 	T data;
 }
 
+@Slf4j
 public class JfxTableEditor<T> extends StackPane {
 	
 	
@@ -62,7 +67,10 @@ public class JfxTableEditor<T> extends StackPane {
 
 	
 	private Function<T, String> rowToStringConverter = null;
+
+	private Function<String, T> stringToRowConverter;
 	
+	private Integer firstEditableColumn = null;
 
 
 	public JfxTableEditor() {
@@ -77,14 +85,17 @@ public class JfxTableEditor<T> extends StackPane {
 		StackPane.setAlignment(addItemBtn, Pos.BOTTOM_RIGHT);
 		StackPane.setMargin(addItemBtn, new Insets(0, 20, 20, 0));
 		this.getChildren().add(addItemBtn);
-		
+
 		final KeyCodeCombination keyCodeCopy = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_ANY);
+		final KeyCodeCombination keyCodePaste = new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_ANY);
 	    table.setOnKeyPressed(event -> {
 	        if (keyCodeCopy.match(event)) {
 	            copySelectionToClipboard();
 	        }
+	        if (keyCodePaste.match(event)) {
+	        	pasteSelectionFromClipboard();
+	        }
 	    });
-		
 	}
 	
 
@@ -104,6 +115,32 @@ public class JfxTableEditor<T> extends StackPane {
 	    clipboardContent.putString(b.toString());
 	    Clipboard.getSystemClipboard().setContent(clipboardContent);
 	}
+	
+	
+	private void pasteSelectionFromClipboard() {
+		if (stringToRowConverter == null)
+			return;
+		
+	    String content = (String) Clipboard.getSystemClipboard().getContent(DataFormat.PLAIN_TEXT);
+		if (content != null) {
+			String lines[] = content.split("\\r?\\n");
+			try {
+				for (String line : lines) {
+					T newEntry = stringToRowConverter.apply(line);
+					if (newEntry != null) {
+						obsWrappedItems.add(new RecursiveWrapper<>(newEntry));
+					}
+				}
+			} catch (Throwable t) {
+				log.error("Failed to parse clipboard content: {}", t.getMessage());
+			}
+		
+		}
+		
+		
+	}
+	
+	
 
 	/**
 	 * used for converting selected rows to clipboard content
@@ -112,6 +149,10 @@ public class JfxTableEditor<T> extends StackPane {
 	 */
 	public void setRowToStringConverter(Function<T, String> rowToStringConverter) {
 		this.rowToStringConverter = rowToStringConverter;
+	}
+	
+	public void setStringToRowConverter(Function<String, T> stringToRowConverter) {
+		this.stringToRowConverter = stringToRowConverter;
 	}
 	
 
@@ -138,6 +179,8 @@ public class JfxTableEditor<T> extends StackPane {
 		column.setMinWidth(100);
 		table.getColumns().add(column);
 //		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
+		if (firstEditableColumn == null)
+			firstEditableColumn = table.getColumns().size() -1; 
 	}
 	
 	public void addColumn(String name, Function1<T, String> getter, BiConsumer<T, String> setter, Consumer<TextField> textFieldInitializer) {
@@ -150,6 +193,8 @@ public class JfxTableEditor<T> extends StackPane {
 		column.setMinWidth(100);
 		table.getColumns().add(column);
 //		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
+		if (firstEditableColumn == null)
+			firstEditableColumn = table.getColumns().size() -1;
 	}
 
 	public void addCheckboxColumn(String name, Function1<T, Boolean> getter, BiConsumer<T, Boolean> setter) {
@@ -343,6 +388,11 @@ public class JfxTableEditor<T> extends StackPane {
 			return node;
 		}
 		
+		
+	}
+
+	public void setStringToRowConverter(Object stringToRowConverter2) {
+		// TODO Auto-generated method stub
 		
 	}
 	

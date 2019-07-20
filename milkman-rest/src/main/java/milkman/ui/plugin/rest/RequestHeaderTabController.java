@@ -5,6 +5,8 @@ import static milkman.utils.FunctionalUtils.run;
 import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ClassPathUtils;
@@ -25,7 +27,7 @@ public class RequestHeaderTabController implements RequestAspectEditor, AutoComp
 
 
 	private AutoCompleter completer;
-
+	private static Pattern headerPattern = Pattern.compile("(?://)?(\\w+):(.*)");
 	private static List<String> headers;
 	
 	@Override
@@ -48,8 +50,9 @@ public class RequestHeaderTabController implements RequestAspectEditor, AutoComp
 				run(HeaderEntry::setValue).andThen(() -> headers.setDirty(true)),
 				tf -> completer.attachVariableCompletionTo(tf));
 		editor.addDeleteColumn("Delete", () -> headers.setDirty(true));
-		
+
 		editor.setRowToStringConverter(this::headerToString);
+		editor.setStringToRowConverter(this::stringToHeader);
 		
 		editor.setItems(headers.getEntries());
 		
@@ -72,6 +75,21 @@ public class RequestHeaderTabController implements RequestAspectEditor, AutoComp
 		return prefix + header.getName() + ": " + header.getValue();
 	}
 
+	public HeaderEntry stringToHeader(String headerStr) {
+		boolean enabled = true;
+		if (headerStr.startsWith("//"))
+			enabled = false;
+
+		Matcher matcher = headerPattern.matcher(headerStr);
+		if (matcher.matches()) {
+			String key = matcher.group(1);
+			String value = matcher.group(2);
+			return new HeaderEntry(UUID.randomUUID().toString(), key.trim(), value.trim(), enabled);
+		}
+
+		return null;
+	}
+	
 	@Override
 	public void setAutoCompleter(AutoCompleter completer) {
 		this.completer = completer;
