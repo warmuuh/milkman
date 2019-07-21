@@ -8,7 +8,9 @@ import org.apache.commons.lang3.SystemUtils;
 
 public class PlatformUtil {
 
-	
+	public static boolean isCurrentDirWritable() {
+		return Files.isWritable(new File(".").toPath());
+	}
 	
 	public static String getWritableLocationForFile(String filename) {
 		if (Files.isWritable(new File(".").toPath())) {

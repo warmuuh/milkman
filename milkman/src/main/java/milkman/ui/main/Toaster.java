@@ -7,6 +7,7 @@ import javax.inject.Singleton;
 import com.jfoenix.controls.JFXSnackbar;
 import com.jfoenix.controls.JFXSnackbarLayout;
 
+import javafx.application.Platform;
 import javafx.css.PseudoClass;
 import javafx.scene.Node;
 import javafx.util.Duration;
@@ -31,7 +32,9 @@ public class Toaster {
 	
 	
 	public void showToast(String message) {
-		lazyInit();
-		snackbar.fireEvent(new JFXSnackbar.SnackbarEvent(new JFXSnackbarLayout(message), Duration.seconds(5), null));
+		Platform.runLater(() -> { 
+			lazyInit();
+			snackbar.fireEvent(new JFXSnackbar.SnackbarEvent(new JFXSnackbarLayout(message), Duration.seconds(5), null));
+		});
 	}
 }

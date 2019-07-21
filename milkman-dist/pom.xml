@@ -95,6 +95,7 @@
 								<!-- <minVersion>11</minVersion> -->
 								<!-- <maxVersion>1.9.0</maxVersion> -->
 								<opts>
+									<opt>-XX:SharedArchiveFile=app-cds.jsa</opt>
 									<!-- <opt>-Djava.endorsed.dirs=./endorsed</opt> --><!-- not yet supported with modules -->
 									<opt><![CDATA[--add-exports javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED]]></opt>
 									<opt><![CDATA[--add-exports javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED]]></opt>
@@ -143,7 +144,7 @@
 			<!-- </executions> -->
 			<!-- </plugin> -->
 
-		
+
 			<plugin>
 				<groupId>com.igormaznitsa</groupId>
 				<artifactId>mvn-jlink-wrapper</artifactId>
@@ -186,7 +187,7 @@
 						<phase>package</phase>
 						<configuration>
 							<output>${project.build.directory}${file.separator}jre-win64</output>
-							
+
 							<provider>BELLSOFT</provider><!-- liberica contains javafx -->
 							<providerConfig>
 								<version>11.0.3</version>
@@ -204,7 +205,7 @@
 						<phase>package</phase>
 						<configuration>
 							<output>${project.build.directory}${file.separator}jre-linux64</output>
-							
+
 							<provider>BELLSOFT</provider><!-- liberica contains javafx -->
 							<providerConfig>
 								<version>11.0.3</version>
@@ -222,7 +223,7 @@
 						<phase>package</phase>
 						<configuration>
 							<output>${project.build.directory}${file.separator}jre-macos64</output>
-							
+
 							<provider>BELLSOFT</provider><!-- liberica contains javafx -->
 							<providerConfig>
 								<version>11.0.3</version>
@@ -234,7 +235,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			
+
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>

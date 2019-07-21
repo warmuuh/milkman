@@ -16,6 +16,7 @@ version 3.3.0 - upcoming
   * fixed postman collection v2.1 import bug
   * improved exploration plugin with history
   * headers can now be copied from response and pasted into request section
+  * improved startup speed via [AppCds](https://blog.codefx.org/java/application-class-data-sharing/)
 
 version 3.2.1
   * added option to not follow redirects

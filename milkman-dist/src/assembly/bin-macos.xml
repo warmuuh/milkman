@@ -11,7 +11,7 @@
 	<fileSets>
 		<fileSet>
 			<directory>src/bin/macos</directory>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory />
 			<lineEnding>unix</lineEnding>
 			<excludes>
 				<exclude>*.sh</exclude>

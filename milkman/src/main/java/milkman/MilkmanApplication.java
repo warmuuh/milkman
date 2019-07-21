@@ -42,6 +42,9 @@ public class MilkmanApplication extends Application {
 				module.getApplicationController().initOptions();
 				module.getThemeSwitcher().setTheme(CoreApplicationOptionsProvider.options().getTheme());
 				module.getApplicationController().initApplication(); // 1 sec
+				module.getAppCdsGenerator().initializeCds(false);
+				
+				
 				primaryStage.setOnCloseRequest(e -> module.getApplicationController().persistState());
 			} catch (Throwable t) {
 				hasError = true;

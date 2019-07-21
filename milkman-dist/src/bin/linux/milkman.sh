@@ -1,7 +1,8 @@
 #!/bin/sh
 chmod +x jre-linux64/bin/java
 
-./jre-linux64/bin/java --add-exports javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED \
+./jre-linux64/bin/java -XX:SharedArchiveFile=app-cds.jsa \
+	--add-exports javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED \
 	--add-exports javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED \
 	--add-exports javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED \
 	--add-exports javafx.graphics/com.sun.javafx.scene.text=ALL-UNNAMED \
