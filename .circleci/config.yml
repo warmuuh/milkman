@@ -40,9 +40,9 @@ jobs:
       # run tests!
       - run: mvn package
       - store_artifacts:
-          path: /home/circleci/repo//milkman-dist/target/milkman-dist-linux64-bin.zip
+          path: /home/circleci/repo//milkman-dist/target/milkman-dist-linux64-bin.tgz
       - store_artifacts:
-          path: /home/circleci/repo//milkman-dist/target/milkman-dist-macos64-bin.zip
+          path: /home/circleci/repo//milkman-dist/target/milkman-dist-macos64-bin.tgz
       - store_artifacts:
           path: /home/circleci/repo//milkman-dist/target/milkman-dist-win64-bin.zip
       - store_artifacts:
