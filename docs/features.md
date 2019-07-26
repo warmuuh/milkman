@@ -9,7 +9,7 @@
 * Clicking on the line-symbol expands the node
 * Right-Clicking on the line-symbol expands the whole subtree
 
-![folding-video](/img/gif/folding.png)
+![folding-video](/img/gif/folding.gif)
 
 
 ## Hotkeys
@@ -27,4 +27,4 @@
 * You can <kbd>CTRL</kbd>+<kbd>C</kbd> selected rows to copy its value
 * You can <kbd>CTRL</kbd>+<kbd>V</kbd> multiple rows into a table
 
-![copypaste-video](/img/gif/copypaste.png)
+![copypaste-video](/img/gif/copypaste.gif)

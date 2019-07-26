@@ -3,7 +3,6 @@
   * Export of environment (privatebin)
   * jdbc -> explorer functionality (what tables are there? what columns does a table have?)
   * jdbc -> lazy list loading
-  * Use hardwire in plugins
   * javascript runner for pre
   * UX: Long URL editor
   * UX: highlighting of environment variables
@@ -11,7 +10,7 @@
 
 # Changelog
 
-version 3.3.0 - upcoming
+version 3.3.0
   * code folding for application/json
   * fixed postman collection v2.1 import bug
   * improved exploration plugin with history
