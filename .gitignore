@@ -8,3 +8,4 @@ errors.log
 .factorypath
 .idea/
 *.iml
+*.log

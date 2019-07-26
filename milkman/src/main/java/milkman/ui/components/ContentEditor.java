@@ -46,6 +46,7 @@ import javafx.util.StringConverter;
 import lombok.val;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.ui.plugin.ContentTypePlugin;
+import milkman.utils.Stopwatch;
 import milkman.utils.fxml.GenericBinding;
 
 /**
@@ -310,9 +311,13 @@ public class ContentEditor extends VBox {
 	}
 
 	public void setContentType(String contentType) {
+		var stopwatchId = "ContentType:"+contentType;
+		Stopwatch.start(stopwatchId);
 		setActiveContentType(highlighters.getItems(), contentType);
+		Stopwatch.logTime(stopwatchId, "changed highlighter");
 		if (CoreApplicationOptionsProvider.options().isAutoformatContent())
 			formatCurrentCode();
+		Stopwatch.stop(stopwatchId);
 	}
 
 	public void setContent(Supplier<String> getter, Consumer<String> setter) {

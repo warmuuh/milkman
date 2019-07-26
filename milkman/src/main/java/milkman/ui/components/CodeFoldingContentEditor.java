@@ -20,6 +20,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import lombok.Data;
+import milkman.utils.Stopwatch;
 
 /**
  * this editor supports code folding
@@ -140,16 +141,21 @@ public class CodeFoldingContentEditor extends ContentEditor {
 
 
     protected void replaceText(String text) {
+    	Stopwatch.start("folding");
         originalText = text;
         if (getCurrentContenttypePlugin() != null && getCurrentContenttypePlugin().supportFolding()) {
             rootRange = getCurrentContenttypePlugin().computeFolding(text);
+            Stopwatch.logTime("folding", "compute folding");
             maxFoldingLevel = computeMaxFoldingLevel(rootRange);
+            Stopwatch.logTime("folding", "compute max folding lvl");
             currentFoldingLevel = maxFoldingLevel; //start with expanded tree
             redrawText();
+            Stopwatch.logTime("folding", "redraw text");
         } else {
         	foldOperatorFactory.clear();
             super.replaceText(text);
         }
+        Stopwatch.stop("folding");
     }
 
     private int computeMaxFoldingLevel(ContentRange node) {
@@ -170,19 +176,25 @@ public class CodeFoldingContentEditor extends ContentEditor {
 
 
     private void redrawText() {
+    	Stopwatch.start("redraw");
         foldOperatorFactory.updateLineToRangeCache(rootRange);
+        Stopwatch.logTime("redraw", "range cache update");
+        
         int caretPos = 0;
         if (codeArea.getText() != null && codeArea.getText().length() > 0 && codeArea.getWidth() > 0)
             caretPos = codeArea.hit(50, 10).getInsertionIndex();
 
+    	Stopwatch.logTime("redraw", "hit test");
         StringBuilder b = new StringBuilder();
         rootRange.appendToString(b);
+        Stopwatch.logTime("redraw", "build content");
         String replacement = b.toString();
         codeArea.replaceText(replacement);
-
+        Stopwatch.logTime("redraw", "replace content in editor");
         //reset window scroll to previous position
         codeArea.moveTo(caretPos);
         codeArea.requestFollowCaret();
+        Stopwatch.stop("redraw");
     }
 
 
@@ -198,26 +210,28 @@ public class CodeFoldingContentEditor extends ContentEditor {
 
         public void updateLineToRangeCache(ContentRange node) {
             clear();
-            updateLineToRangeCacheInternal(node);
+            updateLineToRangeCacheInternal(node, 0);
         }
 
         public void clear() {
             lineToContentLookup.clear();
 		}
 
-		private void updateLineToRangeCacheInternal(ContentRange node) {
+		private void updateLineToRangeCacheInternal(ContentRange node, int lineOffset) {
             if (node == null)
                 return;
 
             if (node instanceof CollapsableRange) {
                 CollapsableRange collapsable = (CollapsableRange) node;
                 if (!collapsable.isRoot()) {
-                    lineToContentLookup.put(node.getStartLine(), collapsable);
+                    lineToContentLookup.put(lineOffset, collapsable);
                 }
 
                 if (!collapsable.isCollapsed()) {
+                	int childLineOffset = lineOffset;
                     for (ContentRange child : collapsable.getChildren()) {
-                        updateLineToRangeCacheInternal(child);
+                        updateLineToRangeCacheInternal(child, childLineOffset);
+                        childLineOffset += child.getContainedLines();
                     }
                 }
             }
@@ -250,14 +264,6 @@ public class CodeFoldingContentEditor extends ContentEditor {
     @Data
     public abstract static class ContentRange {
         protected final ContentRange prevRange;
-
-        public int getStartLine() {
-            return prevRange == null ? 0 : prevRange.getEndLine();
-        }
-
-        public int getEndLine() {
-            return getStartLine() + getContainedLines();
-        }
 
         public abstract int getContainedLines();
 
@@ -325,9 +331,9 @@ public class CodeFoldingContentEditor extends ContentEditor {
             return sum;
         }
 
-        public int getStartLine() {
-            return isRoot ? -1 : super.getStartLine();
-        }
+//        public int getStartLine() {
+//            return isRoot ? -1 : super.getStartLine();
+//        }
 
     }
 

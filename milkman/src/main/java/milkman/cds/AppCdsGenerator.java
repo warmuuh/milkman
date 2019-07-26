@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.io.FileUtils;
@@ -16,11 +17,19 @@ import org.apache.commons.lang3.SystemUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import milkman.PlatformUtil;
+import milkman.ctrl.RequestTypeManager;
+import milkman.ctrl.SynchManager;
+import milkman.ctrl.WorkspaceController;
+import milkman.persistence.PersistenceManager;
+import milkman.ui.main.HotkeyManager;
 import milkman.ui.main.Toaster;
+import milkman.ui.main.ToolbarComponent;
+import milkman.ui.plugin.UiPluginManager;
+import milkman.update.UpdateChecker;
 
 @Slf4j
 @Singleton
-@RequiredArgsConstructor
+@RequiredArgsConstructor(onConstructor_={@Inject})
 public class AppCdsGenerator {
 
 	private final Toaster toaster;

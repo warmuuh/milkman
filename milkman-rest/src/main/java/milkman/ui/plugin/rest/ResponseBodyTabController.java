@@ -26,7 +26,6 @@ public class ResponseBodyTabController implements ResponseAspectEditor, ContentT
 		val body = response.getAspect(RestResponseBodyAspect.class).get();
 		ContentEditor root = new CodeFoldingContentEditor();
 		root.setEditable(false);
-		root.setContent(body::getBody, body::setBody);
 		if (plugins != null)
 			root.setContentTypePlugins(plugins);
 		
@@ -34,6 +33,7 @@ public class ResponseBodyTabController implements ResponseAspectEditor, ContentT
 				.map(RestResponseHeaderAspect::contentType)
 				.ifPresent(root::setContentType);
 		
+		root.setContent(body::getBody, body::setBody);
 		return new Tab("Response Body", root);
 	}
 
