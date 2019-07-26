@@ -27,7 +27,7 @@ public class RequestHeaderTabController implements RequestAspectEditor, AutoComp
 
 
 	private AutoCompleter completer;
-	private static Pattern headerPattern = Pattern.compile("(?://)?(\\w+):(.*)");
+	private static Pattern headerPattern = Pattern.compile("(?://)?(\\S+):(.*)");
 	private static List<String> headers;
 	
 	@Override

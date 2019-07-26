@@ -18,6 +18,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import lombok.Data;
 import milkman.utils.Stopwatch;
@@ -252,7 +253,7 @@ public class CodeFoldingContentEditor extends ContentEditor {
                             view = new FontAwesomeIconView(FontAwesomeIcon.MINUS_SQUARE);
                         }
                         view.setOnMouseClicked(e -> {
-                            r.setCollapsed(!r.isCollapsed());
+                            r.setCollapsed(!r.isCollapsed(), e.getButton() == MouseButton.SECONDARY);
                             redrawText();
                         });
                         view.setStyleClass("handCursor");
@@ -303,8 +304,14 @@ public class CodeFoldingContentEditor extends ContentEditor {
             this.collapsedLines = StringUtils.countMatches(collapsedText, '\n');
         }
 
-        public void setCollapsed(boolean value) {
+        public void setCollapsed(boolean value, boolean applyRecursive) {
             collapsed = value;
+            if (applyRecursive) {
+            	for (ContentRange child : children) {
+					if (child instanceof CollapsableRange)
+						((CollapsableRange) child).setCollapsed(value, true);
+				}
+            }
         }
 
         public void addChildren(ContentRange range) {

@@ -11,9 +11,7 @@ everything being a plugin, other things are possible, like database-requests or 
 # Download
 
  * Download latest version in [Release Section](https://github.com/warmuuh/milkman/releases). 
-   Version 2.2.2 is latest version running on Java8. 
-   Version 3.0.0 and ongoing is first version with packaged JRE and running on Java11.
- * Download plugin archive as well, if you want to use any of those plugins
+ * **Download plugin archive as well**, if you want to use any of those plugins.
 
 For downloading the nightly build:
 
@@ -30,7 +28,8 @@ latest changes can be seen in the [Changelog](changelog.md)
  * **Everything is a plugin:** Request-types (e.g. Http Request), request-aspects (e.g. Headers, Body, etc), editors for request aspects (e.g. table-based editors for headers), importers, whatever it is, you can extend it. The core application only handles Workspaces with Environments, Collections, Requests and their aspects.
  * **Http Request Plugin:** Several plugins are provided already that extend the core application to be a replacement for postman. Crafting and Executing Http/Rest requests with json highlighting. Proxy-server support.
  * **JavaFX Application:** as in: *fast* (compared to electron at least :D) and skinn-able (you can extend milkman with your own themes using simple CSS).
- *
+ * [Some more details](docs/features.md) of the core application features, such as hotkeys etc.
+ 
 # Existing Plugins:
 
 ### Http Request Plugin: (included in main distribution)
