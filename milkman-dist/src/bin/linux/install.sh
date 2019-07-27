@@ -1,5 +1,6 @@
-#!/bin/sh
-BASE_DIR="$(cd "$(dirname "$0")"; pwd)";
+#!/usr/bin/env sh
+
+BASE_DIR="$(cd "$(dirname "$0")"; pwd)" || exit 2
 
 mkdir -p $HOME/.local/share/applications
 
