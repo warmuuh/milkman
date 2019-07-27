@@ -90,6 +90,8 @@ public class AppCdsGenerator {
 					"-Xshare:dump", 
 					"-XX:SharedClassListFile=classes.lst", 
 					"-XX:SharedArchiveFile=app-cds.jsa",
+					"-XX:+UseCompressedOops", 
+					"-XX:+UseCompressedClassPointers",
 					"-cp", classPath
 					).redirectOutput(new File("appcds.log"))
 					.redirectError(new File("appcds.log"))
@@ -114,6 +116,9 @@ public class AppCdsGenerator {
 					getJavaExecutable(), 
 					"-Xshare:on", 
 					"-XX:SharedArchiveFile=app-cds.jsa",
+					"-client",
+					"-XX:+UseCompressedOops", 
+					"-XX:+UseCompressedClassPointers",
 					"-cp", classpath,
 					getClass().getName() // AppCdsGenerator::main
 					).start();
@@ -176,10 +181,11 @@ public class AppCdsGenerator {
 	}
 
 	private String getClassPath() {
-		return Arrays.asList(System.getProperty("java.class.path").split(File.pathSeparator))
-			.stream()
-			.filter(e -> e.endsWith("jar"))
-			.collect(Collectors.joining(File.pathSeparator));
+		return System.getProperty("java.class.path");
+//		return Arrays.asList(System.getProperty("java.class.path").split(File.pathSeparator))
+//			.stream()
+//			.filter(e -> e.endsWith("jar"))
+//			.collect(Collectors.joining(File.pathSeparator));
 	}
 
 	private String getJavaExecutable() {

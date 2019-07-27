@@ -3,6 +3,7 @@ package milkman;
 
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
@@ -20,6 +21,7 @@ public class MilkmanApplication extends Application {
 	
 	private MainModule module;
 
+	private static long startInitializationTime;
 	private boolean hasError = false;
 	
 	@Override
@@ -43,7 +45,8 @@ public class MilkmanApplication extends Application {
 				module.getThemeSwitcher().setTheme(CoreApplicationOptionsProvider.options().getTheme());
 				module.getApplicationController().initApplication(); // 1 sec
 				module.getAppCdsGenerator().initializeCds(false);
-				
+				log.info("App Initialization time: {} ms", System.currentTimeMillis() - startInitializationTime);
+
 				
 				primaryStage.setOnCloseRequest(e -> module.getApplicationController().persistState());
 			} catch (Throwable t) {
@@ -56,6 +59,8 @@ public class MilkmanApplication extends Application {
 	
 	
 	public static void main(String[] args) throws IOException, InterruptedException {
+		log.info("VM Startup time: {} ms", ManagementFactory.getRuntimeMXBean().getUptime());
+		startInitializationTime = System.currentTimeMillis();
 		launch(args);
 	}
 
