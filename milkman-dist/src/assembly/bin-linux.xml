@@ -7,12 +7,11 @@
 	</formats>
 	<baseDirectory>milkman-${project.version}</baseDirectory>
 	<!-- <includeBaseDirectory>false</includeBaseDirectory> -->
-	
+
 	<fileSets>
 		<fileSet>
 			<directory>src/bin/linux</directory>
 			<outputDirectory />
-			<lineEnding>unix</lineEnding>
 			<excludes>
 				<exclude>*.sh</exclude>
 			</excludes>
