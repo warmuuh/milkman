@@ -6,7 +6,7 @@ import milkman.plugin.privatebin.PrivateBinApi.PrivateBinDataV1;
 
 class SjclDeEncryptorTest {
 
-	@Test
+	@Test 
 	void testEncryption() throws Exception {
 		SjclDeEncryptor sut = new SjclDeEncryptor();
 		PrivateBinDataV1 data = sut.encrypt("test");
@@ -16,8 +16,8 @@ class SjclDeEncryptorTest {
 
 	@Test
 	void testDecryption() throws Exception {
-		String secret64 = "KEreOsL0dxwUTvtKoj1nFuNkzKb7adJcQrzgTeSJSD8=";
-		PrivateBinDataV1 data = new PrivateBinDataV1("Vlw/sC8aXrwJyJ9wTtdw9Q==", 1, 10000, 256, 128, "gcm", "", "aes", "rrOClBKft3U=", "0HeMzIwJ/C0QFuIJ7+EOC0TWmY4=", null);
+		String secret64 = "b5E1pTdK/VYvHSZcmCd0gZxJrkJnlVZ6l6wQxgGDgm4=";
+		PrivateBinDataV1 data = new PrivateBinDataV1("YNY2RpljXcT3f4HpSqUfLg==", 1, 10_000, 256, 128, "gcm", "", "aes", "V1oFfs4uKYw=", "SFZEZC4rkcZ0fuZ9m25UvFHu/K8=", null);
 
 		SjclDeEncryptor sut = new SjclDeEncryptor();
 		String decrypted = sut.decrypt(data, secret64);
