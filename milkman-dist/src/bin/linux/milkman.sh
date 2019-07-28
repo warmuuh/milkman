@@ -1,7 +1,10 @@
-#!/bin/sh
-chmod +x jre-linux64/bin/java
+#!/usr/bin/env sh
 
-./jre-linux64/bin/java -XX:SharedArchiveFile=app-cds.jsa \
+BASE_DIR="$(cd "$(dirname "$0")"; pwd)" || exit 2
+
+chmod +x "$BASE_DIR"/jre-linux64/bin/java
+
+"$BASE_DIR"/jre-linux64/bin/java -XX:SharedArchiveFile="$BASE_DIR"/app-cds.jsa \
 	-client \
 	-XX:+UseCompressedOops \
 	-XX:+UseCompressedClassPointers \
@@ -15,4 +18,4 @@ chmod +x jre-linux64/bin/java
 	--add-opens javafx.controls/javafx.scene.control=ALL-UNNAMED \
 	--add-opens javafx.graphics/javafx.scene.text=ALL-UNNAMED \
 	--add-opens javafx.graphics/com.sun.javafx.text=ALL-UNNAMED \
-	-Dprism.dirtyopts=false -cp plugins/*:milkman.jar milkman.MilkmanApplication
+	-Dprism.dirtyopts=false -cp "$BASE_DIR"/plugins/*:"$BASE_DIR"/milkman.jar milkman.MilkmanApplication

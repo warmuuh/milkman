@@ -61,7 +61,8 @@ public class MilkmanApplication extends Application {
 	public static void main(String[] args) throws IOException, InterruptedException {
 		log.info("VM Startup time: {} ms", ManagementFactory.getRuntimeMXBean().getUptime());
 		startInitializationTime = System.currentTimeMillis();
-		launch(args);
+		com.sun.javafx.application.LauncherImpl.launchApplication(
+				MilkmanApplication.class, MilkmanPreloader.class, args);
 	}
 
 	@SneakyThrows
