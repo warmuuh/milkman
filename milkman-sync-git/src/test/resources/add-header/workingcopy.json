@@ -11,6 +11,7 @@
       "@class" : "milkman.ui.plugin.rest.domain.RestHeaderAspect",
       "dirty" : false,
       "entries" : [ {
+      	"id": "cab59a2a-021e-4b6a-a05b-9de1aef658bc",
         "name" : "content-type",
         "value" : "application/json",
         "enabled" : true

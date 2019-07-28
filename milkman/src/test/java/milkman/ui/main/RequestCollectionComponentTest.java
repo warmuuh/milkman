@@ -20,6 +20,7 @@ import javafx.scene.control.TextInputControl;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import milkman.domain.Collection;
+import milkman.ui.main.RequestCollectionComponent.RequestCollectionComponentFxml;
 import milkman.utils.fxml.FxmlUtil;
 
 @ExtendWith(ApplicationExtension.class)
@@ -32,7 +33,8 @@ class RequestCollectionComponentTest {
 	@Start
 	public void setupStage(Stage stage) {
 		requests = new RequestCollectionComponent();
-		Node root = FxmlUtil.loadAndInitialize("/RequestCollectionComponent.fxml", requests);
+		
+		Node root = new RequestCollectionComponentFxml(requests);
 		stage.setScene(new Scene(new Pane(root)));
 		
 		stage.show();

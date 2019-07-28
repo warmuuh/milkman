@@ -7,28 +7,22 @@ import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-
-import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
-import org.reflections.util.ConfigurationBuilder;
-import org.reflections.util.FilterBuilder;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.introspect.ConcreteBeanPropertyBase;
 
 import de.danielbechler.diff.ObjectDifferBuilder;
 import de.danielbechler.diff.comparison.PrimitiveDefaultValueMode;
 import de.danielbechler.diff.identity.IdentityStrategy;
 import de.danielbechler.diff.node.DiffNode;
 import de.danielbechler.diff.node.Visit;
-import de.danielbechler.diff.path.NodePath;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ClassInfoList;
+import io.github.classgraph.ScanResult;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -46,26 +40,30 @@ public class CollectionDiffer {
 	 * defining identity strategies for generic super-classes but only the concrete types.
 	 * TODO: once fixed/introduced in java-object-diff, this needs to be removed
 	 */
-	static Map<Class, Set<Class>> classToSubclassCache = new HashMap<>();
-	private static Reflections reflections;
-	static Set<Class> subtypesOf(Class clazz){
+	static Map<Class, List<Class<?>>> classToSubclassCache = new HashMap<>();
+	static List<Class<?>> subtypesOf(Class clazz){
 		if (classToSubclassCache.containsKey(clazz))
 			return classToSubclassCache.get(clazz);
 		
 		
-		
-		if (reflections == null)
-			reflections = new Reflections(new ConfigurationBuilder()
-//					.filterInputsBy(new FilterBuilder().excludePackage("lombok"))
-					.setScanners(new SubTypesScanner())
-					.build());
-		
-		Set<Class> typesOf = reflections.getSubTypesOf(clazz);
+		List<Class<?>> typesOf = getSubTypesOf(clazz.getName());
 		classToSubclassCache.put(clazz, typesOf);
 		
 		return typesOf;
 	}
 	
+	
+	static List<Class<?>> getSubTypesOf(String superclassName) {
+	    try (ScanResult scanResult = new ClassGraph()
+	    							 	.enableClassInfo().enableAnnotationInfo()
+							 			.ignoreClassVisibility()
+							 			.blacklistModules("*")
+							 			.scan()) {
+	        ClassInfoList classInfoList = scanResult.getSubclasses(superclassName);
+	        return classInfoList.loadClasses();
+	    }
+	}
+
 	
 	
 	
@@ -164,7 +162,7 @@ public class CollectionDiffer {
 		return diffNode;
 	}
 	private void registerSubtypeIdentityStrategies(ObjectDifferBuilder diffBuilder, Class type, String property, IdentityStrategy strat) {
-		for (Class subType : subtypesOf(type)) {
+		for (Class<?> subType : subtypesOf(type)) {
 			diffBuilder.identity().ofCollectionItems(subType, property).via(strat);
 		}
 	}
