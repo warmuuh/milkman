@@ -4,14 +4,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import milkman.plugin.privatebin.PrivateBinApi.PrivateBinData;
+import milkman.plugin.privatebin.PrivateBinApi.PrivateBinDataV1;
 
 class JavaDeEncryptorTest {
 
 	@Test
 	void testEncryption() throws Exception {
 		JavaDeEncryptor sut = new JavaDeEncryptor();
-		PrivateBinData data = sut.encrypt("test");
+		PrivateBinDataV1 data = sut.encrypt("test");
 		System.out.println(data);
 	}
 

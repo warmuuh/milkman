@@ -12,7 +12,7 @@ import javax.script.SimpleScriptContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.SneakyThrows;
-import milkman.plugin.privatebin.PrivateBinApi.PrivateBinData;
+import milkman.plugin.privatebin.PrivateBinApi.PrivateBinDataV1;
 
 /**
  * uses sjcl for de-/encryption. i cannot find another way to make it work in browser as well.
@@ -42,17 +42,17 @@ public class SjclDeEncryptor implements DeEncryptor {
 	}
 	
 	@Override
-	public PrivateBinData encrypt(String strToEncrypt) throws Exception {
+	public PrivateBinDataV1 encrypt(String strToEncrypt) throws Exception {
 		byte[] key = DeEncryptor.generateRandomKey(AES_KEY_LENGTH);
 		return encodeInSjcl(strToEncrypt, Base64.getEncoder().encodeToString(key));
 	}
 
 	@Override
-	public String decrypt(PrivateBinData data, String secret64) throws Exception {
+	public String decrypt(PrivateBinDataV1 data, String secret64) throws Exception {
 		return decodeSjcl(data, secret64 );
 	}
 	
-	private PrivateBinData encodeInSjcl(String strToEncrypt, String secret64) throws Exception {
+	private PrivateBinDataV1 encodeInSjcl(String strToEncrypt, String secret64) throws Exception {
 		ObjectMapper m = new ObjectMapper();
 		Bindings bindings = ctx.getBindings(ScriptContext.ENGINE_SCOPE);
 		bindings.put("secret", secret64);
@@ -66,12 +66,12 @@ public class SjclDeEncryptor implements DeEncryptor {
 				throw new RuntimeException("Failed to encrypt: " + eval.get("message"));
 			}
 		}
-		PrivateBinData data = m.readValue((String)evaluation, PrivateBinData.class);
+		PrivateBinDataV1 data = m.readValue((String)evaluation, PrivateBinDataV1.class);
 		data.setSecret(secret64);
 		return data;
 	}
 	
-	private String decodeSjcl(PrivateBinData data, String secret64) throws Exception {
+	private String decodeSjcl(PrivateBinDataV1 data, String secret64) throws Exception {
 		ObjectMapper m = new ObjectMapper();
 		Bindings bindings = ctx.getBindings(ScriptContext.ENGINE_SCOPE);
 		bindings.put("secret", secret64);

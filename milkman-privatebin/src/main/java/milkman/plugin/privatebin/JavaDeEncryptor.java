@@ -12,7 +12,7 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import milkman.plugin.privatebin.PrivateBinApi.PrivateBinData;
+import milkman.plugin.privatebin.PrivateBinApi.PrivateBinDataV1;
 
 /**
  * uses java to de / encrypt data
@@ -33,7 +33,7 @@ public class JavaDeEncryptor implements DeEncryptor {
 	
 
 	
-	public PrivateBinData encrypt(String strToEncrypt) throws Exception {
+	public PrivateBinDataV1 encrypt(String strToEncrypt) throws Exception {
 		byte[] iv = randomInitializationVector();
 		byte[] salt = generateRandomSalt();
 		byte[] key = DeEncryptor.generateRandomKey(AES_KEY_LENGTH);
@@ -46,7 +46,7 @@ public class JavaDeEncryptor implements DeEncryptor {
 		cipher.updateAAD("".getBytes());
 		byte[] encrypted = cipher.doFinal(strToEncrypt.getBytes());
 		
-		return new PrivateBinData(
+		return new PrivateBinDataV1(
 				Base64.getEncoder().encodeToString(iv), 
 				1, ITERATIONS, AES_KEY_LENGTH, AUTH_TAG_LENGTH, "gcm", "", "aes",
 				Base64.getEncoder().encodeToString(salt),
@@ -58,7 +58,7 @@ public class JavaDeEncryptor implements DeEncryptor {
 		return Cipher.getInstance("AES/GCM/NoPadding");
 	}
 	
-	public String decrypt(PrivateBinData data, String secret64) throws Exception {
+	public String decrypt(PrivateBinDataV1 data, String secret64) throws Exception {
 		byte[] iv = Base64.getDecoder().decode(data.getInitializationVector());
 		byte[] salt = Base64.getDecoder().decode(data.getSalt());
 		byte[] secretBytes = Base64.getDecoder().decode(secret64);

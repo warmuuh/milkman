@@ -11,7 +11,7 @@ import java.util.zip.InflaterInputStream;
 import org.apache.commons.io.IOUtils;
 
 import lombok.Data;
-import milkman.plugin.privatebin.PrivateBinApi.PrivateBinData;
+import milkman.plugin.privatebin.PrivateBinApi.PrivateBinDataV1;
 
 @Data
 public class DeflatingWrapper implements DeEncryptor {
@@ -19,12 +19,12 @@ public class DeflatingWrapper implements DeEncryptor {
 	private final DeEncryptor delegate;
 
 	@Override
-	public PrivateBinData encrypt(String strToEncrypt) throws Exception {
+	public PrivateBinDataV1 encrypt(String strToEncrypt) throws Exception {
 		return delegate.encrypt(deflate(strToEncrypt.getBytes()));
 	}
 
 	@Override
-	public String decrypt(PrivateBinData data, String secret64) throws Exception {
+	public String decrypt(PrivateBinDataV1 data, String secret64) throws Exception {
 		return new String(inflate(delegate.decrypt(data, secret64)));
 	}
 	
