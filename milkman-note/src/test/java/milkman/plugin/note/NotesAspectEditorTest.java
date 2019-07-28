@@ -4,6 +4,7 @@ package milkman.plugin.note;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.testfx.assertions.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.api.FxRobot;
@@ -17,6 +18,7 @@ import javafx.scene.control.TextInputControl;
 import javafx.stage.Stage;
 import milkman.domain.RequestContainer;
 
+@Tag("ui")
 @ExtendWith(ApplicationExtension.class)
 public class NotesAspectEditorTest {
 

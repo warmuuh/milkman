@@ -1,5 +1,6 @@
 package milkman.ui.plugin.rest;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.api.FxRobot;
@@ -21,6 +22,7 @@ import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.*;
 
+@Tag("ui")
 @ExtendWith(ApplicationExtension.class)
 class RestRequestEditControllerTest {
 
