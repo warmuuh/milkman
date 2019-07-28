@@ -96,6 +96,10 @@
 								<!-- <maxVersion>1.9.0</maxVersion> -->
 								<opts>
 									<opt>-XX:SharedArchiveFile=app-cds.jsa</opt>
+									<opt>-client</opt>
+									<opt>-XX:+UseCompressedOops</opt>
+									<opt>-XX:+UseCompressedClassPointers</opt>
+<!-- 									<opt>-Xlog:class+load:file=cds3.log</opt> -->
 									<!-- <opt>-Djava.endorsed.dirs=./endorsed</opt> --><!-- not yet supported with modules -->
 									<opt><![CDATA[--add-exports javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED]]></opt>
 									<opt><![CDATA[--add-exports javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED]]></opt>
@@ -176,6 +180,7 @@
 						<option>--compress=2</option>
 						<option>--no-header-files</option>
 						<option>--no-man-pages</option>
+						<option>--vm=client</option>
 					</options>
 				</configuration>
 				<executions>
