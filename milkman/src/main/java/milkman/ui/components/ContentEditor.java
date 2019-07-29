@@ -328,6 +328,8 @@ public class ContentEditor extends VBox {
 //		codeAreaTextBinding = Var.mapBidirectional(contentBinding,  s -> s, s->s);
 
 		String curValue = getter.get();
+		if (CoreApplicationOptionsProvider.options().isAutoformatContent())
+			curValue = formatCode(curValue);
 
 		replaceText(curValue);
 
