@@ -166,6 +166,7 @@
 						<addModule>java.scripting</addModule>
 						<addModule>java.sql</addModule>
 						<addModule>java.xml</addModule>
+						<addModule>java.rmi</addModule>
 						<addModule>jdk.jsobject</addModule>
 						<addModule>jdk.crypto.ec</addModule>
 						<addModule>jdk.unsupported</addModule>
