@@ -2,6 +2,7 @@ package milkman.ui.components;
 
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -41,6 +42,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import lombok.EqualsAndHashCode;
@@ -71,6 +74,8 @@ public class JfxTableEditor<T> extends StackPane {
 	private Function<String, T> stringToRowConverter;
 	
 	private Integer firstEditableColumn = null;
+
+	private Supplier<T> newItemCreator;
 
 
 	public JfxTableEditor() {
@@ -172,7 +177,9 @@ public class JfxTableEditor<T> extends StackPane {
 	public void addColumn(String name, Function1<T, String> getter, BiConsumer<T, String> setter) {
 		TreeTableColumn<RecursiveWrapper<T>, String> column = new TreeTableColumn<>(name);
 		column.setCellFactory((TreeTableColumn<RecursiveWrapper<T>, String> param) -> {
-			return new GenericEditableTreeTableCell<RecursiveWrapper<T>, String>(new TextFieldEditorBuilderPatch());
+			var cell = new GenericEditableTreeTableCell<RecursiveWrapper<T>, String>(new TextFieldEditorBuilderPatch());
+			cell.setStepFunction(getStepFunction());
+			return cell;
 		});
 		column.setCellValueFactory(param -> GenericBinding.of(getter, setter, param.getValue().getValue().getData()));
 		column.setMaxWidth(400);
@@ -182,11 +189,31 @@ public class JfxTableEditor<T> extends StackPane {
 		if (firstEditableColumn == null)
 			firstEditableColumn = table.getColumns().size() -1; 
 	}
+
+
+	//returns the number of rows to advance.
+	protected BiFunction<Integer, Integer, Integer> getStepFunction() {
+		return (index, direction) -> {
+			if (obsWrappedItems.size()-1 == index && direction > 0) {
+				var newItemAdded = addNewItem();
+				if (newItemAdded) {
+					Platform.runLater(() -> {
+						if (firstEditableColumn != null)
+							table.edit(index+direction, table.getColumns().get(firstEditableColumn));
+					});
+				}
+				return newItemAdded ? direction : 0;
+			}
+			return direction;
+		};
+	}
 	
 	public void addColumn(String name, Function1<T, String> getter, BiConsumer<T, String> setter, Consumer<TextField> textFieldInitializer) {
 		TreeTableColumn<RecursiveWrapper<T>, String> column = new TreeTableColumn<>(name);
 		column.setCellFactory((TreeTableColumn<RecursiveWrapper<T>, String> param) -> {
-			return new GenericEditableTreeTableCell<RecursiveWrapper<T>, String>(new InitializingCellBuilder(textFieldInitializer));
+			var cell = new GenericEditableTreeTableCell<RecursiveWrapper<T>, String>(new InitializingCellBuilder(textFieldInitializer));
+			cell.setStepFunction(getStepFunction());
+			return cell;
 		});
 		column.setCellValueFactory(param -> GenericBinding.of(getter, setter, param.getValue().getValue().getData()));
 		column.setMaxWidth(400);
@@ -204,6 +231,7 @@ public class JfxTableEditor<T> extends StackPane {
 		});
 		column.setCellFactory(param -> new BooleanCell<>(column));
 		column.setMinWidth(100);
+		column.setEditable(false);
 		table.getColumns().add(column);
 //		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
 	}
@@ -216,15 +244,26 @@ public class JfxTableEditor<T> extends StackPane {
 		TreeTableColumn<RecursiveWrapper<T>, String> column = new TreeTableColumn<>(name);
 		column.setCellFactory(c -> new DeleteEntryCell(listener));
 		column.setMinWidth(100);
+		column.setEditable(false);
 		table.getColumns().add(column);
 //		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
 	}
 
 	public void enableAddition(Supplier<T> newItemCreator) {
+		this.newItemCreator = newItemCreator;
 		addItemBtn.setVisible(true);
 		this.addItemBtn.setOnAction(e -> { 
-			obsWrappedItems.add(new RecursiveWrapper<>(newItemCreator.get()));
+			addNewItem();
 		});
+	}
+
+
+	protected boolean addNewItem() {
+		if (newItemCreator != null) {
+			obsWrappedItems.add(new RecursiveWrapper<>(newItemCreator.get()));
+			return true;
+		}
+		return false;
 	}
 	public void disableAddition() {
 		addItemBtn.setVisible(false);
@@ -322,7 +361,9 @@ public class JfxTableEditor<T> extends StackPane {
 //                        getItems().remove(element);
 		        	
 		        });
-		        setGraphic(btn);
+		        var hbox = new HBox(btn);
+		        hbox.setAlignment(Pos.CENTER);
+				setGraphic(hbox);
 		        setText(null);
 		    }
 		}
@@ -357,7 +398,9 @@ public class JfxTableEditor<T> extends StackPane {
                 this.setGraphic(null);
             } else {
                 checkBox.setSelected(item);
-            	this.setGraphic(checkBox);
+            	var hbox = new HBox(checkBox);
+            	hbox.setAlignment(Pos.CENTER);
+				this.setGraphic(hbox);
             }
         }
     }
@@ -365,6 +408,18 @@ public class JfxTableEditor<T> extends StackPane {
 	
 	public static class TextFieldEditorBuilderPatch extends TextFieldEditorBuilder {
 
+
+	    @Override
+	    public void startEdit() {
+	        Platform.runLater(() -> {
+	        	if (textField != null) { //added nullcheck
+		            textField.selectAll();
+		            textField.requestFocus();
+	        	}
+	        });
+	    }
+
+	    
 	    @Override
 	    public void updateItem(String item, boolean empty) {
 	        Platform.runLater(() -> {
