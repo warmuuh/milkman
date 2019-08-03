@@ -10,6 +10,13 @@
 
 # Changelog
 
+version 3.4.0
+  * fixed github sync initialization
+  * fixed github sync issue (Reflections lib incompatible with java9)
+  * fixed auto-formatting
+  * updated priatebin integration to new v1.3
+  * using client vm for less memory
+  
 version 3.3.0
   * code folding for application/json
   * fixed postman collection v2.1 import bug
