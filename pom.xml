@@ -18,6 +18,7 @@
 		<module>milkman-jdbc</module>
 		<module>milkman-sync-git</module>
 		<module>milkman-privatebin</module>
+		<module>milkman-graphql</module>
 	</modules>
 
 	<properties>
