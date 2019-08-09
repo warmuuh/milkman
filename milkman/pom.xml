@@ -33,12 +33,12 @@
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-controls</artifactId>
-			<version>11.0.2</version>
+			<version>12.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-fxml</artifactId>
-			<version>11.0.2</version>
+			<version>12.0.2</version>
 		</dependency>
 
 
@@ -98,7 +98,7 @@
 		<dependency>
 			<groupId>org.fxmisc.richtext</groupId>
 			<artifactId>richtextfx</artifactId>
-			<version>0.9.3</version>
+			<version>0.10.1</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>

@@ -149,9 +149,9 @@
 					<goal>compile</goal>
 				</goals>
 				<configuration>
-					<release>11</release>
-					<source>11</source>
-					<target>11</target>
+					<release>12</release>
+					<source>12</source>
+					<target>12</target>
 					<annotationProcessors>
 						<annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor</annotationProcessor>
 						<annotationProcessor>wrm.hardwire.processor.AnnotationProcessor</annotationProcessor>
