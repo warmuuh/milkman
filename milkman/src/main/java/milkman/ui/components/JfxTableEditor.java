@@ -22,6 +22,7 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import io.vavr.Function1;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -378,13 +379,18 @@ public class JfxTableEditor<T> extends StackPane {
         public BooleanCell(TreeTableColumn<RecursiveWrapper<T>, ?> column) {
             checkBox = new CheckBox();
             
-            
 //            checkBox.setDisable(true);
             checkBox.setOnAction(e -> {
-        			table.edit(BooleanCell.this.getTreeTableRow().getIndex(), column);
+        			var row = BooleanCell.this.getTreeTableRow().getIndex();
+					table.edit(row, column);
 //        			itemProperty().setValue(newValue == null ? false : newValue);
-                	//if(isEditing())
-                        commitEdit(!checkBox.isSelected());
+
+					//we cannot use commitEdit because we would need to set column editable
+					// but we dont want this as <tab> should not select this column,
+//					commitEdit(!checkBox.isSelected());
+					//hacky way to set value without column being editable:
+					GenericBinding<T2, Boolean> binding = (GenericBinding<T2, Boolean>) column.getCellObservableValue(row);
+					binding.set(checkBox.isSelected());
             });
             this.setGraphic(checkBox);
             this.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);

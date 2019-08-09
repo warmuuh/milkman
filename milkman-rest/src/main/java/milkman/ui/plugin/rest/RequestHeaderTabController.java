@@ -39,7 +39,10 @@ public class RequestHeaderTabController implements RequestAspectEditor, AutoComp
 			Platform.runLater( () -> headers.setDirty(true));
 			return new HeaderEntry(UUID.randomUUID().toString(), "", "", true);
 		});
-		editor.addCheckboxColumn("Enabled", HeaderEntry::isEnabled, run(HeaderEntry::setEnabled).andThen(() -> headers.setDirty(true)));
+		editor.addCheckboxColumn("Enabled", 
+				HeaderEntry::isEnabled, 
+				run(HeaderEntry::setEnabled).andThen(() -> headers.setDirty(true)));
+		
 		List<String> headerList = getHeaders();
 		editor.addColumn("Name",
 				HeaderEntry::getName, 

@@ -33,7 +33,8 @@ public class ResizableJfxTreeTableView<R extends RecursiveTreeObject<R>> extends
 				method.invoke(null,  getSkin(), column, -1);
 			}
 		} catch (Throwable t) {
-			log.warn("Failed to resize columns", t);
+			//for some reason, a NPE will be thrown now and then, some racing condition?
+			log.warn("Failed to resize columns");
 		}
 //		TableSkinUtils.resizeColumnToFitContent((TableViewSkinBase<?, ?, ?, ?, ?>) getSkin(), getTreeColumn(), -1);
 //		((ResizableJfxTreeTableViewSkin<R>)getSkin()).resizeAllColumns();
