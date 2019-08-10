@@ -12,7 +12,8 @@
 
 version 3.5.0 - upcomming
   * improved tabbing in tables (only editable cells), adds new entry on <kbd>TAB</kbd> in last editable cell
-
+  * new graphql plugin
+  
 version 3.4.0
   * fixed github sync initialization
   * fixed github sync issue (Reflections lib incompatible with java9)

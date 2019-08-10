@@ -55,6 +55,9 @@ This plugin allows to synchronize workspaces via Git (using Differential Synchro
 ### PrivateBin Sharing Plugin
 Adds capability to share requests via [PrivateBin](http://PrivateBin.net), including `Burn After Reading` feature
 
+### Graphql Plugin
+Simple Graphql Plugin to craft  [GraphQL](https://graphql.org/) requests. No Auto-complete or schema valiadtion included.
+
 
 # Showcase
 
