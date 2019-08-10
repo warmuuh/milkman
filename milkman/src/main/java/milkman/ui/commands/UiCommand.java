@@ -1,5 +1,6 @@
 package milkman.ui.commands;
 
+import javafx.scene.Node;
 import lombok.Data;
 import lombok.Value;
 import milkman.domain.Collection;
@@ -77,6 +78,7 @@ public interface UiCommand {
 	}
 	@Value
 	public static class NewRequest implements UiCommand {
+		Node quickSelectNode;
 	}
 	
 	@Value

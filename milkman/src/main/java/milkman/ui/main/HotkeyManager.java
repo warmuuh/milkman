@@ -28,7 +28,7 @@ public class HotkeyManager {
 				() -> onCommand.invoke(new SubmitActiveRequest()));
 		
 		scene.getAccelerators().put(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN), 
-				() -> onCommand.invoke(new NewRequest()));
+				() -> onCommand.invoke(new NewRequest(null)));
 		
 		scene.getAccelerators().put(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN), 
 				() -> onCommand.invoke(new RenameActiveRequest()));

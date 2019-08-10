@@ -1,19 +1,32 @@
 package milkman.ctrl;
 
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXPopup;
+
+import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.layout.VBox;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import milkman.domain.RequestContainer;
 import milkman.ui.main.dialogs.SelectValueDialog;
 import milkman.ui.plugin.RequestTypeEditor;
 import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.UiPluginManager;
+import milkman.utils.fxml.FxmlUtil;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_={@Inject})
@@ -24,7 +37,7 @@ public class RequestTypeManager {
 	
 	
 	public Optional<RequestContainer> createNewRequest(boolean useDefault) {
-		Optional<RequestTypePlugin> requestTypePlugin = getRequestTypePlugin(useDefault);
+		Optional<RequestTypePlugin> requestTypePlugin = getRequestTypePlugin(useDefault) ;
 		return requestTypePlugin.map(rType -> {
 			RequestContainer request = rType.createNewRequest();
 			request.setId(UUID.randomUUID().toString());
@@ -33,6 +46,20 @@ public class RequestTypeManager {
 		});
 	}
 
+	
+	
+	public CompletableFuture<Optional<RequestContainer>> createNewRequestQuick(Node quickSelectionNode) {
+		var requestTypePluginF = getRequestTypePluginQuick(quickSelectionNode);
+		return requestTypePluginF.thenApply(requestTypePlugin -> {
+			return requestTypePlugin.map(rType -> {
+				RequestContainer request = rType.createNewRequest();
+				request.setId(UUID.randomUUID().toString());
+				plugins.loadRequestAspectPlugins().forEach(p -> p.initializeRequestAspects(request));
+				return request;
+			});
+		});
+		
+	}
 
 
 	private Optional<RequestTypePlugin> getRequestTypePlugin(boolean useDefault) {
@@ -55,7 +82,29 @@ public class RequestTypeManager {
 		
 		
 	}
-
+	
+	@SneakyThrows
+	private CompletableFuture<Optional<RequestTypePlugin>> getRequestTypePluginQuick(Node node) {
+		List<RequestTypePlugin> requestTypePlugins = plugins.loadRequestTypePlugins();
+		
+		if (requestTypePlugins.size() == 0)
+			throw new IllegalArgumentException("No RequestType plugins found");
+		
+		ContextMenu ctxMenu = new ContextMenu();
+		CompletableFuture<RequestTypePlugin> f = new CompletableFuture<RequestTypePlugin>();
+		requestTypePlugins.forEach(rtp -> {
+			var itm = new MenuItem(rtp.getRequestType());
+			itm.setOnAction(e -> {
+				f.complete(rtp);
+			});
+			ctxMenu.getItems().add(itm);
+		});
+		ctxMenu.setOnCloseRequest(e -> f.complete(null));
+		
+		Point location = MouseInfo.getPointerInfo().getLocation();
+		ctxMenu.show(node, location.getX(), location.getY());
+		return f.thenApply(Optional::ofNullable);
+	}
 
 
 	public RequestTypePlugin getPluginFor(RequestContainer request) {

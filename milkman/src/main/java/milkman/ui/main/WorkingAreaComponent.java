@@ -132,7 +132,7 @@ public class WorkingAreaComponent implements Initializable {
 	}
 	
 	@FXML public void onNewRequestClick() {
-		onCommand.invoke(new UiCommand.NewRequest());
+		onCommand.invoke(new UiCommand.NewRequest(tabPane));
 	}
 
 	public void clearResponse() {

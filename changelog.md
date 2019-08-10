@@ -13,6 +13,7 @@
 version 3.5.0 - upcomming
   * improved tabbing in tables (only editable cells), adds new entry on <kbd>TAB</kbd> in last editable cell
   * new graphql plugin
+  * added quick selection of new requests, if multiple providers exist
   
 version 3.4.0
   * fixed github sync initialization

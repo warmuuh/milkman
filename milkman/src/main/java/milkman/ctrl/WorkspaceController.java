@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -12,6 +13,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import javafx.application.Platform;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -164,9 +166,14 @@ public class WorkspaceController {
 		requestDisplayHistory.add(request.getId());
 	}
 	
-	public void createNewRequest() {
-		requestTypeManager.createNewRequest(false)
+	public void createNewRequest(Node quickSelectNode) {
+		if (quickSelectNode == null) {
+			requestTypeManager.createNewRequest(false)
 			.ifPresent(this::displayRequest);
+		} else {
+			requestTypeManager.createNewRequestQuick(quickSelectNode)
+				.thenAccept(newRequest -> newRequest.ifPresent(this::displayRequest));
+		}
 		
 	}
 	public void createNewRequestWithDefault() {
@@ -258,7 +265,7 @@ public class WorkspaceController {
 		} else if (command instanceof UiCommand.SwitchToRequest) {
 			displayRequest(((UiCommand.SwitchToRequest) command).getRequest());
 		} else if (command instanceof UiCommand.NewRequest) {
-			createNewRequest();
+			createNewRequest(((UiCommand.NewRequest) command).getQuickSelectNode());
 		} else if (command instanceof UiCommand.CloseRequest) {
 			CloseRequest closeRequest = (UiCommand.CloseRequest) command;
 			closeRequest(closeRequest.getRequest(), closeRequest.getType());
