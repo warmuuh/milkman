@@ -1,9 +1,9 @@
-# Milkman Note Plugin
+# Milkman GraphQL Plugin
 
-This is a very simple plugin that adds a tab to each request where users can enter some notes about the request.
+Allows to craft [GraphQL](https://graphql.org/) requests.
 
-This plugin serves demonstrational purposes and should show how milkman can be extended.
+This plugin is rather simple and does not include advanced features such as auto-completion or schema-validation (yet).
 
 # Screenshot
 
-![img](/img/notes-plugin.PNG)
+![img](/img/graphql-plugin.PNG)
