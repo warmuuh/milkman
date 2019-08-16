@@ -259,6 +259,8 @@ public class WorkspaceController {
 			saveRequest(saveCmd.getRequest());
 		} else if (command instanceof UiCommand.SaveActiveRequest) {
 			saveRequest(activeWorkspace.getActiveRequest());
+		} else if (command instanceof UiCommand.CloseActiveRequest) {
+			closeRequest(activeWorkspace.getActiveRequest(), CloseType.CLOSE_THIS);
 		} else if (command instanceof UiCommand.LoadRequest) {
 			val openCmd = ((UiCommand.LoadRequest) command);
 			loadRequestCopy(openCmd.getRequestId(), false);

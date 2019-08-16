@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import milkman.domain.RequestContainer;
 import milkman.plugin.graphql.domain.GraphqlRequestContainer;
@@ -52,7 +53,10 @@ public class GraphqlRequestEditor implements RequestTypeEditor, AutoCompletionAw
 
 	
 	public static class GraphqlRequestEditorFxml extends HboxExt {
+		private GraphqlRequestEditor controller; //avoid gc collection
+
 		public GraphqlRequestEditorFxml(GraphqlRequestEditor controller) {
+			this.controller = controller;
 			HBox.setHgrow(this, Priority.ALWAYS);
 			controller.requestUrl = add(new JFXTextField(), true);
 			controller.requestUrl.setId("requestUrl");

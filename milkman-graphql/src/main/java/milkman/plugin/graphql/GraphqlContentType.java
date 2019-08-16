@@ -20,8 +20,7 @@ public class GraphqlContentType implements ContentTypePlugin {
     private static final String GRAPHQL_VALUE = "(?<=:)\\s*(?<GRAPHQLVALUE>[\\w]+)";
     private static final String GRAPHQL_VARIABLE = "(?<GRAPHQLVARIABLE>\\$[\\w]+)";
     private static final String GRAPHQL_DEFAULT = "(?<==)\\s*(?<GRAPHQLDEFAULT>[^,\\)]+)";
-	private static final String GRAPHQL_BOOL = "(?<GRAPHQLBOOL>true|false)";
-	private static final String GRAPHQL_NUMBER = "(?<GRAPHQLNUMBER>\\d*.?\\d*)";
+
 
 	    
 	private static final String GRAPHQL_CURLY = "(?<GRAPHQLCURLY>\\{|\\})";
@@ -30,9 +29,7 @@ public class GraphqlContentType implements ContentTypePlugin {
 			GRAPHQL_KEYWORD
 			+ "|" + GRAPHQL_VALUE 
 			+ "|" + GRAPHQL_VARIABLE
-			+ "|" + GRAPHQL_BOOL 
 			+ "|" + GRAPHQL_DEFAULT
-			+ "|" + GRAPHQL_NUMBER
 			);
 
 

@@ -133,6 +133,7 @@ public class ResponseComponent implements Initializable {
 			stackPane.getChildren().add(anchorPane);
 			
 			JFXTabPane tabPane = anchorNode(new JFXTabPane(), 1.0, 1.0, 1.0, 1.0);
+			tabPane.setDisableAnimation(true);
 			controller.tabs = tabPane;
 			tabPane.setId("tabs");
 			anchorPane.getChildren().add(tabPane);

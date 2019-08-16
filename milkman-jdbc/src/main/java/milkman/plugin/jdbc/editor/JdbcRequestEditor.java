@@ -52,7 +52,10 @@ public class JdbcRequestEditor implements RequestTypeEditor, AutoCompletionAware
 	}
 
 	public static class JdbcRequestEditorFxml extends HboxExt {
+		private JdbcRequestEditor controller; //avoid gc collection
+
 		public JdbcRequestEditorFxml(JdbcRequestEditor controller) {
+			this.controller = controller;
 			HBox.setHgrow(this, Priority.ALWAYS);
 		
 			controller.jdbcUrl = add(new JFXTextField(), true);

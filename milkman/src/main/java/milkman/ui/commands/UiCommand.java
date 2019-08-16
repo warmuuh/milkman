@@ -63,6 +63,10 @@ public interface UiCommand {
 	}
 	
 	@Value
+	public static class CloseActiveRequest implements UiCommand {
+	}
+	
+	@Value
 	public static class DeleteRequest implements UiCommand {
 		RequestContainer request;
 		Collection collection;

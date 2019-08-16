@@ -151,6 +151,7 @@ public class RequestComponent {
 			
 			JFXTabPane tabPane = add(new JFXTabPane(), true);
 			tabPane.setId("tabs");
+			tabPane.setDisableAnimation(true);
 			controller.tabs = tabPane;
 			tabPane.setPrefHeight(300);
 			
