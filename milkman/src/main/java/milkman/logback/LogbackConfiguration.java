@@ -15,10 +15,18 @@ import milkman.PlatformUtil;
 
 public class LogbackConfiguration extends ContextAwareBase implements Configurator {
 
+	private static boolean muteConsole = false;
+	
+	public static void setMuteConsole(boolean muteConsole) {
+		LogbackConfiguration.muteConsole = muteConsole;
+	}
+	
 	@Override
 	public void configure(LoggerContext loggerContext) {
 		addInfo("Setting up logback configuration.");
-		setupConsoleAppender(loggerContext);
+		if (!muteConsole) {
+			setupConsoleAppender(loggerContext);
+		}
 		setupFileAppender(loggerContext);
 	}
 

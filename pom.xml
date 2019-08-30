@@ -19,6 +19,7 @@
 		<module>milkman-sync-git</module>
 		<module>milkman-privatebin</module>
 		<module>milkman-graphql</module>
+		<module>milkman-cli</module>
 	</modules>
 
 	<properties>
@@ -84,7 +85,7 @@
 		<dependency>
 			<groupId>com.github.warmuuh</groupId>
 			<artifactId>hardwire</artifactId>
-			<version>master</version>
+			<version>0.0.3-SNAPSHOT</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
