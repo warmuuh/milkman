@@ -68,7 +68,7 @@ public class UiPluginManager {
 		}
 	}
 	
-	private <T> List<T> loadSpiInstances(Class<T> type) {
+	public <T> List<T> loadSpiInstances(Class<T> type) {
 		if (cachedInstances.containsKey(type))
 			return cachedInstances.get(type);
 		
@@ -82,7 +82,7 @@ public class UiPluginManager {
 	}
 
 	
-	private <T extends Orderable> List<T> loadOrderedSpiInstances(Class<T> type) {
+	public <T extends Orderable> List<T> loadOrderedSpiInstances(Class<T> type) {
 		if (cachedInstances.containsKey(type))
 			return cachedInstances.get(type);
 		

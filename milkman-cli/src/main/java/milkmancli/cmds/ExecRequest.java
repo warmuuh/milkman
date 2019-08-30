@@ -4,6 +4,7 @@ import static milkmancli.utils.StringUtil.*;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -16,12 +17,15 @@ import lombok.RequiredArgsConstructor;
 import milkman.ctrl.RequestTypeManager;
 import milkman.domain.Environment;
 import milkman.domain.RequestContainer;
+import milkman.domain.ResponseAspect;
 import milkman.domain.ResponseContainer;
 import milkman.domain.Workspace;
 import milkman.persistence.PersistenceManager;
 import milkman.ui.commands.EnvironmentTemplater;
 import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.Templater;
+import milkman.ui.plugin.UiPluginManager;
+import milkmancli.AspectCliPresenter;
 import milkmancli.CliContext;
 import milkmancli.TerminalCommand;
 import milkmancli.utils.StringUtil;
@@ -34,32 +38,50 @@ import milkmancli.utils.StringUtil;
 public class ExecRequest extends TerminalCommand {
 
 	private final RequestTypeManager requestTypeManager;
+	private final UiPluginManager plugins;
 	private final CliContext context;
 
 	public Void call() throws IOException {
 		var reqName = getParameterValue("request");
 		if (reqName == null)
 			return null;
-		if (context.getCurrentWorkspace() == null) {
-			 throw new IllegalArgumentException("Workspace has to be selected first");
-		}
 		
-		if (context.getCurrentCollection() == null) {
-			 throw new IllegalArgumentException("Collection has to be selected first");
-		}
-		
-		
-		
-		RequestContainer req = findMatching(reqName,  context.getCurrentCollection().getRequests(), RequestContainer::getName)
-						.orElseThrow(()  -> new IllegalArgumentException("Request not found " + reqName));
+		RequestContainer req = lookupRequest(reqName);
 		
 		ResponseContainer response = executeRequest(req);
 		
-		for(var aspect : response.getAspects()) {
-			System.out.println("Aspect found: " + aspect.getName());
-		}
+		presentResponse(response, false);
 		
 		return null;
+	}
+
+
+	protected RequestContainer lookupRequest(String reqName) {
+		RequestContainer req = context.findRequestByIdish(reqName)
+						.orElseThrow(()  -> new IllegalArgumentException("Request not found " + reqName));
+		return req;
+	}
+
+
+	protected void presentResponse(ResponseContainer response, boolean verbose) {
+		StringBuilder b = new StringBuilder();
+		boolean isFirst = true;
+		List<AspectCliPresenter> aspectPresenters = plugins.loadOrderedSpiInstances(AspectCliPresenter.class);
+		for (AspectCliPresenter presenter : aspectPresenters) {
+			for(ResponseAspect aspect : response.getAspects()) {
+				if (presenter.canHandleAspect(aspect) && (verbose || presenter.isPrimary())) {
+					if (!isFirst) {
+						b.append(System.lineSeparator());
+					}
+					if (verbose) {
+						b.append(aspect.getName()).append(":").append(System.lineSeparator());
+					}
+					b.append(presenter.getStringRepresentation(aspect));
+					isFirst = false;
+				}
+			}
+		}
+		System.out.println(b.toString());
 	}
 
 
@@ -104,6 +126,9 @@ public class ExecRequest extends TerminalCommand {
 	}
 
 	protected List<String> getAvailableRequestNames() {
+		if (context.getCurrentCollection() == null)
+			return Collections.emptyList();
+		
 		return context.getCurrentCollection().getRequests().stream()
 				.map(r -> r.getName())
 				.collect(Collectors.toList());

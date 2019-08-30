@@ -18,7 +18,6 @@ public class MilkmanCli extends MilkmanCliBase {
 		MilkmanCli cli = new MilkmanCli();
 		cli.start();
 		cli.getTerminalUi().runCommandLoop();
-//		System.in.read();
 	}
 
 	@Override
@@ -33,7 +32,12 @@ public class MilkmanCli extends MilkmanCliBase {
 
 	@Override
 	protected RequestTypeManager createRequestTypeManager() {
-		return new RequestTypeManager(new UiPluginManager(null));
+		return new RequestTypeManager(getUiPluginManager());
+	}
+
+	@Override
+	protected UiPluginManager createUiPluginManager() {
+		return new UiPluginManager(null);
 	}
 	
 }
