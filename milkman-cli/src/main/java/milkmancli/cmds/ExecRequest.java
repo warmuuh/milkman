@@ -3,8 +3,10 @@ package milkmancli.cmds;
 import static milkmancli.utils.StringUtil.*;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -12,6 +14,10 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.apache.commons.io.IOUtils;
+import org.jline.builtins.Less;
+import org.jline.builtins.Source;
 
 import lombok.RequiredArgsConstructor;
 import milkman.ctrl.RequestTypeManager;
@@ -28,6 +34,7 @@ import milkman.ui.plugin.UiPluginManager;
 import milkmancli.AspectCliPresenter;
 import milkmancli.CliContext;
 import milkmancli.TerminalCommand;
+import milkmancli.TerminalUi;
 import milkmancli.utils.StringUtil;
 
 /**
@@ -81,7 +88,17 @@ public class ExecRequest extends TerminalCommand {
 				}
 			}
 		}
-		System.out.println(b.toString());
+		InputStream inputStream = IOUtils.toInputStream(b.toString());
+		
+		try {
+			Less less = new Less(TerminalUi.getTerminal());
+			List<Source> sources = new LinkedList<Source>();
+			sources.add(new Source.InputStreamSource(inputStream, true, "Response"));
+			less.run(sources);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+//		System.out.println(b.toString());
 	}
 
 

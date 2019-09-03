@@ -41,7 +41,7 @@ public class TerminalUi {
 	private final ExecRequest execCmd;
 	
 	private LineReader reader;
-	private Terminal terminal;
+	private static Terminal terminal;
 	private String rightPrompt;
 
 
@@ -112,4 +112,7 @@ public class TerminalUi {
 		return  b.toString();
 	}
 
+	public static Terminal getTerminal() {
+		return terminal;
+	}
 }
