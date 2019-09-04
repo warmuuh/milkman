@@ -80,14 +80,13 @@ public class TerminalUi {
 	public void runCommandLoop() {
 		try {
             // start the shell and process input until the user quits with Ctl-D
-            String line;
             while (true) {
                 try {
                 	String prompt = buildPrompt(cliContext);
-                    line = reader.readLine(prompt, rightPrompt, (MaskingCallback) null, null);
-                    ParsedLine pl = reader.getParser().parse(line, 0);
-                    String[] arguments = pl.words().toArray(new String[0]);
-                    cmd.execute(arguments);
+                    String line = reader.readLine(prompt, rightPrompt, (MaskingCallback) null, null);
+            		ParsedLine pl = reader.getParser().parse(line, 0);
+            		String[] arguments = pl.words().toArray(new String[0]);
+                    executeCommand(arguments);
                 } catch (UserInterruptException e) {
                     // Ignore
                 } catch (EndOfFileException e) {
@@ -97,6 +96,10 @@ public class TerminalUi {
         } catch (Throwable t) {
             t.printStackTrace();
         }
+	}
+
+	public void executeCommand(String[] arguments) {
+		cmd.execute(arguments);
 	}
 
 	private String buildPrompt(CliContext ctx) {

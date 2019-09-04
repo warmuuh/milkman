@@ -30,8 +30,7 @@ public class ChangeCollection extends TerminalCommand {
 
 	public Void call() throws IOException {
 		var colName = getParameterValue("collection");
-		if (colName == null)
-			return null;
+
 		if (context.getCurrentWorkspace() == null) {
 			 throw new IllegalArgumentException("Workspace has to be selected first");
 		}

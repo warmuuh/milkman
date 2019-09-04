@@ -30,8 +30,7 @@ public class ChangeWorkspace extends TerminalCommand {
 
 	public Void call() throws IOException {
 		var wsName = getParameterValue("workspace");
-		if (wsName == null)
-			return null;
+
 		if (context.getCurrentWorkspace() != null 
 				&& stringToId(context.getCurrentWorkspace().getName()).equals(wsName))
 			return null;

@@ -4,6 +4,7 @@ import static milkmancli.utils.StringUtil.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -16,6 +17,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.io.IOUtils;
+import org.jline.builtins.Commands;
 import org.jline.builtins.Less;
 import org.jline.builtins.Source;
 
@@ -50,8 +52,6 @@ public class ExecRequest extends TerminalCommand {
 
 	public Void call() throws IOException {
 		var reqName = getParameterValue("request");
-		if (reqName == null)
-			return null;
 		
 		RequestContainer req = lookupRequest(reqName);
 		
@@ -91,14 +91,14 @@ public class ExecRequest extends TerminalCommand {
 		InputStream inputStream = IOUtils.toInputStream(b.toString());
 		
 		try {
-			Less less = new Less(TerminalUi.getTerminal());
-			List<Source> sources = new LinkedList<Source>();
-			sources.add(new Source.InputStreamSource(inputStream, true, "Response"));
-			less.run(sources);
+			if (isOption("less")) {
+				Commands.less(TerminalUi.getTerminal(), inputStream, System.out, System.err, null, new String[] {"-"});
+			} else {
+				System.out.println(b.toString());
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-//		System.out.println(b.toString());
 	}
 
 
@@ -142,6 +142,13 @@ public class ExecRequest extends TerminalCommand {
 		}));
 	}
 
+	@Override
+	protected List<Option> createOptions() {
+		return List.of(
+				new Option("less", "l", "outputs response into less")
+		);
+	}
+	
 	protected List<String> getAvailableRequestNames() {
 		if (context.getCurrentCollection() == null)
 			return Collections.emptyList();

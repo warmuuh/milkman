@@ -17,7 +17,11 @@ public class MilkmanCli extends MilkmanCliBase {
 		LogbackConfiguration.setMuteConsole(true);
 		MilkmanCli cli = new MilkmanCli();
 		cli.start();
-		cli.getTerminalUi().runCommandLoop();
+		if (args.length > 1) {
+			cli.getTerminalUi().executeCommand(args);
+		} else {
+			cli.getTerminalUi().runCommandLoop();
+		}
 	}
 
 	@Override

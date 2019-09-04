@@ -1,1 +1,0 @@
-cmd /C "c:\Program Files\Java\jdk-11.0.1\bin\java.exe" %*
