@@ -57,7 +57,7 @@ public class ExecRequest extends TerminalCommand {
 		
 		ResponseContainer response = executeRequest(req);
 		
-		presentResponse(response, false);
+		presentResponse(response, isOption("verbose"));
 		
 		return null;
 	}
@@ -79,19 +79,21 @@ public class ExecRequest extends TerminalCommand {
 				if (presenter.canHandleAspect(aspect) && (verbose || presenter.isPrimary())) {
 					if (!isFirst) {
 						b.append(System.lineSeparator());
+						b.append(System.lineSeparator());
 					}
 					if (verbose) {
 						b.append(aspect.getName()).append(":").append(System.lineSeparator());
 					}
 					b.append(presenter.getStringRepresentation(aspect));
+					
 					isFirst = false;
 				}
 			}
 		}
-		InputStream inputStream = IOUtils.toInputStream(b.toString());
 		
 		try {
 			if (isOption("less")) {
+				InputStream inputStream = IOUtils.toInputStream(b.toString());
 				Commands.less(TerminalUi.getTerminal(), inputStream, System.out, System.err, null, new String[] {"-"});
 			} else {
 				System.out.println(b.toString());
@@ -135,9 +137,7 @@ public class ExecRequest extends TerminalCommand {
 		return List.of(new Parameter("request", "the name of the request to execute", new Completion() {
 			@Override
 			public Collection<String> getCompletionCandidates() {
-				return getAvailableRequestNames().stream()
-						.map(StringUtil::stringToId)
-						.collect(Collectors.toList());
+				return context.getAvailableRequestNames();
 			}
 		}));
 	}
@@ -145,17 +145,9 @@ public class ExecRequest extends TerminalCommand {
 	@Override
 	protected List<Option> createOptions() {
 		return List.of(
-				new Option("less", "l", "outputs response into less")
+				new Option("less", "l", "outputs response into less"),
+				new Option("verbose", "v", "outputs all aspects")
 		);
-	}
-	
-	protected List<String> getAvailableRequestNames() {
-		if (context.getCurrentCollection() == null)
-			return Collections.emptyList();
-		
-		return context.getCurrentCollection().getRequests().stream()
-				.map(r -> r.getName())
-				.collect(Collectors.toList());
 	}
 
 }

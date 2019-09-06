@@ -18,6 +18,10 @@ public class RestQueryParamAspect extends RestRequestAspect {
 
 	private List<QueryParamEntry> entries = new LinkedList<>();
 	
+	public RestQueryParamAspect() {
+		super("query");
+	}
+	
 	@Override
 	public void enrichRequest(RequestBuilder builder, Templater templater) throws Exception {
 		/* nothing to do as we did this on-the-fly */

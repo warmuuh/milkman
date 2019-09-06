@@ -12,6 +12,10 @@ public class RestBodyAspect extends RestRequestAspect {
 
 	String body;
 	
+	public RestBodyAspect() {
+		super("body");
+	}
+	
 	public void enrichRequest(RequestBuilder builder, Templater templater) throws Exception {
 		if (StringUtils.isNotBlank(body))
 			builder.setEntity(new StringEntity(templater.replaceTags(body)));

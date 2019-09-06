@@ -40,9 +40,7 @@ public class ChangeCollection extends TerminalCommand {
 			return null;
 		
 		
-		milkman.domain.Collection col = findMatching(colName,  context.getCurrentWorkspace().getCollections(), milkman.domain.Collection::getName)
-						.orElseThrow(()  -> new IllegalArgumentException("Collection not found " + colName));
-		context.setCurrentCollection(col);
+		context.setCurrentCollection(colName);
 		return null;
 	}
 
@@ -68,19 +66,9 @@ public class ChangeCollection extends TerminalCommand {
 		return List.of(new Parameter("collection", "the name of the collection to switch to", new Completion() {
 			@Override
 			public Collection<String> getCompletionCandidates() {
-				return getAvailableCollectionNames().stream()
-						.map(StringUtil::stringToId)
-						.collect(Collectors.toList());
+				return context.getAvailableCollectionNames();
 			}
 		}));
 	}
-
-
-	protected List<String> getAvailableCollectionNames() {
-		return context.getCurrentWorkspace().getCollections().stream()
-				.map(c -> c.getName())
-				.collect(Collectors.toList());
-	}
-
 
 }

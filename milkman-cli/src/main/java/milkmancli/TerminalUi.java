@@ -2,10 +2,13 @@ package milkmancli;
 
 import static milkmancli.utils.StringUtil.stringToId;
 
+import java.io.IOException;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.io.IOUtils;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
@@ -21,7 +24,9 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import milkmancli.cmds.ChangeCollection;
 import milkmancli.cmds.ChangeWorkspace;
+import milkmancli.cmds.EditRequestAspect;
 import milkmancli.cmds.ExecRequest;
+import milkmancli.cmds.QuitApplication;
 import picocli.CommandLine;
 import picocli.CommandLine.ParseResult;
 import picocli.CommandLine.IExecutionExceptionHandler;
@@ -39,6 +44,9 @@ public class TerminalUi {
 	private final ChangeWorkspace wsCmd;
 	private final ChangeCollection colCmd;
 	private final ExecRequest execCmd;
+	private final QuitApplication quitCmd;
+	private final EditRequestAspect editCmd;
+	
 	
 	private LineReader reader;
 	private static Terminal terminal;
@@ -54,6 +62,8 @@ public class TerminalUi {
 				.name("")
 				.addSubcommand(null, commandSpecFactory.getSpecFor(wsCmd))
 				.addSubcommand(null, commandSpecFactory.getSpecFor(execCmd))
+				.addSubcommand(null, commandSpecFactory.getSpecFor(editCmd))
+				.addSubcommand(null, commandSpecFactory.getSpecFor(quitCmd))
 				.addSubcommand(null, commandSpecFactory.getSpecFor(colCmd)));
         
 		cmd.setExecutionExceptionHandler(new IExecutionExceptionHandler() {
@@ -79,6 +89,7 @@ public class TerminalUi {
 
 	public void runCommandLoop() {
 		try {
+			greet();
             // start the shell and process input until the user quits with Ctl-D
             while (true) {
                 try {
@@ -96,6 +107,16 @@ public class TerminalUi {
         } catch (Throwable t) {
             t.printStackTrace();
         }
+	}
+
+	protected void greet() {
+		try {
+			String banner = IOUtils.toString(getClass().getResourceAsStream("/banner.txt"));
+			System.out.print(banner);
+		} catch (IOException e) {
+			/* ignore */
+		}
+		cmd.usage(System.out);
 	}
 
 	public void executeCommand(String[] arguments) {

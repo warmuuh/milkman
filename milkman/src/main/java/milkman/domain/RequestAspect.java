@@ -2,6 +2,7 @@ package milkman.domain;
 
 import java.io.IOException;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
@@ -26,20 +27,38 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(include = As.PROPERTY, use = Id.CLASS, visible = true)
 public abstract class RequestAspect extends Dirtyable implements Searchable {
+	
+	private final String name;
+	
+	public RequestAspect(String name) {
+		super();
+		this.name = name;
+	}
 
 	@Override
 	public boolean match(String searchString) {
 		return false;
 	}
 
+	@JsonIgnore
+	public String getName() {
+		return name;
+	}
+	
+	
 	
 	// used as deserialization target of unknown Aspects (e.g. removed plugins)
 	@Data
-	@AllArgsConstructor
 	@JsonDeserialize(using = CustomUnknownDeserializer.class)
 	@JsonSerialize(using = CustomUnknownSerializer.class)
 	public static class UnknownRequestAspect extends RequestAspect {
 		private TreeNode content;
+		
+		public UnknownRequestAspect(TreeNode content) {
+			super("unknown");
+			this.content = content;
+		}
+		
 	};
 	
 	

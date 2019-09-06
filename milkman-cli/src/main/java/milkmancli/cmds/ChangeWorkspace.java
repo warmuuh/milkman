@@ -25,7 +25,6 @@ import milkmancli.utils.StringUtil;
 @RequiredArgsConstructor(onConstructor_={@Inject})
 public class ChangeWorkspace extends TerminalCommand {
 
-	private final PersistenceManager persistenceManager;
 	private final CliContext context;
 
 	public Void call() throws IOException {
@@ -35,12 +34,7 @@ public class ChangeWorkspace extends TerminalCommand {
 				&& stringToId(context.getCurrentWorkspace().getName()).equals(wsName))
 			return null;
 		
-		
-		
-		Workspace ws = findMatching(wsName, persistenceManager.loadWorkspaceNames())
-						.flatMap(persistenceManager::loadWorkspaceByName)
-						.orElseThrow(()  -> new IllegalArgumentException("Workspace not found " + wsName));
-		context.setCurrentWorkspace(ws);
+		context.setCurrentWorkspace(wsName);
 		return null;
 	}
 
@@ -66,7 +60,7 @@ public class ChangeWorkspace extends TerminalCommand {
 		return List.of(new Parameter("workspace", "the name of the workspace to switch to", new Completion() {
 			@Override
 			public Collection<String> getCompletionCandidates() {
-				return persistenceManager.loadWorkspaceNames().stream().map(StringUtil::stringToId).collect(Collectors.toList());
+				return context.getAvailableWorkspaceNames();
 			}
 		}));
 	}

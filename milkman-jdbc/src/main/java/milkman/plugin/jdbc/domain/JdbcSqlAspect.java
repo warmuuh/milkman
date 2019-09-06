@@ -8,4 +8,7 @@ public class JdbcSqlAspect extends RequestAspect {
 
 	String sql = "";
 	
+	public JdbcSqlAspect() {
+		super("sql");
+	}
 }

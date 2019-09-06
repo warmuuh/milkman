@@ -21,9 +21,10 @@ public class CommandSpecFactory {
         	.usageMessage(new UsageMessageSpec()
         			.description(cmd.getDescription()));
         
-        
+        int idx = 0;
         for (Parameter parameter : cmd.getParameters()) {
-        	addPositionalParameter(cmdSpec, parameter);
+        	addPositionalParameter(cmdSpec, parameter, idx);
+        	idx++;
         }
         
         for(Option option : cmd.getOptions()) {
@@ -50,11 +51,12 @@ public class CommandSpecFactory {
 				.build());
 	}
 
-	private CommandSpec addPositionalParameter(CommandSpec cmdSpec, Parameter parameter) {
+	private CommandSpec addPositionalParameter(CommandSpec cmdSpec, Parameter parameter, int idx) {
 		return cmdSpec.addPositional(PositionalParamSpec.builder()
 				.paramLabel(parameter.getName())
 				.arity("1")
-				.required(true)
+				.index(""+idx)
+				.required(parameter.isRequired())
 				.setter(new ISetter() {
 
 					@Override

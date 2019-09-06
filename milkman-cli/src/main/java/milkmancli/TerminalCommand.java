@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import lombok.Data;
@@ -16,18 +17,24 @@ public abstract class TerminalCommand implements Callable<Void>{
 	public abstract String getName();
 	public abstract String getAlias();
 	public abstract String getDescription();
-	protected abstract List<Parameter> createParameters();
+	protected List<Parameter> createParameters(){
+		return Collections.emptyList();
+	};
 	
 	protected List<Option> createOptions(){
 		return Collections.emptyList();
 	};
 	
 	
-	protected String getParameterValue(String paramName) {
+	protected Optional<String> tryGetParameterValue(String paramName) {
 		return parameters.stream()
 			.filter(p -> p.getName().equals(paramName))
-			.map(p -> p.getValue())
 			.findAny()
+			.flatMap(p -> Optional.ofNullable(p.getValue()));
+	}
+	
+	protected String getParameterValue(String paramName) {
+		return tryGetParameterValue(paramName)
 			.orElseThrow(() -> new IllegalArgumentException("Parameter with name " + paramName + " not found"));
 	}
 	
@@ -60,7 +67,26 @@ public abstract class TerminalCommand implements Callable<Void>{
 		private final String name;
 		private final String description;
 		private final Completion completion;
+		private boolean required;
 		String value;
+		
+		public Parameter(String name, String description, Completion completion, boolean required) {
+			super();
+			this.name = name;
+			this.description = description;
+			this.completion = completion;
+			this.required = required;
+		}
+
+		public Parameter(String name, String description, Completion completion) {
+			super();
+			this.name = name;
+			this.description = description;
+			this.completion = completion;
+		}
+		
+		
+		
 	}
 	
 	@Data
