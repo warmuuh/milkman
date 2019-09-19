@@ -1,5 +1,7 @@
 package milkman.ui.components;
 
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
@@ -102,7 +104,7 @@ public class ContentEditor extends VBox {
 
 	private void setupCodeArea() {
 		codeArea = new CodeArea();
-
+//		codeArea.setWrapText(true);
 		setupParagraphGraphics();
 		EventStream<Object> highLightTrigger = EventStreams.merge(codeArea.multiPlainChanges(),
 				EventStreams.changesOf(highlighters.getSelectionModel().selectedItemProperty()),
@@ -274,7 +276,7 @@ public class ContentEditor extends VBox {
 		StopWatch s = new StopWatch();
 		s.start();
 		try {
-			if (getCurrentContenttypePlugin() != null)
+			if (getCurrentContenttypePlugin() != null && !shouldSkipHighlighting(text))
 				return getCurrentContenttypePlugin().computeHighlighting(text);
 			else
 				return noHighlight(text);
@@ -282,6 +284,38 @@ public class ContentEditor extends VBox {
 			s.stop();
 //			System.out.println("Highlighting code: " + s.getTime() + " ms");
 		}
+	}
+
+	/**
+	 * Because Flowless cannot handle syntax highlighting of very long lines that well,
+	 * we just disable highlighting, if text contains very long lines
+	 * 
+	 * @param text
+	 * @return
+	 */
+	private boolean shouldSkipHighlighting(String text) {
+		/**
+		 * iterates over the string, counting the chars until next \n thereby.
+		 * If line is above max, it returns true
+		 */
+		
+		StringCharacterIterator iterator = new StringCharacterIterator(text);
+		long curLineLength = 0;
+		while(true) {
+			char c = iterator.next();
+			if (c == CharacterIterator.DONE) {
+				break;
+			}
+			curLineLength++;
+			if (c == '\n') {
+				if (curLineLength > 1_000) {
+					return true;
+				}
+				curLineLength = 0;
+			}
+				
+		}
+		return curLineLength > 1_000;
 	}
 
 	private StyleSpans<Collection<String>> noHighlight(String text) {

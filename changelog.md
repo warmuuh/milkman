@@ -12,6 +12,7 @@
 
 version 3.6.0 - upcomming
   * added Commandline Interface `mm` for milkman
+  * improved handling of big unformatted responses.
   
 
 version 3.5.0 
