@@ -1,6 +1,6 @@
 # Milkman Commandline Interface
 
-This is an experimental command line interface for plugin. After copying the content of the archive to the root directory of milkman,
+This is an experimental interactive command line interface for plugin. After copying the content of the archive to the root directory of milkman,
 you can start it by `mm` on terminal.
 
 # Screenshot
@@ -13,7 +13,8 @@ you can start it by `mm` on terminal.
 * Editing Request-Aspects via `nano`
 * Executing requests
 * Analyzing responses via `less`
-
+* Interactive mode (entered by simply starting `mm`) or non-interactive mode (by executing commands via `mm [command]`)
+* Tab-Completion on interactive mode
 
 # Commands
 
@@ -21,10 +22,10 @@ you can start it by `mm` on terminal.
 
 | Command | Alias | Description | Arguments |
 | ------ | --- |  -------  | ------ |
-| change-workspace | ws | Switches currently activated workspace | workspace-id | 
-| change-collection | col | Switches currently activated collection | collection   the name of the collection to switch to |
-| execute-request | req | Executes a given request | requestish<sup>1</sup>     the name of the request to execute<br>-l, --less      outputs response into less<br>-v, --verbose   outputs all aspects |
-| edit-request | e | Edits an aspect of a request | request   the name of the request to execute<br>aspect    the aspect to edit|
+| change-workspace | ws | Switches currently activated workspace | `workspace` the id of the workspace to switch to | 
+| change-collection | col | Switches currently activated collection | `collection`   the id of the collection to switch to |
+| execute-request | req | Executes a given request | `requestish`<sup>1</sup>     the id of the request to execute<br>`-l`, `--less`      outputs response into less<br>`-v`, `--verbose`   outputs all aspects |
+| edit-request | e | Edits an aspect of a request | `requestish`<sup>1</sup>   the id of the request to execute<br>`aspect`    the aspect to edit|
 | quit | q | Quits Application | |
 
 <sup>1</sup>A requestish is [[Workspace-Id/]Collection-Id/]Request-Id (i.e. the first two are optional)
