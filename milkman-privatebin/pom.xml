@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.github.warmuuh</groupId>
 		<artifactId>milkman-parent</artifactId>
-		<version>3.5.0</version>
+		<version>3.6.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>milkman-privatebin</artifactId>
 
@@ -14,7 +14,7 @@
 		<dependency>
 			<groupId>com.github.warmuuh</groupId>
 			<artifactId>milkman</artifactId>
-			<version>3.5.0</version>
+			<version>3.6.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

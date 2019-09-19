@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.github.warmuuh</groupId>
 		<artifactId>milkman-parent</artifactId>
-		<version>3.5.0</version>
+		<version>3.6.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>milkman-dist</artifactId>
 
@@ -22,32 +22,32 @@
 		<dependency>
 			<groupId>com.github.warmuuh</groupId>
 			<artifactId>milkman-sync-git</artifactId>
-			<version>3.5.0</version>
+			<version>3.6.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.warmuuh</groupId>
 			<artifactId>milkman</artifactId>
-			<version>3.5.0</version>
+			<version>3.6.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.warmuuh</groupId>
 			<artifactId>milkman-cli</artifactId>
-			<version>3.5.0</version>
+			<version>3.6.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.warmuuh</groupId>
 			<artifactId>milkman-note</artifactId>
-			<version>3.5.0</version>
+			<version>3.6.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.warmuuh</groupId>
 			<artifactId>milkman-jdbc</artifactId>
-			<version>3.5.0</version>
+			<version>3.6.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.warmuuh</groupId>
 			<artifactId>milkman-rest</artifactId>
-			<version>3.5.0</version>
+			<version>3.6.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hsqldb</groupId>
@@ -58,22 +58,22 @@
 		<dependency>
 			<groupId>com.github.warmuuh</groupId>
 			<artifactId>milkman-scripting</artifactId>
-			<version>3.5.0</version>
+			<version>3.6.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.warmuuh</groupId>
 			<artifactId>milkman-explore</artifactId>
-			<version>3.5.0</version>
+			<version>3.6.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.warmuuh</groupId>
 			<artifactId>milkman-privatebin</artifactId>
-			<version>3.5.0</version>
+			<version>3.6.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.warmuuh</groupId>
 			<artifactId>milkman-graphql</artifactId>
-			<version>3.5.0</version>
+			<version>3.6.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
@@ -304,6 +304,19 @@
 							<finalName>${project.artifactId}-plugins</finalName>
 							<descriptors>
 								<descriptor>src/assembly/plugins-bin.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+						<execution>
+						<id>assembly-cli</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<finalName>${project.artifactId}-cli</finalName>
+							<descriptors>
+								<descriptor>src/assembly/bin-cli.xml</descriptor>
 							</descriptors>
 						</configuration>
 					</execution>

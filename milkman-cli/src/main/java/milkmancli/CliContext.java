@@ -1,6 +1,6 @@
 package milkmancli;
 
-import static milkmancli.utils.StringUtil.findMatching;
+import static milkmancli.utils.StringUtil.*;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -94,7 +94,7 @@ public class CliContext {
 	public void init() {
 		this.workspaces = persistence.loadWorkspaceNames();
 		workbenchState = persistence.loadWorkbenchState();
-		setCurrentWorkspace(workbenchState.getLoadedWorkspace());
+		setCurrentWorkspace(stringToId(workbenchState.getLoadedWorkspace()));
 	}
 	
 	public void setCurrentWorkspace(String wsName) {
