@@ -1,16 +1,16 @@
 package milkman.utils.fxml;
 import java.util.Objects;
+import java.util.function.Supplier;
 
-import io.vavr.CheckedConsumer;
-import io.vavr.Function0;
 import javafx.beans.property.ObjectPropertyBase;
+import milkman.utils.CheckedConsumer;
  
 public class FnProperty<T> extends ObjectPropertyBase<T> {
-   private final Function0<T> getter;
+   private final Supplier<T> getter;
    private final CheckedConsumer<T> setter;
    
  
-    public FnProperty(Function0<T> getter, CheckedConsumer<T> setter) {
+    public FnProperty(Supplier<T> getter, CheckedConsumer<T> setter) {
         super();
 		this.getter = getter;
 		this.setter = setter;
@@ -19,7 +19,7 @@ public class FnProperty<T> extends ObjectPropertyBase<T> {
     @Override
     public void set(T v) {
         try {
-            setter.accept(v);
+            setter.apply(v);
             super.set(v);
         } catch (final Throwable t) {
             throw new RuntimeException("Unable to set value: " + v, t);
@@ -31,7 +31,7 @@ public class FnProperty<T> extends ObjectPropertyBase<T> {
             // TODO : here we are lazily loading the property which will prevent any property listeners
             // from receiving notice of a direct model field change until the next time the get method
             // is called on the PathProperty
-            final T prop = getter.apply();
+            final T prop = getter.get();
             if (!Objects.equals(super.get(),prop)) {
                 super.set(prop);
             }

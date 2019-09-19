@@ -1,8 +1,9 @@
 package milkman.utils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiConsumer;
 
-import io.vavr.collection.List;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import lombok.Data;
@@ -11,16 +12,16 @@ import lombok.SneakyThrows;
 public class Event2<T1, T2> implements Observable {
 
 	
-	List<BiConsumer<T1, T2>> listeners = List.empty();
+	List<BiConsumer<T1, T2>> listeners = new ArrayList<>();
 	
 
 	
 	public void add(BiConsumer<T1, T2> listener) {
-		listeners = listeners.append(listener);
+		listeners.add(listener);
 	}
 
 	public void remove(BiConsumer<T1, T2> listener) {
-		listeners = listeners.remove(listener);
+		listeners.remove(listener);
 	}
 
 	

@@ -1,18 +1,20 @@
 package milkman.utils;
 
 
-import io.vavr.collection.List;
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.SneakyThrows;
 
 public class Event0 {
 
 	
-	List<Runnable> listeners = List.empty();
+	List<Runnable> listeners = new ArrayList<>();
 	
 
 	
 	public void add(Runnable listener) {
-		listeners = listeners.append(listener);
+		listeners.add(listener);
 	}
 
 	@SneakyThrows
@@ -23,7 +25,7 @@ public class Event0 {
 	}
 	
 	public void clear() {
-		listeners = List.empty();
+		listeners.clear();
 	}
 	
 	

@@ -3,8 +3,8 @@ package milkman.ui.plugin.rest.postman;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.reactfx.util.Try;
 
-import io.vavr.control.Try;
 import javafx.scene.Node;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -43,52 +43,56 @@ public class PostmanImporterPlugin implements ImporterPlugin {
 		}
 		String content = IOUtils.toString(stream);
 		importEnvironment(content, workspace, toaster)
-			.onFailure(e -> log.warn("environment import failed", e))
-		.recoverWith(e -> importCollectionV10(content, workspace, toaster))
-			.onFailure(e -> log.warn("collection v1 import failed", e))
-		.recoverWith(e -> importCollevtionV21(content, workspace, toaster))
-			.onFailure(e -> log.warn("collection v2.1 import failed", e))
-		.recoverWith(e -> importPostmanDump(content, workspace, toaster))
-			.onFailure(e -> log.warn("dump import failed", e))
-		.orElseRun(e -> toaster.showToast("Failed to import data. unrecognized format."));
+//			.onFailure(e -> log.warn("environment import failed", e))
+		.orElse(() -> importCollectionV10(content, workspace, toaster))
+//			.onFailure(e -> log.warn("collection v1 import failed", e))
+		.orElse(() -> importCollevtionV21(content, workspace, toaster))
+//			.onFailure(e -> log.warn("collection v2.1 import failed", e))
+		.orElse(() -> importPostmanDump(content, workspace, toaster))
+//			.onFailure(e -> log.warn("dump import failed", e))
+		.ifFailure(e -> toaster.showToast("Failed to import data. unrecognized format."));
 
 		return true;
 	}
 
 	public Try<Void> importEnvironment(String content, Workspace workspace, Toaster toaster) {
-		return Try.run(() -> {
+		return Try.tryGet(() -> {
 			PostmanImporterV21 importer = new PostmanImporterV21();
 			Environment env = importer.importEnvironment(content);
 			workspace.getEnvironments().add(env);
 			toaster.showToast("Imported Environment: " + env.getName());
+			return null;
 		});
 	}
 
 	public Try<Void> importCollectionV10(String content, Workspace workspace, Toaster toaster) {
-		return Try.run(() -> {
+		return Try.tryGet(() -> {
 			PostmanImporterV10 importer = new PostmanImporterV10();
 			Collection collection = importer.importCollection(content);
 			workspace.getCollections().add(collection);
 			toaster.showToast("Imported Collection (V1.0): " + collection.getName());
+			return null;
 		});
 	}
 
 	public Try<Void> importCollevtionV21(String content, Workspace workspace, Toaster toaster) {
-		return Try.run(() -> {
+		return Try.tryGet(() -> {
 			PostmanImporterV21 importer = new PostmanImporterV21();
 			Collection collection = importer.importCollection(content);
 			workspace.getCollections().add(collection);
 			toaster.showToast("Imported Collection (V2.1): " + collection.getName());
+			return null;
 		});
 	}
 
 	public Try<Void> importPostmanDump(String content, Workspace workspace, Toaster toaster) {
-		return Try.run(() -> {
+		return Try.tryGet(() -> {
 			PostmanDumpImporter importer = new PostmanDumpImporter();
 			Workspace importedStuff = importer.importDump(content);
 			workspace.getCollections().addAll(importedStuff.getCollections());
 			workspace.getEnvironments().addAll(importedStuff.getEnvironments());
 			toaster.showToast("Imported Postman Dump");
+			return null;
 		});
 	}
 

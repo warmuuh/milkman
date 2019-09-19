@@ -13,7 +13,6 @@ import javafx.stage.Stage;
 import milkman.domain.Environment;
 import milkman.domain.Environment.EnvironmentEntry;
 import milkman.ui.components.JfxTableEditor;
-import milkman.ui.components.TableEditor;
 import milkman.utils.fxml.FxmlUtil;
 
 public class EditEnvironmentDialog {

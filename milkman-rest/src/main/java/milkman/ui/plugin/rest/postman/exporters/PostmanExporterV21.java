@@ -2,18 +2,18 @@ package milkman.ui.plugin.rest.postman.exporters;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import org.reactfx.util.Try;
 
 import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.milkman.rest.postman.schema.v21.Body;
+import com.milkman.rest.postman.schema.v21.Body.Mode;
 import com.milkman.rest.postman.schema.v21.Header;
 import com.milkman.rest.postman.schema.v21.Info;
 import com.milkman.rest.postman.schema.v21.ItemGroup;
@@ -22,11 +22,7 @@ import com.milkman.rest.postman.schema.v21.Query;
 import com.milkman.rest.postman.schema.v21.Request;
 import com.milkman.rest.postman.schema.v21.Url;
 
-import io.vavr.control.Try;
 import lombok.SneakyThrows;
-
-import com.milkman.rest.postman.schema.v21.Body.Mode;
-
 import milkman.domain.Collection;
 import milkman.ui.plugin.rest.domain.HeaderEntry;
 import milkman.ui.plugin.rest.domain.RestBodyAspect;
@@ -88,11 +84,11 @@ public class PostmanExporterV21 {
 		Url url = new Url();
 		url.setRaw(request.getUrl());
 		
-		Try<URI> tUri = Try.of(() -> new URI(request.getUrl()));
+		Try<URI> tUri = Try.tryGet(() -> new URI(request.getUrl()));
 		
 		url.setHost(tUri.map(u -> u.getHost().split("\\.")).getOrElse(new String[] {}));
 
-		url.setProtocol(tUri.map(u -> u.getScheme()).getOrNull());
+		url.setProtocol(tUri.map(u -> u.getScheme()).getOrElse((String)null));
 		url.setPath(tUri.map(u -> u.getPath().split("/")).getOrElse(new String[] {}));
 		
 		String[] qry = tUri.map(u -> u.getQuery().split("&")).getOrElse(new String[] {});
@@ -108,7 +104,7 @@ public class PostmanExporterV21 {
 			}
 		}
 		
-		url.setPort(tUri.map(u -> u.getPort()).filter(p -> p > 0).map(Object::toString).getOrNull());
+		url.setPort(tUri.map(u -> u.getPort()).map(p -> p > 0 ? Integer.toString(p) : null).getOrElse((String)null));
 		
 		r.setUrl(url);
 		

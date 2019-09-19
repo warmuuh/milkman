@@ -1,5 +1,7 @@
 package milkman.ctrl;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +14,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.reactfx.util.Lists;
 
 import javafx.application.Platform;
 import lombok.RequiredArgsConstructor;
@@ -95,7 +98,7 @@ public class ApplicationController {
 				UUID.randomUUID().toString(),
 				name, 
 				new LinkedList<>(), 
-				io.vavr.collection.List.of(newRequest).toJavaList(), 
+				new ArrayList<>(List.of(newRequest)), 
 				newRequest);
 		workspace.setSyncDetails(syncDetails);
 		

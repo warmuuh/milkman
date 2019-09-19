@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 
-import io.vavr.NotImplementedError;
 import javafx.scene.Node;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
@@ -119,7 +118,7 @@ public class CurlExporter implements RequestExporterPlugin {
 
 	@Override
 	public boolean doExport(RequestContainer request, Templater templater, Toaster toaster) {
-		throw new NotImplementedError("not implemented bc adhoc exporter");
+		throw new UnsupportedOperationException("not implemented bc adhoc exporter");
 	}
 
 }

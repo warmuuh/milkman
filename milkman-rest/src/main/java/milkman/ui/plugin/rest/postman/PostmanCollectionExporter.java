@@ -5,9 +5,11 @@ import java.io.FileOutputStream;
 
 import org.apache.commons.io.IOUtils;
 
-import io.vavr.NotImplementedError;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.VBox;
+import lombok.SneakyThrows;
 import milkman.domain.Collection;
 import milkman.ui.main.Toaster;
 import milkman.ui.plugin.CollectionExporterPlugin;
@@ -15,15 +17,6 @@ import milkman.ui.plugin.Templater;
 import milkman.ui.plugin.rest.postman.exporters.PostmanExporterV21;
 import milkman.utils.fxml.FxmlUtil;
 import milkman.utils.javafx.RetentionFileChooser;
-import javafx.geometry.Insets;
-import javafx.scene.control.Button;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
-import lombok.SneakyThrows;
 
 public class PostmanCollectionExporter implements CollectionExporterPlugin {
 
@@ -65,7 +58,7 @@ public class PostmanCollectionExporter implements CollectionExporterPlugin {
 
 	@Override
 	public boolean doExport(Collection collection, Templater templater, Toaster toaster) {
-		throw new NotImplementedError("not implemented bc adhoc exporter");
+		throw new UnsupportedOperationException("not implemented bc adhoc exporter");
 	}
 
 	

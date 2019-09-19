@@ -2,33 +2,33 @@ package milkman.utils.fxml;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
 
-import io.vavr.Function1;
 import javafx.beans.property.ObjectPropertyBase;
 import javafx.beans.property.Property;
  
 public class GenericBinding<O, T> extends ObjectPropertyBase<T> {
-   private final Function1<O, T> getter;
+   private final Function<O, T> getter;
    private final BiConsumer<O, T> setter;
  
    private O obj;
  
    
-   public static <OS, TS> GenericBinding<OS, TS> of(Function1<OS, TS> getter, BiConsumer<OS, TS> setter){
+   public static <OS, TS> GenericBinding<OS, TS> of(Function<OS, TS> getter, BiConsumer<OS, TS> setter){
 	   return new GenericBinding<>(getter, setter);
    }
    
-   public static <OS, TS> GenericBinding<OS, TS> of(Function1<OS, TS> getter, BiConsumer<OS, TS> setter, OS obj){
+   public static <OS, TS> GenericBinding<OS, TS> of(Function<OS, TS> getter, BiConsumer<OS, TS> setter, OS obj){
 	   GenericBinding<OS, TS> b = new GenericBinding<>(getter, setter);
 	   b.obj = obj;
 	   return b;
    }
    
    
-    private GenericBinding(Function1<O, T> getter, BiConsumer<O, T> setter) {
+    private GenericBinding(Function<O, T> getter, BiConsumer<O, T> setter) {
         super();
 		this.getter = getter;
 		this.setter = setter;

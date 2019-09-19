@@ -3,6 +3,7 @@ package milkman.ui.main.options;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
@@ -11,9 +12,7 @@ import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXToggleButton;
 import com.jfoenix.validation.IntegerValidator;
 
-import io.vavr.Function1;
 import javafx.scene.Node;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import lombok.RequiredArgsConstructor;
@@ -22,13 +21,13 @@ import milkman.utils.fxml.GenericBinding;
 public class OptionDialogBuilder  {
 
 	public interface OptionPaneBuilder<T> {
-		OptionPaneBuilder<T> toggle(String name, Function1<T, Boolean> getter, BiConsumer<T, Boolean> setter);
-		OptionPaneBuilder<T> passwordInput(String name, Function1<T, String> getter, BiConsumer<T, String> setter);
-		OptionPaneBuilder<T> textInput(String name, Function1<T, String> getter, BiConsumer<T, String> setter);
-		OptionPaneBuilder<T> numberInput(String name, Function1<T, Integer> getter, BiConsumer<T, Integer> setter);
+		OptionPaneBuilder<T> toggle(String name, Function<T, Boolean> getter, BiConsumer<T, Boolean> setter);
+		OptionPaneBuilder<T> passwordInput(String name, Function<T, String> getter, BiConsumer<T, String> setter);
+		OptionPaneBuilder<T> textInput(String name, Function<T, String> getter, BiConsumer<T, String> setter);
+		OptionPaneBuilder<T> numberInput(String name, Function<T, Integer> getter, BiConsumer<T, Integer> setter);
 		OptionPaneBuilder<T> button(String name, Runnable runnable);
 
-		OptionPaneBuilder<T> selection(String name, Function1<T, String> getter, BiConsumer<T, String> setter, List<String> possibleValues);
+		OptionPaneBuilder<T> selection(String name, Function<T, String> getter, BiConsumer<T, String> setter, List<String> possibleValues);
 		OptionSectionBuilder<T> endSection();
 	}
 	
@@ -55,7 +54,7 @@ public class OptionDialogBuilder  {
 		}
 
 		@Override
-		public OptionPaneBuilder<T> toggle(String name, Function1<T, Boolean> getter, BiConsumer<T, Boolean> setter) {
+		public OptionPaneBuilder<T> toggle(String name, Function<T, Boolean> getter, BiConsumer<T, Boolean> setter) {
 
 			JFXToggleButton button = new JFXToggleButton();
 			button.setText(name);
@@ -69,7 +68,7 @@ public class OptionDialogBuilder  {
 		}
 
 		@Override
-		public OptionPaneBuilder<T> textInput(String name, Function1<T, String> getter, BiConsumer<T, String> setter) {
+		public OptionPaneBuilder<T> textInput(String name, Function<T, String> getter, BiConsumer<T, String> setter) {
 
 			Label lbl = new Label(name);
 			JFXTextField text = new JFXTextField();
@@ -84,7 +83,7 @@ public class OptionDialogBuilder  {
 		
 
 		@Override
-		public OptionPaneBuilder<T> passwordInput(String name, Function1<T, String> getter, BiConsumer<T, String> setter) {
+		public OptionPaneBuilder<T> passwordInput(String name, Function<T, String> getter, BiConsumer<T, String> setter) {
 
 			Label lbl = new Label(name);
 			JFXPasswordField text = new JFXPasswordField();
@@ -98,7 +97,7 @@ public class OptionDialogBuilder  {
 		}
 		
 		@Override
-		public OptionPaneBuilder<T> numberInput(String name, Function1<T, Integer> getter, BiConsumer<T, Integer> setter) {
+		public OptionPaneBuilder<T> numberInput(String name, Function<T, Integer> getter, BiConsumer<T, Integer> setter) {
 
 			Label lbl = new Label(name);
 			JFXTextField text = new JFXTextField();
@@ -135,7 +134,7 @@ public class OptionDialogBuilder  {
 		}
 
 		@Override
-		public OptionPaneBuilder<T> selection(String name, Function1<T, String> getter, BiConsumer<T, String> setter,
+		public OptionPaneBuilder<T> selection(String name, Function<T, String> getter, BiConsumer<T, String> setter,
 				List<String> possibleValues) {
 			
 			Label lbl = new Label(name);

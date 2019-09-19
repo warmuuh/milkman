@@ -8,8 +8,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.cells.editors.TextFieldEditorBuilder;
@@ -19,10 +17,8 @@ import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import io.vavr.Function1;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -44,7 +40,6 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import lombok.EqualsAndHashCode;
@@ -162,7 +157,7 @@ public class JfxTableEditor<T> extends StackPane {
 	}
 	
 
-	public void addReadOnlyColumn(String name, Function1<T, String> getter) {
+	public void addReadOnlyColumn(String name, Function<T, String> getter) {
 		TreeTableColumn<RecursiveWrapper<T>, String> column = new TreeTableColumn<>(name);
 		column.setCellFactory((TreeTableColumn<RecursiveWrapper<T>, String> param) -> {
 			return new GenericEditableTreeTableCell<RecursiveWrapper<T>, String>(new SelectableTextFieldBuilder());
@@ -175,7 +170,7 @@ public class JfxTableEditor<T> extends StackPane {
 		table.getColumns().add(column);
 	}
 	
-	public void addColumn(String name, Function1<T, String> getter, BiConsumer<T, String> setter) {
+	public void addColumn(String name, Function<T, String> getter, BiConsumer<T, String> setter) {
 		TreeTableColumn<RecursiveWrapper<T>, String> column = new TreeTableColumn<>(name);
 		column.setCellFactory((TreeTableColumn<RecursiveWrapper<T>, String> param) -> {
 			var cell = new GenericEditableTreeTableCell<RecursiveWrapper<T>, String>(new TextFieldEditorBuilderPatch());
@@ -209,7 +204,7 @@ public class JfxTableEditor<T> extends StackPane {
 		};
 	}
 	
-	public void addColumn(String name, Function1<T, String> getter, BiConsumer<T, String> setter, Consumer<TextField> textFieldInitializer) {
+	public void addColumn(String name, Function<T, String> getter, BiConsumer<T, String> setter, Consumer<TextField> textFieldInitializer) {
 		TreeTableColumn<RecursiveWrapper<T>, String> column = new TreeTableColumn<>(name);
 		column.setCellFactory((TreeTableColumn<RecursiveWrapper<T>, String> param) -> {
 			var cell = new GenericEditableTreeTableCell<RecursiveWrapper<T>, String>(new InitializingCellBuilder(textFieldInitializer));
@@ -225,7 +220,7 @@ public class JfxTableEditor<T> extends StackPane {
 			firstEditableColumn = table.getColumns().size() -1;
 	}
 
-	public void addCheckboxColumn(String name, Function1<T, Boolean> getter, BiConsumer<T, Boolean> setter) {
+	public void addCheckboxColumn(String name, Function<T, Boolean> getter, BiConsumer<T, Boolean> setter) {
 		TreeTableColumn<RecursiveWrapper<T>, Boolean> column = new TreeTableColumn<>(name);
 		column.setCellValueFactory(param -> {
 			return GenericBinding.of(getter, setter, param.getValue().getValue().getData());

@@ -5,12 +5,12 @@ import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 
 import org.apache.commons.io.IOUtils;
 
 import com.jfoenix.controls.JFXButton;
 
-import io.vavr.Function1;
 import javafx.scene.control.Tab;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
@@ -22,7 +22,6 @@ import milkman.domain.ResponseContainer;
 import milkman.plugin.jdbc.domain.RowSetResponseAspect;
 import milkman.ui.components.JfxTableEditor;
 import milkman.ui.plugin.ResponseAspectEditor;
-import milkman.utils.fxml.FxmlUtil;
 
 public class JdbcResultSetAspectEditor implements ResponseAspectEditor {
 
@@ -124,7 +123,7 @@ public class JdbcResultSetAspectEditor implements ResponseAspectEditor {
 	}
 
 
-	private Function1<List<Object>, String> getRowValue(int columnIdx) {
+	private Function<List<Object>, String> getRowValue(int columnIdx) {
 		return row -> {
 			Object value = row.get(columnIdx);
 			String stringValue = valueToString(value);
