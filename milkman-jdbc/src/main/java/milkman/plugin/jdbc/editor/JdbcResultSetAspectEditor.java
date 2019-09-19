@@ -15,6 +15,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
@@ -36,7 +37,7 @@ public class JdbcResultSetAspectEditor implements ResponseAspectEditor {
 		editor = new JfxTableEditor<List<Object>>();
 		editor.disableAddition();
 		editor.setRowToStringConverter(this::rowToString);
-		
+		VBox.setVgrow(editor, Priority.ALWAYS);
 		RowSetResponseAspect rowSetAspect = response.getAspect(RowSetResponseAspect.class).get();
 
 		initEditor(rowSetAspect);
