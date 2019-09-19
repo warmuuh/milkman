@@ -10,7 +10,11 @@
 
 # Changelog
 
-version 3.5.0 - upcomming
+version 3.6.0 - upcomming
+  * added Commandline Interface `mm` for milkman
+  
+
+version 3.5.0 
   * improved tabbing in tables (only editable cells), adds new entry on <kbd>TAB</kbd> in last editable cell
   * new graphql plugin
   * added quick selection of new requests, if multiple providers exist
