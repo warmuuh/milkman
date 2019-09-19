@@ -11,7 +11,7 @@ public class CoreApplicationOptionsProvider implements OptionPageProvider<CoreAp
 
 	@Data
 	public static class CoreApplicationOptions implements OptionsObject {
-		private boolean autoformatContent = false;
+		private boolean autoformatContent = true;
 		private boolean checkForUpdates = true;
 		private String theme = "Milkman";
 	} 
