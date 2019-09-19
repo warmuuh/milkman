@@ -10,4 +10,8 @@ import milkman.domain.RequestAspect;
 public class JqlQueryAspect extends RequestAspect {
 	private String query = "";
 	private List<String> queryHistory = new LinkedList<>();
+	
+	public JqlQueryAspect() {
+		super("jql");
+	}
 }

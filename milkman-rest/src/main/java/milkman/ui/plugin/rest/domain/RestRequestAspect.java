@@ -8,4 +8,8 @@ import milkman.ui.plugin.Templater;
 public abstract class RestRequestAspect extends RequestAspect {
 
 	public abstract void enrichRequest(RequestBuilder builder, Templater templater) throws Exception;
+	
+	public RestRequestAspect(String name) {
+		super(name);
+	}
 }

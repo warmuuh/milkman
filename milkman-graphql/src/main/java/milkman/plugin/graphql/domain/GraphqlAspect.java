@@ -7,4 +7,9 @@ import milkman.domain.RequestAspect;
 public class GraphqlAspect extends RequestAspect {
 	private String query = "";
 	private String variables = "{}";
+	
+	public GraphqlAspect() {
+		super("graphql");
+	}
+	
 }

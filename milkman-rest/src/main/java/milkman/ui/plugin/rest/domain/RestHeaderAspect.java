@@ -13,6 +13,10 @@ public class RestHeaderAspect  extends RestRequestAspect  {
 
 	private List<HeaderEntry> entries = new LinkedList<>();
 	
+	public RestHeaderAspect() {
+		super("headers");
+	}
+	
 	@Override
 	public void enrichRequest(RequestBuilder builder, Templater templater) throws Exception {
 		entries.stream()
