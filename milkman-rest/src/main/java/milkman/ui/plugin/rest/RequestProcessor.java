@@ -150,6 +150,10 @@ public class RequestProcessor {
 			}
 		}
 		
+		if (builder.getMethod().equals("GET")) {
+			builder.setEntity(null);
+		}
+		
 		if (builder.getFirstHeader(USER_AGENT_HEADER) == null)
 			builder.setHeader(USER_AGENT_HEADER, "Milkman");
 
