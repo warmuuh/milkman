@@ -1,7 +1,7 @@
  # Planned
  
   * Export of environment (privatebin)
-  * jdbc -> explorer functionality (what tables are there? what columns does a table have?)
+  * jdbc -> explorer functionality (what tables are there? what columns does a table have?). partially implemetned already
   * jdbc -> lazy list loading
   * javascript runner for pre
   * UX: Long URL editor
@@ -12,7 +12,8 @@
 
 version 3.6.0 - upcomming
   * added Commandline Interface `mm` for milkman
-  * improved handling of big unformatted responses.
+  * improved handling of big unformatted responses
+  * improved search in content  
   
 
 version 3.5.0 
