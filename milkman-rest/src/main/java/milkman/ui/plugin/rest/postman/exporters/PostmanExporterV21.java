@@ -5,6 +5,7 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import org.reactfx.util.Try;
 
@@ -91,7 +92,7 @@ public class PostmanExporterV21 {
 		url.setProtocol(tUri.map(u -> u.getScheme()).getOrElse((String)null));
 		url.setPath(tUri.map(u -> u.getPath().split("/")).getOrElse(new String[] {}));
 		
-		String[] qry = tUri.map(u -> u.getQuery().split("&")).getOrElse(new String[] {});
+		String[] qry = tUri.map(u -> Optional.ofNullable(u.getQuery()).orElse("").split("&")).getOrElse(new String[] {});
 		for(String q : qry) {
 			String[] strings = q.split("=");
 			if(strings.length == 2) {

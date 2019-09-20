@@ -38,7 +38,7 @@ jobs:
           key: v1-dependencies-{{ checksum "pom.xml" }}
 
       # run tests!
-      - run: mvn package -DexcludedGroups=ui -U
+      - run: mvn package -DexcludedGroups=ui
       - store_artifacts:
           path: /home/circleci/repo//milkman-dist/target/milkman-dist-linux64-bin.tgz
       - store_artifacts:
