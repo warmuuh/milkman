@@ -3,6 +3,7 @@ package milkman.ui.main;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+
 import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
@@ -54,8 +55,9 @@ public class MainWindow {
 			primaryStage.setHeight(Math.min(800, bounds.getHeight()));
 
 			primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/icon.png")));
+
 			
-//			CSSFX.start(primaryStage);
+			org.fxmisc.cssfx.CSSFX.start(primaryStage);
 			
 			
 			primaryStage.show();

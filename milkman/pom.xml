@@ -45,11 +45,6 @@
 
 
 
-<!-- 		<dependency> -->
-<!-- 			<groupId>io.vavr</groupId> -->
-<!-- 			<artifactId>vavr</artifactId> -->
-<!-- 			<version>0.10.0</version> -->
-<!-- 		</dependency> -->
 		<dependency>
 			<groupId>de.jensd</groupId>
 			<artifactId>fontawesomefx-fontawesome</artifactId>
@@ -61,11 +56,11 @@
 			<version>9.1.2</version>
 		</dependency>
 
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.fxmisc.cssfx</groupId> -->
-<!-- 			<artifactId>cssfx</artifactId> -->
-<!-- 			<version>1.0.0</version> -->
-<!-- 		</dependency> -->
+		<dependency>
+			<groupId>org.fxmisc.cssfx</groupId>
+			<artifactId>cssfx</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.dizitart</groupId>

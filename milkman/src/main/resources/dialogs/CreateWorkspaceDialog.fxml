@@ -21,7 +21,6 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.control.ButtonType?>
 <?import javafx.scene.control.ListView?>
-<?import milkman.ui.components.TableEditor?>
 <?import milkman.ui.components.JfxTableEditor?>
 <?import com.jfoenix.controls.*?>
 <?import com.jfoenix.controls.JFXTextArea?>

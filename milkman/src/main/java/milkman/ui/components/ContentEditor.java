@@ -27,6 +27,8 @@ import org.reactfx.Subscription;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.concurrent.Task;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -50,6 +52,7 @@ import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.ui.plugin.ContentTypePlugin;
 import milkman.utils.Stopwatch;
 import milkman.utils.fxml.GenericBinding;
+import milkman.utils.javafx.JavaFxUtils;
 
 /**
  * @author peter
@@ -78,7 +81,7 @@ public class ContentEditor extends VBox {
 
 	protected HBox header;
 
-	private TextField searchField;
+	private SearchBox search;
 	protected final VirtualizedScrollPane scrollPane;
 
 	public ContentEditor() {
@@ -88,7 +91,7 @@ public class ContentEditor extends VBox {
 		setupCodeArea();
 		setupSearch();
 
-		StackPane.setAlignment(searchField, Pos.TOP_RIGHT);
+		StackPane.setAlignment(search, Pos.TOP_RIGHT);
 		// bug: scrollPane has some issue if it is rendered within a tab that
 		// is not yet shown with content that needs a scrollbar
 		// this leads to e.g. tabs not being updated, if triggered programmatically
@@ -96,7 +99,7 @@ public class ContentEditor extends VBox {
 		scrollPane = new VirtualizedScrollPane(codeArea, ScrollBarPolicy.ALWAYS,
 				ScrollBarPolicy.ALWAYS);
 
-		StackPane contentPane = new StackPane(scrollPane, searchField);
+		StackPane contentPane = new StackPane(scrollPane, search);
 		VBox.setVgrow(contentPane, Priority.ALWAYS);
 
 		getChildren().add(contentPane);
@@ -142,45 +145,42 @@ public class ContentEditor extends VBox {
 	}
 
 	private void setupSearch() {
-		searchField = new TextField();
-		searchField.focusedProperty().addListener((obs, o, n) -> {
-			if (n != null && n == false) {
-				hideSearch();
-			}
-		});
-		searchField.setOnKeyReleased(e -> {
-			if (e.getCode() == KeyCode.ESCAPE) {
-				hideSearch();
-			}
-		});
-
-		searchField.setVisible(false);
-		searchField.setPromptText("Search");
-		searchField.setMaxWidth(200);
-		searchField.setOnAction(e -> {
-			if (searchField.getText().length() > 0) {
-				int sIdx = codeArea.getText().indexOf(searchField.getText(), codeArea.getCaretPosition());
+		search = new SearchBox();
+		search.onSearch((text, forward) -> {
+			int sIdx = -1;
+			if (forward) {
+				sIdx = codeArea.getText().indexOf(text, codeArea.getCaretPosition());
 				if (sIdx < 0) {
 					// wrap search:
-					sIdx = codeArea.getText().substring(0, codeArea.getCaretPosition()).indexOf(searchField.getText());
+					sIdx = codeArea.getText().substring(0, codeArea.getCaretPosition()).indexOf(text);
 				}
-				if (sIdx >= 0) {
-					codeArea.selectRange(sIdx, sIdx + searchField.getText().length());
-					codeArea.requestFollowCaret();
+			} else {
+				int caretPos = codeArea.getCaretPosition() - codeArea.getSelectedText().length();
+				sIdx = codeArea.getText().substring(0, caretPos).lastIndexOf(text);
+				if (sIdx < 0) {
+					// wrap search:
+					sIdx = codeArea.getText().substring(codeArea.getCaretPosition()).lastIndexOf(text);
+					if (sIdx >= 0) {
+						sIdx += codeArea.getCaretPosition();
+					}
 				}
-
+			}
+			if (sIdx >= 0) {
+				codeArea.selectRange(sIdx, sIdx + text.length());
+				codeArea.requestFollowCaret();
 			}
 		});
+		search.onCloseRequest(this::hideSearch);
 	}
 
 	private void hideSearch() {
-		searchField.setVisible(false);
+		search.setVisible(false);
 		codeArea.requestFocus();
 	}
 
 	private void focusSearch() {
-		searchField.setVisible(true);
-		searchField.requestFocus();
+		search.setVisible(true);
+		search.requestFocus();
 	}
 
 	private void setupHeader() {
