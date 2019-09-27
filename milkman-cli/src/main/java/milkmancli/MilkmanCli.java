@@ -42,7 +42,7 @@ public class MilkmanCli extends MilkmanCliBase {
 
 	@Override
 	protected UiPluginManager createUiPluginManager() {
-		return new UiPluginManager(null);
+		return new UiPluginManager(null, null);
 	}
 	
 	@Override

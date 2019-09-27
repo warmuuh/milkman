@@ -11,13 +11,14 @@ import javax.inject.Singleton;
 
 import lombok.RequiredArgsConstructor;
 import milkman.ui.components.AutoCompleter;
+import milkman.ui.main.ActiveEnvironmentProvider;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_={@Inject})
 public class UiPluginManager {
 
 	private final AutoCompleter completer;
-	
+	private final ActiveEnvironmentProvider envProvider;
 	
 	Map<Class, List> cachedInstances = new HashMap<Class, List>();
 	
@@ -65,6 +66,10 @@ public class UiPluginManager {
 		
 		if (o instanceof AutoCompletionAware) {
 			((AutoCompletionAware) o).setAutoCompleter(completer);
+		}
+		
+		if (o instanceof ActiveEnvironmentAware) {
+			((ActiveEnvironmentAware) o).setActiveEnvironment(envProvider.getActiveEnvironment());
 		}
 	}
 	
