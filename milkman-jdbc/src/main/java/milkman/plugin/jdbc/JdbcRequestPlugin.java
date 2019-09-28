@@ -2,7 +2,10 @@ package milkman.plugin.jdbc;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
+import javafx.application.Platform;
+import lombok.SneakyThrows;
 import milkman.domain.RequestContainer;
 import milkman.domain.RequestExecutionContext;
 import milkman.domain.ResponseContainer;
@@ -11,6 +14,7 @@ import milkman.plugin.jdbc.domain.JdbcSqlAspect;
 import milkman.plugin.jdbc.editor.JdbcRequestEditor;
 import milkman.plugin.jdbc.editor.JdbcResultSetAspectEditor;
 import milkman.plugin.jdbc.editor.SqlAspectEditor;
+import milkman.ui.main.dialogs.StringInputDialog;
 import milkman.ui.plugin.CustomCommand;
 import milkman.ui.plugin.RequestAspectEditor;
 import milkman.ui.plugin.RequestAspectsPlugin;
@@ -80,13 +84,19 @@ public class JdbcRequestPlugin implements RequestTypePlugin, RequestAspectsPlugi
 
 	@Override
 	public List<CustomCommand> getCustomCommands() {
-		return Collections.singletonList(new CustomCommand("SHOW_TABLES", "Show Tables"));
+		return List.of(
+				new CustomCommand("SHOW_TABLES", "Show Tables"),
+				new CustomCommand("SHOW_COLUMNS", "Show Table Schema")
+				);
 	}
 
 	@Override
+	@SneakyThrows
 	public ResponseContainer executeCustomCommand(String commandId, RequestContainer request, Templater templater) {
 		if (commandId.equals("SHOW_TABLES")) {
 			return metaProcessor.showAllTables(request, templater);
+		} else if (commandId.equals("SHOW_COLUMNS")) {
+			return metaProcessor.showTableInformation(request, templater);
 		}
 		throw new IllegalArgumentException("Custom command " + commandId + " not supported.");
 	}

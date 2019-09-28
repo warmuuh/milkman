@@ -10,10 +10,12 @@
 
 # Changelog
 
-version 3.6.0 - upcomming
+version 3.6.0
   * added Commandline Interface `mm` for milkman
+  * added jdbc `Show Table Schema` command
   * improved handling of big unformatted responses
   * improved search in content  
+  * support of nested folders in postman import
   
 
 version 3.5.0 
