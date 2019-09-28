@@ -97,7 +97,7 @@ public class PostmanImporterV21 {
 			//it is a folder
 			Folder folder = new Folder(UUID.randomUUID().toString(), pmItem.getName(), new LinkedList<>(), new LinkedList<>());
 			folders.add(folder);
-			pmItem.getItem().forEach(itm -> convertToDomain(itm, requests, folders, folder));
+			pmItem.getItem().forEach(itm -> convertToDomain(itm, requests, folder.getFolders(), folder));
 		} else {
 			//it is a request
 			RestRequestContainer request = new RestRequestContainer(pmItem.getName(), pmItem.getRequest().getUrl().getRaw(), pmItem.getRequest().getMethod().toString());

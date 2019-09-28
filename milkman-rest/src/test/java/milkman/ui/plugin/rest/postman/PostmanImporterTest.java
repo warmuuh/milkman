@@ -8,8 +8,10 @@ import java.io.IOException;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
+
 import milkman.domain.Collection;
 import milkman.domain.Environment;
+import milkman.domain.Folder;
 import milkman.ui.plugin.rest.postman.importers.PostmanImporterV10;
 import milkman.ui.plugin.rest.postman.importers.PostmanImporterV21;
 
@@ -21,6 +23,16 @@ class PostmanImporterTest {
 		String json = IOUtils.toString(getClass().getResourceAsStream("/test.postman_collection.json"));
 		Collection collection  = sut.importCollection(json);
 		assertThat(collection.getName()).isEqualTo("test");
+	}
+	
+	@Test
+	void shouldImportNestedFoldersCorrectly() throws IOException, Exception {
+		PostmanImporterV21 sut = new PostmanImporterV21();
+		String json = IOUtils.toString(getClass().getResourceAsStream("/nested_test.postman_collection.json"));
+		Collection collection  = sut.importCollection(json);
+		assertThat(collection.getName()).isEqualTo("new");
+		assertThat(collection.getFolders()).extracting(Folder::getName).containsExactly("lvl1");
+		assertThat(collection.getFolders().get(0).getFolders()).extracting(Folder::getName).containsExactly("lvl2");
 	}
 
 	@Test
