@@ -57,7 +57,7 @@ public class GraphqlPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 
 	@Override
 	public int getOrder() {
-		return 10;
+		return 15;
 	}
 
 	@Override
