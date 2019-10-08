@@ -295,6 +295,19 @@
 						</configuration>
 					</execution>
 					<execution>
+						<id>distro-assembly-macos-bundle</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<finalName>${project.artifactId}-appbundle-macos64</finalName>
+							<descriptors>
+								<descriptor>src/assembly/bundle-macos.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+					<execution>
 						<id>plugin-assembly</id>
 						<phase>package</phase>
 						<goals>
