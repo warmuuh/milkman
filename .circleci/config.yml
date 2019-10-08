@@ -41,9 +41,16 @@ jobs:
       - run: mvn package -DexcludedGroups=ui
       - store_artifacts:
           path: /home/circleci/repo//milkman-dist/target/milkman-dist-linux64-bin.tgz
+          destination: milkman-dist-linux64-bin.tgz
       - store_artifacts:
           path: /home/circleci/repo//milkman-dist/target/milkman-dist-macos64-bin.tgz
+          destination: milkman-dist-macos64-bin.tgz
       - store_artifacts:
           path: /home/circleci/repo//milkman-dist/target/milkman-dist-win64-bin.zip
+          destination: milkman-dist-win64-bin.zip
       - store_artifacts:
           path: /home/circleci/repo//milkman-dist/target/milkman-dist-plugins-bin.zip
+          destination: milkman-dist-plugins-bin.zip
+      - store_artifacts:
+          path: /home/circleci/repo//milkman-dist/target/milkman-dist-appbundle-macos64-bin.tgz
+          destination: milkman-dist-appbundle-macos64-bin.tgz
