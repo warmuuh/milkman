@@ -12,7 +12,7 @@
 		<fileSet>
 			<directory>src/bin/macos-bundle</directory>
 			<outputDirectory />
-			<lineEnding>unix</lineEnding>
+			<filtered>false</filtered>
 			<excludes>
 				<exclude>**/Milkman</exclude>
 			</excludes>
