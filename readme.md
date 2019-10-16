@@ -18,6 +18,11 @@ For downloading the nightly build:
  * Login to circleci.com (e.g. via github-authentication)
  * Go to [Milkman Builds](https://circleci.com/gh/warmuuh/milkman/tree/master)
  * Choose latest build and Download the build from the artifacts tab
+ 
+# Install via Chocolatey
+ * To install just Milkman run `Choco install milkman`
+ * To install a plugin run `Choco install milkman-<plugin name>` ex. `Choco install milkman-explore`
+ * Install Milkman and all plugins available run `Choco install milkman-plugins` 
 
 # Changes
 
