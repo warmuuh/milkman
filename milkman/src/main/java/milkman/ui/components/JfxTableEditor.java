@@ -1,6 +1,8 @@
 package milkman.ui.components;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -265,10 +267,17 @@ public class JfxTableEditor<T> extends StackPane {
 		addItemBtn.setVisible(false);
 	}
 	
-	
 	public void setItems(List<T> items) {
+		setItems(items, null);
+	}
+	public void setItems(List<T> items, Comparator<T> comparator) {
 		List<RecursiveWrapper<T>> wrappedItems = items.stream().map(i -> new RecursiveWrapper<>(i)).collect(Collectors.toList());
 		obsWrappedItems = FXCollections.observableList(wrappedItems);
+		if (comparator != null) {
+			FXCollections.sort(obsWrappedItems, (ra, rb) -> comparator.compare(ra.getData(), rb.getData()));
+		}
+		
+		
 		obsWrappedItems.addListener(new ListChangeListener<RecursiveWrapper<T>>() {
 
 			@Override
@@ -278,7 +287,9 @@ public class JfxTableEditor<T> extends StackPane {
 					return;
 				
 				if (c.wasRemoved()) {
-					items.remove(c.getFrom());
+					for(var ri : c.getRemoved()) {
+						items.remove(ri.getData());
+					}
 				}
 				
 				if (c.wasAdded()) {
@@ -345,8 +356,10 @@ public class JfxTableEditor<T> extends StackPane {
 		        btn.setOnAction(event -> {
 
 					Platform.runLater( () -> {
+					
 //						table.build().getChildren().remove(getTreeTableRow().getIndex());
-						obsWrappedItems.remove(getTreeTableRow().getIndex());
+//						obsWrappedItems.remove(getTreeTableRow().getIndex());
+						obsWrappedItems.remove(getTreeTableRow().getItem());
 //						table.build().getValue().setChildren(obsWrappedItems);
 //						table.setRoot(table.build());
 //						table.refresh();

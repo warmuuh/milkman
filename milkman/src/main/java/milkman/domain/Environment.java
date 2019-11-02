@@ -8,9 +8,11 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @NoArgsConstructor
 @Data
+@Slf4j
 public class Environment {
 
 	@Data
@@ -37,6 +39,11 @@ public class Environment {
 
 	
 	public void setOrAdd(String name, String value) {
+		if (name == null) {
+			log.error("Variable name is null");
+			return;
+		}
+		
 		Optional<EnvironmentEntry> maybeEntry = entries.stream().filter(e -> e.name.equals(name)).findAny();
 		if (maybeEntry.isPresent()) {
 			maybeEntry.get().setValue(value);
@@ -44,7 +51,6 @@ public class Environment {
 			EnvironmentEntry entry = new EnvironmentEntry(UUID.randomUUID().toString(), name, value, true);
 			entries.add(entry);
 		}
-		
 	}
 	
 }
