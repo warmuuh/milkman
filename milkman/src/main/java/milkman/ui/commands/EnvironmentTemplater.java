@@ -35,7 +35,7 @@ public class EnvironmentTemplater implements Templater{
 			.filter(e -> e.isEnabled())
 			.collect(Collectors.toMap(
 					(EnvironmentEntry e) -> e.getName(), 
-					(EnvironmentEntry e) -> e.getValue(),
+					(EnvironmentEntry e) -> e.getValue() == null ? "" : e.getValue(),
 					(String a, String b) -> a)); //in case several keys have the same name, use first one
 	}
 
