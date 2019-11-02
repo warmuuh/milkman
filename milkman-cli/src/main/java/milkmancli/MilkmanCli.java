@@ -6,6 +6,8 @@ import java.util.List;
 import milkman.ctrl.RequestTypeManager;
 import milkman.logback.LogbackConfiguration;
 import milkman.persistence.PersistenceManager;
+import milkman.ui.main.MainWindow;
+import milkman.ui.main.Toaster;
 import milkman.ui.plugin.OptionPageProvider;
 import milkman.ui.plugin.OptionsObject;
 import milkman.ui.plugin.UiPluginManager;
@@ -13,6 +15,17 @@ import wrm.hardwire.Module;
 
 @Module
 public class MilkmanCli extends MilkmanCliBase {
+
+	private final class NoOpToaster extends Toaster {
+		private NoOpToaster(MainWindow mainWindow) {
+			super(mainWindow);
+		}
+
+		@Override
+		public void showToast(String message) {
+			/* no op */
+		}
+	}
 
 	public static void main(String[] args) throws IOException {
 		LogbackConfiguration.setMuteConsole(true);
@@ -42,7 +55,7 @@ public class MilkmanCli extends MilkmanCliBase {
 
 	@Override
 	protected UiPluginManager createUiPluginManager() {
-		return new UiPluginManager(null, null);
+		return new UiPluginManager(null, null, () -> new NoOpToaster(null));
 	}
 	
 	@Override

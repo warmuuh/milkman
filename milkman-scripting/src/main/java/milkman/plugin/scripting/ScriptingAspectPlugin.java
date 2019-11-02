@@ -8,16 +8,23 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
+import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
 import milkman.domain.RequestExecutionContext;
 import milkman.domain.ResponseContainer;
+import milkman.ui.main.Toaster;
 import milkman.ui.plugin.RequestAspectEditor;
 import milkman.ui.plugin.RequestAspectsPlugin;
 import milkman.ui.plugin.ResponseAspectEditor;
+import milkman.ui.plugin.ToasterAware;
 
-public class ScriptingAspectPlugin implements RequestAspectsPlugin {
+@Slf4j
+public class ScriptingAspectPlugin implements RequestAspectsPlugin, ToasterAware {
 
 	static ScriptEngine engine = initScriptEngine();
+	private Toaster toaster;
 	
 	
 	@Override
@@ -54,13 +61,21 @@ public class ScriptingAspectPlugin implements RequestAspectsPlugin {
 		try {
 			Object eval = engine.eval(postRequestScript, bindings);
 		} catch (ScriptException e) {
-			e.printStackTrace();
+			String causeMessage = ExceptionUtils.getRootCauseMessage(e);
+			toaster.showToast("Failed to execute script: " + causeMessage);
+			log.error("failed to execute script", e);
+			
 		}
 	}
 
 	@Override
 	public int getOrder() {
 		return 30;
+	}
+
+	@Override
+	public void setToaster(Toaster toaster) {
+		this.toaster = toaster;
 	}
 	
 	

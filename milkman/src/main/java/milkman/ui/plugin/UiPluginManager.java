@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.function.Supplier;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -12,13 +13,14 @@ import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import milkman.ui.components.AutoCompleter;
 import milkman.ui.main.ActiveEnvironmentProvider;
+import milkman.ui.main.Toaster;
 
-@Singleton
 @RequiredArgsConstructor(onConstructor_={@Inject})
 public class UiPluginManager {
 
 	private final AutoCompleter completer;
 	private final ActiveEnvironmentProvider envProvider;
+	private final Supplier<Toaster> toaster; 
 	
 	Map<Class, List> cachedInstances = new HashMap<Class, List>();
 	
@@ -70,6 +72,10 @@ public class UiPluginManager {
 		
 		if (o instanceof ActiveEnvironmentAware) {
 			((ActiveEnvironmentAware) o).setActiveEnvironment(envProvider.getActiveEnvironment());
+		}
+		
+		if (o instanceof ToasterAware) {
+			((ToasterAware) o).setToaster(toaster.get());
 		}
 	}
 	
