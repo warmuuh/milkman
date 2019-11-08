@@ -10,6 +10,7 @@ import lombok.Value;
 import milkman.plugin.graphql.domain.GraphqlAspect;
 import milkman.plugin.graphql.domain.GraphqlRequestContainer;
 import milkman.ui.plugin.Templater;
+import milkman.ui.plugin.rest.ApacheRequestProcessor;
 import milkman.ui.plugin.rest.RequestProcessor;
 import milkman.ui.plugin.rest.domain.RestBodyAspect;
 import milkman.ui.plugin.rest.domain.RestHeaderAspect;
@@ -17,7 +18,7 @@ import milkman.ui.plugin.rest.domain.RestRequestContainer;
 import milkman.ui.plugin.rest.domain.RestResponseContainer;
 
 public class GraphqlProcessor {
-	RequestProcessor requestProcessor = new RequestProcessor();
+	RequestProcessor requestProcessor = new ApacheRequestProcessor();
 	
 	
 	@Value

@@ -9,7 +9,12 @@
   * UX: closing request confirmation
 
 # Changelog
-
+version 3.7.0
+  * added experimental Http/2 support (see options)
+  * added macos app bundling added 
+  * fixed small bugs in environment variable dialog
+  * fixed git-sync for unwritable currentdir
+  
 version 3.6.0
   * added Commandline Interface `mm` for milkman
   * added jdbc `Show Table Schema` command
