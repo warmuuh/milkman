@@ -6,6 +6,7 @@ import org.apache.http.entity.StringEntity;
 
 import lombok.Data;
 import milkman.ui.plugin.Templater;
+import milkman.ui.plugin.rest.HttpRequestBuilder;
 
 @Data
 public class RestBodyAspect extends RestRequestAspect {
@@ -16,8 +17,8 @@ public class RestBodyAspect extends RestRequestAspect {
 		super("body");
 	}
 	
-	public void enrichRequest(RequestBuilder builder, Templater templater) throws Exception {
+	public void enrichRequest(HttpRequestBuilder builder, Templater templater) throws Exception {
 		if (StringUtils.isNotBlank(body))
-			builder.setEntity(new StringEntity(templater.replaceTags(body)));
+			builder.setBody(templater.replaceTags(body));
 	}
 }

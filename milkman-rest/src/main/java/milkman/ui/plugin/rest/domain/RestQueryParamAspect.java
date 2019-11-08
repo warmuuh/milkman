@@ -5,13 +5,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.apache.http.client.methods.RequestBuilder;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javafx.beans.property.StringProperty;
 import lombok.Data;
 import milkman.ui.plugin.Templater;
+import milkman.ui.plugin.rest.HttpRequestBuilder;
 
 @Data
 public class RestQueryParamAspect extends RestRequestAspect {
@@ -23,7 +20,7 @@ public class RestQueryParamAspect extends RestRequestAspect {
 	}
 	
 	@Override
-	public void enrichRequest(RequestBuilder builder, Templater templater) throws Exception {
+	public void enrichRequest(HttpRequestBuilder builder, Templater templater) throws Exception {
 		/* nothing to do as we did this on-the-fly */
 	}
 	

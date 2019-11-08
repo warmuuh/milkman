@@ -3,10 +3,9 @@ package milkman.ui.plugin.rest.domain;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.http.client.methods.RequestBuilder;
-
 import lombok.Data;
 import milkman.ui.plugin.Templater;
+import milkman.ui.plugin.rest.HttpRequestBuilder;
 
 @Data
 public class RestHeaderAspect  extends RestRequestAspect  {
@@ -18,7 +17,7 @@ public class RestHeaderAspect  extends RestRequestAspect  {
 	}
 	
 	@Override
-	public void enrichRequest(RequestBuilder builder, Templater templater) throws Exception {
+	public void enrichRequest(HttpRequestBuilder builder, Templater templater) throws Exception {
 		entries.stream()
 			.filter(HeaderEntry::isEnabled)
 			.forEach(h -> builder.addHeader(templater.replaceTags(h.getName()), templater.replaceTags(h.getValue())));
