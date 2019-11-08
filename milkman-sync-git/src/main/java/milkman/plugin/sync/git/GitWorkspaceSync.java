@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import de.danielbechler.diff.node.DiffNode;
 import lombok.SneakyThrows;
+import milkman.PlatformUtil;
 import milkman.domain.Collection;
 import milkman.domain.Environment;
 import milkman.domain.Workspace;
@@ -50,7 +51,7 @@ public class GitWorkspaceSync implements WorkspaceSynchronizer {
 		CollectionDiffer diffMerger = new CollectionDiffer();
 
 		
-		File syncDir = new File("sync/"+workspace.getWorkspaceId()+"/");
+		File syncDir = new File(PlatformUtil.getWritableLocationForFile("sync/"+workspace.getWorkspaceId()+"/"));
 
 		File collectionFile = new File(syncDir, "collections.json");
 		List<Collection> collectionCommonCopy = new LinkedList<Collection>();
