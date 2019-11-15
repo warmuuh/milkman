@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.Authenticator;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
@@ -58,9 +59,12 @@ import milkman.ui.plugin.rest.domain.RestResponseHeaderAspect;
 @Slf4j
 public class JavaRequestProcessor implements RequestProcessor {
 
-	private static final String PROXY_AUTHORIZATION = "Proxy-Authorization";
-
-
+	static {
+		//this enables using "Basic" authentication for https-requests over http proxy (disabled by default)
+		//see https://bugs.openjdk.java.net/browse/JDK-8229962 for more details
+		System.setProperty("jdk.http.auth.tunneling.disabledSchemes", "");
+	}
+	
 	private static final String USER_AGENT_HEADER = "User-Agent";
 
 	
@@ -74,6 +78,14 @@ public class JavaRequestProcessor implements RequestProcessor {
 			URL url = new URL(HttpOptionsPluginProvider.options().getProxyUrl());
 			builder.proxy(new ProxyExclusionRoutePlanner(url, HttpOptionsPluginProvider.options().getProxyExclusion()).java());
 			
+			if (proxyCredentials != null) {
+				builder.authenticator(new Authenticator() {
+					@Override
+					protected PasswordAuthentication getPasswordAuthentication() {
+						return proxyCredentials;
+					}
+				});
+			}
 		}
 		
 		if (!HttpOptionsPluginProvider.options().isCertificateValidation()) {
@@ -166,12 +178,6 @@ public class JavaRequestProcessor implements RequestProcessor {
 				((RestRequestAspect) aspect).enrichRequest(new JavaRequestBuilder(builder, request.getHttpMethod()), templater);
 			}
 		}
-		
-		if (HttpOptionsPluginProvider.options().isUseProxy()
-				&& proxyCredentials != null) {
-			builder.header(PROXY_AUTHORIZATION, HttpUtil.authorizationHeaderValue(proxyCredentials));
-		}
-
 		
 		if (builder.build().headers().firstValue(USER_AGENT_HEADER).isEmpty())
 			builder.setHeader(USER_AGENT_HEADER, "Milkman");

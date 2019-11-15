@@ -1,8 +1,11 @@
 package milkman.ui.main;
 
+import java.awt.Taskbar;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.sun.javafx.tk.Toolkit;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
@@ -15,12 +18,14 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import milkman.ui.main.RequestCollectionComponent.RequestCollectionComponentFxml;
 import milkman.ui.main.ToolbarComponent.ToolbarComponentFxml;
 import milkman.ui.main.WorkingAreaComponent.WorkingAreaComponentFxml;
 import milkman.ui.plugin.UiThemePlugin;
 import milkman.utils.fxml.FxmlUtil;
 
+@Slf4j
 @Singleton
 @RequiredArgsConstructor(onConstructor_={@Inject})
 public class MainWindow {
@@ -54,8 +59,8 @@ public class MainWindow {
 			primaryStage.setWidth(Math.min(1000, bounds.getWidth()));
 			primaryStage.setHeight(Math.min(800, bounds.getHeight()));
 
-			primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/icon.png")));
-
+			setIcon(primaryStage);
+			
 			
 			org.fxmisc.cssfx.CSSFX.start(primaryStage);
 			
@@ -83,6 +88,23 @@ public class MainWindow {
 //
 //		return null;
 //	}
+
+	protected void setIcon(Stage primaryStage) {
+		var icon = new Image(getClass().getResourceAsStream("/images/icon.png"));
+		primaryStage.getIcons().add(icon);
+		
+		//doing it via AWT to support icon on macOs:
+		var awtIcon = java.awt.Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/icon.png"));
+		Taskbar awtTaskbar = Taskbar.getTaskbar();
+		try {
+			awtTaskbar.setIconImage(awtIcon);
+		} catch (final UnsupportedOperationException e) {
+            log.warn("The os does not support: 'taskbar.setIconImage'");
+        } catch (final SecurityException e) {
+            log.warn("There was a security exception for: 'taskbar.setIconImage'");
+        }
+		
+	}
 
 	public void switchToTheme(UiThemePlugin theme) {
 
