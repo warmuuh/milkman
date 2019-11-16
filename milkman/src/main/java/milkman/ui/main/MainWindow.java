@@ -93,15 +93,13 @@ public class MainWindow {
 		var icon = new Image(getClass().getResourceAsStream("/images/icon.png"));
 		primaryStage.getIcons().add(icon);
 		
-		//doing it via AWT to support icon on macOs:
-		var awtIcon = java.awt.Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/icon.png"));
-		Taskbar awtTaskbar = Taskbar.getTaskbar();
 		try {
+			//doing it via AWT to support icon on macOs:
+			var awtIcon = java.awt.Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/icon.png"));
+			Taskbar awtTaskbar = Taskbar.getTaskbar();
 			awtTaskbar.setIconImage(awtIcon);
-		} catch (final UnsupportedOperationException e) {
-            log.warn("The os does not support: 'taskbar.setIconImage'");
-        } catch (final SecurityException e) {
-            log.warn("There was a security exception for: 'taskbar.setIconImage'");
+		} catch (final Throwable e) {
+            log.warn("The os does not support setting taskbar icon");
         }
 		
 	}

@@ -9,7 +9,7 @@
   * UX: closing request confirmation
 
 # Changelog
-version 3.7.0
+version 3.7.1
   * added experimental Http/2 support (see options)
   * added macos app bundling added
   * fixed small bugs in environment variable dialog
