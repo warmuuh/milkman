@@ -1,5 +1,6 @@
 package milkman.plugin.grpc.processor;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -22,6 +23,7 @@ import me.dinowernli.grpc.polyglot.grpc.DynamicGrpcClient;
 import me.dinowernli.grpc.polyglot.grpc.ServerReflectionClient;
 import me.dinowernli.grpc.polyglot.io.MessageReader;
 import me.dinowernli.grpc.polyglot.protobuf.ProtoMethodName;
+import me.dinowernli.grpc.polyglot.protobuf.ProtocInvoker;
 import me.dinowernli.grpc.polyglot.protobuf.ServiceResolver;
 import milkman.plugin.grpc.domain.GrpcOperationAspect;
 import milkman.plugin.grpc.domain.GrpcPayloadAspect;
@@ -60,7 +62,10 @@ public class GrpcRequestProcessor {
 	    
 	    var client = ServerReflectionClient.create(channel);
 	    var protoMethod = ProtoMethodName.parseFullGrpcMethodName(operationAspect.getOperation());
-	    FileDescriptorSet descriptorSet = client.lookupService(protoMethod.getFullServiceName()).get();
+		FileDescriptorSet descriptorSet = operationAspect.isUseReflection() 
+						? lookupDescriptorViaReflection(client, protoMethod) 
+						: compileProtoSchema(operationAspect.getProtoSchema(), protoMethod);
+						
 	    var resolver = ServiceResolver.fromFileDescriptorSet(descriptorSet);
 	    var methodDefinition = resolver.resolveServiceMethod(protoMethod);
 	    
@@ -101,6 +106,18 @@ public class GrpcRequestProcessor {
 		response.getAspects().add(responsePayloadAspect);
 		
 		return response;
+	}
+
+	@SneakyThrows
+	private FileDescriptorSet compileProtoSchema(String protoSchema, ProtoMethodName protoMethod) {
+		ProtocInvoker protocInvoker = new ProtocInvoker(IOUtils.toInputStream(protoSchema));
+		return protocInvoker.invoke();
+	}
+
+	protected FileDescriptorSet lookupDescriptorViaReflection(ServerReflectionClient client,
+			ProtoMethodName protoMethod) throws InterruptedException, ExecutionException {
+		FileDescriptorSet descriptorSet = client.lookupService(protoMethod.getFullServiceName()).get();
+		return descriptorSet;
 	}
 
 }

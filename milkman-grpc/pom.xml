@@ -51,6 +51,11 @@
 			<artifactId>grpc-services</artifactId>
 			<version>${grpc.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.github.os72</groupId>
+			<artifactId>protoc-jar</artifactId>
+			<version>3.8.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

@@ -7,6 +7,8 @@ import milkman.domain.RequestAspect;
 public class GrpcOperationAspect extends RequestAspect {
 
 	String operation;
+	boolean useReflection;
+	String protoSchema;
 
 	public GrpcOperationAspect() {
 		super("operation");
