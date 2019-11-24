@@ -25,10 +25,10 @@ public class GrpcResponsePayloadEditor implements ResponseAspectEditor {
 		val payload = response.getAspect(GrpcResponsePayloadAspect.class).get();
 		TextArea root = new TextArea();
 		root.setEditable(false);
-		payload.getPayloads().subscribe(
+		payload.getPayloads().subscribe(Subscribers.subscriber(
 			value -> root.setText(root.getText() + "\n" + value),
 			throwable -> root.setText(root.getText() + "\n" + throwable.toString())
-		);
+		));
 		VBox.setVgrow(root, Priority.ALWAYS);
 		return new Tab("Response Payload", root);
 	}

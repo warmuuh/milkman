@@ -76,7 +76,10 @@ public class GrpcPlugin implements RequestTypePlugin, RequestAspectsPlugin {
 
 	@Override
 	public List<CustomCommand> getCustomCommands() {
-		return List.of(new CustomCommand("LIST_SERVICES", "List Services"));
+		return List.of(
+				new CustomCommand("LIST_SERVICES", "List Services"),
+				new CustomCommand("SERVICE_DEFINITION", "Show Service Definition")
+				);
 	}
 
 	@Override
@@ -88,6 +91,8 @@ public class GrpcPlugin implements RequestTypePlugin, RequestAspectsPlugin {
 		switch (commandId) {
 		case "LIST_SERVICES":
 			return metaProcessor.listServices((GrpcRequestContainer) request, templater);
+		case "SERVICE_DEFINITION":
+			return metaProcessor.showServiceDefinition((GrpcRequestContainer) request, templater);
 		default:
 			throw new IllegalArgumentException("Unsupported custom command: " + commandId);
 		}
