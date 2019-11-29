@@ -1,20 +1,9 @@
 package milkman.ui.plugin.rest;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Authenticator;
-import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
-import java.net.Proxy;
-import java.net.ProxySelector;
-import java.net.SocketAddress;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Builder;
 import java.net.http.HttpClient.Redirect;
@@ -25,9 +14,6 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -37,10 +23,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpHost;
-import org.apache.http.conn.routing.HttpRoute;
 
 import javafx.application.Platform;
 import lombok.RequiredArgsConstructor;
@@ -59,12 +41,14 @@ import milkman.ui.plugin.rest.domain.RestResponseHeaderAspect;
 @Slf4j
 public class JavaRequestProcessor implements RequestProcessor {
 
+
 	static {
 		//this enables using "Basic" authentication for https-requests over http proxy (disabled by default)
 		//see https://bugs.openjdk.java.net/browse/JDK-8229962 for more details
 		System.setProperty("jdk.http.auth.tunneling.disabledSchemes", "");
 	}
 	
+	private static final String PROXY_AUTHORIZATION_HEADER = "Proxy-Authorization";
 	private static final String USER_AGENT_HEADER = "User-Agent";
 
 	
@@ -78,14 +62,17 @@ public class JavaRequestProcessor implements RequestProcessor {
 			URL url = new URL(HttpOptionsPluginProvider.options().getProxyUrl());
 			builder.proxy(new ProxyExclusionRoutePlanner(url, HttpOptionsPluginProvider.options().getProxyExclusion()).java());
 			
-			if (proxyCredentials != null) {
-				builder.authenticator(new Authenticator() {
-					@Override
-					protected PasswordAuthentication getPasswordAuthentication() {
-						return proxyCredentials;
-					}
-				});
-			}
+			//we dont use Authenticator because it might result in an exception if there is a 401 response
+			// see https://github.com/AdoptOpenJDK/openjdk-jdk11/blob/master/src/java.net.http/share/classes/jdk/internal/net/http/AuthenticationFilter.java#L263
+			//we manually add Proxy-Authorization header instead
+//			if (proxyCredentials != null) {
+//				builder.authenticator(new Authenticator() {
+//					@Override
+//					protected PasswordAuthentication getPasswordAuthentication() {
+//						return proxyCredentials;
+//					}
+//				});
+//			}
 		}
 		
 		if (!HttpOptionsPluginProvider.options().isCertificateValidation()) {
@@ -143,7 +130,8 @@ public class JavaRequestProcessor implements RequestProcessor {
 				if (!dialog.isCancelled()) {
 					proxyCredentials = new PasswordAuthentication(dialog.getUsername(), dialog.getPassword().toCharArray());
 					try {
-						responseHolder.set(executeRequest(httpRequest));
+						var newRequest = toHttpRequest(request, templater);
+						responseHolder.set(executeRequest(newRequest));
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -182,6 +170,10 @@ public class JavaRequestProcessor implements RequestProcessor {
 		if (builder.build().headers().firstValue(USER_AGENT_HEADER).isEmpty())
 			builder.setHeader(USER_AGENT_HEADER, "Milkman");
 
+		if (proxyCredentials != null) {
+			builder.setHeader(PROXY_AUTHORIZATION_HEADER, HttpUtil.authorizationHeaderValue(proxyCredentials));
+		}
+		
 		return builder.build();
 	}
 
