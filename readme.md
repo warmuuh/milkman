@@ -32,6 +32,7 @@ latest changes can be seen in the [Changelog](changelog.md)
 
  * **Everything is a plugin:** Request-types (e.g. Http Request), request-aspects (e.g. Headers, Body, etc), editors for request aspects (e.g. table-based editors for headers), importers, whatever it is, you can extend it. The core application only handles Workspaces with Environments, Collections, Requests and their aspects.
  * **Http Request Plugin:** Several plugins are provided already that extend the core application to be a replacement for postman. Crafting and Executing Http/Rest requests with json highlighting. Proxy-server support.
+ * **Grpc Plugin:** support of Grpc Services, Server Reflection and Streaming
  * **JavaFX Application:** as in: *fast* (compared to electron at least :D) and skinn-able (you can extend milkman with your own themes using simple CSS).
  * **Commandline Interface:** there is a [command line interface](/milkman-cli) for Milkman which allows to edit/execute requests on your command line.
  * [Some more details](docs/features.md) of the core application features, such as hotkeys etc.
@@ -40,34 +41,34 @@ latest changes can be seen in the [Changelog](changelog.md)
 
 *Note: see respective plugin folder for more details*
 
-### Http Request Plugin: (included in main distribution)
+### [Http Request Plugin](/milkman-rest): (included in main distribution)
 The Http request plugin packaged with the release contains all means to do http request as well as import collections, environments or dumps from postman.
 To migrate from postman, just [export a dump-file from postman](https://learning.getpostman.com/docs/postman/collections/data_formats/#data-dumps) and import it by pasting its content into the `Postman (v2.1) Dump`-Importer.
 The Http Request Plugin also comes with Proxy-support. Some proxies require credentials and support for supplying `BASIC` proxy credentials is built into the plugin. See Options-page to activate that as it is off by default.
 
-### Note Plugin:
-This is a sample plugin that allows to add arbitrary description to every request. Serves as a starting point for learning to extend milkman.
-
-### Explore Plugin:
-This plugin extends Rest-responses by adding an `Explore`-Tab where you can use [JMesPath](http://jmespath.org/) queries against a JSON response.
-
-### Scripting Plugin:
-Extends requests by executing a script after request execution. This allows to e.g. set environment variables based on results of json.
-
-### JDBC Plugin
-This plugin introduces SQL capability to milkman. You can query SQL databases via milkman as well, using JDBC drivers.
-
-### Git Team Synchronization Plugin
-This plugin allows to synchronize workspaces via Git (using Differential Synchronization). Teams can use this plugin to have a shared workspace that synchronizes between members.
-
-### PrivateBin Sharing Plugin
-Adds capability to share requests via [PrivateBin](http://PrivateBin.net), including `Burn After Reading` feature
-
-### Graphql Plugin
+### [Graphql Plugin](/milkman-graphql)
 Simple Graphql Plugin to craft  [GraphQL](https://graphql.org/) requests. No Auto-complete or schema valiadtion included.
 
-### Grpc Plugin
+### [Grpc Plugin](/milkman-grpc)
 Grpc plugin with [server-reflection](https://github.com/grpc/grpc/blob/master/doc/server-reflection.md) support and streaming-support. Can also query via proto-defintion.
+
+### [JDBC Plugin](/milkman-jdbc)
+This plugin introduces SQL capability to milkman. You can query SQL databases via milkman as well, using JDBC drivers.
+
+### [Git Team Synchronization Plugin](/milkman-sync-git)
+This plugin allows to synchronize workspaces via Git (using Differential Synchronization). Teams can use this plugin to have a shared workspace that synchronizes between members.
+
+### [Explore Plugin](/milkman-explore):
+This plugin extends Rest-responses by adding an `Explore`-Tab where you can use [JMesPath](http://jmespath.org/) queries against a JSON response.
+
+### [Scripting Plugin](/milkman-scripting):
+Extends requests by executing a script after request execution. This allows to e.g. set environment variables based on results of json.
+
+### [PrivateBin Sharing Plugin](/milkman-privatebin)
+Adds capability to share requests via [PrivateBin](http://PrivateBin.net), including `Burn After Reading` feature
+
+### [Note Plugin](/milkman-note):
+This is a sample plugin that allows to add arbitrary description to every request. Serves as a starting point for learning to extend milkman.
 
 # Showcase
 
