@@ -6,6 +6,7 @@ import java.util.concurrent.SubmissionPublisher;
 
 import com.google.protobuf.DescriptorProtos.FileDescriptorSet;
 
+import io.grpc.Channel;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
@@ -32,8 +33,8 @@ public class BaseGrpcProcessor {
 	            .build();
 		return channel;
 	}
-
-	protected FileDescriptorSet fetchServiceDescriptionViaReflection(ManagedChannel channel, ProtoMethodName protoMethod) throws InterruptedException, ExecutionException {
+	
+	protected FileDescriptorSet fetchServiceDescriptionViaReflection(Channel channel, ProtoMethodName protoMethod) throws InterruptedException, ExecutionException {
 		var client = ServerReflectionClient.create(channel);
 		FileDescriptorSet descriptorSet = client.lookupService(protoMethod.getFullServiceName()).get();
 		return descriptorSet;
@@ -47,7 +48,7 @@ public class BaseGrpcProcessor {
 	@RequiredArgsConstructor
 	class StreamObserverToPublisherBridge<T> implements StreamObserver<T> {
 		private final SubmissionPublisher<T> publisher;
-		private final ManagedChannel channel;
+		private final Runnable onClose;
 
 		@Override
 		public void onNext(T value) {
@@ -57,13 +58,13 @@ public class BaseGrpcProcessor {
 		@Override
 		public void onError(Throwable t) {
 			t.printStackTrace();
-			channel.shutdown();
+			onClose.run();
 			publisher.closeExceptionally(t);
 		}
 		
 		@Override
 		public void onCompleted() {
-			channel.shutdown();
+			onClose.run();
 			publisher.close();
 		}
 	}

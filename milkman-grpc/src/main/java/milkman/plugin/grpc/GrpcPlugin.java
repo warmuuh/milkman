@@ -5,12 +5,15 @@ import java.util.List;
 import milkman.domain.RequestContainer;
 import milkman.domain.RequestExecutionContext;
 import milkman.domain.ResponseContainer;
+import milkman.plugin.grpc.domain.GrpcHeaderAspect;
 import milkman.plugin.grpc.domain.GrpcOperationAspect;
 import milkman.plugin.grpc.domain.GrpcPayloadAspect;
 import milkman.plugin.grpc.domain.GrpcRequestContainer;
+import milkman.plugin.grpc.editor.GrpcHeaderAspectEditor;
 import milkman.plugin.grpc.editor.GrpcOperationAspectEditor;
 import milkman.plugin.grpc.editor.GrpcPayloadAspectEditor;
 import milkman.plugin.grpc.editor.GrpcRequestEditor;
+import milkman.plugin.grpc.editor.GrpcResponseHeaderAspectEditor;
 import milkman.plugin.grpc.editor.GrpcResponsePayloadEditor;
 import milkman.plugin.grpc.processor.GrpcMetaProcessor;
 import milkman.plugin.grpc.processor.GrpcRequestProcessor;
@@ -29,12 +32,12 @@ public class GrpcPlugin implements RequestTypePlugin, RequestAspectsPlugin {
 
 	@Override
 	public List<RequestAspectEditor> getRequestTabs() {
-		return List.of(new GrpcOperationAspectEditor(), new GrpcPayloadAspectEditor());
+		return List.of(new GrpcOperationAspectEditor(), new GrpcPayloadAspectEditor(), new GrpcHeaderAspectEditor());
 	}
 
 	@Override
 	public List<ResponseAspectEditor> getResponseTabs() {
-		return List.of(new GrpcResponsePayloadEditor());
+		return List.of(new GrpcResponsePayloadEditor(), new GrpcResponseHeaderAspectEditor());
 	}
 
 	@Override
@@ -45,6 +48,9 @@ public class GrpcPlugin implements RequestTypePlugin, RequestAspectsPlugin {
 			}
 			if (request.getAspect(GrpcPayloadAspect.class).isEmpty()) {
 				request.addAspect(new GrpcPayloadAspect());
+			}
+			if (request.getAspect(GrpcHeaderAspect.class).isEmpty()) {
+				request.addAspect(new GrpcHeaderAspect());
 			}
 		}
 	}

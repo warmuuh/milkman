@@ -211,7 +211,10 @@
     -fx-text-fill: black;
 	-fx-font-weight: normal;
 }
-
+#tabs .tab-content-area {
+	-fx-background-color: white;
+	-fx-padding: 10 5 0 0;
+}
 
 /**
 * working area > response area
@@ -365,6 +368,11 @@
 .contentEditor {
 	-fx-background-color: white;
 }
+
+.contentEditor .disabled {
+	-fx-background-color: lightgrey;
+}
+
 .contentEditor  .contentEditor-header {
 	-fx-padding: 10;
 }

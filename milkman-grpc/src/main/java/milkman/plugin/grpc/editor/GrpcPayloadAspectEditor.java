@@ -2,33 +2,33 @@ package milkman.plugin.grpc.editor;
 
 import static milkman.utils.FunctionalUtils.run;
 
+import java.util.List;
+
 import javafx.scene.control.Tab;
-import javafx.scene.control.TextArea;
 import lombok.SneakyThrows;
 import milkman.domain.RequestContainer;
 import milkman.plugin.grpc.domain.GrpcPayloadAspect;
+import milkman.ui.components.ContentEditor;
+import milkman.ui.plugin.ContentTypeAwareEditor;
+import milkman.ui.plugin.ContentTypePlugin;
 import milkman.ui.plugin.RequestAspectEditor;
-import milkman.utils.fxml.GenericBinding;
 
-public class GrpcPayloadAspectEditor implements RequestAspectEditor {
-
-
+public class GrpcPayloadAspectEditor implements RequestAspectEditor, ContentTypeAwareEditor{
+	private List<ContentTypePlugin> contentTypes;
 
 	@Override
 	@SneakyThrows
 	public Tab getRoot(RequestContainer request) {
 		GrpcPayloadAspect aspect = request.getAspect(GrpcPayloadAspect.class).get();
-		TextArea textArea = new TextArea();
-		GenericBinding<GrpcPayloadAspect, String> binding = GenericBinding.of(
-				GrpcPayloadAspect::getPayload, 
-				run(GrpcPayloadAspect::setPayload)
-					.andThen(() -> aspect.setDirty(true)), //mark aspect as dirty propagates to the request itself and shows up in UI
-				aspect); 
-
-		textArea.textProperty().bindBidirectional(binding);
-		textArea.setUserData(binding); //need to add a strong reference to keep the binding from being GC-collected.
 		
-		return new Tab("Payload", textArea);
+		ContentEditor root = new ContentEditor();
+		root.setEditable(true);
+		root.setContent(aspect::getPayload, run(aspect::setPayload).andThen(() -> aspect.setDirty(true)));
+		if (contentTypes != null)
+			root.setContentTypePlugins(contentTypes);
+		root.setContentType("application/json");
+		root.setHeaderVisibility(false);
+		return new Tab("Payload", root);
 	}
 
 
@@ -37,5 +37,8 @@ public class GrpcPayloadAspectEditor implements RequestAspectEditor {
 		return request.getAspect(GrpcPayloadAspect.class).isPresent();
 	}
 
-
+	@Override
+	public void setContentTypePlugins(List<ContentTypePlugin> contentTypes) {
+		this.contentTypes = contentTypes;
+	}
 }

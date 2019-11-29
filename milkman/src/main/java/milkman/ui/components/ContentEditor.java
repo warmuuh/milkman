@@ -327,6 +327,7 @@ public class ContentEditor extends VBox {
 	public void setEditable(boolean editable) {
 		codeArea.setEditable(editable);
 	}
+	
 
 	public void setContentTypePlugins(List<ContentTypePlugin> plugins) {
 		highlighters.getItems().addAll(plugins);
@@ -377,6 +378,14 @@ public class ContentEditor extends VBox {
 
 	protected void replaceText(String newText) {
 		codeArea.replaceText(newText != null ? newText : "");
+	}
+
+	public void setDisableContent(Boolean disable) {
+		if (disable)
+			codeArea.getStyleClass().add("disabled");
+		else 
+			codeArea.getStyleClass().remove("disabled");
+		codeArea.setDisable(disable);
 	}
 
 }

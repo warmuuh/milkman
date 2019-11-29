@@ -20,6 +20,7 @@
 				<include>com.github.warmuuh:milkman-sync-git</include>
 				<include>com.github.warmuuh:milkman-privatebin</include>
 				<include>com.github.warmuuh:milkman-graphql</include>
+				<include>com.github.warmuuh:milkman-grpc</include>
 			</includes>
 			<binaries>
 				<unpack>false</unpack>

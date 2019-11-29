@@ -1,9 +1,11 @@
 package milkman.plugin.grpc.processor;
 
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Flow.Publisher;
 import java.util.concurrent.SubmissionPublisher;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.FutureCallback;
@@ -20,6 +22,7 @@ import milkman.plugin.grpc.domain.GrpcRequestContainer;
 import milkman.plugin.grpc.domain.GrpcResponseContainer;
 import milkman.plugin.grpc.domain.GrpcResponsePayloadAspect;
 import milkman.plugin.grpc.editor.Subscribers;
+import milkman.plugin.grpc.processor.ProtoDescriptorSerializer.FileContent;
 import milkman.ui.plugin.Templater;
 
 public class GrpcMetaProcessor extends BaseGrpcProcessor {
@@ -62,11 +65,21 @@ public class GrpcMetaProcessor extends BaseGrpcProcessor {
 		ManagedChannel channel = createChannel(request);
 		FileDescriptorSet descriptorSet = fetchServiceDescriptionViaReflection(channel, protoMethod);
 		
+		String protoContent = toProto(descriptorSet);
+		
 		SubmissionPublisher<String> publisher = new SubmissionPublisher<String>();
 		var buffer = Subscribers.buffer(publisher);
-		publisher.submit(descriptorSet.toString());
+		publisher.submit(protoContent);
 		
 		return buffer;
+	}
+
+	private String toProto(FileDescriptorSet descriptorSet) {
+		ProtoDescriptorSerializer serializer = new ProtoDescriptorSerializer();
+		List<FileContent> files = serializer.descriptorToString(descriptorSet);
+		return files.stream()
+			.map((FileContent f) ->  "/* Filename: " + f.getFileName() + " */\n" +f.getContents())
+			.collect(Collectors.joining("\n---\n"));
 	}
 
 	protected SubmissionPublisher<String> fetchServiceList(GrpcRequestContainer request) {

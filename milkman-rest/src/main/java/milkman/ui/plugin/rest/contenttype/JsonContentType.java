@@ -17,19 +17,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.extern.slf4j.Slf4j;
 import milkman.ui.plugin.ContentTypePlugin;
 
-/**
- * highlighting copied from
- * https://github.com/RohitAwate/Everest/blob/master/src/main/java/com/rohitawate/everest/controllers/codearea/highlighters/JSONHighlighter.java
- * Copyright 2018 Rohit Awate.
- * 
- * 
- * 
- * changes: 
- * non-highlighting related stuff
- * css classes
- * 
- *
- */
+
 @Slf4j
 public class JsonContentType implements ContentTypePlugin {
 
