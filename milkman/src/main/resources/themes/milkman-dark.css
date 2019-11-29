@@ -222,6 +222,19 @@
 	 
 }
 
+/**
+* working area > request aspect area
+*/
+
+#tabs .tab-label {
+    -fx-text-fill: white;
+	-fx-font-weight: normal;
+}
+#tabs .tab-content-area {
+    -fx-text-fill: white;
+	-fx-background-color: #2C3964;
+	-fx-padding: 10 5 0 0;
+}
 
 /**
 * working area > response area
@@ -429,6 +442,12 @@
 .contentEditor {
 	-fx-background-color: #4c4b4b;
 }
+
+.contentEditor .disabled {
+	-fx-background-color: #e5e5e5;
+}
+
+
 .contentEditor .label,
 .contentEditor .button,
 .contentEditor .code-area,

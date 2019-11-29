@@ -66,6 +66,8 @@ Adds capability to share requests via [PrivateBin](http://PrivateBin.net), inclu
 ### Graphql Plugin
 Simple Graphql Plugin to craft  [GraphQL](https://graphql.org/) requests. No Auto-complete or schema valiadtion included.
 
+### Grpc Plugin
+Grpc plugin with [server-reflection](https://github.com/grpc/grpc/blob/master/doc/server-reflection.md) support and streaming-support. Can also query via proto-defintion.
 
 # Showcase
 
