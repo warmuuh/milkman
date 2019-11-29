@@ -5,8 +5,6 @@ import java.awt.Taskbar;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.sun.javafx.tk.Toolkit;
-
 import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
@@ -62,7 +60,7 @@ public class MainWindow {
 			setIcon(primaryStage);
 			
 			
-			org.fxmisc.cssfx.CSSFX.start(primaryStage);
+//			org.fxmisc.cssfx.CSSFX.start(primaryStage);
 			
 			
 			primaryStage.show();
