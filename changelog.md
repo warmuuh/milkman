@@ -9,6 +9,12 @@
   * UX: closing request confirmation
 
 # Changelog
+
+
+version 3.8.0 (upcomming)
+  * added [Grpc plugin](/milkman-grpc)
+  * changed way of proxy authentication for http2 client to be less rigid
+
 version 3.7.1
   * added experimental Http/2 support (see options)
   * added macos app bundling added
