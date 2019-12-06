@@ -15,4 +15,4 @@ jobs:
         java-version: 11.0.3
         java-package: jdk+fx
     - name: Build with Maven
-      run: mvn -B package -DexcludedGroups=ui --file pom.xml
+      run: mvn package -DexcludedGroups=ui
