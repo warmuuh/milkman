@@ -8,6 +8,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpClient.Builder;
 import java.net.http.HttpClient.Redirect;
 import java.net.http.HttpClient.Version;
+import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
@@ -35,6 +36,7 @@ import javax.net.ssl.X509TrustManager;
 import javafx.application.Platform;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestAspect;
 import milkman.ui.main.dialogs.CredentialsInputDialog;
@@ -130,45 +132,45 @@ public class JavaRequestProcessor implements RequestProcessor {
 	public RestResponseContainer executeRequest(RestRequestContainer request, Templater templater, AsyncControl asyncControl) {
 		HttpRequest httpRequest = toHttpRequest(request, templater);
 		SubmissionPublisher<String> publisher = new SubmissionPublisher<String>();
+		
 		Publisher<String> buffer = Subscribers.buffer(publisher);
+		
 		asyncControl.triggerReqeuestStarted();
 		AtomicLong startTime = new AtomicLong(System.currentTimeMillis());
 		StringSubscriber responseSubscriber = executeRequest(httpRequest, publisher, asyncControl.onCancellationRequested);
 		
-		var responseF = responseSubscriber.getResponseInfo().thenApply(responseInfo -> {
-			AtomicReference<StringSubscriber> responseHolder = new AtomicReference<>(responseSubscriber);
-			if (responseInfo.statusCode() == 407 
-					&& HttpOptionsPluginProvider.options().isAskForProxyAuth()) {
-				CountDownLatch latch = new CountDownLatch(1);
-				Platform.runLater(() -> {
-					CredentialsInputDialog dialog = new CredentialsInputDialog();
-					dialog.showAndWait("Proxy Authentication");
-					if (!dialog.isCancelled()) {
-						proxyCredentials = new PasswordAuthentication(dialog.getUsername(), dialog.getPassword().toCharArray());
-						try {
-							var newRequest = toHttpRequest(request, templater);
-							startTime.set(System.currentTimeMillis());
-							responseHolder.set(executeRequest(newRequest, publisher, asyncControl.onCancellationRequested));
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
+		//we block until we get the headers:
+		var responseInfo = responseSubscriber.getResponseInfo().get(); //TODO: timeout
+		
+		AtomicReference<StringSubscriber> responseHolder = new AtomicReference<>(responseSubscriber);
+		if (responseInfo.statusCode() == 407 
+				&& HttpOptionsPluginProvider.options().isAskForProxyAuth()) {
+			CountDownLatch latch = new CountDownLatch(1);
+			Platform.runLater(() -> {
+				CredentialsInputDialog dialog = new CredentialsInputDialog();
+				dialog.showAndWait("Proxy Authentication");
+				if (!dialog.isCancelled()) {
+					proxyCredentials = new PasswordAuthentication(dialog.getUsername(), dialog.getPassword().toCharArray());
+					try {
+						var newRequest = toHttpRequest(request, templater);
+						startTime.set(System.currentTimeMillis());
+						responseHolder.set(executeRequest(newRequest, publisher, asyncControl.onCancellationRequested));
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
-					latch.countDown();
-				});
-				try {
-					latch.await();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
 				}
+				latch.countDown();
+			});
+			try {
+				latch.await();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-			
-			return responseHolder.get();
-		});
+		}
 		
-		
-		responseF
-		.thenCompose(StringSubscriber::getBody) // body fulfills only after request is completed
+		responseHolder.get().getBody()// body fulfills only after request is completed
 		.handle((res, e) -> {
+			System.out.println("triggers");
 			if (res != null) {
 				asyncControl.triggerRequestSucceeded();
 			}
@@ -179,8 +181,8 @@ public class JavaRequestProcessor implements RequestProcessor {
 		
 		
 		RestResponseContainer response = toResponseContainer(httpRequest.uri().toString(),
-																publisher,
-																responseF.thenCompose(StringSubscriber::getResponseInfo), 
+				buffer,
+																responseHolder.get().getResponseInfo(), 
 																startTime);
 		return response;
 	}
@@ -189,6 +191,26 @@ public class JavaRequestProcessor implements RequestProcessor {
 		HttpClient httpclient = buildClient();
 		var stringSubscriber = new StringSubscriber(publisher);
 		var future = httpclient.sendAsync(httpRequest, responseInfo -> stringSubscriber.onResponse(responseInfo));
+		future.handle((res, err) -> {
+			System.out.println("Received response: " + res);
+			System.out.println("Received err: " + err);
+			System.out.println("has subscription: " + stringSubscriber.hasSubscription());
+			//under certain circumstances, the stringSubscriber was not subscribed (body handler not activated)
+			//leading to the call-future resolve but the futures in the subscriber to not be resolved.
+			if (!stringSubscriber.hasSubscription()) {
+				if (err != null) {
+					stringSubscriber.onError(err);
+				} else {
+					stringSubscriber.responseInfo.complete(new StaticResponseInfo(res));
+					stringSubscriber.onComplete();
+				}
+				
+			}
+			
+			
+			
+			return null;
+		});
 		cancellationEvent.add(stringSubscriber::cancel);
 		return stringSubscriber;
 	}
@@ -276,4 +298,11 @@ public class JavaRequestProcessor implements RequestProcessor {
 		}
 	}
 	
+	
+	
+	@RequiredArgsConstructor
+	class StaticResponseInfo implements ResponseInfo {
+		@Delegate(types = ResponseInfo.class)
+		private final HttpResponse<?> response;
+	}
 }

@@ -1,6 +1,8 @@
 package milkman.utils.reactive;
 
 import java.util.concurrent.SubmissionPublisher;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.Flow.Processor;
 import java.util.concurrent.Flow.Publisher;
 import java.util.concurrent.Flow.Subscriber;
@@ -60,7 +62,7 @@ public class Subscribers {
 	public static <T> Publisher<T> buffer(Publisher<T> publisher){
 		Processor<T, T> proc = new Processor<T, T>() {
 			private Subscription subscription;
-			private Subscriber<? super T> subscriber;
+			private List<Subscriber<? super T>> subscribers = new LinkedList<>();
 
 			@Override
 			public void onSubscribe(Subscription subscription) {
@@ -69,24 +71,23 @@ public class Subscribers {
 
 			@Override
 			public void onNext(T item) {
-				subscriber.onNext(item);
+				this.subscribers.forEach(s -> s.onNext(item));
 			}
 
 			@Override
 			public void onError(Throwable throwable) {
-				subscriber.onError(throwable);
+				this.subscribers.forEach(s -> s.onError(throwable));
 			}
 
 			@Override
 			public void onComplete() {
-				subscriber.onComplete();
+				this.subscribers.forEach(Subscriber::onComplete);
 			}
 
 			@Override
 			public void subscribe(Subscriber<? super T> subscriber) {
-				this.subscriber = subscriber;
+				this.subscribers.add(subscriber);
 				subscriber.onSubscribe(subscription);
-				
 			}
 		};
 		publisher.subscribe(proc);

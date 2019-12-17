@@ -36,6 +36,10 @@ public class StringSubscriber implements BodySubscriber<String> {
 		this.subscription = subscription;
 		subscription.request(1); // Request first item
 	}
+	
+	public boolean hasSubscription() {
+		return this.subscription != null;
+	}
 
 	@Override
 	public void onNext(List<ByteBuffer> buffers) {
@@ -58,6 +62,7 @@ public class StringSubscriber implements BodySubscriber<String> {
 	public void onError(Throwable throwable) {
 		publisher.submit(throwable.toString());
 		bodyCF.completeExceptionally(throwable);
+		responseInfo.completeExceptionally(throwable);
 	}
 
 	@Override
@@ -83,11 +88,14 @@ public class StringSubscriber implements BodySubscriber<String> {
 	}
 
 	public void cancel() {
-		subscription.cancel();
+		if (subscription != null) {
+			subscription.cancel();
+		}
 		onError(new CancellationException("Cancelled"));
 	}
 
 	public BodySubscriber<String> onResponse(ResponseInfo responseInfo) {
+		System.out.println("Response info available");
 		this.responseInfo.complete(responseInfo);
 		return this;
 	}
