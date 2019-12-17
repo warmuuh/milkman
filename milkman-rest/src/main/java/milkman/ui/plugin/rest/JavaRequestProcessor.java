@@ -15,9 +15,11 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.net.ssl.SSLContext;
@@ -117,6 +119,7 @@ public class JavaRequestProcessor implements RequestProcessor {
 	@SneakyThrows
 	public RestResponseContainer executeRequest(RestRequestContainer request, Templater templater) {
 		HttpRequest httpRequest = toHttpRequest(request, templater);
+		AtomicLong startTime = new AtomicLong(System.currentTimeMillis());
 		HttpResponse<String> httpResponse = executeRequest(httpRequest);
 		
 		AtomicReference<HttpResponse<String>> responseHolder = new AtomicReference<HttpResponse<String>>(httpResponse);
@@ -131,6 +134,7 @@ public class JavaRequestProcessor implements RequestProcessor {
 					proxyCredentials = new PasswordAuthentication(dialog.getUsername(), dialog.getPassword().toCharArray());
 					try {
 						var newRequest = toHttpRequest(request, templater);
+						startTime.set(System.currentTimeMillis());
 						responseHolder.set(executeRequest(newRequest));
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -141,7 +145,8 @@ public class JavaRequestProcessor implements RequestProcessor {
 			latch.await();
 		}
 		
-		RestResponseContainer response = toResponseContainer(httpRequest.uri().toString(), responseHolder.get());
+		var responseTimeInMs = System.currentTimeMillis() - startTime.get();
+		RestResponseContainer response = toResponseContainer(httpRequest.uri().toString(), responseHolder.get(), responseTimeInMs);
 		return response;
 	}
 
@@ -179,7 +184,7 @@ public class JavaRequestProcessor implements RequestProcessor {
 
 	
 
-	private RestResponseContainer toResponseContainer(String url, HttpResponse<String> httpResponse) throws IOException {
+	private RestResponseContainer toResponseContainer(String url, HttpResponse<String> httpResponse, long responseTimeInMs) throws IOException {
 		RestResponseContainer response = new RestResponseContainer(url);
 		String body = httpResponse.body();
 		if (body == null)
@@ -194,13 +199,15 @@ public class JavaRequestProcessor implements RequestProcessor {
 		}
 		response.getAspects().add(headers);
 		
-		buildStatusView(httpResponse, response);
+		buildStatusView(httpResponse, response, responseTimeInMs);
 		
 		return response;
 	}
 
-	private void buildStatusView(HttpResponse<String> httpResponse, RestResponseContainer response) {
-		response.getStatusInformations().put("Status", ""+httpResponse.statusCode());
+	private void buildStatusView(HttpResponse<String> httpResponse, RestResponseContainer response, long responseTimeInMs) {
+		response.getStatusInformations().complete(Map.of(
+				"Status", ""+httpResponse.statusCode(), 
+				"Time", responseTimeInMs + "ms"));
 	}
 
 	@RequiredArgsConstructor

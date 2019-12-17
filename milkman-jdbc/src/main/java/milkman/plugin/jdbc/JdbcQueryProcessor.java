@@ -2,12 +2,8 @@ package milkman.plugin.jdbc;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Map;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -41,18 +37,21 @@ public class JdbcQueryProcessor extends AbstractJdbcProcessor {
 		
 		Connection connection = DriverManager.getConnection(templater.replaceTags(jdbcUrl));
 		Statement statement = connection.createStatement();
+		long startTime = System.currentTimeMillis();
 		boolean isResultSet = statement.execute(finalSql);
+		long requestTimeInMs = System.currentTimeMillis() - startTime;
 		
 		JdbcResponseContainer response = new JdbcResponseContainer();
 		RowSetResponseAspect rowSetAspect = new RowSetResponseAspect();
 		
 		if (isResultSet) {
 			extractRows(statement.getResultSet(), rowSetAspect);
-			response.getStatusInformations().put("Selected Rows", ""+ rowSetAspect.getRows().size());
+			response.getStatusInformations().complete(Map.of("Selected Rows", ""+ rowSetAspect.getRows().size()));
 		} else {
-			response.getStatusInformations().put("Affected Rows", ""+statement.getUpdateCount());	
+			response.getStatusInformations().complete(Map.of("Affected Rows", ""+ statement.getUpdateCount()));
 		}
-		
+		response.getStatusInformations().complete(Map.of("Time", requestTimeInMs + "ms"));
+
 		response.getAspects().add(rowSetAspect);
 		
 		return response;

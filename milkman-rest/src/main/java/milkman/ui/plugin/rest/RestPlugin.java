@@ -16,6 +16,7 @@ import milkman.ui.plugin.rest.domain.RestBodyAspect;
 import milkman.ui.plugin.rest.domain.RestHeaderAspect;
 import milkman.ui.plugin.rest.domain.RestQueryParamAspect;
 import milkman.ui.plugin.rest.domain.RestRequestContainer;
+import milkman.utils.AsyncResponseControl.AsyncControl;
 
 public class RestPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 

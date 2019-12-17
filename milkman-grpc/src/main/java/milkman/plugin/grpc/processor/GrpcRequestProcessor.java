@@ -6,16 +6,21 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Flow.Publisher;
 import java.util.concurrent.SubmissionPublisher;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.DescriptorProtos.FileDescriptorSet;
 import com.google.protobuf.DynamicMessage;
 
 import io.grpc.CallOptions;
 import io.grpc.Channel;
 import io.grpc.ClientInterceptors;
+import io.grpc.StatusRuntimeException;
 import lombok.SneakyThrows;
 import lombok.Value;
 import me.dinowernli.grpc.polyglot.grpc.DynamicGrpcClient;
@@ -31,17 +36,18 @@ import milkman.plugin.grpc.domain.GrpcResponsePayloadAspect;
 import milkman.plugin.grpc.domain.HeaderEntry;
 import milkman.plugin.grpc.editor.Subscribers;
 import milkman.ui.plugin.Templater;
+import milkman.utils.AsyncResponseControl.AsyncControl;
 
 public class GrpcRequestProcessor extends BaseGrpcProcessor {
 
 	@SneakyThrows
-	public GrpcResponseContainer executeRequest(GrpcRequestContainer request, Templater templater) {
+	public GrpcResponseContainer executeRequest(GrpcRequestContainer request, Templater templater, AsyncControl asyncControl) {
 	    GrpcOperationAspect operationAspect = request.getAspect(GrpcOperationAspect.class).orElseThrow(() -> new IllegalArgumentException("Operation Aspect missing"));
 	    GrpcPayloadAspect payloadAspect = request.getAspect(GrpcPayloadAspect.class).orElseThrow(() -> new IllegalArgumentException("Payload Aspect missing"));
 	    GrpcHeaderAspect headerAspect = request.getAspect(GrpcHeaderAspect.class).orElseThrow(() -> new IllegalArgumentException("Header Aspect missing"));
 		
 		
-		var responseData = makeRequest(request, operationAspect, headerAspect, payloadAspect);
+		var responseData = makeRequest(request, operationAspect, headerAspect, payloadAspect, asyncControl);
     	
 		var response = new GrpcResponseContainer(request.getEndpoint());
 
@@ -51,6 +57,9 @@ public class GrpcRequestProcessor extends BaseGrpcProcessor {
 		var responseHeaderAspect = new GrpcResponseHeaderAspect(responseData.getHeaderFuture().thenApply(this::convertToEntries));
 		response.getAspects().add(responseHeaderAspect);
 
+		responseData.getRequestTime().thenAccept(t -> response.getStatusInformations().complete(Map.of("Time", t + "ms")));
+		
+		
 		
 		return response;
 	}
@@ -58,7 +67,8 @@ public class GrpcRequestProcessor extends BaseGrpcProcessor {
 	protected ResponseDataHolder makeRequest(GrpcRequestContainer request, 
 			GrpcOperationAspect operationAspect,
 			GrpcHeaderAspect headerAspect,
-			GrpcPayloadAspect payloadAspect) throws InterruptedException, ExecutionException {
+			GrpcPayloadAspect payloadAspect, 
+			AsyncControl asyncControl) throws InterruptedException, ExecutionException {
 	   
 		HeaderClientInterceptor clientInterceptor = createHeaderInterceptor(headerAspect);
 	    var managedChannel = createChannel(request);
@@ -79,9 +89,31 @@ public class GrpcRequestProcessor extends BaseGrpcProcessor {
 		
 		var requestMessages = deenc.deserializeFromJson(payloadAspect.getPayload());
 	    var dynamicClient  = DynamicGrpcClient.create(deenc.getMethodDefinition(), channel);
-	    dynamicClient.call(requestMessages, new StreamObserverToPublisherBridge<>(publisher, () -> managedChannel.shutdown()), CallOptions.DEFAULT);
+	    long startTime = System.currentTimeMillis();
+	    CompletableFuture<Long> requestTime = new CompletableFuture<Long>();
+	    asyncControl.triggerReqeuestStarted();
+	    var streamObserver = new StreamObserverToPublisherBridge<>(publisher, () -> managedChannel.shutdown());
+		var callFuture = dynamicClient.call(requestMessages, streamObserver, CallOptions.DEFAULT);
+	    
+	    asyncControl.onCancellationRequested.add(streamObserver::cancel);
+	    
+	    Futures.addCallback(callFuture, new FutureCallback<Void>() {
+			@Override
+			public void onSuccess(Void result) {
+				requestTime.complete(System.currentTimeMillis() - startTime);
+				asyncControl.triggerRequestSucceeded();
+			}
+
+			@Override
+			public void onFailure(Throwable t) {
+				requestTime.complete(System.currentTimeMillis() - startTime);
+				asyncControl.triggerRequestFailed(t);
+			}
+		}, MoreExecutors.directExecutor());
+	    
+	    
     	var responseStream = Subscribers.map(buffer, deenc::serializeToJson);
-		return new ResponseDataHolder(responseStream, clientInterceptor.getResponseHeaders());
+		return new ResponseDataHolder(responseStream, clientInterceptor.getResponseHeaders(), requestTime);
 	}
 	
 	protected List<HeaderEntry> convertToEntries(Map<String, String> headers){
@@ -107,6 +139,7 @@ public class GrpcRequestProcessor extends BaseGrpcProcessor {
 	static class ResponseDataHolder{
 		Publisher<String> bodyStream;
 		CompletableFuture<Map<String, String>> headerFuture;
+		CompletableFuture<Long> requestTime;
 	}
 	
 	

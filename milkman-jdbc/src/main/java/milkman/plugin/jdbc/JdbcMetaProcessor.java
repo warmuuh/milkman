@@ -4,7 +4,10 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+
 
 import javafx.application.Platform;
 import lombok.SneakyThrows;
@@ -34,7 +37,7 @@ public class JdbcMetaProcessor extends AbstractJdbcProcessor {
 		RowSetResponseAspect rowSetAspect = new RowSetResponseAspect();
 		extractRows(rs, rowSetAspect);
 		response.getAspects().add(rowSetAspect);
-		response.getStatusInformations().put("Selected Rows", ""+ rowSetAspect.getRows().size());
+		response.getStatusInformations().complete(Map.of("Selected Rows", ""+ rowSetAspect.getRows().size()));
 
 		
 		return response;
@@ -59,7 +62,7 @@ public class JdbcMetaProcessor extends AbstractJdbcProcessor {
 		RowSetResponseAspect rowSetAspect = new RowSetResponseAspect();
 		extractRows(rs, rowSetAspect);
 		response.getAspects().add(rowSetAspect);
-		response.getStatusInformations().put("Selected Rows", ""+ rowSetAspect.getRows().size());
+		response.getStatusInformations().complete(Map.of("Selected Rows", ""+ rowSetAspect.getRows().size()));
 
 		
 		return response;

@@ -17,6 +17,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import milkman.ctrl.RequestExecutor;
 import milkman.ui.main.sync.NoSyncDetails;
+import milkman.utils.AsyncResponseControl;
 
 @Data
 @AllArgsConstructor
@@ -40,7 +41,7 @@ public class Workspace {
 	private SyncDetails syncDetails = new NoSyncDetails();
 	
 	@JsonIgnore
-	private Map<String, ResponseContainer> cachedResponses = new HashMap<String, ResponseContainer>();
+	private Map<String, AsyncResponseControl> cachedResponses = new HashMap<String, AsyncResponseControl>();
 	
 	@JsonIgnore
 	private Map<String, RequestExecutor> enqueuedRequestIds = new HashMap<String, RequestExecutor>();

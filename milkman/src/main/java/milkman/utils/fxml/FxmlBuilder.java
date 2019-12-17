@@ -62,7 +62,11 @@ public class FxmlBuilder {
 	}
 	
 	public static Node icon(FontAwesomeIcon icon) {
-		FontAwesomeIconView view = new FontAwesomeIconView(icon, "1.5em");
+		return icon(icon, "1.5em");
+	}
+	
+	public static Node icon(FontAwesomeIcon icon, String size) {
+		FontAwesomeIconView view = new FontAwesomeIconView(icon, size);
 		view.setStyleClass("icon");
 		return view;
 	}

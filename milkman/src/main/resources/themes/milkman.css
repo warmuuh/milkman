@@ -452,8 +452,19 @@
     -fx-stroke-width: 5.0;
 }
   
-
-
+/**
+* tiny spinner
+*/
+.tiny-spinner {
+	-fx-background-color: white;
+	-fx-box-border: transparent;
+    real-radius: 10;
+    -fx-pref-height: real-radius;
+    -fx-pref-width: real-radius;
+    -fx-min-height: real-radius;
+    -fx-min-width: real-radius;
+    
+}
 
 /**
 * Toast Style

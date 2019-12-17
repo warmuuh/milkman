@@ -215,13 +215,12 @@ public class WorkspaceController {
 			executor = null;
 		});
 		executor.setOnSucceeded(e -> {
-			ResponseContainer response = executor.getValue();
-			addResponseTimeInfo(response, System.currentTimeMillis() - startTime);
+			var asyncCtrl = executor.getValue();
 			activeWorkspace.getEnqueuedRequestIds().remove(request.getId());
-			plugins.loadRequestAspectPlugins().forEach(a -> a.initializeResponseAspects(request, response, context));
-			activeWorkspace.getCachedResponses().put(request.getId(), response);
+			plugins.loadRequestAspectPlugins().forEach(a -> a.initializeResponseAspects(request, asyncCtrl.getResponse(), context));
+			activeWorkspace.getCachedResponses().put(request.getId(), asyncCtrl);
 			log.info("Received response");
-			workingAreaView.displayResponseFor(request, response);	
+			workingAreaView.displayResponseFor(request, asyncCtrl);	
 			executor = null;
 		});
 		
@@ -236,10 +235,6 @@ public class WorkspaceController {
 	}
 
 
-	private void addResponseTimeInfo(ResponseContainer response, long responseTime) {
-		response.getStatusInformations().put("Time", responseTime + "ms");
-	}
-	
 	public void handleCommand(UiCommand command) {
 		log.info("Handling command: " + command);
 		if (command instanceof UiCommand.SubmitRequest) {

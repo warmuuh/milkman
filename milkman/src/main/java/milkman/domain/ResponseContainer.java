@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -25,7 +26,7 @@ public abstract class ResponseContainer {
 
 	
 	@JsonIgnore
-	private Map<String, String> statusInformations = new HashMap<String, String>();
+	private CompletableFuture<Map<String, String>> statusInformations = new CompletableFuture<>();
 	
 	
 	public <T extends ResponseAspect> Optional<T> getAspect(Class<T> aspectType) {

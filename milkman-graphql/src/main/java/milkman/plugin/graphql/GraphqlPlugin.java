@@ -19,6 +19,7 @@ import milkman.ui.plugin.ResponseAspectEditor;
 import milkman.ui.plugin.Templater;
 import milkman.ui.plugin.rest.domain.HeaderEntry;
 import milkman.ui.plugin.rest.domain.RestHeaderAspect;
+import milkman.utils.AsyncResponseControl.AsyncControl;
 
 public class GraphqlPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 

@@ -32,6 +32,7 @@ import milkman.ui.commands.UiCommand;
 import milkman.ui.commands.UiCommand.CloseRequest.CloseType;
 import milkman.ui.main.RequestComponent.RequestComponentFxml;
 import milkman.ui.main.ResponseComponent.ResponseComponentFxml;
+import milkman.utils.AsyncResponseControl;
 import milkman.utils.Event;
 import milkman.utils.fxml.FxmlBuilder.HboxExt;
 import milkman.utils.fxml.FxmlBuilder.VboxExt;
@@ -126,9 +127,12 @@ public class WorkingAreaComponent implements Initializable {
 		return tab;
 	}
 
-	public void displayResponseFor(RequestContainer request, ResponseContainer response) {
-		if (restRequestComponent.getCurrentRequest().getId().equals(request.getId()))
+	public void displayResponseFor(RequestContainer request, AsyncResponseControl response) {
+		//only, if the current request should be shown.
+		//should prevent background-tabs to be rendered, if response arrives.
+		if (restRequestComponent.getCurrentRequest().getId().equals(request.getId())) {
 			responseComponent.display(request, response);
+		}
 	}
 	
 	@FXML public void onNewRequestClick() {

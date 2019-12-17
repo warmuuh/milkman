@@ -11,9 +11,10 @@
 # Changelog
 
 
-version 3.8.0 (upcomming)
+version 4.0.0 (upcomming)
   * added [Grpc plugin](/milkman-grpc)
   * changed way of proxy authentication for http2 client to be less rigid
+  * made Milkman asynchronous at core, for better support of streaming response types, such as Grpc Streaming, SSE or WebSockets
 
 version 3.7.1
   * added experimental Http/2 support (see options)

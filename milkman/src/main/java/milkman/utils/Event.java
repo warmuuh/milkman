@@ -23,5 +23,9 @@ public class Event<T> {
 		}
 	}
 	
+	public void clear() {
+		listeners.clear();
+	}
+	
 	
 }

@@ -24,6 +24,7 @@ import milkman.ui.plugin.RequestTypeEditor;
 import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.ResponseAspectEditor;
 import milkman.ui.plugin.Templater;
+import milkman.utils.AsyncResponseControl.AsyncControl;
 
 public class GrpcPlugin implements RequestTypePlugin, RequestAspectsPlugin {
 
@@ -72,12 +73,12 @@ public class GrpcPlugin implements RequestTypePlugin, RequestAspectsPlugin {
 	}
 
 	@Override
-	public ResponseContainer executeRequest(RequestContainer request, Templater templater) {
+	public ResponseContainer executeRequestAsync(RequestContainer request, Templater templater, AsyncControl asnycControl) {
 		if (!(request instanceof GrpcRequestContainer)) {
 			throw new IllegalArgumentException("Unsupported request type");
 		}
 
-		return processor.executeRequest((GrpcRequestContainer) request, templater);
+		return processor.executeRequest((GrpcRequestContainer) request, templater, asnycControl);
 	}
 
 	@Override
@@ -117,6 +118,11 @@ public class GrpcPlugin implements RequestTypePlugin, RequestAspectsPlugin {
 	@Override
 	public int getOrder() {
 		return 18;
+	}
+
+	@Override
+	public ResponseContainer executeRequest(RequestContainer request, Templater templater) {
+		throw new UnsupportedOperationException();
 	}
 
 }

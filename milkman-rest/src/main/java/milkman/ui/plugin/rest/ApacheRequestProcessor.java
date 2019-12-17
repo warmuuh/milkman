@@ -2,23 +2,21 @@ package milkman.ui.plugin.rest;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
-import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -105,6 +103,7 @@ public class ApacheRequestProcessor implements RequestProcessor {
 	@SneakyThrows
 	public RestResponseContainer executeRequest(RestRequestContainer request, Templater templater) {
 		HttpUriRequest httpRequest = toHttpRequest(request, templater);
+		AtomicLong startTime = new AtomicLong(System.currentTimeMillis());
 		HttpResponse httpResponse = executeRequest(httpRequest);
 		
 		AtomicReference<HttpResponse> responseHolder = new AtomicReference<HttpResponse>(httpResponse);
@@ -118,6 +117,7 @@ public class ApacheRequestProcessor implements RequestProcessor {
 				if (!dialog.isCancelled()) {
 					proxyCredentials = new UsernamePasswordCredentials( dialog.getUsername(), dialog.getPassword());
 					try {
+						startTime.set(System.currentTimeMillis());
 						responseHolder.set(executeRequest(httpRequest));
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -128,7 +128,8 @@ public class ApacheRequestProcessor implements RequestProcessor {
 			latch.await();
 		}
 		
-		RestResponseContainer response = toResponseContainer(httpRequest.getURI().toString(), responseHolder.get());
+		var responseTimeInMs = System.currentTimeMillis() - startTime.get();
+		RestResponseContainer response = toResponseContainer(httpRequest.getURI().toString(), responseHolder.get(), responseTimeInMs);
 		return response;
 	}
 
@@ -161,7 +162,7 @@ public class ApacheRequestProcessor implements RequestProcessor {
 	}
 
 
-	private RestResponseContainer toResponseContainer(String url, HttpResponse httpResponse) throws IOException {
+	private RestResponseContainer toResponseContainer(String url, HttpResponse httpResponse, long responseTimeInMs) throws IOException {
 		RestResponseContainer response = new RestResponseContainer(url);
 		String body = "";
 		if (httpResponse.getEntity() != null && httpResponse.getEntity().getContent() != null)
@@ -174,13 +175,16 @@ public class ApacheRequestProcessor implements RequestProcessor {
 		}
 		response.getAspects().add(headers);
 		
-		buildStatusView(httpResponse, response);
+		buildStatusView(httpResponse, response, responseTimeInMs);
 		
 		return response;
 	}
 
-	private void buildStatusView(HttpResponse httpResponse, RestResponseContainer response) {
-		response.getStatusInformations().put("Status", httpResponse.getStatusLine().getStatusCode() + " " + httpResponse.getStatusLine().getReasonPhrase());
+	private void buildStatusView(HttpResponse httpResponse, RestResponseContainer response, long responseTimeInMs) {
+		var status = httpResponse.getStatusLine().getStatusCode() + " " + httpResponse.getStatusLine().getReasonPhrase();
+		response.getStatusInformations().complete(Map.of(
+				"Status", status, 
+				"Time", responseTimeInMs + "ms"));
 	}
 	
 	@RequiredArgsConstructor

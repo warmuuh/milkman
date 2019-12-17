@@ -5,27 +5,29 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableList;
 
+import io.grpc.stub.ClientCallStreamObserver;
+import io.grpc.stub.ClientResponseObserver;
 import io.grpc.stub.StreamObserver;
 
 /**
  * A {@link StreamObserver} which groups multiple observers and executes them all.
  */
-public class CompositeStreamObserver<T> implements StreamObserver<T> {
+public class CompositeStreamObserver<ReqT, ResT> implements ClientResponseObserver<ReqT, ResT> {
   private static final Logger logger = LoggerFactory.getLogger(CompositeStreamObserver.class);
-  private final ImmutableList<StreamObserver<T>> observers;
+  private final ImmutableList<StreamObserver<ResT>> observers;
 
   @SafeVarargs
-  public static <T> CompositeStreamObserver<T> of(StreamObserver<T>... observers) {
-    return new CompositeStreamObserver<T>(ImmutableList.copyOf(observers));
+  public static <R, T> CompositeStreamObserver<R, T> of(StreamObserver<T>... observers) {
+    return new CompositeStreamObserver<R, T>(ImmutableList.copyOf(observers));
   }
 
-  private CompositeStreamObserver(ImmutableList<StreamObserver<T>> observers) {
+  private CompositeStreamObserver(ImmutableList<StreamObserver<ResT>> observers) {
     this.observers = observers;
   }
 
   @Override
   public void onCompleted() {
-    for (StreamObserver<T> observer : observers) {
+    for (StreamObserver<ResT> observer : observers) {
       try {
         observer.onCompleted();
       } catch (Throwable t) {
@@ -36,7 +38,7 @@ public class CompositeStreamObserver<T> implements StreamObserver<T> {
 
   @Override
   public void onError(Throwable t) {
-    for (StreamObserver<T> observer : observers) {
+    for (StreamObserver<ResT> observer : observers) {
       try {
         observer.onError(t);
       } catch (Throwable s) {
@@ -46,8 +48,8 @@ public class CompositeStreamObserver<T> implements StreamObserver<T> {
   }
 
   @Override
-  public void onNext(T value) {
-    for (StreamObserver<T> observer : observers) {
+  public void onNext(ResT value) {
+    for (StreamObserver<ResT> observer : observers) {
       try {
         observer.onNext(value);
       } catch (Throwable t) {
@@ -55,4 +57,13 @@ public class CompositeStreamObserver<T> implements StreamObserver<T> {
       }
     }
   }
+
+	@Override
+	public void beforeStart(ClientCallStreamObserver<ReqT> requestStream) {
+		for (StreamObserver<ResT> observer : observers) {
+			if (observer instanceof ClientResponseObserver) {
+				((ClientResponseObserver)observer).beforeStart(requestStream);
+			}
+		}
+	}
 }

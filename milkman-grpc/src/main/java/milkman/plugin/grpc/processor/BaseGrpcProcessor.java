@@ -9,6 +9,8 @@ import com.google.protobuf.DescriptorProtos.FileDescriptorSet;
 import io.grpc.Channel;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.stub.ClientCallStreamObserver;
+import io.grpc.stub.ClientResponseObserver;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
 import me.dinowernli.grpc.polyglot.grpc.ServerReflectionClient;
@@ -46,18 +48,18 @@ public class BaseGrpcProcessor {
 	 * @param <T>
 	 */
 	@RequiredArgsConstructor
-	class StreamObserverToPublisherBridge<T> implements StreamObserver<T> {
-		private final SubmissionPublisher<T> publisher;
+	class StreamObserverToPublisherBridge<ReqT, ResT> implements ClientResponseObserver<ReqT, ResT> {
+		private final SubmissionPublisher<ResT> publisher;
 		private final Runnable onClose;
+		private ClientCallStreamObserver<ReqT> requestStream;
 
 		@Override
-		public void onNext(T value) {
+		public void onNext(ResT value) {
 			publisher.submit(value);
 		}
 		
 		@Override
 		public void onError(Throwable t) {
-			t.printStackTrace();
 			onClose.run();
 			publisher.closeExceptionally(t);
 		}
@@ -66,6 +68,15 @@ public class BaseGrpcProcessor {
 		public void onCompleted() {
 			onClose.run();
 			publisher.close();
+		}
+
+		@Override
+		public void beforeStart(ClientCallStreamObserver<ReqT> requestStream) {
+			this.requestStream = requestStream;
+		}
+		
+		public void cancel() {
+			requestStream.cancel("cancelled", new Exception("Cancellation Requested"));
 		}
 	}
 }

@@ -5,6 +5,7 @@ import java.util.List;
 
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
+import milkman.utils.AsyncResponseControl.AsyncControl;
 
 /**
 * extension point for introducing new types of requests
@@ -27,6 +28,26 @@ public interface RequestTypePlugin extends Orderable {
     */
 	ResponseContainer executeRequest(RequestContainer request, Templater templater);
 
+	/**
+	 * executes a request in async way. by default, this just invokes sync way of executing request
+	 * @param request
+	 * @param templater
+	 * @param asyncControl
+	 * @return
+	 */
+	default ResponseContainer executeRequestAsync(RequestContainer request, Templater templater, AsyncControl asyncControl) {
+		asyncControl.triggerReqeuestStarted();
+		try {
+			ResponseContainer response = executeRequest(request, templater);
+			asyncControl.triggerRequestSucceeded();
+			return response;
+		} catch (Exception e) {
+			asyncControl.triggerRequestFailed(e);
+			throw e;
+		}
+	};
+	
+	
     /**
     * returns a short string that allows for differentiation.
     * will show up in ui, so user can select which type of Request he wants to create.
@@ -51,4 +72,23 @@ public interface RequestTypePlugin extends Orderable {
 	default ResponseContainer executeCustomCommand(String commandId, RequestContainer request, Templater templater)   {
 		throw new IllegalArgumentException("No Custom commands implemented");
 	}
+	
+	/**
+	 * executes a command in async way. by default, this just invokes sync way of executing request
+	 * @param request
+	 * @param templater
+	 * @param asyncControl
+	 * @return
+	 */
+	default ResponseContainer executeCustomCommandAsync(String commandId, RequestContainer request, Templater templater, AsyncControl asyncControl) {
+		asyncControl.triggerReqeuestStarted();
+		try {
+			ResponseContainer response = executeCustomCommand(commandId, request, templater);
+			asyncControl.triggerRequestSucceeded();
+			return response;
+		} catch (Exception e) {
+			asyncControl.triggerRequestFailed(e);
+			throw e;
+		}
+	};
 }

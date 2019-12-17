@@ -13,10 +13,11 @@ import milkman.domain.ResponseContainer;
 import milkman.ui.plugin.CustomCommand;
 import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.Templater;
+import milkman.utils.AsyncResponseControl;
 
 @RequiredArgsConstructor
 @Slf4j
-public class RequestExecutor extends Service<ResponseContainer> {
+public class RequestExecutor extends Service<AsyncResponseControl> {
 
 	private final RequestContainer request; 
 	private final RequestTypePlugin plugin;
@@ -24,19 +25,24 @@ public class RequestExecutor extends Service<ResponseContainer> {
 	private final Optional<CustomCommand> customCommand;
 	
 	@Override
-	protected Task<ResponseContainer> createTask() {
-		return new Task<ResponseContainer>() {
+	protected Task<AsyncResponseControl> createTask() {
+		return new Task<AsyncResponseControl>() {
 			
 			@Override
-			protected ResponseContainer call() {
+			protected AsyncResponseControl call() {
 				try {
+					var asyncCtrl = new AsyncResponseControl();
 					if (customCommand.isPresent()) {
 						String commandId = customCommand.get().getCommandId();
 						log.info("Execute custom command: " + commandId);
-						return plugin.executeCustomCommand(commandId, request, templater);
+						var response =  plugin.executeCustomCommandAsync(commandId, request, templater, asyncCtrl.getCancellationControl());
+						asyncCtrl.setResponse(response);
+						return asyncCtrl;
 					} else {
 						log.info("Execute request");
-						return plugin.executeRequest(request, templater);
+						var response = plugin.executeRequestAsync(request, templater, asyncCtrl.getCancellationControl());
+						asyncCtrl.setResponse(response);
+						return asyncCtrl;
 					}
 				} catch (Throwable e) {
 					log.error("Execution of request failed", e);

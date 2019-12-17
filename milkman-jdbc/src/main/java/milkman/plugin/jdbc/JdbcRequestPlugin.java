@@ -22,6 +22,7 @@ import milkman.ui.plugin.RequestTypeEditor;
 import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.ResponseAspectEditor;
 import milkman.ui.plugin.Templater;
+import milkman.utils.AsyncResponseControl.AsyncControl;
 
 public class JdbcRequestPlugin implements RequestTypePlugin, RequestAspectsPlugin {
 
