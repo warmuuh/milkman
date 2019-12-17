@@ -73,9 +73,16 @@ public class GraphqlPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 
 	@Override
 	public ResponseContainer executeRequest(RequestContainer request, Templater templater) {
-		return requestProcessor.executeRequest((GraphqlRequestContainer) request, templater);
+		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public ResponseContainer executeRequestAsync(RequestContainer request, Templater templater,
+			AsyncControl asyncControl) {
+		return requestProcessor.executeRequest((GraphqlRequestContainer) request, templater, asyncControl);
+
+	}
+	
 	@Override
 	public String getRequestType() {
 		return "GraphQl";

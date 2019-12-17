@@ -373,9 +373,20 @@ public class ContentEditor extends VBox {
 				setter.accept(n);
 			}
 		});
-
 	}
+	
+	public void addContent(String additiveContent) {
+//		if (contentBinding != null) {
+//			Bindings.unbindBidirectional(codeAreaTextBinding, contentBinding);
+//		}
+//		contentBinding = GenericBinding.of(o -> getter.get(), (o,v) -> setter.accept(v), null);
+//		codeAreaTextBinding = Var.mapBidirectional(contentBinding,  s -> s, s->s);
+		if (CoreApplicationOptionsProvider.options().isAutoformatContent())
+			additiveContent = formatCode(additiveContent);
 
+		codeArea.appendText(additiveContent);
+	}
+	
 	protected void replaceText(String newText) {
 		codeArea.replaceText(newText != null ? newText : "");
 	}

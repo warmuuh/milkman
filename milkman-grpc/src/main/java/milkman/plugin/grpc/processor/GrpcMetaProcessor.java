@@ -21,9 +21,9 @@ import milkman.plugin.grpc.domain.GrpcOperationAspect;
 import milkman.plugin.grpc.domain.GrpcRequestContainer;
 import milkman.plugin.grpc.domain.GrpcResponseContainer;
 import milkman.plugin.grpc.domain.GrpcResponsePayloadAspect;
-import milkman.plugin.grpc.editor.Subscribers;
 import milkman.plugin.grpc.processor.ProtoDescriptorSerializer.FileContent;
 import milkman.ui.plugin.Templater;
+import milkman.utils.reactive.Subscribers;
 
 public class GrpcMetaProcessor extends BaseGrpcProcessor {
 

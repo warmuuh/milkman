@@ -1,4 +1,4 @@
-package milkman.plugin.grpc.editor;
+package milkman.utils.reactive;
 
 import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.Flow.Processor;

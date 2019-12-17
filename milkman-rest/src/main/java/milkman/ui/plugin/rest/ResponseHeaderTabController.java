@@ -1,5 +1,6 @@
 package milkman.ui.plugin.rest;
 
+import javafx.application.Platform;
 import javafx.scene.control.Tab;
 import lombok.SneakyThrows;
 import milkman.domain.RequestContainer;
@@ -21,7 +22,7 @@ public class ResponseHeaderTabController implements ResponseAspectEditor {
 		editor.addReadOnlyColumn("Value", HeaderEntry::getValue);
 		editor.setRowToStringConverter(this::headerToString);
 		
-		editor.setItems(headers.getEntries());
+		headers.getEntries().thenAccept(itms -> Platform.runLater(() -> editor.setItems(itms)));
 		
 		return new Tab("Response Headers", editor);
 	}

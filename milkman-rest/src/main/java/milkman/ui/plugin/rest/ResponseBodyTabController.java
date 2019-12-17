@@ -2,7 +2,7 @@ package milkman.ui.plugin.rest;
 
 import java.util.List;
 
-import javafx.fxml.FXMLLoader;
+import javafx.application.Platform;
 import javafx.scene.control.Tab;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -15,6 +15,7 @@ import milkman.ui.plugin.ContentTypePlugin;
 import milkman.ui.plugin.ResponseAspectEditor;
 import milkman.ui.plugin.rest.domain.RestResponseBodyAspect;
 import milkman.ui.plugin.rest.domain.RestResponseHeaderAspect;
+import milkman.utils.reactive.Subscribers;
 
 public class ResponseBodyTabController implements ResponseAspectEditor, ContentTypeAwareEditor {
 
@@ -31,9 +32,23 @@ public class ResponseBodyTabController implements ResponseAspectEditor, ContentT
 		
 		response.getAspect(RestResponseHeaderAspect.class)
 				.map(RestResponseHeaderAspect::contentType)
-				.ifPresent(root::setContentType);
+				.ifPresent(ctf -> ctf.thenAccept(root::setContentType));
 		
-		root.setContent(body::getBody, body::setBody);
+
+		
+		body.getBody().subscribe(Subscribers.subscriber(
+				value -> {
+					Platform.runLater(() -> {
+						root.addContent(value);
+					});
+				},
+				throwable -> {
+					Platform.runLater(() -> {
+						root.addContent(throwable.toString());
+					});
+				}
+			));
+		
 		return new Tab("Response Body", root);
 	}
 

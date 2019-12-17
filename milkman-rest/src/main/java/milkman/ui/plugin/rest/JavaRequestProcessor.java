@@ -11,16 +11,20 @@ import java.net.http.HttpClient.Version;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandlers;
+import java.net.http.HttpResponse.ResponseInfo;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Flow.Publisher;
+import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -41,6 +45,9 @@ import milkman.ui.plugin.rest.domain.RestRequestContainer;
 import milkman.ui.plugin.rest.domain.RestResponseBodyAspect;
 import milkman.ui.plugin.rest.domain.RestResponseContainer;
 import milkman.ui.plugin.rest.domain.RestResponseHeaderAspect;
+import milkman.utils.AsyncResponseControl.AsyncControl;
+import milkman.utils.Event0;
+import milkman.utils.reactive.Subscribers;
 
 @Slf4j
 public class JavaRequestProcessor implements RequestProcessor {
@@ -120,48 +127,70 @@ public class JavaRequestProcessor implements RequestProcessor {
 	}
 	@Override
 	@SneakyThrows
-	public RestResponseContainer executeRequest(RestRequestContainer request, Templater templater) {
+	public RestResponseContainer executeRequest(RestRequestContainer request, Templater templater, AsyncControl asyncControl) {
 		HttpRequest httpRequest = toHttpRequest(request, templater);
+		SubmissionPublisher<String> publisher = new SubmissionPublisher<String>();
+		Publisher<String> buffer = Subscribers.buffer(publisher);
+		asyncControl.triggerReqeuestStarted();
 		AtomicLong startTime = new AtomicLong(System.currentTimeMillis());
-		HttpResponse<String> httpResponse = executeRequest(httpRequest);
+		StringSubscriber responseSubscriber = executeRequest(httpRequest, publisher, asyncControl.onCancellationRequested);
 		
-		AtomicReference<HttpResponse<String>> responseHolder = new AtomicReference<HttpResponse<String>>(httpResponse);
-		
-		if (httpResponse.statusCode() == 407 
-				&& HttpOptionsPluginProvider.options().isAskForProxyAuth()) {
-			CountDownLatch latch = new CountDownLatch(1);
-			Platform.runLater(() -> {
-				CredentialsInputDialog dialog = new CredentialsInputDialog();
-				dialog.showAndWait("Proxy Authentication");
-				if (!dialog.isCancelled()) {
-					proxyCredentials = new PasswordAuthentication(dialog.getUsername(), dialog.getPassword().toCharArray());
-					try {
-						var newRequest = toHttpRequest(request, templater);
-						startTime.set(System.currentTimeMillis());
-						responseHolder.set(executeRequest(newRequest));
-					} catch (Exception e) {
-						e.printStackTrace();
+		var responseF = responseSubscriber.getResponseInfo().thenApply(responseInfo -> {
+			AtomicReference<StringSubscriber> responseHolder = new AtomicReference<>(responseSubscriber);
+			if (responseInfo.statusCode() == 407 
+					&& HttpOptionsPluginProvider.options().isAskForProxyAuth()) {
+				CountDownLatch latch = new CountDownLatch(1);
+				Platform.runLater(() -> {
+					CredentialsInputDialog dialog = new CredentialsInputDialog();
+					dialog.showAndWait("Proxy Authentication");
+					if (!dialog.isCancelled()) {
+						proxyCredentials = new PasswordAuthentication(dialog.getUsername(), dialog.getPassword().toCharArray());
+						try {
+							var newRequest = toHttpRequest(request, templater);
+							startTime.set(System.currentTimeMillis());
+							responseHolder.set(executeRequest(newRequest, publisher, asyncControl.onCancellationRequested));
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
+					latch.countDown();
+				});
+				try {
+					latch.await();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
-				latch.countDown();
-			});
-			latch.await();
-		}
+			}
+			
+			return responseHolder.get();
+		});
 		
-		var responseTimeInMs = System.currentTimeMillis() - startTime.get();
-		RestResponseContainer response = toResponseContainer(httpRequest.uri().toString(), responseHolder.get(), responseTimeInMs);
+		
+		responseF
+		.thenCompose(StringSubscriber::getBody) // body fulfills only after request is completed
+		.handle((res, e) -> {
+			if (res != null) {
+				asyncControl.triggerRequestSucceeded();
+			}
+			else 
+				asyncControl.triggerRequestFailed(e);	
+			return null;
+		});
+		
+		
+		RestResponseContainer response = toResponseContainer(httpRequest.uri().toString(),
+																publisher,
+																responseF.thenCompose(StringSubscriber::getResponseInfo), 
+																startTime);
 		return response;
 	}
 
-	private HttpResponse<String> executeRequest(HttpRequest httpRequest) throws IOException {
+	private StringSubscriber executeRequest(HttpRequest httpRequest, SubmissionPublisher<String> publisher, Event0 cancellationEvent) throws IOException {
 		HttpClient httpclient = buildClient();
-		HttpResponse<String> httpResponse;
-		try {
-			httpResponse = httpclient.send(httpRequest, BodyHandlers.ofString());
-		} catch (InterruptedException e) {
-			throw new IOException(e);
-		}
-		return httpResponse;
+		var stringSubscriber = new StringSubscriber(publisher);
+		var future = httpclient.sendAsync(httpRequest, responseInfo -> stringSubscriber.onResponse(responseInfo));
+		cancellationEvent.add(stringSubscriber::cancel);
+		return stringSubscriber;
 	}
 
 	@SneakyThrows
@@ -187,31 +216,36 @@ public class JavaRequestProcessor implements RequestProcessor {
 
 	
 
-	private RestResponseContainer toResponseContainer(String url, HttpResponse<String> httpResponse, long responseTimeInMs) throws IOException {
+	private RestResponseContainer toResponseContainer(String url, Publisher<String> bodyPublisher, CompletableFuture<ResponseInfo> httpResponse, AtomicLong startTime) throws IOException {
 		RestResponseContainer response = new RestResponseContainer(url);
-		String body = httpResponse.body();
-		if (body == null)
-			body = "";
-		response.getAspects().add(new RestResponseBodyAspect(body));
+		response.getAspects().add(new RestResponseBodyAspect(bodyPublisher));
 		
-		RestResponseHeaderAspect headers = new RestResponseHeaderAspect();
-		for (Entry<String, List<String>> h : httpResponse.headers().map().entrySet()) {
-			for(String hval : h.getValue()) {
-				headers.getEntries().add(new HeaderEntry(UUID.randomUUID().toString(), h.getKey(), hval, false));
+		var entries = httpResponse.thenApply(res -> {
+			List<HeaderEntry> result = new LinkedList<>();
+			for (Entry<String, List<String>> h : res.headers().map().entrySet()) {
+				for(String hval : h.getValue()) {
+					result.add(new HeaderEntry(UUID.randomUUID().toString(), h.getKey(), hval, false));
+				}
 			}
-		}
+			return result;
+		});
+		RestResponseHeaderAspect headers = new RestResponseHeaderAspect(entries);
+		
 		response.getAspects().add(headers);
 		
-		buildStatusView(httpResponse, response, responseTimeInMs, httpResponse.version());
+		httpResponse.thenAccept(res -> {
+			var responseTimeInMs = System.currentTimeMillis() - startTime.get();
+			buildStatusView(res, response, responseTimeInMs);
+		});
 		
 		return response;
 	}
 
-	private void buildStatusView(HttpResponse<String> httpResponse, RestResponseContainer response, long responseTimeInMs, Version version) {
-		String versionStr = version.toString();
-		if (version == Version.HTTP_1_1) {
+	private void buildStatusView(ResponseInfo httpResponse, RestResponseContainer response, long responseTimeInMs) {
+		String versionStr = httpResponse.version().toString();
+		if (httpResponse.version() == Version.HTTP_1_1) {
 			versionStr = "1.1";
-		} else if (version == Version.HTTP_2) {
+		} else if (httpResponse.version() == Version.HTTP_2) {
 			versionStr = "2.0";
 		}
 		LinkedHashMap<String, String> statusKeys = new LinkedHashMap<String, String>();

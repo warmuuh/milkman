@@ -14,6 +14,7 @@ import milkman.ui.components.ContentEditor;
 import milkman.ui.plugin.ContentTypeAwareEditor;
 import milkman.ui.plugin.ContentTypePlugin;
 import milkman.ui.plugin.ResponseAspectEditor;
+import milkman.utils.reactive.Subscribers;
 
 public class GrpcResponsePayloadEditor implements ResponseAspectEditor, ContentTypeAwareEditor {
 
@@ -38,18 +39,17 @@ public class GrpcResponsePayloadEditor implements ResponseAspectEditor, ContentT
 			root.setContentTypePlugins(plugins);
 		root.setContentType("application/json");
 		
-		StringBuffer buffer = new StringBuffer();
 		payload.getPayloads().subscribe(Subscribers.subscriber(
 			value -> {
-				buffer.append("\n").append(value);
 				Platform.runLater(() -> {
-					root.setContent(() -> buffer.toString(), s -> {});
+					root.addContent("\n");
+					root.addContent(value);
 				});
 			},
 			throwable -> {
-				buffer.append("\n").append(throwable.toString());
 				Platform.runLater(() -> {
-					root.setContent(() -> buffer.toString(), s -> {});
+					root.addContent("\n");
+					root.addContent(throwable.toString());
 				});
 			}
 		));

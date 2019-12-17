@@ -34,9 +34,9 @@ import milkman.plugin.grpc.domain.GrpcResponseContainer;
 import milkman.plugin.grpc.domain.GrpcResponseHeaderAspect;
 import milkman.plugin.grpc.domain.GrpcResponsePayloadAspect;
 import milkman.plugin.grpc.domain.HeaderEntry;
-import milkman.plugin.grpc.editor.Subscribers;
 import milkman.ui.plugin.Templater;
 import milkman.utils.AsyncResponseControl.AsyncControl;
+import milkman.utils.reactive.Subscribers;
 
 public class GrpcRequestProcessor extends BaseGrpcProcessor {
 

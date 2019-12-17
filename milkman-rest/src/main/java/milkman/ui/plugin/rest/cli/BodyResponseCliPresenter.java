@@ -1,6 +1,7 @@
 package milkman.ui.plugin.rest.cli;
 
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,6 +10,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import milkman.domain.ResponseAspect;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.ui.plugin.rest.domain.RestResponseBodyAspect;
+import milkman.utils.reactive.Subscribers;
 import milkmancli.AspectCliPresenter;
 
 public class BodyResponseCliPresenter implements AspectCliPresenter {
@@ -26,10 +28,20 @@ public class BodyResponseCliPresenter implements AspectCliPresenter {
 	@Override
 	public String getStringRepresentation(ResponseAspect aspect) {
 		RestResponseBodyAspect body = (RestResponseBodyAspect) aspect;
-		if (CoreApplicationOptionsProvider.options().isAutoformatContent()) {
-			return tryFormat(body.getBody());
+		
+		StringBuffer buffer = new StringBuffer();
+		CountDownLatch latch = new CountDownLatch(1);
+		body.getBody().subscribe(Subscribers.subscriber(buffer::append, e -> buffer.append(e.toString()), latch::countDown));
+		try {
+			latch.await();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
 		}
-		return body.getBody();
+		
+		if (CoreApplicationOptionsProvider.options().isAutoformatContent()) {
+			return tryFormat(buffer.toString());
+		}
+		return buffer.toString();
 	}
 
 	protected String tryFormat(String body) {
