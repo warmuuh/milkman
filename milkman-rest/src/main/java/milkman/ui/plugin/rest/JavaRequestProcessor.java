@@ -7,6 +7,7 @@ import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Builder;
 import java.net.http.HttpClient.Redirect;
+import java.net.http.HttpClient.Version;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
@@ -14,6 +15,7 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -47,7 +49,7 @@ public class JavaRequestProcessor implements RequestProcessor {
 	static {
 		//this enables using "Basic" authentication for https-requests over http proxy (disabled by default)
 		//see https://bugs.openjdk.java.net/browse/JDK-8229962 for more details
-		System.setProperty("jdk.http.auth.tunneling.disabledSchemes", "");
+//		System.setProperty("jdk.http.auth.tunneling.disabledSchemes", "");
 	}
 	
 	private static final String PROXY_AUTHORIZATION_HEADER = "Proxy-Authorization";
@@ -59,6 +61,7 @@ public class JavaRequestProcessor implements RequestProcessor {
 	@SneakyThrows
 	private HttpClient buildClient() {
 		Builder builder = HttpClient.newBuilder();
+		
 		
 		if (HttpOptionsPluginProvider.options().isUseProxy()) {
 			URL url = new URL(HttpOptionsPluginProvider.options().getProxyUrl());
@@ -199,15 +202,24 @@ public class JavaRequestProcessor implements RequestProcessor {
 		}
 		response.getAspects().add(headers);
 		
-		buildStatusView(httpResponse, response, responseTimeInMs);
+		buildStatusView(httpResponse, response, responseTimeInMs, httpResponse.version());
 		
 		return response;
 	}
 
-	private void buildStatusView(HttpResponse<String> httpResponse, RestResponseContainer response, long responseTimeInMs) {
-		response.getStatusInformations().complete(Map.of(
-				"Status", ""+httpResponse.statusCode(), 
-				"Time", responseTimeInMs + "ms"));
+	private void buildStatusView(HttpResponse<String> httpResponse, RestResponseContainer response, long responseTimeInMs, Version version) {
+		String versionStr = version.toString();
+		if (version == Version.HTTP_1_1) {
+			versionStr = "1.1";
+		} else if (version == Version.HTTP_2) {
+			versionStr = "2.0";
+		}
+		LinkedHashMap<String, String> statusKeys = new LinkedHashMap<String, String>();
+		statusKeys.put("Status", ""+httpResponse.statusCode());
+		statusKeys.put("Time", responseTimeInMs + "ms");
+		statusKeys.put("Http", versionStr);
+		
+		response.getStatusInformations().complete(statusKeys);
 	}
 
 	@RequiredArgsConstructor
