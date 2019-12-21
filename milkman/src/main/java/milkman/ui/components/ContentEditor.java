@@ -237,7 +237,7 @@ public class ContentEditor extends VBox {
 		codeArea.setStyleSpans(0, highlighting);
 	}
 
-	protected void formatCurrentCode() {
+	public void formatCurrentCode() {
 		StopWatch s = new StopWatch();
 		s.start();
 		try {
@@ -381,8 +381,6 @@ public class ContentEditor extends VBox {
 //		}
 //		contentBinding = GenericBinding.of(o -> getter.get(), (o,v) -> setter.accept(v), null);
 //		codeAreaTextBinding = Var.mapBidirectional(contentBinding,  s -> s, s->s);
-		if (CoreApplicationOptionsProvider.options().isAutoformatContent())
-			additiveContent = formatCode(additiveContent);
 
 		codeArea.appendText(additiveContent);
 	}

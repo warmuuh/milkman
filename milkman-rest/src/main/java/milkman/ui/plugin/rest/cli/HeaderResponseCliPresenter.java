@@ -22,7 +22,7 @@ public class HeaderResponseCliPresenter implements AspectCliPresenter {
 	public String getStringRepresentation(ResponseAspect aspect) {
 		RestResponseHeaderAspect headers = (RestResponseHeaderAspect) aspect;
 		StringBuilder b = new StringBuilder();
-		headers.getEntries().get()
+		headers.getEntries()
 				.forEach(h -> b.append(h.getName()).append(": ").append(h.getValue()).append(System.lineSeparator()));
 		return b.toString();
 	}

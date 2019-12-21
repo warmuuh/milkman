@@ -8,7 +8,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpClient.Builder;
 import java.net.http.HttpClient.Redirect;
 import java.net.http.HttpClient.Version;
-import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
@@ -21,11 +20,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Flow.Publisher;
-import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -49,7 +45,7 @@ import milkman.ui.plugin.rest.domain.RestResponseContainer;
 import milkman.ui.plugin.rest.domain.RestResponseHeaderAspect;
 import milkman.utils.AsyncResponseControl.AsyncControl;
 import milkman.utils.Event0;
-import milkman.utils.reactive.Subscribers;
+import reactor.core.publisher.Flux;
 
 @Slf4j
 public class JavaRequestProcessor implements RequestProcessor {
@@ -70,8 +66,10 @@ public class JavaRequestProcessor implements RequestProcessor {
 	@SneakyThrows
 	private HttpClient buildClient() {
 		Builder builder = HttpClient.newBuilder();
-		
-		
+		if (!HttpOptionsPluginProvider.options().isHttp2Support()){
+			builder.version(Version.HTTP_1_1);
+		}
+
 		if (HttpOptionsPluginProvider.options().isUseProxy()) {
 			URL url = new URL(HttpOptionsPluginProvider.options().getProxyUrl());
 			builder.proxy(new ProxyExclusionRoutePlanner(url, HttpOptionsPluginProvider.options().getProxyExclusion()).java());
@@ -131,18 +129,18 @@ public class JavaRequestProcessor implements RequestProcessor {
 	@SneakyThrows
 	public RestResponseContainer executeRequest(RestRequestContainer request, Templater templater, AsyncControl asyncControl) {
 		HttpRequest httpRequest = toHttpRequest(request, templater);
-		SubmissionPublisher<String> publisher = new SubmissionPublisher<String>();
-		
-		Publisher<String> buffer = Subscribers.buffer(publisher);
 		
 		asyncControl.triggerReqeuestStarted();
 		AtomicLong startTime = new AtomicLong(System.currentTimeMillis());
-		StringSubscriber responseSubscriber = executeRequest(httpRequest, publisher, asyncControl.onCancellationRequested);
+		
+		
+		var chReq = new ChunkedRequest(buildClient(), httpRequest);
+		chReq.executeRequest(asyncControl.onCancellationRequested);
 		
 		//we block until we get the headers:
-		var responseInfo = responseSubscriber.getResponseInfo().get(); //TODO: timeout
+		var responseInfo = chReq.getResponseInfo().get(); //TODO: timeout
 		
-		AtomicReference<StringSubscriber> responseHolder = new AtomicReference<>(responseSubscriber);
+		AtomicReference<ChunkedRequest> responseHolder = new AtomicReference<>(chReq);
 		if (responseInfo.statusCode() == 407 
 				&& HttpOptionsPluginProvider.options().isAskForProxyAuth()) {
 			CountDownLatch latch = new CountDownLatch(1);
@@ -154,7 +152,10 @@ public class JavaRequestProcessor implements RequestProcessor {
 					try {
 						var newRequest = toHttpRequest(request, templater);
 						startTime.set(System.currentTimeMillis());
-						responseHolder.set(executeRequest(newRequest, publisher, asyncControl.onCancellationRequested));
+						//TODO i actually need a new flux here, no?
+						var proxyReq = new ChunkedRequest(buildClient(), httpRequest);
+						proxyReq.executeRequest(asyncControl.onCancellationRequested);
+						responseHolder.set(proxyReq);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -168,51 +169,23 @@ public class JavaRequestProcessor implements RequestProcessor {
 			}
 		}
 		
-		responseHolder.get().getBody()// body fulfills only after request is completed
-		.handle((res, e) -> {
-			System.out.println("triggers");
-			if (res != null) {
+		chReq = responseHolder.get();
+		chReq.getRequestDone().handle((res, e) -> {
+//			System.out.println("triggers");
+			if (e != null) {
+				asyncControl.triggerRequestFailed(e);
+			}
+			else {
 				asyncControl.triggerRequestSucceeded();
 			}
-			else 
-				asyncControl.triggerRequestFailed(e);	
 			return null;
 		});
-		
 		
 		RestResponseContainer response = toResponseContainer(httpRequest.uri().toString(),
-				buffer,
-																responseHolder.get().getResponseInfo(), 
+																chReq.getEmitterProcessor(),
+																chReq.getResponseInfo(), 
 																startTime);
 		return response;
-	}
-
-	private StringSubscriber executeRequest(HttpRequest httpRequest, SubmissionPublisher<String> publisher, Event0 cancellationEvent) throws IOException {
-		HttpClient httpclient = buildClient();
-		var stringSubscriber = new StringSubscriber(publisher);
-		var future = httpclient.sendAsync(httpRequest, responseInfo -> stringSubscriber.onResponse(responseInfo));
-		future.handle((res, err) -> {
-			System.out.println("Received response: " + res);
-			System.out.println("Received err: " + err);
-			System.out.println("has subscription: " + stringSubscriber.hasSubscription());
-			//under certain circumstances, the stringSubscriber was not subscribed (body handler not activated)
-			//leading to the call-future resolve but the futures in the subscriber to not be resolved.
-			if (!stringSubscriber.hasSubscription()) {
-				if (err != null) {
-					stringSubscriber.onError(err);
-				} else {
-					stringSubscriber.responseInfo.complete(new StaticResponseInfo(res));
-					stringSubscriber.onComplete();
-				}
-				
-			}
-			
-			
-			
-			return null;
-		});
-		cancellationEvent.add(stringSubscriber::cancel);
-		return stringSubscriber;
 	}
 
 	@SneakyThrows
@@ -238,7 +211,8 @@ public class JavaRequestProcessor implements RequestProcessor {
 
 	
 
-	private RestResponseContainer toResponseContainer(String url, Publisher<String> bodyPublisher, CompletableFuture<ResponseInfo> httpResponse, AtomicLong startTime) throws IOException {
+	@SneakyThrows
+	private RestResponseContainer toResponseContainer(String url, Flux<String> bodyPublisher, CompletableFuture<ResponseInfo> httpResponse, AtomicLong startTime) throws IOException {
 		RestResponseContainer response = new RestResponseContainer(url);
 		response.getAspects().add(new RestResponseBodyAspect(bodyPublisher));
 		
@@ -251,7 +225,7 @@ public class JavaRequestProcessor implements RequestProcessor {
 			}
 			return result;
 		});
-		RestResponseHeaderAspect headers = new RestResponseHeaderAspect(entries);
+		RestResponseHeaderAspect headers = new RestResponseHeaderAspect(entries.get());
 		
 		response.getAspects().add(headers);
 		
@@ -301,7 +275,7 @@ public class JavaRequestProcessor implements RequestProcessor {
 	
 	
 	@RequiredArgsConstructor
-	class StaticResponseInfo implements ResponseInfo {
+	public static class StaticResponseInfo implements ResponseInfo {
 		@Delegate(types = ResponseInfo.class)
 		private final HttpResponse<?> response;
 	}

@@ -31,7 +31,7 @@ public class BodyResponseCliPresenter implements AspectCliPresenter {
 		
 		StringBuffer buffer = new StringBuffer();
 		CountDownLatch latch = new CountDownLatch(1);
-		body.getBody().subscribe(Subscribers.subscriber(buffer::append, e -> buffer.append(e.toString()), latch::countDown));
+		body.getBody().subscribe(buffer::append, e -> buffer.append(e.toString()), latch::countDown);
 		try {
 			latch.await();
 		} catch (InterruptedException e1) {

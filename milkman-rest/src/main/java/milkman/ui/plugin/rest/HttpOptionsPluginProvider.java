@@ -16,7 +16,7 @@ public class HttpOptionsPluginProvider implements OptionPageProvider<HttpOptions
 		private boolean askForProxyAuth = false;
 		private boolean certificateValidation = false;
 		private boolean followRedirects = false;
-		private boolean http2Support = false;
+		private boolean http2Support = true;
 	}
 
 	
@@ -47,7 +47,7 @@ public class HttpOptionsPluginProvider implements OptionPageProvider<HttpOptions
 				.section("Requests")
 					.toggle("Validate Certificates", HttpOptions::isCertificateValidation, HttpOptions::setCertificateValidation)
 					.toggle("Follow Redirects", HttpOptions::isFollowRedirects, HttpOptions::setFollowRedirects)
-					.toggle("Http2 support (experimental)", HttpOptions::isHttp2Support, HttpOptions::setHttp2Support)
+					.toggle("Http2 enabled", HttpOptions::isHttp2Support, HttpOptions::setHttp2Support)
 				.endSection()
 				.build();
 	}

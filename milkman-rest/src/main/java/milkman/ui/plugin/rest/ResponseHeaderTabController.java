@@ -22,7 +22,7 @@ public class ResponseHeaderTabController implements ResponseAspectEditor {
 		editor.addReadOnlyColumn("Value", HeaderEntry::getValue);
 		editor.setRowToStringConverter(this::headerToString);
 		
-		headers.getEntries().thenAccept(itms -> Platform.runLater(() -> editor.setItems(itms)));
+		editor.setItems(headers.getEntries());
 		
 		return new Tab("Response Headers", editor);
 	}

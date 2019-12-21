@@ -6,13 +6,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import milkman.domain.ResponseAspect;
+import reactor.core.publisher.Flux;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class RestResponseBodyAspect implements ResponseAspect {
 
-	private Publisher<String> body;
+	private Flux<String> body;
 
 	@Override
 	public String getName() {

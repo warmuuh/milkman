@@ -143,7 +143,7 @@ public class JqlAspectResponseEditor implements ResponseAspectEditor {
 				.map(b -> {
 					var buffer = new StringBuffer();
 					var f = new CompletableFuture<String>();
-					b.subscribe(Subscribers.subscriber(buffer::append, buffer::append, () -> f.complete(buffer.toString())));
+					b.subscribe(buffer::append, buffer::append, () -> f.complete(buffer.toString()));
 					return f;
 				}).orElse(CompletableFuture.completedFuture(""));
 
