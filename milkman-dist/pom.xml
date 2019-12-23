@@ -168,8 +168,8 @@
 				<!--<groupId>com.igormaznitsa</groupId>
 				<artifactId>mvn-jlink-wrapper</artifactId>
 				<version>1.0.4</version>-->
-				<groupId>com.github.warmuuh</groupId>
-				<artifactId>mvn-jlink</artifactId>
+				<groupId>com.github.warmuuh.mvn-jlink</groupId>
+				<artifactId>mvn-jlink-wrapper</artifactId>
 				<version>master-SNAPSHOT</version>
 				<configuration>
 					<!-- <modulePath>${env.JAVAFX_MODS}</modulePath> -->
