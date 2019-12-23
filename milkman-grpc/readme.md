@@ -13,3 +13,11 @@ Grpc Plugin for communication with Grpc Servers.
 ## Screenshot
 
 ![Milkman Grpc](/img/grpc-plugin.png)
+
+### Example of Server streaming
+
+![Milkman Grpc Streaming](/img/gif/grpc-streaming.gif)
+
+### Client Streaming
+
+To send multiple messages, just add multiple json objects to the payload, divided by two new lines.

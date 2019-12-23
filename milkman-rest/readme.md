@@ -4,7 +4,11 @@ Introduces Http request (despite the wrong naming) capabilities to milkman. Cons
 
 # Screenshot
 
-tbd
+![Milkman Http](/img/screenshot.png)
+
+### Example of Server Sent Events Streaming
+
+![Milkman SSE Streaming](/img/gif/sse-streaming.gif)
 
 # Features
 
