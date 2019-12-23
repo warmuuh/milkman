@@ -170,7 +170,7 @@
 				<version>1.0.4</version>-->
 				<groupId>com.github.warmuuh.mvn-jlink</groupId>
 				<artifactId>mvn-jlink-wrapper</artifactId>
-				<version>master-da93eea840</version>
+				<version>1.0.5</version>
 				<configuration>
 					<!-- <modulePath>${env.JAVAFX_MODS}</modulePath> -->
 					<addModules>
@@ -387,12 +387,12 @@
 	</build>
 	
 
-	<repositories>
-		<repository>
+	<pluginRepositories>
+		<pluginRepository>
 		    <id>jitpack.io</id>
 		    <url>https://jitpack.io</url>
-		</repository>
-	</repositories>
+		</pluginRepository>
+	</pluginRepositories>
 
 
 </project>
