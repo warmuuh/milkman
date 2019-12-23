@@ -1,27 +1,11 @@
 package milkman.plugin.explore;
 
-import java.awt.Desktop;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.time.Duration;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXTooltip;
-
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import io.burt.jmespath.Expression;
@@ -29,7 +13,6 @@ import io.burt.jmespath.JmesPath;
 import io.burt.jmespath.jackson.JacksonRuntime;
 import io.burt.jmespath.parser.ParseException;
 import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
@@ -44,13 +27,21 @@ import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 import milkman.ui.components.AutoCompleter;
 import milkman.ui.components.ContentEditor;
-import milkman.ui.plugin.AutoCompletionAware;
 import milkman.ui.plugin.ResponseAspectEditor;
 import milkman.ui.plugin.rest.contenttype.JsonContentType;
 import milkman.ui.plugin.rest.domain.RestResponseBodyAspect;
-import milkman.ui.plugin.rest.domain.RestResponseHeaderAspect;
 import milkman.utils.fxml.GenericBinding;
-import milkman.utils.reactive.Subscribers;
+import org.apache.commons.lang3.StringUtils;
+
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.time.Duration;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
