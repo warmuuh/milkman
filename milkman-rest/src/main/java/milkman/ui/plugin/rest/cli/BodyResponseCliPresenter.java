@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import milkman.domain.ResponseAspect;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.ui.plugin.rest.domain.RestResponseBodyAspect;
-import milkman.utils.reactive.Subscribers;
 import milkmancli.AspectCliPresenter;
 
 public class BodyResponseCliPresenter implements AspectCliPresenter {

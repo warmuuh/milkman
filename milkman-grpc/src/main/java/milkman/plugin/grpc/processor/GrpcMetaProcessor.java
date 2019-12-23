@@ -23,7 +23,8 @@ import milkman.plugin.grpc.domain.GrpcResponseContainer;
 import milkman.plugin.grpc.domain.GrpcResponsePayloadAspect;
 import milkman.plugin.grpc.processor.ProtoDescriptorSerializer.FileContent;
 import milkman.ui.plugin.Templater;
-import milkman.utils.reactive.Subscribers;
+import reactor.core.publisher.FluxSink;
+import reactor.core.publisher.ReplayProcessor;
 
 public class GrpcMetaProcessor extends BaseGrpcProcessor {
 
@@ -32,10 +33,11 @@ public class GrpcMetaProcessor extends BaseGrpcProcessor {
 	@SneakyThrows
 	public GrpcResponseContainer listServices(GrpcRequestContainer request, Templater templater) {
 		var response = new GrpcResponseContainer(request.getEndpoint());
-		
-	    SubmissionPublisher<String> publisher = fetchServiceList(request);
+
+		ReplayProcessor<String> processor = ReplayProcessor.create();
+		fetchServiceList(processor.sink(), request);
 	  
-    	var responsePayloadAspect = new GrpcResponsePayloadAspect(publisher);
+    	var responsePayloadAspect = new GrpcResponsePayloadAspect(processor);
 		response.getAspects().add(responsePayloadAspect);
 		
 		return response;
@@ -46,13 +48,11 @@ public class GrpcMetaProcessor extends BaseGrpcProcessor {
 		GrpcOperationAspect operationAspect = request.getAspect(GrpcOperationAspect.class).orElseThrow(() -> new IllegalArgumentException("Operation Aspect missing"));
 	    var protoMethod = ProtoMethodName.parseFullGrpcMethodName(operationAspect.getOperation());
 
-	    
-		
-	    Publisher<String> publisher = fetchServiceDefinition(request, protoMethod);
+		ReplayProcessor<String> processor = ReplayProcessor.create();
+	    fetchServiceDefinition(processor.sink(), request, protoMethod);
 
-	    
 	    var response = new GrpcResponseContainer(request.getEndpoint());
-    	var responsePayloadAspect = new GrpcResponsePayloadAspect(publisher);
+    	var responsePayloadAspect = new GrpcResponsePayloadAspect(processor);
 		response.getAspects().add(responsePayloadAspect);
 		
 		return response;
@@ -61,17 +61,12 @@ public class GrpcMetaProcessor extends BaseGrpcProcessor {
 	
 	
 	@SneakyThrows
-	private Publisher<String> fetchServiceDefinition(GrpcRequestContainer request, ProtoMethodName protoMethod) {
+	private void fetchServiceDefinition(FluxSink<String> sink, GrpcRequestContainer request, ProtoMethodName protoMethod) {
 		ManagedChannel channel = createChannel(request);
 		FileDescriptorSet descriptorSet = fetchServiceDescriptionViaReflection(channel, protoMethod);
-		
 		String protoContent = toProto(descriptorSet);
-		
-		SubmissionPublisher<String> publisher = new SubmissionPublisher<String>();
-		var buffer = Subscribers.buffer(publisher);
-		publisher.submit(protoContent);
-		
-		return buffer;
+		sink.next(protoContent);
+		sink.complete();
 	}
 
 	private String toProto(FileDescriptorSet descriptorSet) {
@@ -82,31 +77,27 @@ public class GrpcMetaProcessor extends BaseGrpcProcessor {
 			.collect(Collectors.joining("\n---\n"));
 	}
 
-	protected SubmissionPublisher<String> fetchServiceList(GrpcRequestContainer request) {
+	protected void fetchServiceList(FluxSink<String> sink, GrpcRequestContainer request) {
 		ManagedChannel channel = createChannel(request);
 	    var client = ServerReflectionClient.create(channel);
 
 	    
-	    SubmissionPublisher<String> publisher = new SubmissionPublisher<>();
-		
- 
-	    Futures.addCallback(client.listServices(), new FutureCallback<ImmutableList<String>>() {
+	    Futures.addCallback(client.listServices(), new FutureCallback<>() {
 
 			@Override
 			public void onSuccess(ImmutableList<String> result) {
-				result.forEach(publisher::submit);
+				result.forEach(sink::next);
 				channel.shutdown();
-				publisher.close();
+				sink.complete();
 			}
 
 			@Override
 			public void onFailure(Throwable t) {
 				t.printStackTrace();
 				channel.shutdown();
-				publisher.closeExceptionally(t);
+				sink.error(t);
 			}
 		}, executor);
-		return publisher;
 	}
 
 }

@@ -17,7 +17,6 @@ import milkman.ui.plugin.ContentTypePlugin;
 import milkman.ui.plugin.ResponseAspectEditor;
 import milkman.ui.plugin.rest.domain.RestResponseBodyAspect;
 import milkman.ui.plugin.rest.domain.RestResponseHeaderAspect;
-import milkman.utils.reactive.Subscribers;
 import reactor.core.scheduler.Schedulers;
 
 public class ResponseBodyTabController implements ResponseAspectEditor, ContentTypeAwareEditor {
@@ -27,7 +26,7 @@ public class ResponseBodyTabController implements ResponseAspectEditor, ContentT
 	@Override
 	@SneakyThrows
 	public Tab getRoot(RequestContainer request, ResponseContainer response) {
-		val body = response.getAspect(RestResponseBodyAspect.class).get();
+		val body = response.getAspect(RestResponseBodyAspect.class).orElseThrow(() -> new IllegalArgumentException("No rest response aspect"));
 		CodeFoldingContentEditor root = new CodeFoldingContentEditor();
 		root.setEditable(false);
 		if (plugins != null)

@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import me.dinowernli.grpc.polyglot.grpc.ServerReflectionClient;
 import me.dinowernli.grpc.polyglot.protobuf.ProtoMethodName;
 import milkman.plugin.grpc.domain.GrpcRequestContainer;
+import reactor.core.publisher.FluxSink;
 
 public class BaseGrpcProcessor {
 
@@ -45,29 +46,28 @@ public class BaseGrpcProcessor {
 	/**
 	 * bridges to a publisher and handles channel closing 
 	 *
-	 * @param <T>
 	 */
 	@RequiredArgsConstructor
 	class StreamObserverToPublisherBridge<ReqT, ResT> implements ClientResponseObserver<ReqT, ResT> {
-		private final SubmissionPublisher<ResT> publisher;
+		private final FluxSink<ResT> publisher;
 		private final Runnable onClose;
 		private ClientCallStreamObserver<ReqT> requestStream;
 
 		@Override
 		public void onNext(ResT value) {
-			publisher.submit(value);
+			publisher.next(value);
 		}
 		
 		@Override
 		public void onError(Throwable t) {
 			onClose.run();
-			publisher.closeExceptionally(t);
+			publisher.error(t);
 		}
 		
 		@Override
 		public void onCompleted() {
 			onClose.run();
-			publisher.close();
+			publisher.complete();
 		}
 
 		@Override

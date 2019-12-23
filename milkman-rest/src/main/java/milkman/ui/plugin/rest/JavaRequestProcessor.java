@@ -99,8 +99,7 @@ public class JavaRequestProcessor implements RequestProcessor {
 				.build();
 	}
 
-	private void disableSsl(Builder builder)
-			throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
+	private void disableSsl(Builder builder) {
 		// Create a trust manager that does not validate certificate chains
 		TrustManager[] trustAllCerts = new TrustManager[]{
 		    new X509TrustManager() {
@@ -122,6 +121,7 @@ public class JavaRequestProcessor implements RequestProcessor {
 		    sc.init(null, trustAllCerts, new java.security.SecureRandom());
 		    builder.sslContext(sc);
 		} catch (Exception e) {
+			/* */
 		}
 
 	}
@@ -180,12 +180,11 @@ public class JavaRequestProcessor implements RequestProcessor {
 			}
 			return null;
 		});
-		
-		RestResponseContainer response = toResponseContainer(httpRequest.uri().toString(),
+
+		return toResponseContainer(httpRequest.uri().toString(),
 																chReq.getEmitterProcessor(),
-																chReq.getResponseInfo(), 
+																chReq.getResponseInfo(),
 																startTime);
-		return response;
 	}
 
 	@SneakyThrows
@@ -212,7 +211,7 @@ public class JavaRequestProcessor implements RequestProcessor {
 	
 
 	@SneakyThrows
-	private RestResponseContainer toResponseContainer(String url, Flux<String> bodyPublisher, CompletableFuture<ResponseInfo> httpResponse, AtomicLong startTime) throws IOException {
+	private RestResponseContainer toResponseContainer(String url, Flux<String> bodyPublisher, CompletableFuture<ResponseInfo> httpResponse, AtomicLong startTime) {
 		RestResponseContainer response = new RestResponseContainer(url);
 		response.getAspects().add(new RestResponseBodyAspect(bodyPublisher));
 		
@@ -244,7 +243,7 @@ public class JavaRequestProcessor implements RequestProcessor {
 		} else if (httpResponse.version() == Version.HTTP_2) {
 			versionStr = "2.0";
 		}
-		LinkedHashMap<String, String> statusKeys = new LinkedHashMap<String, String>();
+		LinkedHashMap<String, String> statusKeys = new LinkedHashMap<>();
 		statusKeys.put("Status", ""+httpResponse.statusCode());
 		statusKeys.put("Time", responseTimeInMs + "ms");
 		statusKeys.put("Http", versionStr);
