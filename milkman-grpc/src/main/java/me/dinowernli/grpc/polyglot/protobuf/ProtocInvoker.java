@@ -1,22 +1,18 @@
 package me.dinowernli.grpc.polyglot.protobuf;
 
+import com.github.os72.protocjar.Protoc;
+import com.google.common.collect.ImmutableList;
+import com.google.protobuf.DescriptorProtos.FileDescriptorSet;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import org.apache.commons.io.FileUtils;
-
-import com.github.os72.protocjar.Protoc;
-import com.google.common.collect.ImmutableList;
-import com.google.protobuf.DescriptorProtos.FileDescriptorSet;
-
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * A utility class which facilitates invoking the protoc compiler on all proto
@@ -40,12 +36,12 @@ public class ProtocInvoker {
 	 * path and returns a {@link FileDescriptorSet} which describes all the protos.
 	 */
 	public FileDescriptorSet invoke() throws ProtocInvocationException {
-		Path wellKnownTypesInclude;
-		try {
-			wellKnownTypesInclude = setupWellKnownTypes();
-		} catch (IOException e) {
-			throw new ProtocInvocationException("Unable to extract well known types", e);
-		}
+//		Path wellKnownTypesInclude;
+//		try {
+//			wellKnownTypesInclude = setupWellKnownTypes();
+//		} catch (IOException e) {
+//			throw new ProtocInvocationException("Unable to extract well known types", e);
+//		}
 
 		Path descriptorPath;
 		try {
@@ -57,7 +53,8 @@ public class ProtocInvoker {
 		var inputFile = writeContentsToTempFile(inputStream);
 		ImmutableList<String> protocArgs = ImmutableList.<String>builder()
 				.add(inputFile)
-				.addAll(includePathArgs(wellKnownTypesInclude, inputFile))
+				.addAll(includePathArgs(inputFile))
+				.add("--include_std_types")
 				.add("--descriptor_set_out=" + descriptorPath.toAbsolutePath().toString())
 				.add("--include_imports")
 				.build();
@@ -80,7 +77,7 @@ public class ProtocInvoker {
 		return tempFile.getAbsolutePath();
 	}
 
-	private ImmutableList<String> includePathArgs(Path wellKnownTypesInclude, String inputFilePath) {
+	private ImmutableList<String> includePathArgs(String inputFilePath) {
 		ImmutableList.Builder<String> resultBuilder = ImmutableList.builder();
 		
 		// Add the include path which makes sure that protoc finds the well known types.
@@ -88,7 +85,7 @@ public class ProtocInvoker {
 		// add this *after* the user types above in case users want to provide their own
 		// well known
 		// types.
-		resultBuilder.add("-I" + wellKnownTypesInclude.toString());
+//		resultBuilder.add("-I" + wellKnownTypesInclude.toString());
 
 		// Protoc requires that all files being compiled are present in the subtree
 		// rooted at one of
@@ -104,22 +101,15 @@ public class ProtocInvoker {
 		int status;
 		String[] protocLogLines;
 
-		// The "protoc" library unconditionally writes to stdout. So, we replace stdout
-		// right before
-		// calling into the library in order to gather its output.
-		PrintStream stdoutBackup = System.out;
+
 		try {
 			ByteArrayOutputStream protocStdout = new ByteArrayOutputStream();
-			System.setOut(new PrintStream(protocStdout));
-
-			status = Protoc.runProtoc(protocArgs.toArray(new String[0]));
+			status = Protoc.runProtoc(protocArgs.toArray(new String[0]), protocStdout, System.err);
 			protocLogLines = protocStdout.toString().split("\n");
 		} catch (IOException | InterruptedException e) {
 			throw new ProtocInvocationException("Unable to execute protoc binary", e);
-		} finally {
-			// Restore stdout.
-			System.setOut(stdoutBackup);
 		}
+
 		if (status != 0) {
 			// If protoc failed, we dump its output as a warning.
 			log.warn("Protoc invocation failed with status: " + status);
@@ -132,19 +122,19 @@ public class ProtocInvoker {
 		}
 	}
 
-	/**
-	 * Extracts the .proto files for the well-known-types into a directory and
-	 * returns a proto include path which can be used to point protoc to the files.
-	 */
-	private static Path setupWellKnownTypes() throws IOException {
-		Path tmpdir = Files.createTempDirectory("polyglot-well-known-types");
-		Path protoDir = Files.createDirectories(Paths.get(tmpdir.toString(), "google", "protobuf"));
-		for (String file : WellKnownTypes.fileNames()) {
-			Files.copy(ProtocInvoker.class.getResourceAsStream("/google/protobuf/" + file),
-					Paths.get(protoDir.toString(), file));
-		}
-		return tmpdir;
-	}
+//	/**
+//	 * Extracts the .proto files for the well-known-types into a directory and
+//	 * returns a proto include path which can be used to point protoc to the files.
+//	 */
+//	private static Path setupWellKnownTypes() throws IOException {
+//		Path tmpdir = Files.createTempDirectory("polyglot-well-known-types");
+//		Path protoDir = Files.createDirectories(Paths.get(tmpdir.toString(), "google", "protobuf"));
+//		for (String file : WellKnownTypes.fileNames()) {
+//			Files.copy(ProtocInvoker.class.getResourceAsStream("/google/protobuf/" + file),
+//					Paths.get(protoDir.toString(), file));
+//		}
+//		return tmpdir;
+//	}
 
 	/** An error indicating that something went wrong while invoking protoc. */
 	public class ProtocInvocationException extends Exception {
