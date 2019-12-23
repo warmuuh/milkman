@@ -170,7 +170,7 @@
 				<version>1.0.4</version>-->
 				<groupId>com.github.warmuuh.mvn-jlink</groupId>
 				<artifactId>mvn-jlink-wrapper</artifactId>
-				<version>master-SNAPSHOT</version>
+				<version>master-da93eea840</version>
 				<configuration>
 					<!-- <modulePath>${env.JAVAFX_MODS}</modulePath> -->
 					<addModules>
