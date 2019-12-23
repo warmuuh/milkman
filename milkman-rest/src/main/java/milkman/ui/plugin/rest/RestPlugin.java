@@ -61,11 +61,14 @@ public class RestPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 
 	@Override
 	public ResponseContainer executeRequest(RequestContainer request, Templater templater) {
-		RequestProcessor requestProcessor = HttpOptionsPluginProvider.options().isHttp2Support() 
-						? new JavaRequestProcessor() 
-						: new ApacheRequestProcessor();
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public ResponseContainer executeRequestAsync(RequestContainer request, Templater templater, AsyncControl asyncControl) {
+		RequestProcessor requestProcessor = new JavaRequestProcessor();
+		return requestProcessor.executeRequest((RestRequestContainer) request, templater, asyncControl);
 		
-		return requestProcessor.executeRequest((RestRequestContainer) request, templater);
 	}
 
 	@Override

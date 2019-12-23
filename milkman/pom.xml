@@ -21,6 +21,11 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-core</artifactId>
+			<version>3.3.1.RELEASE</version>
+		</dependency>
+		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-controls</artifactId>
 			<version>${javafx.version}</version>
@@ -56,11 +61,11 @@
 			<version>9.1.2</version>
 		</dependency>
 
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.fxmisc.cssfx</groupId> -->
-<!-- 			<artifactId>cssfx</artifactId> -->
-<!-- 			<version>1.0.0</version> -->
-<!-- 		</dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.fxmisc.cssfx</groupId> -->
+		<!-- <artifactId>cssfx</artifactId> -->
+		<!-- <version>1.0.0</version> -->
+		<!-- </dependency> -->
 
 		<dependency>
 			<groupId>org.dizitart</groupId>
@@ -96,22 +101,22 @@
 
 
 	<build>
-	<resources>
-	<resource>
-		<directory>src/main/resources</directory>
-		<filtering>false</filtering>
-	</resource>
-	</resources>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>false</filtering>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
-<!-- 				<version>3.1.1</version> -->
+				<!-- <version>3.1.1</version> -->
 				<configuration>
-<!-- 					<descriptorRefs> -->
-<!-- 						<descriptorRef>jar-with-dependencies</descriptorRef> -->
-<!-- 					</descriptorRefs> -->
-					
+					<!-- <descriptorRefs> -->
+					<!-- <descriptorRef>jar-with-dependencies</descriptorRef> -->
+					<!-- </descriptorRefs> -->
+
 					<descriptors>
 						<descriptor>src/main/assembly/assembly.xml</descriptor>
 					</descriptors>

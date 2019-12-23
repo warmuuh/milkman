@@ -165,9 +165,12 @@
 
 
 			<plugin>
-				<groupId>com.igormaznitsa</groupId>
+				<!--<groupId>com.igormaznitsa</groupId>
 				<artifactId>mvn-jlink-wrapper</artifactId>
-				<version>1.0.2</version>
+				<version>1.0.4</version>-->
+				<groupId>com.github.warmuuh.mvn-jlink</groupId>
+				<artifactId>mvn-jlink-wrapper</artifactId>
+				<version>1.0.5</version>
 				<configuration>
 					<!-- <modulePath>${env.JAVAFX_MODS}</modulePath> -->
 					<addModules>
@@ -382,4 +385,14 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+
+	<pluginRepositories>
+		<pluginRepository>
+		    <id>jitpack.io</id>
+		    <url>https://jitpack.io</url>
+		</pluginRepository>
+	</pluginRepositories>
+
+
 </project>

@@ -199,11 +199,19 @@ public class CodeFoldingContentEditor extends ContentEditor {
     }
 
 
-    protected void formatCurrentCode() {
+    public void formatCurrentCode() {
+//    	System.out.println("### Formatting");
         if (getCurrentContenttypePlugin() != null && getCurrentContenttypePlugin().supportFormatting()) {
             replaceText(formatCode(originalText));
         }
     }
+    
+    @Override
+    public void addContent(String additiveContent) {
+    	originalText += additiveContent;
+//        System.out.println("Content length: " + originalText.length());
+    	super.addContent(additiveContent);
+    };
 
     private class FoldOperatorFactory implements IntFunction<Node> {
 

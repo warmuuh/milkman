@@ -1,7 +1,5 @@
 package milkman.plugin.grpc.editor;
 
-import java.util.List;
-
 import javafx.application.Platform;
 import javafx.scene.control.Tab;
 import lombok.SneakyThrows;
@@ -15,6 +13,8 @@ import milkman.ui.plugin.ContentTypeAwareEditor;
 import milkman.ui.plugin.ContentTypePlugin;
 import milkman.ui.plugin.ResponseAspectEditor;
 
+import java.util.List;
+
 public class GrpcResponsePayloadEditor implements ResponseAspectEditor, ContentTypeAwareEditor {
 
 
@@ -23,36 +23,28 @@ public class GrpcResponsePayloadEditor implements ResponseAspectEditor, ContentT
 	@Override
 	@SneakyThrows
 	public Tab getRoot(RequestContainer request, ResponseContainer response) {
-		val payload = response.getAspect(GrpcResponsePayloadAspect.class).get();
-//		TextArea root = new TextArea();
-//		root.setEditable(false);
-//		payload.getPayloads().subscribe(Subscribers.subscriber(
-//			value -> root.setText(root.getText() + "\n" + value),
-//			throwable -> root.setText(root.getText() + "\n" + throwable.toString())
-//		));
-//		VBox.setVgrow(root, Priority.ALWAYS);
-		
+		val payload = response.getAspect(GrpcResponsePayloadAspect.class).orElseThrow(() -> new IllegalArgumentException("No Grpc payload aspect"));
+
 		ContentEditor root = new CodeFoldingContentEditor();
 		root.setEditable(false);
 		if (plugins != null)
 			root.setContentTypePlugins(plugins);
 		root.setContentType("application/json");
 		
-		StringBuffer buffer = new StringBuffer();
-		payload.getPayloads().subscribe(Subscribers.subscriber(
+		payload.getPayloads().subscribe(
 			value -> {
-				buffer.append("\n").append(value);
 				Platform.runLater(() -> {
-					root.setContent(() -> buffer.toString(), s -> {});
+					root.addContent("\n");
+					root.addContent(value);
 				});
 			},
 			throwable -> {
-				buffer.append("\n").append(throwable.toString());
 				Platform.runLater(() -> {
-					root.setContent(() -> buffer.toString(), s -> {});
+					root.addContent("\n");
+					root.addContent(throwable.toString());
 				});
 			}
-		));
+		);
 		return new Tab("Response Payload", root);
 	}
 

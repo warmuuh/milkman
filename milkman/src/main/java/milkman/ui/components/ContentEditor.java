@@ -237,7 +237,7 @@ public class ContentEditor extends VBox {
 		codeArea.setStyleSpans(0, highlighting);
 	}
 
-	protected void formatCurrentCode() {
+	public void formatCurrentCode() {
 		StopWatch s = new StopWatch();
 		s.start();
 		try {
@@ -373,9 +373,18 @@ public class ContentEditor extends VBox {
 				setter.accept(n);
 			}
 		});
-
 	}
+	
+	public void addContent(String additiveContent) {
+//		if (contentBinding != null) {
+//			Bindings.unbindBidirectional(codeAreaTextBinding, contentBinding);
+//		}
+//		contentBinding = GenericBinding.of(o -> getter.get(), (o,v) -> setter.accept(v), null);
+//		codeAreaTextBinding = Var.mapBidirectional(contentBinding,  s -> s, s->s);
 
+		codeArea.appendText(additiveContent);
+	}
+	
 	protected void replaceText(String newText) {
 		codeArea.replaceText(newText != null ? newText : "");
 	}

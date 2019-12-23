@@ -34,9 +34,10 @@ import milkman.plugin.grpc.domain.GrpcResponseContainer;
 import milkman.plugin.grpc.domain.GrpcResponseHeaderAspect;
 import milkman.plugin.grpc.domain.GrpcResponsePayloadAspect;
 import milkman.plugin.grpc.domain.HeaderEntry;
-import milkman.plugin.grpc.editor.Subscribers;
 import milkman.ui.plugin.Templater;
 import milkman.utils.AsyncResponseControl.AsyncControl;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.ReplayProcessor;
 
 public class GrpcRequestProcessor extends BaseGrpcProcessor {
 
@@ -72,7 +73,7 @@ public class GrpcRequestProcessor extends BaseGrpcProcessor {
 	   
 		HeaderClientInterceptor clientInterceptor = createHeaderInterceptor(headerAspect);
 	    var managedChannel = createChannel(request);
-		Channel channel = ClientInterceptors.intercept(managedChannel, clientInterceptor);;
+		Channel channel = ClientInterceptors.intercept(managedChannel, clientInterceptor);
 		
 		
 	    var protoMethod = ProtoMethodName.parseFullGrpcMethodName(operationAspect.getOperation());
@@ -83,21 +84,20 @@ public class GrpcRequestProcessor extends BaseGrpcProcessor {
 						
 		DynamicMessageDeEncoder deenc = new DynamicMessageDeEncoder(protoMethod, descriptorSet);
 
-	    
-		SubmissionPublisher<DynamicMessage> publisher = new SubmissionPublisher<>();
-		Publisher<DynamicMessage> buffer = Subscribers.buffer(publisher);
-		
+
+		ReplayProcessor<DynamicMessage> publisher = ReplayProcessor.create();
+
 		var requestMessages = deenc.deserializeFromJson(payloadAspect.getPayload());
 	    var dynamicClient  = DynamicGrpcClient.create(deenc.getMethodDefinition(), channel);
 	    long startTime = System.currentTimeMillis();
-	    CompletableFuture<Long> requestTime = new CompletableFuture<Long>();
+	    CompletableFuture<Long> requestTime = new CompletableFuture<>();
 	    asyncControl.triggerReqeuestStarted();
-	    var streamObserver = new StreamObserverToPublisherBridge<>(publisher, () -> managedChannel.shutdown());
+	    var streamObserver = new StreamObserverToPublisherBridge<>(publisher.sink(), () -> managedChannel.shutdown());
 		var callFuture = dynamicClient.call(requestMessages, streamObserver, CallOptions.DEFAULT);
 	    
 	    asyncControl.onCancellationRequested.add(streamObserver::cancel);
 	    
-	    Futures.addCallback(callFuture, new FutureCallback<Void>() {
+	    Futures.addCallback(callFuture, new FutureCallback<>() {
 			@Override
 			public void onSuccess(Void result) {
 				requestTime.complete(System.currentTimeMillis() - startTime);
@@ -112,7 +112,7 @@ public class GrpcRequestProcessor extends BaseGrpcProcessor {
 		}, MoreExecutors.directExecutor());
 	    
 	    
-    	var responseStream = Subscribers.map(buffer, deenc::serializeToJson);
+    	var responseStream = publisher.map(deenc::serializeToJson);
 		return new ResponseDataHolder(responseStream, clientInterceptor.getResponseHeaders(), requestTime);
 	}
 	
@@ -137,7 +137,7 @@ public class GrpcRequestProcessor extends BaseGrpcProcessor {
 	
 	@Value
 	static class ResponseDataHolder{
-		Publisher<String> bodyStream;
+		Flux<String> bodyStream;
 		CompletableFuture<Map<String, String>> headerFuture;
 		CompletableFuture<Long> requestTime;
 	}

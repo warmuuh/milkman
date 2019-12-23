@@ -1,5 +1,6 @@
 package milkman.ui.plugin.rest;
 
+import javafx.application.Platform;
 import javafx.scene.control.Tab;
 import lombok.SneakyThrows;
 import milkman.domain.RequestContainer;

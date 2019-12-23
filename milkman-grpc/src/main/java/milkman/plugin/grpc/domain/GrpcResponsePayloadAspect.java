@@ -7,12 +7,13 @@ import java.util.concurrent.Flow.Publisher;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import milkman.domain.ResponseAspect;
+import reactor.core.publisher.Flux;
 
 @Data
 @AllArgsConstructor
 public class GrpcResponsePayloadAspect implements ResponseAspect {
 	
-	private Publisher<String> payloads;
+	private Flux<String> payloads;
 
 	
 	@Override

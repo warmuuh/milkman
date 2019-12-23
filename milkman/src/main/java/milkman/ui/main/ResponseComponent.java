@@ -133,7 +133,7 @@ public class ResponseComponent implements Initializable {
 	public void hideSpinner() {
 		cancellation.setVisible(false);
 		spinner.setVisible(false);
-		
+		asyncControlSpinner.setVisible(false);
 	}
 
 

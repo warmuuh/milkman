@@ -1,24 +1,23 @@
 package milkman.plugin.graphql;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.Value;
 import milkman.plugin.graphql.domain.GraphqlAspect;
 import milkman.plugin.graphql.domain.GraphqlRequestContainer;
 import milkman.ui.plugin.Templater;
-import milkman.ui.plugin.rest.ApacheRequestProcessor;
+import milkman.ui.plugin.rest.JavaRequestProcessor;
 import milkman.ui.plugin.rest.RequestProcessor;
 import milkman.ui.plugin.rest.domain.RestBodyAspect;
 import milkman.ui.plugin.rest.domain.RestHeaderAspect;
 import milkman.ui.plugin.rest.domain.RestRequestContainer;
 import milkman.ui.plugin.rest.domain.RestResponseContainer;
+import milkman.utils.AsyncResponseControl.AsyncControl;
 
 public class GraphqlProcessor {
-	RequestProcessor requestProcessor = new ApacheRequestProcessor();
+	RequestProcessor requestProcessor = new JavaRequestProcessor();
 	
 	
 	@Value
@@ -29,7 +28,7 @@ public class GraphqlProcessor {
 		String variables;
 	}
 	
-	public RestResponseContainer executeRequest(GraphqlRequestContainer request, Templater templater) {
+	public RestResponseContainer executeRequest(GraphqlRequestContainer request, Templater templater, AsyncControl asyncControl) {
 		
 		RestRequestContainer restContainer = new RestRequestContainer(request.getUrl(), "POST");
 		request.getAspect(RestHeaderAspect.class).ifPresent(restContainer::addAspect);
@@ -38,9 +37,10 @@ public class GraphqlProcessor {
 		
 		restContainer.addAspect(body);
 		
-		return requestProcessor.executeRequest(restContainer, templater);
+		return requestProcessor.executeRequest(restContainer, templater, asyncControl);
 	}
 
+	
 
 	private RestBodyAspect getBodyAspect(GraphqlRequestContainer request) {
 		GraphqlAspect gqlAspect = request.getAspect(GraphqlAspect.class).orElseThrow(() -> new IllegalArgumentException("Graphql Aspect not found"));
