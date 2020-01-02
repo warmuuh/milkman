@@ -1,19 +1,13 @@
 package milkman.plugin.grpc.processor;
 
+import com.google.protobuf.DescriptorProtos.*;
+import com.google.protobuf.DescriptorProtos.FieldDescriptorProto.Type;
+import com.google.protobuf.Descriptors.FieldDescriptor;
+import lombok.Value;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
-
-import com.google.protobuf.DescriptorProtos.DescriptorProto;
-import com.google.protobuf.DescriptorProtos.FieldDescriptorProto;
-import com.google.protobuf.DescriptorProtos.FieldDescriptorProto.Type;
-import com.google.protobuf.DescriptorProtos.FileDescriptorProto;
-import com.google.protobuf.DescriptorProtos.FileDescriptorSet;
-import com.google.protobuf.DescriptorProtos.MethodDescriptorProto;
-import com.google.protobuf.DescriptorProtos.ServiceDescriptorProto;
-import com.google.protobuf.Descriptors.FieldDescriptor;
-
-import lombok.Value;
 
 public class ProtoDescriptorSerializer {
 
@@ -28,7 +22,7 @@ public class ProtoDescriptorSerializer {
 		List<FileContent> result = new LinkedList<>();
 		
 		for (FileDescriptorProto protoFileDesc : descriptorSet.getFileList()) {
-			StringBuffer buffer = new StringBuffer();
+			StringBuilder buffer = new StringBuilder();
 			buffer.append("syntax = \"").append(protoFileDesc.getSyntax()).append("\";\n");
 			
 			for (Entry<FieldDescriptor, Object> opt : protoFileDesc.getOptions().getAllFields().entrySet()) {
@@ -44,6 +38,7 @@ public class ProtoDescriptorSerializer {
 				for (FieldDescriptorProto field : msgType.getFieldList()) {
 					String type = getType(field.getType());
 					buffer.append("    ")
+					.append(toLabel(field.getLabel()))
 					.append(type)
 					.append(" ")
 					.append(field.getName())
@@ -86,6 +81,18 @@ public class ProtoDescriptorSerializer {
 		}
 		
 		return result;
+	}
+
+	private String toLabel(FieldDescriptorProto.Label label) {
+		if (label == null){
+			return "";
+		}
+		switch (label){
+			case LABEL_OPTIONAL: return "optional ";
+			case LABEL_REQUIRED: return "required ";
+			case LABEL_REPEATED: return "repeated ";
+			default: return "";
+		}
 	}
 
 	private String getType(Type type) {

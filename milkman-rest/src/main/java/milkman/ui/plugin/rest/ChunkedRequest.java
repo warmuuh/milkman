@@ -1,5 +1,12 @@
 package milkman.ui.plugin.rest;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import milkman.utils.Event0;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.ReplayProcessor;
+
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -7,18 +14,10 @@ import java.net.http.HttpResponse.ResponseInfo;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Flow;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import milkman.utils.Event0;
-import reactor.core.publisher.EmitterProcessor;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.ReplayProcessor;
 
 @RequiredArgsConstructor
 public class ChunkedRequest {
@@ -92,8 +91,8 @@ public class ChunkedRequest {
 				//leading to the call-future resolve but the futures in the subscriber to not be resolved.
 				if (!isSubscribed.get()) {
 					if (err != null) {
-						emitterProcessor.onError(err);
-						responseInfo.complete(new JavaRequestProcessor.StaticResponseInfo(res));
+						emitterProcessor.onError(ExceptionUtils.getRootCause(err));
+						responseInfo.complete(new JavaRequestProcessor.EmptyResponseInfo());
 					} else {
 						emitterProcessor.onComplete();
 						responseInfo.complete(new JavaRequestProcessor.StaticResponseInfo(res));

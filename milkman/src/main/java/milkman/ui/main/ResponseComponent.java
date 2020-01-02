@@ -1,23 +1,7 @@
 package milkman.ui.main;
 
-import static milkman.utils.fxml.FxmlBuilder.anchorNode;
-import static milkman.utils.fxml.FxmlBuilder.button;
-import static milkman.utils.fxml.FxmlBuilder.hbox;
-import static milkman.utils.fxml.FxmlBuilder.icon;
-
-import java.net.URL;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.ResourceBundle;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTabPane;
-
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -30,13 +14,21 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import milkman.domain.RequestContainer;
-import milkman.domain.ResponseContainer;
 import milkman.ui.components.FancySpinner;
 import milkman.ui.components.TinySpinner;
-import milkman.ui.plugin.ContentTypeAwareEditor;
 import milkman.ui.plugin.UiPluginManager;
 import milkman.utils.AsyncResponseControl;
-import milkman.utils.fxml.FxmlBuilder.VboxExt;
+import milkman.utils.fxml.FxmlBuilder.*;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.net.URL;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
+
+import static milkman.utils.fxml.FxmlBuilder.*;
 
 @Singleton
 public class ResponseComponent implements Initializable {
@@ -75,10 +67,8 @@ public class ResponseComponent implements Initializable {
 		plugins.loadRequestAspectPlugins().stream()
 			.flatMap(p -> p.getResponseTabs().stream())
 			.forEach(tabController -> {
+				plugins.wireUp(tabController);
 				if (tabController.canHandleAspect(request, response)) {
-					if (tabController instanceof ContentTypeAwareEditor) {
-						((ContentTypeAwareEditor) tabController).setContentTypePlugins(plugins.loadContentTypePlugins());
-					}
 					Tab aspectTab = tabController.getRoot(request, response);
 					aspectTab.setClosable(false);
 					tabs.getTabs().add(aspectTab);
@@ -93,9 +83,7 @@ public class ResponseComponent implements Initializable {
 		CompletableFuture<Object> reqCompleted = CompletableFuture.anyOf(respCtrl.onRequestFailed, respCtrl.onRequestSucceeded);
 		asyncControlSpinner.setVisible(!reqCompleted.isDone());
 		if (!reqCompleted.isDone()) {
-			reqCompleted.thenRun(() -> {
-				asyncControlSpinner.setVisible(false);
-			});
+			reqCompleted.thenRun(() -> asyncControlSpinner.setVisible(false));
 			asyncControlSpinner.setOnAction(e -> respCtrl.cancleRequest());
 		}
 		

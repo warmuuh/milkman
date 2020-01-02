@@ -1,37 +1,27 @@
 package milkman.ui.main;
 
-import java.util.Iterator;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import javafx.application.Platform;
+import com.jfoenix.controls.JFXTabPane;
 import javafx.fxml.FXML;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
 import javafx.scene.layout.HBox;
 import lombok.Getter;
 import milkman.ctrl.RequestTypeManager;
-import milkman.domain.RequestAspect;
 import milkman.domain.RequestContainer;
 import milkman.ui.commands.UiCommand;
-import milkman.ui.plugin.ContentTypeAwareEditor;
 import milkman.ui.plugin.CustomCommand;
-import milkman.ui.plugin.RequestAspectEditor;
-import milkman.ui.plugin.RequestAspectsPlugin;
 import milkman.ui.plugin.RequestTypeEditor;
-import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.UiPluginManager;
 import milkman.utils.Event;
 import milkman.utils.fxml.FxmlBuilder.HboxExt;
 import milkman.utils.fxml.FxmlBuilder.VboxExt;
 
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXTabPane;
-import static milkman.utils.fxml.FxmlBuilder.*;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.List;
+
+import static milkman.utils.fxml.FxmlBuilder.hbox;
 
 @Singleton
 public class RequestComponent {
@@ -41,7 +31,7 @@ public class RequestComponent {
 	@FXML SplitMenuButton saveBtn;
 
 	
-	public final Event<UiCommand> onCommand = new Event<UiCommand>();
+	public final Event<UiCommand> onCommand = new Event<>();
 	@Getter private RequestContainer currentRequest;
 	@FXML SplitMenuButton submitBtn;
 	private RequestTypeManager reqTypeManager;
@@ -85,9 +75,6 @@ public class RequestComponent {
 		.forEach(tabController -> {
 			plugins.wireUp(tabController);
 			if (tabController.canHandleAspect(request)) {
-				if (tabController instanceof ContentTypeAwareEditor) {
-					((ContentTypeAwareEditor) tabController).setContentTypePlugins(plugins.loadContentTypePlugins());
-				}
 				Tab aspectTab = tabController.getRoot(request);
 				aspectTab.setClosable(false);
 				tabs.getTabs().add(aspectTab);

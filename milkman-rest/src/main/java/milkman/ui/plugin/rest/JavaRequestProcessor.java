@@ -1,34 +1,5 @@
 package milkman.ui.plugin.rest;
 
-import java.io.IOException;
-import java.net.PasswordAuthentication;
-import java.net.URI;
-import java.net.URL;
-import java.net.http.HttpClient;
-import java.net.http.HttpClient.Builder;
-import java.net.http.HttpClient.Redirect;
-import java.net.http.HttpClient.Version;
-import java.net.http.HttpRequest;
-import java.net.http.HttpRequest.BodyPublishers;
-import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.ResponseInfo;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
 import javafx.application.Platform;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -37,15 +8,31 @@ import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestAspect;
 import milkman.ui.main.dialogs.CredentialsInputDialog;
 import milkman.ui.plugin.Templater;
-import milkman.ui.plugin.rest.domain.HeaderEntry;
-import milkman.ui.plugin.rest.domain.RestRequestAspect;
-import milkman.ui.plugin.rest.domain.RestRequestContainer;
-import milkman.ui.plugin.rest.domain.RestResponseBodyAspect;
-import milkman.ui.plugin.rest.domain.RestResponseContainer;
-import milkman.ui.plugin.rest.domain.RestResponseHeaderAspect;
+import milkman.ui.plugin.rest.domain.*;
 import milkman.utils.AsyncResponseControl.AsyncControl;
-import milkman.utils.Event0;
 import reactor.core.publisher.Flux;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.net.PasswordAuthentication;
+import java.net.URI;
+import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpClient.Builder;
+import java.net.http.HttpClient.Redirect;
+import java.net.http.HttpClient.Version;
+import java.net.http.HttpHeaders;
+import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.ResponseInfo;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 public class JavaRequestProcessor implements RequestProcessor {
@@ -277,5 +264,21 @@ public class JavaRequestProcessor implements RequestProcessor {
 	public static class StaticResponseInfo implements ResponseInfo {
 		@Delegate(types = ResponseInfo.class)
 		private final HttpResponse<?> response;
+	}
+	public static class EmptyResponseInfo implements ResponseInfo {
+		@Override
+		public int statusCode() {
+			return 0;
+		}
+
+		@Override
+		public HttpHeaders headers() {
+			return HttpHeaders.of(Collections.emptyMap(), (s1,s2) -> true);
+		}
+
+		@Override
+		public Version version() {
+			return null;
+		}
 	}
 }

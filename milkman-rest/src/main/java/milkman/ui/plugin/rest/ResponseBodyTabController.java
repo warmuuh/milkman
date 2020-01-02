@@ -1,27 +1,31 @@
 package milkman.ui.plugin.rest;
 
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import javafx.application.Platform;
 import javafx.scene.control.Tab;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 import milkman.ui.components.CodeFoldingContentEditor;
-import milkman.ui.components.ContentEditor;
+import milkman.ui.main.Toaster;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.ui.plugin.ContentTypeAwareEditor;
 import milkman.ui.plugin.ContentTypePlugin;
 import milkman.ui.plugin.ResponseAspectEditor;
+import milkman.ui.plugin.ToasterAware;
 import milkman.ui.plugin.rest.domain.RestResponseBodyAspect;
 import milkman.ui.plugin.rest.domain.RestResponseHeaderAspect;
 import reactor.core.scheduler.Schedulers;
 
-public class ResponseBodyTabController implements ResponseAspectEditor, ContentTypeAwareEditor {
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
+@Slf4j
+public class ResponseBodyTabController implements ResponseAspectEditor, ContentTypeAwareEditor, ToasterAware {
 
 	private List<ContentTypePlugin> plugins;
+	private Toaster toaster;
 
 	@Override
 	@SneakyThrows
@@ -40,7 +44,7 @@ public class ResponseBodyTabController implements ResponseAspectEditor, ContentT
 		
 		AtomicInteger idx = new AtomicInteger(0);
 		body.getBody()
-				.subscribeOn(Schedulers.boundedElastic())
+				.subscribeOn(Schedulers.elastic())
 				.subscribe(
 				value -> {
 					val cidx = idx.getAndIncrement();
@@ -51,11 +55,8 @@ public class ResponseBodyTabController implements ResponseAspectEditor, ContentT
 					});
 				},
 				throwable -> {
-					throwable.printStackTrace();
-					Platform.runLater(() -> {
-
-						root.addContent(throwable.toString());
-					});
+					log.error("Received Error", throwable);
+					toaster.showToast(throwable.toString());
 				},
 				() -> Platform.runLater(() -> {
 					if (CoreApplicationOptionsProvider.options().isAutoformatContent())
@@ -81,5 +82,9 @@ public class ResponseBodyTabController implements ResponseAspectEditor, ContentT
 		
 	}
 
-	
+
+	@Override
+	public void setToaster(Toaster toaster) {
+		this.toaster = toaster;
+	}
 }
