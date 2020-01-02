@@ -1,12 +1,9 @@
 package milkman.ui.plugin.rest.domain;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.entity.StringEntity;
-
 import lombok.Data;
 import milkman.ui.plugin.Templater;
 import milkman.ui.plugin.rest.HttpRequestBuilder;
+import org.apache.commons.lang3.StringUtils;
 
 @Data
 public class RestBodyAspect extends RestRequestAspect {

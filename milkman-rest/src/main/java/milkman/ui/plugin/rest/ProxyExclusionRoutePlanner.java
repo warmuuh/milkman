@@ -1,22 +1,11 @@
 package milkman.ui.plugin.rest;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.ProxySelector;
-import java.net.SocketAddress;
-import java.net.URI;
-import java.net.URL;
+import java.net.*;
 import java.util.Arrays;
 import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpException;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
-import org.apache.http.conn.routing.HttpRoute;
-import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
-import org.apache.http.protocol.HttpContext;
 
 public class ProxyExclusionRoutePlanner  {
 
@@ -39,20 +28,20 @@ public class ProxyExclusionRoutePlanner  {
 		return false;
 	}
 	
-	public DefaultProxyRoutePlanner apache() {
-		return new DefaultProxyRoutePlanner(new HttpHost(proxyUrl.getHost(), proxyUrl.getPort())) {
-			@Override
-		    public HttpRoute determineRoute(
-		            final HttpHost host,
-		            final HttpRequest request,
-		            final HttpContext context) throws HttpException {
-		        if (isExluded(host.getHostName())) {
-		    			return new HttpRoute(host); //direct route
-		    	}
-		        return super.determineRoute(host, request, context);
-		    }
-		};
-	}
+//	public DefaultProxyRoutePlanner apache() {
+//		return new DefaultProxyRoutePlanner(new HttpHost(proxyUrl.getHost(), proxyUrl.getPort())) {
+//			@Override
+//		    public HttpRoute determineRoute(
+//		            final HttpHost host,
+//		            final HttpRequest request,
+//		            final HttpContext context) throws HttpException {
+//		        if (isExluded(host.getHostName())) {
+//		    			return new HttpRoute(host); //direct route
+//		    	}
+//		        return super.determineRoute(host, request, context);
+//		    }
+//		};
+//	}
 	
 	
 	public ProxySelector java() {

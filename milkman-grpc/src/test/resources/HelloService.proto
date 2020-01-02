@@ -5,6 +5,7 @@ package com.example.demo.grpc;
 message HelloRequest {
     string firstName = 1;
     string lastName = 2;
+    repeated string items = 3;
 }
 
 message HelloResponse {

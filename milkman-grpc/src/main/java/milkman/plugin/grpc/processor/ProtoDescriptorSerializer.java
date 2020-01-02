@@ -88,7 +88,7 @@ public class ProtoDescriptorSerializer {
 			return "";
 		}
 		switch (label){
-			case LABEL_OPTIONAL: return "optional ";
+			case LABEL_OPTIONAL: return ""; //optional is implicit
 			case LABEL_REQUIRED: return "required ";
 			case LABEL_REPEATED: return "repeated ";
 			default: return "";
