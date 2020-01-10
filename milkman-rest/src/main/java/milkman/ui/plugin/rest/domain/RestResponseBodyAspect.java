@@ -1,11 +1,11 @@
 package milkman.ui.plugin.rest.domain;
 
-import java.util.concurrent.Flow.Publisher;
-
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import milkman.domain.ResponseAspect;
+import milkman.utils.json.BlockingFluxToStringConverter;
 import reactor.core.publisher.Flux;
 
 @Data
@@ -13,6 +13,7 @@ import reactor.core.publisher.Flux;
 @AllArgsConstructor
 public class RestResponseBodyAspect implements ResponseAspect {
 
+	@JsonSerialize(converter = BlockingFluxToStringConverter.class)
 	private Flux<String> body;
 
 	@Override

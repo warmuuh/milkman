@@ -1,15 +1,5 @@
 package milkman.plugin.scripting;
 
-import java.util.Collections;
-import java.util.List;
-
-import javax.script.Bindings;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-
-import org.apache.commons.lang3.exception.ExceptionUtils;
-
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
 import milkman.domain.RequestExecutionContext;
@@ -19,6 +9,14 @@ import milkman.ui.plugin.RequestAspectEditor;
 import milkman.ui.plugin.RequestAspectsPlugin;
 import milkman.ui.plugin.ResponseAspectEditor;
 import milkman.ui.plugin.ToasterAware;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
+import javax.script.Bindings;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 public class ScriptingAspectPlugin implements RequestAspectsPlugin, ToasterAware {
@@ -57,7 +55,7 @@ public class ScriptingAspectPlugin implements RequestAspectsPlugin, ToasterAware
 
 	private void executeScript(String postRequestScript, RequestContainer request, ResponseContainer response, RequestExecutionContext context) {
 		Bindings bindings = engine.createBindings();
-		bindings.put("milkman", new MilkmanScriptingFacade(response, context));
+		bindings.put("milkman", new MilkmanScriptingFacade(response, context, toaster));
 		try {
 			Object eval = engine.eval(postRequestScript, bindings);
 		} catch (ScriptException e) {
