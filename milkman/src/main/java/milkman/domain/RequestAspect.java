@@ -1,7 +1,5 @@
 package milkman.domain;
 
-import java.io.IOException;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -17,12 +15,10 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
-
-import lombok.AllArgsConstructor;
 import lombok.Data;
+
+import java.io.IOException;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(include = As.PROPERTY, use = Id.CLASS, visible = true)

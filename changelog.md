@@ -10,8 +10,12 @@
 
 # Changelog
 
+version 4.1.0 (upcomming)
+  * added import/export of whole workspace
+  * fixed crash caused by disclosure node in tree view
 
-version 4.0.0 (upcomming)
+
+version 4.0.0
   * added [Grpc plugin](/milkman-grpc)
   * changed way of proxy authentication for http2 client to be less rigid
   * made Milkman asynchronous at core, for better support of streaming response types, such as Grpc Streaming, SSE or WebSockets
