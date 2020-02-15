@@ -1,31 +1,22 @@
 package milkman.utils.javafx;
-import java.util.HashMap;
-import java.util.Objects;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.jfoenix.controls.JFXTreeCell;
-
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.TransformationList;
 import javafx.scene.Node;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.DataFormat;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
+import javafx.scene.input.*;
 import javafx.util.Callback;
 import lombok.SneakyThrows;
 import milkman.domain.Collection;
 import milkman.domain.Folder;
 import milkman.domain.RequestContainer;
 import milkman.persistence.UnknownPluginHandler;
+
+import java.util.Objects;
 
 public class DnDCellFactory implements Callback<TreeView<Node>, TreeCell<Node>> {
     private static final DataFormat JAVA_FORMAT = new DataFormat("application/x-java-serialized-object");
@@ -51,12 +42,19 @@ public class DnDCellFactory implements Callback<TreeView<Node>, TreeCell<Node>> 
 //                setGraphic(iv1);
 //                setText(item.getName());
 //            }
-        };
+
+
+			@Override
+			protected void updateItem(Node item, boolean empty) {
+				super.updateItem(item, empty);
+				setDisclosureNode(null);
+			}
+		};
         cell.setOnDragDetected((MouseEvent event) -> dragDetected(event, cell, treeView));
         cell.setOnDragOver((DragEvent event) -> dragOver(event, cell, treeView));
         cell.setOnDragDropped((DragEvent event) -> drop(event, cell, treeView));
         cell.setOnDragDone((DragEvent event) -> clearDropLocation());
-        
+        cell.setDisclosureNode(null);
         return cell;
     }
 
@@ -215,4 +213,6 @@ public class DnDCellFactory implements Callback<TreeView<Node>, TreeCell<Node>> 
 		mapper.addHandler(new UnknownPluginHandler());
 		return mapper;
 	}
+
+
 }

@@ -1,21 +1,7 @@
 package milkman.ui.main;
 
-import java.time.Duration;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.apache.commons.lang3.builder.CompareToBuilder;
-import org.reactfx.EventStreams;
-
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTreeView;
-
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.application.Platform;
@@ -26,11 +12,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TreeItem;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -45,9 +27,20 @@ import milkman.domain.Searchable;
 import milkman.ui.commands.UiCommand;
 import milkman.utils.Event;
 import milkman.utils.PropertyChangeEvent;
-import milkman.utils.fxml.FxmlBuilder;
 import milkman.utils.javafx.DnDCellFactory;
 import milkman.utils.javafx.SettableTreeItem;
+import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.reactfx.EventStreams;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import static milkman.utils.fxml.FxmlBuilder.*;
 
 @Singleton
@@ -122,6 +115,7 @@ public class RequestCollectionComponent {
 		item.expandedProperty().addListener((obs, o, n) -> {
 			expansionCache.put(collection.getId(), n);
 		});
+
 		
 		List<RequestContainer> collectionRequests = new LinkedList<>(collection.getRequests());
 		
