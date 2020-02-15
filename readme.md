@@ -12,6 +12,7 @@ everything being a plugin, other things are possible, like database-requests or 
 
  * Download latest version in [Release Section](https://github.com/warmuuh/milkman/releases). 
  * **Download plugin archive as well**, if you want to use any of those plugins.
+ * unzip everything into the same directory and start application via either the supplied start-scripts or `milkman.exe`
 
 For downloading the nightly build:
 
@@ -19,10 +20,13 @@ For downloading the nightly build:
  * Go to [Milkman Builds](https://circleci.com/gh/warmuuh/milkman/tree/master)
  * Choose latest build and Download the build from the artifacts tab
  
-# Install via Chocolatey
+# Install via Chocolatey (Win)
  * To install just Milkman run `Choco install milkman`
  * To install a plugin run `Choco install milkman-<plugin name>` ex. `Choco install milkman-explore`
  * Install Milkman and all plugins available run `Choco install milkman-plugins` 
+
+# Install via Homebrew (MacOs)
+ * To install, run `brew cask install milkman`. All plugins are included.
 
 # Changes
 
