@@ -1,21 +1,5 @@
 package milkman.ctrl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.reactfx.util.Lists;
-
 import javafx.application.Platform;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
@@ -29,21 +13,26 @@ import milkman.persistence.WorkbenchState;
 import milkman.ui.commands.AppCommand;
 import milkman.ui.commands.AppCommand.RenameEnvironment;
 import milkman.ui.commands.AppCommand.RenameWorkspace;
+import milkman.ui.commands.EnvironmentTemplater;
 import milkman.ui.main.HotkeyManager;
 import milkman.ui.main.Toaster;
 import milkman.ui.main.ToolbarComponent;
-import milkman.ui.main.dialogs.CreateWorkspaceDialog;
-import milkman.ui.main.dialogs.EditEnvironmentDialog;
-import milkman.ui.main.dialogs.ImportDialog;
-import milkman.ui.main.dialogs.ManageEnvironmentsDialog;
-import milkman.ui.main.dialogs.ManageWorkspacesDialog;
-import milkman.ui.main.dialogs.OptionsDialog;
+import milkman.ui.main.dialogs.*;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.ui.main.sync.NoSyncDetails;
+import milkman.ui.plugin.Exporter;
 import milkman.ui.plugin.OptionPageProvider;
 import milkman.ui.plugin.OptionsObject;
 import milkman.ui.plugin.UiPluginManager;
 import milkman.update.UpdateChecker;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_={@Inject})
@@ -153,9 +142,25 @@ public class ApplicationController {
 			openOptionsDialog();
 		}  else if (command instanceof AppCommand.SyncWorkspace) {
 			syncWorkspace(((AppCommand.SyncWorkspace) command).getCallback());
+		} else if (command instanceof AppCommand.ExportWorkspace) {
+			exportWorkspace(((AppCommand.ExportWorkspace) command).getWorkspaceName());
 		} else {
 			throw new IllegalArgumentException("Unsupported command: " + command);
 		}
+	}
+
+	private void exportWorkspace(String workspaceName) {
+		ExportDialog<Workspace> dialog = new ExportDialog<>();
+		List<Exporter<Workspace>> exportPlugins = plugins.loadWorkspaceExportPlugins().stream()
+				.map(p -> (Exporter<Workspace>)p)
+				.collect(Collectors.toList());
+
+		persistence.loadWorkspaceByName(workspaceName).ifPresentOrElse(
+				ws -> dialog.showAndWait(exportPlugins, buildTemplater(), toaster, ws),
+				() -> toaster.showToast("Failed to load workspace " + workspaceName)
+		);
+
+
 	}
 
 	private void syncWorkspace(Runnable callback) {
@@ -333,6 +338,14 @@ public class ApplicationController {
 		state.setLoadedWorkspace(workspaceController.getActiveWorkspace().getName());
 		persistence.saveWorkbenchState(state);
 		persistOptions();
+	}
+
+
+	private EnvironmentTemplater buildTemplater() {
+		Optional<Environment> activeEnv = workspaceController.getActiveWorkspace().getEnvironments().stream().filter(e -> e.isActive()).findAny();
+		List<Environment> globalEnvs = workspaceController.getActiveWorkspace().getEnvironments().stream().filter(e -> e.isGlobal()).collect(Collectors.toList());
+		EnvironmentTemplater templater = new EnvironmentTemplater(activeEnv, globalEnvs);
+		return templater;
 	}
 
 }

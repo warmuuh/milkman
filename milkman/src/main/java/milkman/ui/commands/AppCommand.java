@@ -1,12 +1,11 @@
 package milkman.ui.commands;
 
-import java.util.Optional;
-import java.util.function.Consumer;
-
 import lombok.Value;
 import milkman.domain.Environment;
-import milkman.domain.SyncDetails;
 import milkman.domain.Workspace;
+
+import java.util.Optional;
+import java.util.function.Consumer;
 
 public interface AppCommand {
 
@@ -39,6 +38,11 @@ public interface AppCommand {
 	public static class RenameWorkspace implements AppCommand {
 		String workspaceName;
 		String newWorkspaceName;
+	}
+
+	@Value
+	public static class ExportWorkspace implements AppCommand {
+		String workspaceName;
 	}
 	
 	

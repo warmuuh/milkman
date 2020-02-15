@@ -1,32 +1,26 @@
 package milkman.ui.main.dialogs;
 
-import java.util.Collections;
-import java.util.List;
-
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXListCell;
-
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.stage.Stage;
 import milkman.ui.commands.AppCommand;
 import milkman.utils.Event;
 import milkman.utils.fxml.FxmlUtil;
 import milkman.utils.fxml.NoSelectionModel;
+
+import java.util.List;
 
 public class ManageWorkspacesDialog {
 
@@ -55,20 +49,32 @@ public class ManageWorkspacesDialog {
 			
 			JFXButton renameButton = new JFXButton();
 			renameButton.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PENCIL, "1.5em"));
+			renameButton.setTooltip(new Tooltip("Rename workspace"));
 			renameButton.setOnAction(e -> triggerRenameDialog(workspaceName));
 			
 			JFXButton deleteButton = new JFXButton();
 			deleteButton.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.TIMES, "1.5em"));
+			deleteButton.setTooltip(new Tooltip("Delete workspace"));
 			deleteButton.setOnAction(e -> {
 				onCommand.invoke(new AppCommand.DeleteWorkspace(workspaceName));
 				Platform.runLater(() -> workspaces.remove(workspaceName));
 			});
+
+			JFXButton exportButton = new JFXButton();
+			exportButton.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.UPLOAD, "1.5em"));
+			exportButton.setTooltip(new Tooltip("Export workspace"));
+			exportButton.setOnAction(e -> triggerExportWorkspaceDialog(workspaceName));
+
 			Label wsName = new Label(workspaceName);
 			HBox.setHgrow(wsName, Priority.ALWAYS);
 			
-			return new HBox(wsName, renameButton, deleteButton);
+			return new HBox(wsName, renameButton, deleteButton, exportButton);
 		}
 
+
+		private void triggerExportWorkspaceDialog(String workspaceName){
+			onCommand.invoke(new AppCommand.ExportWorkspace(workspaceName));
+		}
 
 		private void triggerRenameDialog(String workspaceName) {
 			StringInputDialog inputDialog = new StringInputDialog();

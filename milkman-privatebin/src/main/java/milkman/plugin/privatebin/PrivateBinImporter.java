@@ -2,7 +2,6 @@ package milkman.plugin.privatebin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jfoenix.controls.JFXTextField;
-
 import javafx.scene.Node;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.Collection;
@@ -10,6 +9,7 @@ import milkman.domain.RequestContainer;
 import milkman.domain.Workspace;
 import milkman.persistence.UnknownPluginHandler;
 import milkman.ui.main.Toaster;
+import milkman.ui.main.dialogs.ConfirmationInputDialog;
 import milkman.ui.plugin.ImporterPlugin;
 
 @Slf4j
@@ -40,6 +40,8 @@ public class PrivateBinImporter implements ImporterPlugin {
 				handleImportedRequest(workspace, ((RequestDataContainer) container).getRequest(), toaster);
 			} else if (container instanceof CollectionDataContainer) {
 				handleImportedCollection(workspace, ((CollectionDataContainer) container).getCollection(), toaster);
+			} else if (container instanceof WorkspaceDataContainer) {
+				handleImportedWorkspace(workspace, ((WorkspaceDataContainer) container).getWorkspace(), toaster);
 			} else {
 				toaster.showToast("Unknown data format");
 			}
@@ -54,6 +56,18 @@ public class PrivateBinImporter implements ImporterPlugin {
 	private void handleImportedCollection(Workspace workspace, Collection collection, Toaster toast) {
 		workspace.getCollections().add(collection);
 		toast.showToast("Collection imported: " + collection.getName());
+	}
+
+
+	private void handleImportedWorkspace(Workspace activeWorkspace, Workspace newWorkspace, Toaster toast) {
+		var dialog = new ConfirmationInputDialog();
+		dialog.showAndWait("Confirm import", "The workspace '" + newWorkspace.getName() + "' will be imported into your current workspace.");
+		if (!dialog.isCancelled()){
+			activeWorkspace.getCollections().addAll(newWorkspace.getCollections());
+			activeWorkspace.getEnvironments().addAll(newWorkspace.getEnvironments());
+		}
+
+		toast.showToast("Workspace imported: " + newWorkspace.getName());
 	}
 
 	private void handleImportedRequest(Workspace workspace, RequestContainer request, Toaster toast) {

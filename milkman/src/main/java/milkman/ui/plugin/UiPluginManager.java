@@ -1,19 +1,13 @@
 package milkman.ui.plugin;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.ServiceLoader;
-import java.util.function.Supplier;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import lombok.RequiredArgsConstructor;
 import milkman.ui.components.AutoCompleter;
 import milkman.ui.main.ActiveEnvironmentProvider;
 import milkman.ui.main.Toaster;
+
+import javax.inject.Inject;
+import java.util.*;
+import java.util.function.Supplier;
 
 @RequiredArgsConstructor(onConstructor_={@Inject})
 public class UiPluginManager {
@@ -61,6 +55,9 @@ public class UiPluginManager {
 		return loadSpiInstances(CollectionExporterPlugin.class);
 	}
 
+	public List<WorkspaceExporterPlugin> loadWorkspaceExportPlugins(){
+		return loadSpiInstances(WorkspaceExporterPlugin.class);
+	}
 	public void wireUp(Object o) {
 		if (o instanceof ContentTypeAwareEditor) {
 			((ContentTypeAwareEditor) o).setContentTypePlugins(loadContentTypePlugins());
