@@ -10,9 +10,10 @@
 
 # Changelog
 
-version 4.1.0 (upcomming)
+version 4.1.0 
   * added import/export of whole workspace
   * fixed crash caused by disclosure node in tree view
+  * fixed access of request body via script plugin
 
 
 version 4.0.0
