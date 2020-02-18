@@ -1,5 +1,6 @@
 [![CircleCI](https://circleci.com/gh/warmuuh/milkman.svg?style=svg)](https://circleci.com/gh/warmuuh/milkman)
 [![Donate](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/warmuuh/donate)
+[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/milkman-project/community)
 
 # ![Milkman Logo](img/milk-bottle.png) Milkman - An Extensible Request/Response Workbench
 
