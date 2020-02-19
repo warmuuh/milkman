@@ -1,200 +1,229 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.github.warmuuh</groupId>
-	<artifactId>milkman-parent</artifactId>
-	<version>4.2.0-SNAPSHOT</version>
-	<packaging>pom</packaging>
-	<name>milkman-parent</name>
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.github.warmuuh</groupId>
+    <artifactId>milkman-parent</artifactId>
+    <version>4.2.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>milkman-parent</name>
 
-	<modules>
-		<module>milkman</module>
-		<module>milkman-rest</module>
-		<module>milkman-dist</module>
-		<module>milkman-note</module>
-		<module>milkman-scripting</module>
-		<module>milkman-explore</module>
-		<module>milkman-jdbc</module>
-		<module>milkman-sync-git</module>
-		<module>milkman-privatebin</module>
-		<module>milkman-graphql</module>
-		<module>milkman-grpc</module>
-		<module>milkman-cli</module>
-	</modules>
+    <modules>
+        <module>milkman</module>
+        <module>milkman-rest</module>
+        <module>milkman-dist</module>
+        <module>milkman-note</module>
+        <module>milkman-scripting</module>
+        <module>milkman-explore</module>
+        <module>milkman-jdbc</module>
+        <module>milkman-sync-git</module>
+        <module>milkman-privatebin</module>
+        <module>milkman-graphql</module>
+        <module>milkman-grpc</module>
+        <module>milkman-cli</module>
+    </modules>
 
-	<properties>
-		<maven.deploy.skip>true</maven.deploy.skip>
-	</properties>
-
-
-	<description>extensible request/response workbench</description>
-	<url>https://github.com/warmuuh/milkman</url>
-	<scm>
-		<url>https://github.com/warmuuh/milkman</url>
-		<connection>scm:git:https://github.com/warmuuh/milkman</connection>
-		<tag>${project.version}</tag>
-	</scm>
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
 
 
-	<dependencies>
+    <description>extensible request/response workbench</description>
+    <url>https://github.com/warmuuh/milkman</url>
+    <scm>
+        <url>https://github.com/warmuuh/milkman</url>
+        <connection>scm:git:https://github.com/warmuuh/milkman</connection>
+        <tag>${project.version}</tag>
+    </scm>
 
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<version>1.18.6</version>
-			<scope>provided</scope>
-		</dependency>
-		<!-- <dependency> -->
-		<!-- <groupId>com.sun</groupId> -->
-		<!-- <artifactId>tools</artifactId> -->
-		<!-- <version>1.5.0</version> -->
-		<!-- <scope>system</scope> -->
-		<!-- <systemPath>${JAVA_HOME}/lib/tools.jar</systemPath> -->
-		<!-- </dependency> -->
 
-		<dependency>
-			<groupId>org.assertj</groupId>
-			<artifactId>assertj-core</artifactId>
-			<version>3.12.2</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-api</artifactId>
-			<version>5.4.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-params</artifactId>
-			<version>5.4.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
-			<version>5.4.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.testfx</groupId>
-			<artifactId>testfx-junit5</artifactId>
-			<version>4.0.15-alpha</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.github.warmuuh</groupId>
-			<artifactId>hardwire</artifactId>
-			<version>0.0.4</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>com.sun</groupId>
-					<artifactId>tools</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-	</dependencies>
+    <dependencies>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>com.fasterxml.jackson</groupId>
-				<artifactId>jackson-bom</artifactId>
-				<version>2.10.0</version>
-				<scope>import</scope>
-				<type>pom</type>
-			</dependency>
-<!-- 			<dependency> -->
-<!-- 				<groupId>com.fasterxml.jackson.core</groupId> -->
-<!-- 				<artifactId>jackson-databind</artifactId> -->
-<!-- 				<version>2.9.9.2</version> -->
-<!-- 			</dependency> -->
-		</dependencies>
-	</dependencyManagement>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.6</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- <dependency> -->
+        <!-- <groupId>com.sun</groupId> -->
+        <!-- <artifactId>tools</artifactId> -->
+        <!-- <version>1.5.0</version> -->
+        <!-- <scope>system</scope> -->
+        <!-- <systemPath>${JAVA_HOME}/lib/tools.jar</systemPath> -->
+        <!-- </dependency> -->
 
-	<licenses>
-		<license>
-			<name>MIT License</name>
-			<url>http://www.opensource.org/licenses/mit-license.php</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.12.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.4.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <version>5.4.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.4.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testfx</groupId>
+            <artifactId>testfx-junit5</artifactId>
+            <version>4.0.15-alpha</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.warmuuh</groupId>
+            <artifactId>hardwire</artifactId>
+            <version>0.0.4</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.sun</groupId>
+                    <artifactId>tools</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
 
-	<developers>
-		<developer>
-			<name>Peter Mucha</name>
-			<email>ptmucha@gmail.com</email>
-			<organizationUrl>https://github.com/warmuuh</organizationUrl>
-		</developer>
-	</developers>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>2.10.0</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <!-- 			<dependency> -->
+            <!-- 				<groupId>com.fasterxml.jackson.core</groupId> -->
+            <!-- 				<artifactId>jackson-databind</artifactId> -->
+            <!-- 				<version>2.9.9.2</version> -->
+            <!-- 			</dependency> -->
+        </dependencies>
+    </dependencyManagement>
 
-	<repositories>
-		<repository>
-			<id>jitpack.io</id>
-			<url>https://jitpack.io</url>
-		</repository>
-		<repository>
-			<id>spring</id>
-			<url>http://repo.spring.io/plugins-release</url>
-		</repository>
-	</repositories>
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
-	<build>
-		<plugins>
+    <developers>
+        <developer>
+            <name>Peter Mucha</name>
+            <email>ptmucha@gmail.com</email>
+            <organizationUrl>https://github.com/warmuuh</organizationUrl>
+        </developer>
+    </developers>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.0</version>
-				<goals>
-					<goal>compile</goal>
-				</goals>
-				<configuration>
-					<release>11</release>
-					<source>11</source>
-					<target>11</target>
-					<annotationProcessors>
-						<annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor</annotationProcessor>
-						<annotationProcessor>wrm.hardwire.processor.AnnotationProcessor</annotationProcessor>
-					</annotationProcessors>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.4</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>report</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>report</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.22.2</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-assembly-plugin</artifactId>
-					<version>3.1.1</version>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+        <repository>
+            <id>spring</id>
+            <url>http://repo.spring.io/plugins-release</url>
+        </repository>
+    </repositories>
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <goals>
+                    <goal>compile</goal>
+                </goals>
+                <configuration>
+                    <release>11</release>
+                    <source>11</source>
+                    <target>11</target>
+                    <annotationProcessors>
+                        <annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor
+                        </annotationProcessor>
+                        <annotationProcessor>wrm.hardwire.processor.AnnotationProcessor</annotationProcessor>
+                    </annotationProcessors>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.4</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.22.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>3.1.1</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+    <profiles>
+        <profile>
+            <id>native</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.gluonhq</groupId>
+                        <artifactId>client-maven-plugin</artifactId>
+                        <version>0.1.15</version>
+                        <configuration>
+                            <!-- Uncomment to run on iOS: -->
+                            <!-- <target>ios</target>-->
+
+                            <mainClass>milkman.MilkmanApplication</mainClass>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>gluon-releases</id>
+                    <url>https://nexus.gluonhq.com/nexus/content/repositories/releases/</url>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+    </profiles>
+
 
 </project>
