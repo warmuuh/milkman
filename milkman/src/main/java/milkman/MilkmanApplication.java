@@ -48,7 +48,10 @@ public class MilkmanApplication extends Application {
 				log.info("App Initialization time: {} ms", System.currentTimeMillis() - startInitializationTime);
 
 				
-				primaryStage.setOnCloseRequest(e -> module.getApplicationController().persistState());
+				primaryStage.setOnCloseRequest(e -> {
+					module.getApplicationController().persistState();
+					module.getApplicationController().closeApplication();
+				});
 			} catch (Throwable t) {
 				hasError = true;
 				showFatalError(t);

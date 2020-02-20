@@ -340,6 +340,9 @@ public class ApplicationController {
 		persistOptions();
 	}
 
+	public void closeApplication(){
+		persistence.close();
+	}
 
 	private EnvironmentTemplater buildTemplater() {
 		Optional<Environment> activeEnv = workspaceController.getActiveWorkspace().getEnvironments().stream().filter(e -> e.isActive()).findAny();

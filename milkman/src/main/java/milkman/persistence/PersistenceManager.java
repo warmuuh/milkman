@@ -1,9 +1,7 @@
 package milkman.persistence;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.io.File;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -22,50 +20,77 @@ import lombok.val;
 import lombok.extern.slf4j.Slf4j;
 import milkman.PlatformUtil;
 import milkman.domain.Workspace;
+import org.mapdb.*;
 
-// bogus inmemory impl only for graal testing
 @Singleton
 @Slf4j
 public class PersistenceManager {
 	
-	private List<Workspace> workspaces = new LinkedList<>();
-	private List<OptionEntry> options = new LinkedList<>();
-	private WorkbenchState workbenchState = new WorkbenchState();
-	
+	private Map<String, Workspace> workspaces;
+	private Set<OptionEntry> options;
+	private Atomic.Var<WorkbenchState> workbenchState;
+	private DB db;
+
+	@PostConstruct
+	public void init() {
+		String writableLocationForFile = PlatformUtil.getWritableLocationForFile("database.mapdb");
+		db = DBMaker.fileDB(new File(writableLocationForFile))
+//				.encryptionEnable("milkman")
+				.make();
+
+
+		JacksonMapper nitriteMapper = new JacksonMapper();
+		ObjectMapper mapper = nitriteMapper.getObjectMapper();
+		mapper.addHandler(new UnknownPluginHandler());
+
+		workspaces = db.hashMap("workspaces", Serializer.STRING, new MapDbJsonSerializer(mapper, Workspace.class));
+		workbenchState = db.atomicVar("workbenchstate", new MapDbJsonSerializer(mapper, WorkbenchState.class));
+		workbenchState = new Atomic.Var<>(db.getEngine(), workbenchState.getRecid(), new MapDbJsonSerializer(mapper, WorkbenchState.class));
+		options = db.hashSet("options",  new MapDbJsonSerializer(mapper, OptionEntry.class));
+	}
+
 	public WorkbenchState loadWorkbenchState() {
-		return workbenchState;
+		return Optional.ofNullable(workbenchState.get()).orElse(new WorkbenchState());
 	}
 	public void saveWorkbenchState(WorkbenchState state) {
-		workbenchState = state;
+		workbenchState.set(state);
 	}
 	
 	public List<String> loadWorkspaceNames(){
-		return	workspaces.stream().map(Workspace::getName).collect(Collectors.toList());
+		return new LinkedList<>(workspaces.keySet());
 	}
 
 	public Optional<Workspace> loadWorkspaceByName(String name) {
-		return workspaces.stream().filter(ws -> ws.getName().equals(name)).findFirst();
+		return Optional.ofNullable(workspaces.get(name));
 	}
 
 	public void persistWorkspace(Workspace workspace) {
 		if (workspace.getId() == 0) {
 			long newId = new Random().nextLong(); //todo awkward method to generate new id
 			workspace.setId(newId);			
-			workspaces.add(workspace);
+
 		}
+		workspaces.put(workspace.getName(), workspace);
+		//todo: this breaks functionality, we need to use id as identifier, not name, otherwise, renaming is not possible
+
 	}
 	
 	public List<OptionEntry> loadOptions(){
-		return options;
+		return new LinkedList<>(options);
 	}
 	
 	public void storeOptions(List<OptionEntry> optEntries) {
-		options = optEntries;
+		options.clear();
+		options.addAll(optEntries);
 	}
 
 	public boolean deleteWorkspace(String workspaceName) {
-		return workspaces.removeIf(ws -> ws.getName().equals(workspaceName));
+		return workspaces.remove(workspaceName) != null;
 	}
 
-	
+
+	public void close() {
+		db.commit();
+		db.close();
+	}
 }

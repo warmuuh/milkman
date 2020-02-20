@@ -78,6 +78,12 @@
 			<version>3.2.0</version>
 		</dependency>
 		<dependency>
+			<groupId>org.mapdb</groupId>
+			<artifactId>mapdb</artifactId>
+			<version>2.0-beta13</version>
+		</dependency>
+
+		<dependency>
 			<groupId>com.jfoenix</groupId>
 			<artifactId>jfoenix</artifactId>
 			<version>9.0.9</version>
