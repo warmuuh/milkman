@@ -9,3 +9,4 @@ errors.log
 .idea/
 *.iml
 *.log
+.DS_Store

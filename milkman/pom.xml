@@ -143,20 +143,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>com.gluonhq</groupId>
-				<artifactId>client-maven-plugin</artifactId>
-				<version>0.1.15</version>
-				<configuration>
-					<!-- Uncomment to run on iOS: -->
-					<!-- <target>ios</target>-->
-
-					<mainClass>milkman.MilkmanApplication</mainClass>
-					<nativeImageArgs>
-						<nativeImageArg>--allow-incomplete-classpath</nativeImageArg>
-					</nativeImageArgs>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
 

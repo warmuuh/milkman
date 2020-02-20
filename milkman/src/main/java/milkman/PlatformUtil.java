@@ -14,7 +14,7 @@ public class PlatformUtil {
 	
 	public static String getWritableLocationForFile(String filename) {
 		if (Files.isWritable(new File(".").toPath())) {
-			return filename;
+			return "./" + filename;
 		} 
 		return getOsSpecificAppDataFolder(filename);
 	}

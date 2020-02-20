@@ -21,6 +21,7 @@
         <module>milkman-graphql</module>
         <module>milkman-grpc</module>
         <module>milkman-cli</module>
+        <module>milkman-dist-graal</module>
     </modules>
 
     <properties>
@@ -197,33 +198,6 @@
             </plugins>
         </pluginManagement>
     </build>
-    <profiles>
-        <profile>
-            <id>native</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.gluonhq</groupId>
-                        <artifactId>client-maven-plugin</artifactId>
-                        <version>0.1.15</version>
-                        <configuration>
-                            <!-- Uncomment to run on iOS: -->
-                            <!-- <target>ios</target>-->
-
-                            <mainClass>milkman.MilkmanApplication</mainClass>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-
-            <pluginRepositories>
-                <pluginRepository>
-                    <id>gluon-releases</id>
-                    <url>https://nexus.gluonhq.com/nexus/content/repositories/releases/</url>
-                </pluginRepository>
-            </pluginRepositories>
-        </profile>
-    </profiles>
 
 
 </project>
