@@ -3,6 +3,7 @@ package milkman.utils.fxml;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 
+import com.jfoenix.validation.RequiredFieldValidator;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.scene.Node;
@@ -21,7 +22,10 @@ public class FxmlBuilder {
 		lbl.setGraphic(graphic);
 		return lbl;
 	}
-	
+	public static Label label(String text) {
+		return new Label(text);
+	}
+
 	public static JFXButton button(String text, Runnable onAction) {
 		JFXButton jfxButton = new JFXButton(text);
 		jfxButton.setOnAction(e -> onAction.run());
@@ -52,7 +56,14 @@ public class FxmlBuilder {
 		jfxButton.setId(id);
 		return jfxButton;
 	}
-	
+
+
+	public static RequiredFieldValidator requiredValidator(){
+		 RequiredFieldValidator validator = new RequiredFieldValidator("Input Required!");
+		validator.setIcon(icon(FontAwesomeIcon.WARNING));
+		validator.getIcon().setStyle("-fx-font-family: FontAwesome;");
+		return validator;
+	}
 	
 	public static TextField text(String id, String prompt) {
 		TextField txt = new JFXTextField();
@@ -60,7 +71,30 @@ public class FxmlBuilder {
 		txt.setPromptText(prompt);
 		return txt;
 	}
-	
+
+	public static JFXButton submit(Runnable action) {
+		return submit(action, "Apply");
+	}
+
+	public static JFXButton submit(Runnable action, String text){
+		JFXButton apply = new JFXButton(text);
+		apply.setDefaultButton(true);
+		apply.setOnAction(e -> action.run());
+		return apply;
+	}
+
+	public static JFXButton cancel(Runnable action) {
+		return cancel(action, "Cancel");
+	}
+
+	public static JFXButton cancel(Runnable action, String text){
+		JFXButton cancel = new JFXButton(text);
+		cancel.setCancelButton(true);
+		cancel.setOnAction(e -> action.run());
+		return cancel;
+	}
+
+
 	public static Node icon(FontAwesomeIcon icon) {
 		return icon(icon, "1.5em");
 	}

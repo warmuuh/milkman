@@ -4,6 +4,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import com.jfoenix.validation.RequiredFieldValidator;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import javafx.scene.control.Label;
+import milkman.utils.fxml.FxmlBuilder;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.jfoenix.controls.JFXComboBox;
@@ -22,6 +27,8 @@ import milkman.ui.plugin.WorkspaceSynchronizer;
 import milkman.ui.plugin.WorkspaceSynchronizer.SynchronizationDetailFactory;
 import milkman.utils.fxml.FxmlUtil;
 
+import static milkman.utils.fxml.FxmlBuilder.*;
+
 public class CreateWorkspaceDialog {
 	@FXML VBox syncDetailsArea;
 	@FXML JFXComboBox<SynchronizationDetailFactory> syncSelector;
@@ -36,7 +43,7 @@ public class CreateWorkspaceDialog {
 	
 	public void showAndWait(List<WorkspaceSynchronizer> synchronizers, Toaster toaster) {
 		this.toaster = toaster;
-		JFXDialogLayout content = FxmlUtil.loadAndInitialize("/dialogs/CreateWorkspaceDialog.fxml", this);
+		JFXDialogLayout content = new CreateWorkspaceDialogFxml(this);
 		synchronizers.forEach(i -> syncSelector.getItems().add(i.getDetailFactory()));
 		
 		//default to first item
@@ -99,6 +106,33 @@ public class CreateWorkspaceDialog {
 		return syncDetails == null;
 	}
 	
-	
+
+
+
+	public static class CreateWorkspaceDialogFxml extends JFXDialogLayout {
+
+		public CreateWorkspaceDialogFxml(CreateWorkspaceDialog controller){
+			setHeading(new Label("Create Workspace"));
+
+			VboxExt vbox = new VboxExt();
+
+			vbox.add(new Label("Workspace Name"));
+
+			controller.workspaceNameInput = vbox.add(new JFXTextField());
+			controller.workspaceNameInput.setValidators(requiredValidator());
+
+			vbox.add(new Label("Synchronization"));
+			controller.syncSelector = vbox.add(new JFXComboBox<>());
+			controller.syncDetailsArea = vbox.add(new VBox());
+
+			setBody(vbox);
+
+
+
+			setActions(submit(controller::onCreate, "Create"), cancel(controller::onClose, "Close"));
+
+
+		}
+	}
 	
 }
