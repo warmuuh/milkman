@@ -10,6 +10,9 @@
 
 # Changelog
 
+version 4.2.0 (upcoming)
+  * removed FXML dependency (small performance improvement, preparation for native image)
+
 version 4.1.0 
   * added import/export of whole workspace
   * fixed crash caused by disclosure node in tree view
