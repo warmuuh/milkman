@@ -9,7 +9,6 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
@@ -28,7 +27,7 @@ import static milkman.utils.fxml.FxmlBuilder.*;
 
 public class ManageWorkspacesDialog {
 
-	@FXML JFXListView<String> workspaceList;
+	 JFXListView<String> workspaceList;
 	private Dialog dialog;
 	private ObservableList<String> workspaces;
 
@@ -106,12 +105,12 @@ public class ManageWorkspacesDialog {
 	
 	
 	
-	@FXML public void onClose() {
+	 public void onClose() {
 		dialog.close();
 	}
 
 
-	@FXML public void onCreateWorkspace() {
+	 public void onCreateWorkspace() {
 		onCommand.invoke(new AppCommand.CreateNewWorkspace(ws -> Platform.runLater(() -> {
 			workspaces.add(ws.getName());
 		})));

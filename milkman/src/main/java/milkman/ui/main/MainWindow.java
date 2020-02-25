@@ -1,11 +1,5 @@
 package milkman.ui.main;
 
-import java.awt.Taskbar;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
@@ -23,6 +17,10 @@ import milkman.ui.main.WorkingAreaComponent.WorkingAreaComponentFxml;
 import milkman.ui.plugin.UiThemePlugin;
 import milkman.utils.fxml.FxmlUtil;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.awt.*;
+
 @Slf4j
 @Singleton
 @RequiredArgsConstructor(onConstructor_={@Inject})
@@ -34,7 +32,7 @@ public class MainWindow {
 	private final RequestCollectionComponent requestCollectionComponent;
 	private final ToolbarComponent toolbarComponent;
 	private final HotkeyManager hotkeys;
-	@Getter @FXML StackPane root;
+	@Getter StackPane root;
 	private Scene mainScene;
 	
 

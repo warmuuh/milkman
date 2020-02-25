@@ -1,15 +1,10 @@
 package milkman.ui.main.dialogs;
 
-import java.util.Objects;
-
 import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
-
-import javafx.fxml.FXML;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import lombok.Getter;
 import milkman.utils.fxml.FxmlBuilder;
 import milkman.utils.fxml.FxmlUtil;
@@ -21,9 +16,9 @@ public class CredentialsInputDialog {
 	private Dialog dialog;
 	@Getter boolean cancelled = true;
 
-	@FXML JFXTextField username;
-	@FXML JFXPasswordField password;
-	@FXML Label title;
+	 JFXTextField username;
+	 JFXPasswordField password;
+	 Label title;
 	
 	public CredentialsInputDialog() {}
 
@@ -42,14 +37,14 @@ public class CredentialsInputDialog {
 		return password.getText();
 	}
 	
-	@FXML private void onSave() {
+	 private void onSave() {
 		if (username.validate() && password.validate()) {
 			cancelled = false;
 			dialog.close();	
 		}
 	}
 
-	@FXML private void onCancel() {
+	 private void onCancel() {
 		cancelled = true;
 		dialog.close();
 	}

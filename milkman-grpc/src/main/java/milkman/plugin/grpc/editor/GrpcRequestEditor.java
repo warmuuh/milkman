@@ -1,9 +1,6 @@
 package milkman.plugin.grpc.editor;
 
-import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
-
-import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -20,7 +17,7 @@ import milkman.utils.fxml.GenericBinding;
 public class GrpcRequestEditor implements RequestTypeEditor, AutoCompletionAware {
 
 
-	@FXML TextField endpoint;
+	 TextField endpoint;
 	
 	private GenericBinding<GrpcRequestContainer, String> endpointBinding = GenericBinding.of(GrpcRequestContainer::getEndpoint, GrpcRequestContainer::setEndpoint);
 	private AutoCompleter completer;

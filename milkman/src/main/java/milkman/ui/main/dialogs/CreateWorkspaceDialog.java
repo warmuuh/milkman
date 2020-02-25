@@ -1,38 +1,28 @@
 package milkman.ui.main.dialogs;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-
-import com.jfoenix.validation.RequiredFieldValidator;
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import javafx.scene.control.Label;
-import milkman.utils.fxml.FxmlBuilder;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXTextField;
-
-import javafx.fxml.FXML;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import milkman.domain.SyncDetails;
 import milkman.domain.Workspace;
 import milkman.ui.main.Toaster;
-import milkman.ui.plugin.ImporterPlugin;
 import milkman.ui.plugin.WorkspaceSynchronizer;
 import milkman.ui.plugin.WorkspaceSynchronizer.SynchronizationDetailFactory;
 import milkman.utils.fxml.FxmlUtil;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
+import java.util.List;
 
 import static milkman.utils.fxml.FxmlBuilder.*;
 
 public class CreateWorkspaceDialog {
-	@FXML VBox syncDetailsArea;
-	@FXML JFXComboBox<SynchronizationDetailFactory> syncSelector;
-	@FXML JFXTextField workspaceNameInput;
+	 VBox syncDetailsArea;
+	 JFXComboBox<SynchronizationDetailFactory> syncSelector;
+	 JFXTextField workspaceNameInput;
 	private Dialog dialog;
 
 	SynchronizationDetailFactory selectedSynchronizer = null;
@@ -78,11 +68,11 @@ public class CreateWorkspaceDialog {
 	}
 	
 	
-	@FXML public void onClose() {
+	 public void onClose() {
 		dialog.close();
 	}
 	
-	@FXML public void onCreate() {
+	 public void onCreate() {
 		if (selectedSynchronizer != null && workspaceNameInput.validate()) {
 			try{
 				syncDetails = selectedSynchronizer.createSyncDetails();

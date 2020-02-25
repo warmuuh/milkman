@@ -2,7 +2,6 @@ package milkman.ui.main.dialogs;
 
 import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXTextField;
-import javafx.fxml.FXML;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import lombok.Getter;
@@ -18,10 +17,10 @@ public class StringInputDialog {
 	private Dialog dialog;
 	@Getter boolean cancelled = true;
 
-	@FXML JFXTextField input;
-	@FXML Label promptLabel;
+	 JFXTextField input;
+	 Label promptLabel;
 	private String prefilledValue;
-	@FXML Label title;
+	 Label title;
 	
 	public StringInputDialog() {}
 
@@ -44,14 +43,14 @@ public class StringInputDialog {
 		return !Objects.equals(prefilledValue, input.getText());
 	}
 	
-	@FXML private void onSave() {
+	 private void onSave() {
 		if (input.validate()) {
 			cancelled = false;
 			dialog.close();	
 		}
 	}
 
-	@FXML private void onCancel() {
+	 private void onCancel() {
 		cancelled = true;
 		dialog.close();
 	}

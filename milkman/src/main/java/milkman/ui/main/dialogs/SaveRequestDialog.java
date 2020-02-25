@@ -5,8 +5,6 @@ import com.jfoenix.controls.JFXTextField;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
@@ -16,18 +14,16 @@ import milkman.domain.RequestContainer;
 import milkman.utils.fxml.FxmlBuilder;
 import milkman.utils.fxml.FxmlUtil;
 
-import java.net.URL;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 import static milkman.utils.fxml.FxmlBuilder.*;
 
-public class SaveRequestDialog implements Initializable{
+public class SaveRequestDialog {
 
-	@FXML ListView<String> collectionList;
-	@FXML JFXTextField requestName;
-	@FXML JFXTextField collectionName;
+	 ListView<String> collectionList;
+	 JFXTextField requestName;
+	 JFXTextField collectionName;
 	private Dialog dialog;
 
 	private RequestContainer request;
@@ -45,8 +41,7 @@ public class SaveRequestDialog implements Initializable{
 		dialog.showAndWait();
 	}
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
+	public void initialize() {
 		requestName.setText(request.getName());
 		List<String> collectionNames = collections.stream().map(c -> c.getName()).collect(Collectors.toList());
 		FilteredList<String> filteredList = new FilteredList<String>(FXCollections.observableList(collectionNames));
@@ -77,14 +72,14 @@ public class SaveRequestDialog implements Initializable{
 		return collectionName.getText();
 	}
 	
-	@FXML private void onSave() {
+	 private void onSave() {
 		if (requestName.validate() && collectionName.validate()) {
 			cancelled = false;
 			dialog.close();
 		}
 	}
 
-	@FXML private void onCancel() {
+	 private void onCancel() {
 		cancelled = true;
 		dialog.close();
 	}
@@ -105,11 +100,12 @@ public class SaveRequestDialog implements Initializable{
 
 			vbox.add(label("Existing Collections:"));
 			controller.collectionList = vbox.add(new ListView<>());
-
+			setBody(vbox);
 
 			setActions(submit(controller::onSave, "Save"),
 					cancel(controller::onCancel));
 
+			controller.initialize();
 		}
 	}
 

@@ -2,7 +2,6 @@ package milkman.utils.fxml;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
-
 import com.jfoenix.validation.RequiredFieldValidator;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
@@ -117,7 +116,12 @@ public class FxmlBuilder {
 		hBox.setId(id);
 		return hBox;
 	}
-	
+
+	public static VboxExt vbox(String id) {
+		VboxExt vbox = new VboxExt();
+		vbox.setId(id);
+		return vbox;
+	}
 	public static <T extends Node> T anchorNode(T node, Double top, Double right, Double bottom, Double left) {
 		AnchorPane.setTopAnchor(node, top);
 		AnchorPane.setRightAnchor(node, right);

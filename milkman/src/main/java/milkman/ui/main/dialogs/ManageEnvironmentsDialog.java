@@ -6,7 +6,6 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -24,7 +23,7 @@ import static milkman.utils.fxml.FxmlBuilder.*;
 
 public class ManageEnvironmentsDialog {
 
-	@FXML JFXListView<Environment> environmentList;
+	 JFXListView<Environment> environmentList;
 	private JFXAlert dialog;
 	private ObservableList<Environment> environments;
 
@@ -116,12 +115,12 @@ public class ManageEnvironmentsDialog {
 	
 	
 	
-	@FXML public void onClose() {
+	 public void onClose() {
 		dialog.close();
 	}
 
 
-	@FXML public void onCreateEnvironment() {
+	 public void onCreateEnvironment() {
 		StringInputDialog inputDialog = new StringInputDialog();
 		inputDialog.showAndWait("Create new Environment", "Name of new Environment", "");
 		if (!inputDialog.isCancelled() && inputDialog.wasChanged()) {

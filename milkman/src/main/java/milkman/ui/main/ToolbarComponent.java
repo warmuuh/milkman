@@ -1,48 +1,40 @@
 package milkman.ui.main;
 
-import java.net.URL;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
-
-import javax.inject.Singleton;
-
+import com.jfoenix.controls.JFXButton;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
-import javafx.scene.layout.HBox;
 import lombok.Value;
 import lombok.val;
 import milkman.domain.Environment;
 import milkman.domain.Workspace;
 import milkman.ui.commands.AppCommand;
 import milkman.utils.Event;
-import com.jfoenix.controls.JFXButton;
 
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import javax.inject.Singleton;
+import java.util.List;
+import java.util.Optional;
 
 import static milkman.utils.fxml.FxmlBuilder.*;
 @Singleton
-public class ToolbarComponent implements Initializable {
+public class ToolbarComponent {
 
-	@FXML ChoiceBox<ChoiceboxEntry> workspaceSelection;
+	 ChoiceBox<ChoiceboxEntry> workspaceSelection;
 
 	public final Event<AppCommand> onCommand = new Event<AppCommand>();
 
-	@FXML ChoiceBox<ChoiceboxEntry> environmentSelection;
+	 ChoiceBox<ChoiceboxEntry> environmentSelection;
 
-	@FXML JFXButton syncBtn;
+	 JFXButton syncBtn;
 
 	
 	
 	public interface ChoiceboxEntry {
-		public void invoke();
-		public boolean isSelectable();
+		void invoke();
+		boolean isSelectable();
 	}
 	public static class ChoiceBoxSeparator extends Separator implements ChoiceboxEntry {
 		@Override public void invoke() {}
@@ -121,8 +113,7 @@ public class ToolbarComponent implements Initializable {
 		workspaceSelection.setValue(activeEntry);
 	}
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
+	public void initialize() {
 		workspaceSelection.getSelectionModel().selectedItemProperty()
 		.addListener((obs, o, n) -> changed(o,n, workspaceSelection));
 		
@@ -144,15 +135,15 @@ public class ToolbarComponent implements Initializable {
 		
 	}
 
-	@FXML public void onImport() {
+	 public void onImport() {
 		onCommand.invoke(new AppCommand.RequestImport());
 	}
 
-	@FXML public void onOptions() {
+	 public void onOptions() {
 		onCommand.invoke(new AppCommand.ManageOptions());
 	}
 
-	@FXML public void onSync() {
+	 public void onSync() {
 		syncBtn.setDisable(true);
 		syncBtn.setText("Syncing...");
 		onCommand.invoke(new AppCommand.SyncWorkspace(() -> {
@@ -183,7 +174,7 @@ public class ToolbarComponent implements Initializable {
 			this.getItems().add( button(icon(FontAwesomeIcon.WRENCH), controller::onOptions));
 			
 			
-			controller.initialize(null, null);
+			controller.initialize();
 		}
 	}
 	

@@ -1,7 +1,6 @@
 package milkman.ui.main.dialogs;
 
 import com.jfoenix.controls.JFXDialogLayout;
-import javafx.fxml.FXML;
 import javafx.geometry.Side;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
@@ -18,7 +17,7 @@ import static milkman.utils.fxml.FxmlBuilder.cancel;
 import static milkman.utils.fxml.FxmlBuilder.label;
 
 public class OptionsDialog {
-	@FXML TabPane tabs;
+	 TabPane tabs;
 	private Dialog dialog;
 
 	
@@ -45,7 +44,7 @@ public class OptionsDialog {
 	}
 	
 	
-	@FXML public void onClose() {
+	 public void onClose() {
 		dialog.close();
 	}
 
@@ -55,16 +54,22 @@ public class OptionsDialog {
 			setHeading(label("Options"));
 
 			var tabs = controller.tabs = new TabPane();
+			tabs.setId("tabs");
+//			tabs.setRotateGraphic(true);
+			tabs.setSide(Side.LEFT);
+			tabs.getStyleClass().add("options-tabs");
 			tabs.setPrefHeight(400.0);
 			tabs.setPrefWidth(400.0);
-			tabs.setTabMinWidth(40);
-			tabs.setTabMaxWidth(40);
-			tabs.setMinHeight(100);
-			tabs.setTabMaxHeight(100);
-			tabs.getStyleClass().add("options-tabs");
-			tabs.setSide(Side.LEFT);
+			//javafx setters seem to be broken, have to use property for these configs
+//			tabs.setTabMinWidth(40);
+//			tabs.setTabMaxWidth(40);
+			tabs.tabMinWidthProperty().setValue(40);
+			tabs.tabMaxWidthProperty().setValue(40);
+//			tabs.setMinHeight(150);
+//			tabs.setTabMaxHeight(150);
+			tabs.tabMinHeightProperty().setValue(150);
+			tabs.tabMaxHeightProperty().setValue(150);
 			tabs.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-			tabs.setRotateGraphic(false);
 			setBody(tabs);
 
 			setActions(cancel(controller::onClose, "Close"));

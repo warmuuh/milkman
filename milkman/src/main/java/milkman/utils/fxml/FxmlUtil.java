@@ -2,12 +2,8 @@ package milkman.utils.fxml;
 
 import com.jfoenix.controls.JFXAlert;
 import com.jfoenix.controls.JFXDialogLayout;
-
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -22,26 +18,7 @@ public class FxmlUtil {
 	public static Stage getPrimaryStage() {
 		return primaryStage;
 	}
-	@SneakyThrows
-	public static <T, R extends Node> R loadAndInitialize(String file, T controller){
-		log.info("Loading Fxml: " + file);
-		FXMLLoader loader = new FXMLLoader(FxmlUtil.class.getResource(file));
-		loader.setControllerFactory(c -> controller);
-		R root = loader.load();
-		// to prevent GCing of controller
-		// see https://github.com/sialcasa/mvvmFX/issues/429#issuecomment-238829854 for more details
-		root.setUserData(controller);
-		
-		return root;
-	}
-	
-	@SneakyThrows
-	public static <T, R> R loadAndInitialize(String file){
-		log.info("Loading Fxml: " + file);
-		FXMLLoader loader = new FXMLLoader(FxmlUtil.class.getResource(file));
-		R root = loader.load();
-		return root;
-	}
+
 //	
 //	
 //	public static Stage createDialog(String title, Parent content){

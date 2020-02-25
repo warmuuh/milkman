@@ -1,17 +1,14 @@
 package milkman.ui.main;
 
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.jfoenix.controls.JFXSnackbar;
 import com.jfoenix.controls.JFXSnackbarLayout;
-
 import javafx.application.Platform;
-import javafx.css.PseudoClass;
-import javafx.scene.Node;
 import javafx.util.Duration;
 import lombok.RequiredArgsConstructor;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_={@Inject})

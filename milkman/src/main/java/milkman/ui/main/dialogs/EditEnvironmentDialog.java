@@ -2,7 +2,6 @@ package milkman.ui.main.dialogs;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialogLayout;
-import javafx.fxml.FXML;
 import javafx.scene.control.Dialog;
 import milkman.domain.Environment;
 import milkman.domain.Environment.EnvironmentEntry;
@@ -16,7 +15,7 @@ import static milkman.utils.fxml.FxmlBuilder.label;
 
 public class EditEnvironmentDialog {
 
-	@FXML JfxTableEditor<EnvironmentEntry> editor;
+	 JfxTableEditor<EnvironmentEntry> editor;
 	private Dialog dialog;
 
 	public void showAndWait(Environment environment) {
@@ -35,7 +34,7 @@ public class EditEnvironmentDialog {
 
 	
 	
-	@FXML public void onClose() {
+	 public void onClose() {
 		dialog.close();
 	}
 

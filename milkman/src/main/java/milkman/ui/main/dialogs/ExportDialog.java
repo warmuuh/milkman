@@ -3,7 +3,6 @@ package milkman.ui.main.dialogs;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDialogLayout;
-import javafx.fxml.FXML;
 import javafx.scene.control.Dialog;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
@@ -18,9 +17,9 @@ import java.util.List;
 import static milkman.utils.fxml.FxmlBuilder.*;
 
 public class ExportDialog<T> {
-	@FXML VBox exportArea;
-	@FXML JFXComboBox<Exporter<T>> exportSelector;
-	@FXML JFXButton exportBtn;
+	 VBox exportArea;
+	 JFXComboBox<Exporter<T>> exportSelector;
+	 JFXButton exportBtn;
 	
 	
 	private Dialog dialog;
@@ -62,11 +61,11 @@ public class ExportDialog<T> {
 	}
 	
 	
-	@FXML public void onClose() {
+	 public void onClose() {
 		dialog.close();
 	}
 	
-	@FXML public void onExport() {
+	 public void onExport() {
 		if (selectedExporter != null) {
 			if (selectedExporter.doExport(objToExport, templater, toaster)) {
 				dialog.close();
@@ -80,10 +79,11 @@ public class ExportDialog<T> {
 
 			var vbox = new FxmlBuilder.VboxExt();
 			controller.exportSelector = vbox.add(new JFXComboBox());
-			controller.exportArea = vbox.add(new VBox());
+			controller.exportArea = vbox.add(vbox("exportArea"));
 			setBody(vbox);
 
-			setActions(submit(controller::onExport, "Export"),
+			controller.exportBtn = submit(controller::onExport, "Export");
+			setActions(controller.exportBtn,
 					cancel(controller::onClose, "Close"));
 
 		}

@@ -2,7 +2,6 @@ package milkman.ui.main.dialogs;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialogLayout;
-import javafx.fxml.FXML;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -17,9 +16,9 @@ public class ConfirmationInputDialog {
 	private Dialog dialog;
 	@Getter boolean cancelled = true;
 
-	@FXML Label promptLabel;
+	 Label promptLabel;
 
-	@FXML Label title;
+	 Label title;
 
 	public ConfirmationInputDialog() {}
 
@@ -34,12 +33,12 @@ public class ConfirmationInputDialog {
 	}
 
 
-	@FXML private void onSave() {
+	 private void onSave() {
 		cancelled = false;
 		dialog.close();
 	}
 
-	@FXML private void onCancel() {
+	 private void onCancel() {
 		cancelled = true;
 		dialog.close();
 	}

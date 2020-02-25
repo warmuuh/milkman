@@ -1,15 +1,14 @@
 package milkman.ui.main;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import milkman.ui.main.options.CoreApplicationOptionsProvider;
+import milkman.ui.plugin.UiPluginManager;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
-import lombok.RequiredArgsConstructor;
-import milkman.ui.main.options.CoreApplicationOptionsProvider;
-import milkman.ui.plugin.UiPluginManager;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_={@Inject})

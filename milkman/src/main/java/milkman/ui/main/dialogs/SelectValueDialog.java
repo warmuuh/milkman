@@ -2,7 +2,6 @@ package milkman.ui.main.dialogs;
 
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDialogLayout;
-import javafx.fxml.FXML;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import lombok.Getter;
@@ -18,9 +17,9 @@ public class SelectValueDialog {
 	private Dialog dialog;
 	@Getter boolean cancelled = true;
 
-	@FXML JFXComboBox<String> valueSelection;
-	@FXML Label promptLabel;
-	@FXML Label title;
+	 JFXComboBox<String> valueSelection;
+	 Label promptLabel;
+	 Label title;
 	
 	public SelectValueDialog() {}
 
@@ -40,12 +39,12 @@ public class SelectValueDialog {
 		return valueSelection.getValue();
 	}
 	
-	@FXML private void onSave() {
+	 private void onSave() {
 		cancelled = false;
 		dialog.close();	
 	}
 
-	@FXML private void onCancel() {
+	 private void onCancel() {
 		cancelled = true;
 		dialog.close();
 	}
