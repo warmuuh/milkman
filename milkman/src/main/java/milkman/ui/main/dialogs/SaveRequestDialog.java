@@ -1,36 +1,29 @@
 package milkman.ui.main.dialogs;
 
-import java.net.URL;
-import java.util.Collections;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.stream.Collectors;
-
 import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXTextField;
-
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.Parent;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.Region;
-import javafx.stage.Stage;
 import lombok.Getter;
 import milkman.domain.Collection;
 import milkman.domain.RequestContainer;
+import milkman.utils.fxml.FxmlBuilder;
 import milkman.utils.fxml.FxmlUtil;
 
-public class SaveRequestDialog implements Initializable{
+import java.util.List;
+import java.util.stream.Collectors;
 
-	@FXML ListView<String> collectionList;
-	@FXML JFXTextField requestName;
-	@FXML JFXTextField collectionName;
+import static milkman.utils.fxml.FxmlBuilder.*;
+
+public class SaveRequestDialog {
+
+	 ListView<String> collectionList;
+	 JFXTextField requestName;
+	 JFXTextField collectionName;
 	private Dialog dialog;
 
 	private RequestContainer request;
@@ -43,13 +36,12 @@ public class SaveRequestDialog implements Initializable{
 	}
 
 	public void showAndWait() {
-		JFXDialogLayout content = FxmlUtil.loadAndInitialize("/dialogs/SaveRequestDialog.fxml", this);
+		JFXDialogLayout content = new SaveRequestDialogFxml(this);
 		dialog = FxmlUtil.createDialog(content);
 		dialog.showAndWait();
 	}
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
+	public void initialize() {
 		requestName.setText(request.getName());
 		List<String> collectionNames = collections.stream().map(c -> c.getName()).collect(Collectors.toList());
 		FilteredList<String> filteredList = new FilteredList<String>(FXCollections.observableList(collectionNames));
@@ -80,16 +72,41 @@ public class SaveRequestDialog implements Initializable{
 		return collectionName.getText();
 	}
 	
-	@FXML private void onSave() {
+	 private void onSave() {
 		if (requestName.validate() && collectionName.validate()) {
 			cancelled = false;
 			dialog.close();
 		}
 	}
 
-	@FXML private void onCancel() {
+	 private void onCancel() {
 		cancelled = true;
 		dialog.close();
+	}
+
+
+	public static class SaveRequestDialogFxml extends JFXDialogLayout {
+		public SaveRequestDialogFxml(SaveRequestDialog controller){
+			setHeading(label("Save Request"));
+
+			var vbox = new FxmlBuilder.VboxExt();
+			vbox.add(label("Request Name"));
+			controller.requestName = vbox.add(new JFXTextField());
+			controller.requestName.setValidators(requiredValidator());
+
+			vbox.add(label("Collection:"));
+			controller.collectionName = vbox.add(new JFXTextField());
+			controller.collectionName.setValidators(requiredValidator());
+
+			vbox.add(label("Existing Collections:"));
+			controller.collectionList = vbox.add(new ListView<>());
+			setBody(vbox);
+
+			setActions(submit(controller::onSave, "Save"),
+					cancel(controller::onCancel));
+
+			controller.initialize();
+		}
 	}
 
 }

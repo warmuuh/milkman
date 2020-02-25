@@ -1,7 +1,6 @@
 package milkman.ui.main;
 
 import com.jfoenix.controls.JFXTabPane;
-import javafx.fxml.FXML;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.Tab;
@@ -26,14 +25,14 @@ import static milkman.utils.fxml.FxmlBuilder.hbox;
 @Singleton
 public class RequestComponent {
 
-	@FXML JFXTabPane tabs;
-	@FXML HBox mainEditingArea;
-	@FXML SplitMenuButton saveBtn;
+	 JFXTabPane tabs;
+	 HBox mainEditingArea;
+	 SplitMenuButton saveBtn;
 
 	
 	public final Event<UiCommand> onCommand = new Event<>();
 	@Getter private RequestContainer currentRequest;
-	@FXML SplitMenuButton submitBtn;
+	 SplitMenuButton submitBtn;
 	private RequestTypeManager reqTypeManager;
 	private UiPluginManager plugins; 
 	
@@ -85,7 +84,7 @@ public class RequestComponent {
 		
 	}
 
-	@FXML public void onSubmit() {
+	 public void onSubmit() {
 		try {
 			onCommand.invoke(new UiCommand.SubmitRequest(currentRequest));
 		} catch (Exception e) {
@@ -94,17 +93,17 @@ public class RequestComponent {
 	}
 	
 
-	@FXML public void onSave() {
+	 public void onSave() {
 		onCommand.invoke(new UiCommand.SaveRequestCommand(currentRequest));
 	}
 	
 
-	@FXML public void onSaveAs() {
+	 public void onSaveAs() {
 		onCommand.invoke(new UiCommand.SaveRequestAsCommand(currentRequest));
 	}
 
 
-	@FXML public void onExport() {
+	 public void onExport() {
 		onCommand.invoke(new UiCommand.ExportRequest(currentRequest));
 	}
 

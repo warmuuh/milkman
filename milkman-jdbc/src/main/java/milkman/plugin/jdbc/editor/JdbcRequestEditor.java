@@ -1,8 +1,6 @@
 package milkman.plugin.jdbc.editor;
 
 import com.jfoenix.controls.JFXTextField;
-
-import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -19,7 +17,7 @@ import milkman.utils.fxml.GenericBinding;
 public class JdbcRequestEditor implements RequestTypeEditor, AutoCompletionAware {
 
 	
-	@FXML TextField jdbcUrl;
+	 TextField jdbcUrl;
 	
 	private GenericBinding<JdbcRequestContainer, String> urlBinding = GenericBinding.of(JdbcRequestContainer::getJdbcUrl, JdbcRequestContainer::setJdbcUrl);
 

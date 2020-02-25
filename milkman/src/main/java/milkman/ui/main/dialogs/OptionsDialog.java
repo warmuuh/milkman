@@ -1,34 +1,28 @@
 package milkman.ui.main.dialogs;
 
-import java.util.List;
-
-import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDialogLayout;
-import com.jfoenix.controls.JFXTabPane;
-
-import javafx.fxml.FXML;
+import javafx.geometry.Side;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
-import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.layout.VBox;
-import javafx.util.StringConverter;
-import milkman.domain.Workspace;
-import milkman.ui.main.Toaster;
 import milkman.ui.main.options.OptionDialogBuilder;
 import milkman.ui.main.options.OptionDialogPane;
-import milkman.ui.plugin.ImporterPlugin;
 import milkman.ui.plugin.OptionPageProvider;
 import milkman.utils.fxml.FxmlUtil;
 
+import java.util.List;
+
+import static milkman.utils.fxml.FxmlBuilder.cancel;
+import static milkman.utils.fxml.FxmlBuilder.label;
+
 public class OptionsDialog {
-	@FXML TabPane tabs;
+	 TabPane tabs;
 	private Dialog dialog;
 
 	
 	public void showAndWait(List<OptionPageProvider> optionPageProviders) {
-		JFXDialogLayout content = FxmlUtil.loadAndInitialize("/dialogs/OptionsDialog.fxml", this);
+		JFXDialogLayout content = new OptionsDialogFxml(this);
 		content.setPrefWidth(600);
 		for(OptionPageProvider<?> p : optionPageProviders) {
 			OptionDialogPane pane = p.getOptionsDialog(new OptionDialogBuilder());
@@ -50,8 +44,35 @@ public class OptionsDialog {
 	}
 	
 	
-	@FXML public void onClose() {
+	 public void onClose() {
 		dialog.close();
 	}
-	
+
+
+	public class OptionsDialogFxml extends JFXDialogLayout {
+		public OptionsDialogFxml(OptionsDialog controller){
+			setHeading(label("Options"));
+
+			var tabs = controller.tabs = new TabPane();
+			tabs.setId("tabs");
+//			tabs.setRotateGraphic(true);
+			tabs.setSide(Side.LEFT);
+			tabs.getStyleClass().add("options-tabs");
+			tabs.setPrefHeight(400.0);
+			tabs.setPrefWidth(400.0);
+			//javafx setters seem to be broken, have to use property for these configs
+//			tabs.setTabMinWidth(40);
+//			tabs.setTabMaxWidth(40);
+			tabs.tabMinWidthProperty().setValue(40);
+			tabs.tabMaxWidthProperty().setValue(40);
+//			tabs.setMinHeight(150);
+//			tabs.setTabMaxHeight(150);
+			tabs.tabMinHeightProperty().setValue(150);
+			tabs.tabMaxHeightProperty().setValue(150);
+			tabs.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+			setBody(tabs);
+
+			setActions(cancel(controller::onClose, "Close"));
+		}
+	}
 }

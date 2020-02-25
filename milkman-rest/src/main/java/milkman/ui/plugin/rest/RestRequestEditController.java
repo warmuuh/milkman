@@ -2,8 +2,6 @@ package milkman.ui.plugin.rest;
 
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
-
-import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -20,8 +18,8 @@ import milkman.utils.fxml.GenericBinding;
 
 public class RestRequestEditController implements RequestTypeEditor, AutoCompletionAware {
 
-	@FXML TextField requestUrl;
-	@FXML JFXComboBox<String> httpMethod;
+	 TextField requestUrl;
+	 JFXComboBox<String> httpMethod;
 	
 	private GenericBinding<RestRequestContainer, String> urlBinding = GenericBinding.of(RestRequestContainer::getUrl, RestRequestContainer::setUrl);
 	private GenericBinding<RestRequestContainer, String> httpMethodBinding = GenericBinding.of(RestRequestContainer::getHttpMethod, RestRequestContainer::setHttpMethod);

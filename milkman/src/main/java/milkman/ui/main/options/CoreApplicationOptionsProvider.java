@@ -1,7 +1,5 @@
 package milkman.ui.main.options;
 
-import java.util.Arrays;
-
 import lombok.Data;
 import milkman.ui.main.ThemeSwitcher;
 import milkman.ui.plugin.OptionPageProvider;

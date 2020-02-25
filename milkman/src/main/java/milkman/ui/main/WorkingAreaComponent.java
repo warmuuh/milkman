@@ -1,46 +1,32 @@
 package milkman.ui.main;
 
-import static milkman.utils.fxml.FxmlBuilder.button;
-import static milkman.utils.fxml.FxmlBuilder.hbox;
-import static milkman.utils.fxml.FxmlBuilder.icon;
-
-import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.jfoenix.controls.JFXTabPane;
-
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.beans.value.ChangeListener;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.Tab;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
-import milkman.domain.ResponseContainer;
 import milkman.ui.commands.UiCommand;
 import milkman.ui.commands.UiCommand.CloseRequest.CloseType;
 import milkman.ui.main.RequestComponent.RequestComponentFxml;
 import milkman.ui.main.ResponseComponent.ResponseComponentFxml;
 import milkman.utils.AsyncResponseControl;
 import milkman.utils.Event;
-import milkman.utils.fxml.FxmlBuilder.HboxExt;
-import milkman.utils.fxml.FxmlBuilder.VboxExt;
+import milkman.utils.fxml.FxmlBuilder.*;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.List;
+
+import static milkman.utils.fxml.FxmlBuilder.*;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_={@Inject})
 @Slf4j
-public class WorkingAreaComponent implements Initializable {
+public class WorkingAreaComponent {
 
 	private static final String CSS_CLASS_REQUEST_ACTIVE = "mm-request-active";
 	private static final String CSS_CLASS_REQUEST_DIRTY = "mm-request-dirty";
@@ -49,7 +35,7 @@ public class WorkingAreaComponent implements Initializable {
 
 	
 	public final Event<UiCommand> onCommand = new Event<UiCommand>();
-	@FXML JFXTabPane tabPane;
+	 JFXTabPane tabPane;
 	private ChangeListener<? super Tab> tabChangeListener;
 	
 	public void display(RequestContainer activeRequest, List<RequestContainer> openedRequests) {
@@ -68,7 +54,7 @@ public class WorkingAreaComponent implements Initializable {
 			tabPane.getTabs().add(tab);
 			if (isActive)
 				activeTab = tab;
-		};
+		}
 		if (activeTab != null) {
 			Tab t = activeTab;
 //			Platform.runLater(() -> {
@@ -135,7 +121,7 @@ public class WorkingAreaComponent implements Initializable {
 		}
 	}
 	
-	@FXML public void onNewRequestClick() {
+	 public void onNewRequestClick() {
 		onCommand.invoke(new UiCommand.NewRequest(tabPane));
 	}
 
@@ -153,8 +139,7 @@ public class WorkingAreaComponent implements Initializable {
 	
 	
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
+	public void initialize() {
 		tabChangeListener = (obs, o, n) -> {
 			if (n != null && o != n) {
 				RequestContainer r = (RequestContainer) n.getUserData();
@@ -188,7 +173,7 @@ public class WorkingAreaComponent implements Initializable {
 			splitPane.getItems().add(new ResponseComponentFxml(controller.responseComponent));
 			
 			
-			controller.initialize(null, null);
+			controller.initialize();
 		}
 	}
 	
