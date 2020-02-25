@@ -3,18 +3,20 @@ package milkman.ui.main.dialogs;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXListCell;
+import com.jfoenix.controls.JFXListView;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import milkman.ui.commands.AppCommand;
 import milkman.utils.Event;
 import milkman.utils.fxml.FxmlUtil;
@@ -22,9 +24,11 @@ import milkman.utils.fxml.NoSelectionModel;
 
 import java.util.List;
 
+import static milkman.utils.fxml.FxmlBuilder.*;
+
 public class ManageWorkspacesDialog {
 
-	@FXML ListView<String> workspaceList;
+	@FXML JFXListView<String> workspaceList;
 	private Dialog dialog;
 	private ObservableList<String> workspaces;
 
@@ -91,7 +95,7 @@ public class ManageWorkspacesDialog {
 	}
 	
 	public void showAndWait(List<String> workspaceNames) {
-		JFXDialogLayout content = FxmlUtil.loadAndInitialize("/dialogs/ManageWorkspacesDialog.fxml", this);
+		JFXDialogLayout content = new ManageWorkspacesDialogFxml(this);
 		workspaces = FXCollections.observableList(workspaceNames);
 		workspaceList.setItems(workspaces);
 		workspaceList.setCellFactory(l -> new WorkspaceCell());
@@ -112,5 +116,31 @@ public class ManageWorkspacesDialog {
 			workspaces.add(ws.getName());
 		})));
 	}
+
+
+	public static class ManageWorkspacesDialogFxml extends JFXDialogLayout {
+		public ManageWorkspacesDialogFxml(ManageWorkspacesDialog controller){
+			setHeading(label("Workspaces"));
+
+			StackPane stackPane = new StackPane();
+			var list = controller.workspaceList = new JFXListView<>();
+			list.setVerticalGap(10.0);
+			list.setMinHeight(400);
+			stackPane.getChildren().add(list);
+
+			var btn = button(icon(FontAwesomeIcon.PLUS, "1.5em"), controller::onCreateWorkspace);
+			btn.getStyleClass().add("btn-add-entry");
+			StackPane.setAlignment(btn, Pos.BOTTOM_RIGHT);
+			stackPane.getChildren().add(btn);
+
+			setBody(stackPane);
+
+			JFXButton close = cancel(controller::onClose, "Close");
+			close.getStyleClass().add("dialog-accept");
+			setActions(close);
+
+		}
+	}
+
 
 }

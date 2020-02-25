@@ -1,10 +1,7 @@
 package milkman.ui.main.dialogs;
 
-import java.util.List;
-
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDialogLayout;
-
 import javafx.fxml.FXML;
 import javafx.scene.control.Dialog;
 import javafx.scene.layout.VBox;
@@ -12,7 +9,12 @@ import javafx.util.StringConverter;
 import milkman.domain.Workspace;
 import milkman.ui.main.Toaster;
 import milkman.ui.plugin.ImporterPlugin;
+import milkman.utils.fxml.FxmlBuilder;
 import milkman.utils.fxml.FxmlUtil;
+
+import java.util.List;
+
+import static milkman.utils.fxml.FxmlBuilder.*;
 
 public class ImportDialog {
 	@FXML VBox importerArea;
@@ -26,7 +28,7 @@ public class ImportDialog {
 	public void showAndWait(List<ImporterPlugin> importers, Toaster toaster, Workspace workspace) {
 		this.toaster = toaster;
 		this.workspace = workspace;
-		JFXDialogLayout content = FxmlUtil.loadAndInitialize("/dialogs/ImportDialog.fxml", this);
+		JFXDialogLayout content = new ImportDialogFxml(this);
 		importerSelector.setPromptText("Select Importer");
 		importers.forEach(i -> importerSelector.getItems().add(i));
 		importerSelector.setConverter(new StringConverter<ImporterPlugin>() {
@@ -62,6 +64,23 @@ public class ImportDialog {
 			if (selectedImporter.importInto(workspace, toaster)) {
 				dialog.close();
 			}
+		}
+	}
+
+
+
+	public class ImportDialogFxml extends JFXDialogLayout {
+		public ImportDialogFxml(ImportDialog controller){
+			setHeading(label("Import"));
+
+			var vbox = new FxmlBuilder.VboxExt();
+			controller.importerSelector = vbox.add(new JFXComboBox());
+			controller.importerArea = vbox.add(new VBox());
+			setBody(vbox);
+
+			setActions(submit(controller::onImport, "Import"),
+					cancel(controller::onClose, "Close"));
+
 		}
 	}
 }
