@@ -1,42 +1,29 @@
 package milkman.ui.main.dialogs;
 
-import java.util.Collections;
-import java.util.List;
-
-import com.jfoenix.controls.JFXAlert;
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXDialog;
-import com.jfoenix.controls.JFXDialogLayout;
-import com.jfoenix.controls.JFXListCell;
-import com.jfoenix.controls.JFXListView;
-import com.jfoenix.controls.JFXToggleNode;
-
+import com.jfoenix.controls.*;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
-import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Dialog;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
+import javafx.scene.layout.StackPane;
 import milkman.domain.Environment;
 import milkman.ui.commands.AppCommand;
 import milkman.utils.Event;
 import milkman.utils.fxml.FxmlUtil;
 import milkman.utils.fxml.NoSelectionModel;
 
+import java.util.List;
+
+import static milkman.utils.fxml.FxmlBuilder.*;
+
 public class ManageEnvironmentsDialog {
 
-	@FXML JFXListView<Environment> environmentList;
+	 JFXListView<Environment> environmentList;
 	private JFXAlert dialog;
 	private ObservableList<Environment> environments;
 
@@ -112,7 +99,7 @@ public class ManageEnvironmentsDialog {
 	
 	public void showAndWait(List<Environment> envs) {
 		this.originalList = envs;
-		JFXDialogLayout content = FxmlUtil.loadAndInitialize("/dialogs/ManageEnvironmentsDialog.fxml", this);
+		JFXDialogLayout content = new ManageEnvironmentsDialogFxml(this);
 		environments = FXCollections.observableList(envs);
 		environmentList.setItems(environments);
 		environmentList.setCellFactory(l -> new EnvironmentCell());
@@ -128,12 +115,12 @@ public class ManageEnvironmentsDialog {
 	
 	
 	
-	@FXML public void onClose() {
+	 public void onClose() {
 		dialog.close();
 	}
 
 
-	@FXML public void onCreateEnvironment() {
+	 public void onCreateEnvironment() {
 		StringInputDialog inputDialog = new StringInputDialog();
 		inputDialog.showAndWait("Create new Environment", "Name of new Environment", "");
 		if (!inputDialog.isCancelled() && inputDialog.wasChanged()) {
@@ -145,6 +132,32 @@ public class ManageEnvironmentsDialog {
 			Platform.runLater(() -> environmentList.setItems(environments)); 
 		}
 		
+	}
+
+	public static class ManageEnvironmentsDialogFxml extends JFXDialogLayout {
+		public ManageEnvironmentsDialogFxml(ManageEnvironmentsDialog controller){
+
+			setHeading(label("Manage Environments"));
+
+			StackPane stackPane = new StackPane();
+			var list = controller.environmentList = new JFXListView<>();
+			list.setVerticalGap(10.0);
+			list.setMinHeight(400);
+			stackPane.getChildren().add(list);
+
+			var btn = button(icon(FontAwesomeIcon.PLUS, "1.5em"), controller::onCreateEnvironment);
+			btn.getStyleClass().add("btn-add-entry");
+			StackPane.setAlignment(btn, Pos.BOTTOM_RIGHT);
+			stackPane.getChildren().add(btn);
+
+			setBody(stackPane);
+
+			JFXButton close = cancel(controller::onClose, "Close");
+			close.getStyleClass().add("dialog-accept");
+			setActions(close);
+
+		}
+
 	}
 
 }

@@ -1,10 +1,5 @@
 package milkman.plugin.jdbc.editor;
 
-import static milkman.utils.FunctionalUtils.run;
-
-import java.util.Collections;
-
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Tab;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -13,6 +8,10 @@ import milkman.plugin.jdbc.SqlContentType;
 import milkman.plugin.jdbc.domain.JdbcSqlAspect;
 import milkman.ui.components.ContentEditor;
 import milkman.ui.plugin.RequestAspectEditor;
+
+import java.util.Collections;
+
+import static milkman.utils.FunctionalUtils.run;
 
 public class SqlAspectEditor implements RequestAspectEditor {
 

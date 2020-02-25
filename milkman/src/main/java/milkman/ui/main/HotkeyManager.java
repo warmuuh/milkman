@@ -1,7 +1,5 @@
 package milkman.ui.main;
 
-import javax.inject.Singleton;
-
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -9,14 +7,10 @@ import javafx.scene.input.KeyCombination;
 import milkman.ui.commands.AppCommand;
 import milkman.ui.commands.AppCommand.EditCurrentEnvironment;
 import milkman.ui.commands.UiCommand;
-import milkman.ui.commands.UiCommand.CancelActiveRequest;
-import milkman.ui.commands.UiCommand.CloseActiveRequest;
-import milkman.ui.commands.UiCommand.NewRequest;
-import milkman.ui.commands.UiCommand.RenameActiveRequest;
-import milkman.ui.commands.UiCommand.RenameRequest;
-import milkman.ui.commands.UiCommand.SaveActiveRequest;
-import milkman.ui.commands.UiCommand.SubmitActiveRequest;
+import milkman.ui.commands.UiCommand.*;
 import milkman.utils.Event;
+
+import javax.inject.Singleton;
 
 @Singleton
 public class HotkeyManager {

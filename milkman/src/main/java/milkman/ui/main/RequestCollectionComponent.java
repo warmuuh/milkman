@@ -10,7 +10,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
-import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
@@ -49,10 +48,10 @@ public class RequestCollectionComponent {
 
 	public final Event<UiCommand> onCommand = new Event<UiCommand>();
 
-	@FXML
+
 	JFXTreeView<Node> collectionContainer;
 	
-	@FXML
+
 	TextField searchField;
 
 	Map<String, Boolean> expansionCache = new HashMap<>();
@@ -228,8 +227,7 @@ public class RequestCollectionComponent {
 							//as we cant use filtered lists in folders (See line 193)
 							//we have to do cheap version here and check all contaiend folders&requests, if they
 							//contain a matching request and show the whole folder
-							if (findMatchingRequestInFolderStructure(ro, searchTerm))
-								return true;
+							return findMatchingRequestInFolderStructure(ro, searchTerm);
 						} else if (ro.getValue().getUserData() instanceof RequestContainer) {
 							RequestContainer req = (RequestContainer) ro.getValue().getUserData();
 							return req.match(searchTerm);
@@ -313,7 +311,7 @@ public class RequestCollectionComponent {
 	}
 	
 	
-	@FXML public void clearSearch() {
+	 public void clearSearch() {
 		searchField.clear();
 	}
 	

@@ -1,8 +1,5 @@
 package milkman.plugin.scripting;
 
-import java.util.Collections;
-
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Tab;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -10,6 +7,8 @@ import milkman.domain.RequestContainer;
 import milkman.plugin.scripting.conenttype.JavascriptContentType;
 import milkman.ui.components.ContentEditor;
 import milkman.ui.plugin.RequestAspectEditor;
+
+import java.util.Collections;
 
 public class ScriptingAspectEditor implements RequestAspectEditor {
 

@@ -1,24 +1,25 @@
 package milkman.ui.main.dialogs;
 
-import java.util.List;
-
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDialogLayout;
-
-import javafx.fxml.FXML;
 import javafx.scene.control.Dialog;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import milkman.ui.main.Toaster;
 import milkman.ui.plugin.Exporter;
 import milkman.ui.plugin.Templater;
+import milkman.utils.fxml.FxmlBuilder;
 import milkman.utils.fxml.FxmlUtil;
 
+import java.util.List;
+
+import static milkman.utils.fxml.FxmlBuilder.*;
+
 public class ExportDialog<T> {
-	@FXML VBox exportArea;
-	@FXML JFXComboBox<Exporter<T>> exportSelector;
-	@FXML JFXButton exportBtn;
+	 VBox exportArea;
+	 JFXComboBox<Exporter<T>> exportSelector;
+	 JFXButton exportBtn;
 	
 	
 	private Dialog dialog;
@@ -32,7 +33,7 @@ public class ExportDialog<T> {
 		this.templater = templater;
 		this.toaster = toaster;
 		this.objToExport = objToExport;
-		JFXDialogLayout content = FxmlUtil.loadAndInitialize("/dialogs/ExportDialog.fxml", this);
+		JFXDialogLayout content = new ExportDialogFxml(this);
 		exportSelector.setPromptText("Select Exporter");
 		exporters.forEach(exportSelector.getItems()::add);
 		exportSelector.setConverter(new StringConverter<Exporter<T>>() {
@@ -60,15 +61,31 @@ public class ExportDialog<T> {
 	}
 	
 	
-	@FXML public void onClose() {
+	 public void onClose() {
 		dialog.close();
 	}
 	
-	@FXML public void onExport() {
+	 public void onExport() {
 		if (selectedExporter != null) {
 			if (selectedExporter.doExport(objToExport, templater, toaster)) {
 				dialog.close();
 			}
+		}
+	}
+
+	public class ExportDialogFxml extends JFXDialogLayout {
+		public ExportDialogFxml(ExportDialog controller){
+			setHeading(label("Export"));
+
+			var vbox = new FxmlBuilder.VboxExt();
+			controller.exportSelector = vbox.add(new JFXComboBox());
+			controller.exportArea = vbox.add(vbox("exportArea"));
+			setBody(vbox);
+
+			controller.exportBtn = submit(controller::onExport, "Export");
+			setActions(controller.exportBtn,
+					cancel(controller::onClose, "Close"));
+
 		}
 	}
 }

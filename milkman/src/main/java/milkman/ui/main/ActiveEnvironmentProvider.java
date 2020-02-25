@@ -1,11 +1,11 @@
 package milkman.ui.main;
 
-import java.util.Optional;
-import java.util.function.Supplier;
-
 import lombok.RequiredArgsConstructor;
 import milkman.ctrl.WorkspaceController;
 import milkman.domain.Environment;
+
+import java.util.Optional;
+import java.util.function.Supplier;
 
 
 @RequiredArgsConstructor

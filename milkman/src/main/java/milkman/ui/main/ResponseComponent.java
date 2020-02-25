@@ -4,8 +4,6 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTabPane;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.application.Platform;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -22,28 +20,26 @@ import milkman.utils.fxml.FxmlBuilder.*;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.net.URL;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 
 import static milkman.utils.fxml.FxmlBuilder.*;
 
 @Singleton
-public class ResponseComponent implements Initializable {
+public class ResponseComponent {
 
 	private final UiPluginManager plugins;
 
-	@FXML JFXTabPane tabs;
+	 JFXTabPane tabs;
 
-	@FXML Node spinner;
+	 Node spinner;
 
-	@FXML HBox statusDisplay;
+	 HBox statusDisplay;
 
-	@FXML JFXButton cancellation;
+	 JFXButton cancellation;
 	
-	@FXML TinySpinner asyncControlSpinner;
+	 TinySpinner asyncControlSpinner;
 
 	private int oldSelection = -1;
 
@@ -125,8 +121,7 @@ public class ResponseComponent implements Initializable {
 	}
 
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
+	public void initialize() {
 		hideSpinner();
 	}
 	
@@ -174,7 +169,7 @@ public class ResponseComponent implements Initializable {
 			stackPane.getChildren().add(cancel);
 			
 			
-			controller.initialize(null, null);
+			controller.initialize();
 		}
 	}
 	
