@@ -29,51 +29,6 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>com.gluonhq</groupId>
-                <artifactId>client-maven-plugin</artifactId>
-                <version>0.1.15</version>
-                <configuration>
-                    <!-- Uncomment to run on iOS: -->
-                    <!-- <target>ios</target>-->
-
-                    <mainClass>milkman.MilkmanApplication</mainClass>
-                    <resourcesList>
-                        <list>.*\\.txt$</list> <!-- headers.txt from rest plugin -->
-                    </resourcesList>
-                    <reflectionList>
-                        <list>milkman.MilkmanPreloader</list>
-
-                        <!-- see https://github.com/h2database/h2database/blob/version-1.4.196/h2/src/main/org/h2/store/fs/FilePath.java#L71 -->
-                        <list>org.h2.store.fs.FilePathDisk</list>
-<!--                        <list>org.h2.store.fs.FilePathMem</list>-->
-<!--                        <list>org.h2.store.fs.FilePathMemLZF</list>-->
-<!--                        <list>org.h2.store.fs.FilePathNioMem</list>-->
-<!--                        <list>org.h2.store.fs.FilePathNioMemLZF</list>-->
-<!--                        <list>org.h2.store.fs.FilePathSplit</list>-->
-<!--                        <list>org.h2.store.fs.FilePathNio</list>-->
-<!--                        <list>org.h2.store.fs.FilePathNioMapped</list>-->
-<!--                        <list>org.h2.store.fs.FilePathZip</list>-->
-<!--                        <list>org.h2.store.fs.FilePathRetryOnInterrup</list>-->
-
-                        <!-- javafx missing classes -->
-                        <list>javafx.scene.control.TableColumnBase</list>
-                        <list>javafx.css.converter.SizeConverter$SequenceConverter</list> <!-- loaded by JavaFXCompatibility  -->
-                        <list>javafx.scene.text.Text</list><!-- specific method loaded by JavaFXCompatibility  -->
-                        <list>com.sun.javafx.text.PrismTextLayout</list>
-                        <list>javafx.scene.control.skin.TextFieldSkin</list>
-
-
-                    </reflectionList>
-
-                    <nativeImageArgs>
-                        <nativeImageArg>--allow-incomplete-classpath</nativeImageArg>
-                        <nativeImageArg>-H:DynamicProxyConfigurationFiles=${project.basedir}/src/main/native-image/dynamicProxies.json</nativeImageArg>
-                        <nativeImageArg>--initialize-at-build-time=org.fxmisc.richtext.TextFlowExt$TextLayout</nativeImageArg>
-                        <nativeImageArg>--initialize-at-build-time=org.fxmisc.richtext.TextFlowExt$TextLine</nativeImageArg>
-                    </nativeImageArgs>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.2</version>
@@ -95,6 +50,72 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>native</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.gluonhq</groupId>
+                        <artifactId>client-maven-plugin</artifactId>
+                        <version>0.1.15</version>
+                        <configuration>
+                            <!-- Uncomment to run on iOS: -->
+                            <!-- <target>ios</target>-->
+
+                            <mainClass>milkman.MilkmanApplication</mainClass>
+                            <resourcesList>
+                                <list>.*\\.txt$</list> <!-- headers.txt from rest plugin -->
+                            </resourcesList>
+                            <reflectionList>
+                                <list>milkman.MilkmanPreloader</list>
+
+                                <!-- see https://github.com/h2database/h2database/blob/version-1.4.196/h2/src/main/org/h2/store/fs/FilePath.java#L71 -->
+                                <list>org.h2.store.fs.FilePathDisk</list>
+
+                                <!-- javafx missing classes -->
+                                <list>javafx.scene.control.TableColumnBase</list>
+                                <list>javafx.css.converter.SizeConverter$SequenceConverter</list> <!-- loaded by JavaFXCompatibility  -->
+                                <list>javafx.scene.text.Text</list><!-- specific method loaded by JavaFXCompatibility  -->
+                                <list>com.sun.javafx.text.PrismTextLayout</list>
+                                <list>javafx.scene.control.skin.TextFieldSkin</list>
+
+
+                            </reflectionList>
+
+                            <nativeImageArgs>
+                                <nativeImageArg>--allow-incomplete-classpath</nativeImageArg>
+                                <nativeImageArg>-H:DynamicProxyConfigurationFiles=${project.basedir}/src/main/native-image/dynamicProxies.json</nativeImageArg>
+                                <nativeImageArg>--initialize-at-build-time=org.fxmisc.richtext.TextFlowExt$TextLayout</nativeImageArg>
+                                <nativeImageArg>--initialize-at-build-time=org.fxmisc.richtext.TextFlowExt$TextLine</nativeImageArg>
+                            </nativeImageArgs>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>compile-native</id>
+                                <goals>
+                                    <goal>compile</goal>
+                                </goals>
+                                <phase>package</phase>
+                            </execution>
+                            <execution>
+                                <id>link-native</id>
+                                <goals>
+                                    <goal>link</goal>
+                                </goals>
+                                <phase>package</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+
+            </build>
+
+        </profile>
+
+    </profiles>
 
     <pluginRepositories>
         <pluginRepository>

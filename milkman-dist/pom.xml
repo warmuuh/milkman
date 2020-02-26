@@ -287,6 +287,7 @@
 							<descriptors>
 								<descriptor>src/assembly/bin-linux.xml</descriptor>
 							</descriptors>
+							<tarLongFileMode>posix</tarLongFileMode>
 						</configuration>
 					</execution>
 					<execution>
@@ -300,6 +301,7 @@
 							<descriptors>
 								<descriptor>src/assembly/bin-macos.xml</descriptor>
 							</descriptors>
+							<tarLongFileMode>posix</tarLongFileMode>
 						</configuration>
 					</execution>
 					<execution>
@@ -313,6 +315,7 @@
 							<descriptors>
 								<descriptor>src/assembly/bundle-macos.xml</descriptor>
 							</descriptors>
+							<tarLongFileMode>posix</tarLongFileMode>
 						</configuration>
 					</execution>
 					<execution>
