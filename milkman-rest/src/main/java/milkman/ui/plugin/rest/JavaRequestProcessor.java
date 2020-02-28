@@ -13,6 +13,7 @@ import milkman.utils.AsyncResponseControl.AsyncControl;
 import reactor.core.publisher.Flux;
 
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLParameters;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.net.PasswordAuthentication;
@@ -73,7 +74,7 @@ public class JavaRequestProcessor implements RequestProcessor {
 //				});
 //			}
 		}
-		
+
 		if (!HttpOptionsPluginProvider.options().isCertificateValidation()) {
 			disableSsl(builder);
 		}
@@ -81,9 +82,17 @@ public class JavaRequestProcessor implements RequestProcessor {
 		if (HttpOptionsPluginProvider.options().isFollowRedirects()) {
 			builder.followRedirects(Redirect.ALWAYS);
 		}
-		
+
+		setupSslLegacyProtocolSupport(builder);
+
 		return builder
 				.build();
+	}
+
+	private void setupSslLegacyProtocolSupport(Builder builder) {
+		var sslParameters = new SSLParameters();
+		sslParameters.setProtocols(new String[]{"SSLv3","TLSv1","TLSv1.1","TLSv1.2"});
+		builder.sslParameters(sslParameters);
 	}
 
 	private void disableSsl(Builder builder) {
