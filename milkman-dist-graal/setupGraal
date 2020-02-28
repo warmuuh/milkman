@@ -1,3 +1,3 @@
-﻿export GRAALVM_HOME=/Users/pmucha/tools/graalvm-ce-java11-20.0.0/Contents/Home/
-export JAVA_HOME=$GRAALVM_HOME
-export PATH=/Users/pmucha/tools/graalvm-ce-java11-20.0.0/Contents/Home/bin/:$PATH
+﻿set GRAALVM_HOME=/Users/pmucha/tools/graalvm-ce-java11-20.0.0/Contents/Home/
+set JAVA_HOME=$GRAALVM_HOME
+set PATH=/Users/pmucha/tools/graalvm-ce-java11-20.0.0/Contents/Home/bin/:$PATH

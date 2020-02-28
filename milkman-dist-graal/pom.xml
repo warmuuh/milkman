@@ -26,31 +26,6 @@
     </dependencies>
 
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.2</version>
-                <configuration>
-                    <transformers>
-                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                            <mainClass>milkman.MilkmanApplication</mainClass>
-                        </transformer>
-                    </transformers>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
     <profiles>
         <profile>
             <id>native</id>
@@ -80,6 +55,54 @@
                                 <list>javafx.scene.text.Text</list><!-- specific method loaded by JavaFXCompatibility  -->
                                 <list>com.sun.javafx.text.PrismTextLayout</list>
                                 <list>javafx.scene.control.skin.TextFieldSkin</list>
+                                <list>javafx.scene.control.skin.TableSkinUtils</list>
+                                <list>javafx.scene.input.Clipboard</list>
+
+
+                                <!-- for enabling %i pattern in logback config, see ch.qos.logback.core.rolling.helper.FileNamePattern::42-->
+                                <list>ch.qos.logback.core.rolling.helper.IntegerTokenConverter</list>
+                                <list>ch.qos.logback.classic.pattern.LineSeparatorConverter</list>
+                                <list>ch.qos.logback.classic.pattern.MessageConverter</list>
+                                <list>ch.qos.logback.classic.pattern.LineOfCallerConverter</list>
+                                <list>ch.qos.logback.classic.pattern.FileOfCallerConverter</list>
+                                <list>ch.qos.logback.classic.pattern.LoggerConverter</list>
+                                <list>ch.qos.logback.classic.pattern.ThreadConverter</list>
+                                <list>ch.qos.logback.classic.pattern.LevelConverter</list>
+                                <list>ch.qos.logback.classic.pattern.DateConverter</list>
+                                <list>ch.qos.logback.core.rolling.helper.DateTokenConverter</list>
+
+                                <!-- domain model as this is stored to db via reflection (jackson) -->
+                                <list>milkman.update.GithubReleaseChecker$ReleaseResponse</list>
+                                <list>milkman.persistence.WorkbenchState</list>
+                                <list>milkman.domain.Collection</list>
+                                <list>milkman.domain.Dirtyable</list>
+                                <list>milkman.domain.Environment</list>
+                                <list>milkman.domain.Folder</list>
+                                <list>milkman.domain.RequestAspect</list>
+                                <list>milkman.domain.RequestAspect$CustomUnknownDeserializer</list>
+                                <list>milkman.domain.RequestContainer</list>
+                                <list>milkman.domain.RequestContainer$CustomUnknownDeserializer</list>
+                                <list>milkman.domain.RequestExecutionContext</list>
+                                <list>milkman.domain.ResponseContainer</list>
+                                <list>milkman.domain.SyncDetails</list>
+                                <list>milkman.ui.main.sync.NoSyncDetails</list>
+                                <list>milkman.domain.Workspace</list>
+                                <list>milkman.persistence.OptionEntry</list>
+                                <list>milkman.ui.plugin.OptionsObject$CustomUnknownDeserializer</list>
+
+                                <list>milkman.ui.main.options.CoreApplicationOptionsProvider$CoreApplicationOptions</list>
+
+                                <list>milkman.ui.plugin.rest.HttpOptionsPluginProvider$HttpOptions</list>
+                                <list>milkman.ui.plugin.rest.domain.HeaderEntry</list>
+                                <list>milkman.ui.plugin.rest.domain.QueryParamEntry</list>
+                                <list>milkman.ui.plugin.rest.domain.RestBodyAspect</list>
+                                <list>milkman.ui.plugin.rest.domain.RestHeaderAspect</list>
+                                <list>milkman.ui.plugin.rest.domain.RestQueryParamAspect</list>
+                                <list>milkman.ui.plugin.rest.domain.RestRequestAspect</list>
+                                <list>milkman.ui.plugin.rest.domain.RestRequestContainer</list>
+                                <list>milkman.ui.plugin.rest.domain.RestResponseBodyAspect</list>
+                                <list>milkman.ui.plugin.rest.domain.RestResponseContainer</list>
+                                <list>milkman.ui.plugin.rest.domain.RestResponseHeaderAspect</list>
 
 
                             </reflectionList>
@@ -103,6 +126,13 @@
                                 <id>link-native</id>
                                 <goals>
                                     <goal>link</goal>
+                                </goals>
+                                <phase>package</phase>
+                            </execution>
+                            <execution>
+                                <id>package-native</id>
+                                <goals>
+                                    <goal>package</goal>
                                 </goals>
                                 <phase>package</phase>
                             </execution>

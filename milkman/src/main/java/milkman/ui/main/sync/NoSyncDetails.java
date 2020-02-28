@@ -1,12 +1,11 @@
 package milkman.ui.main.sync;
 
+import lombok.Data;
 import milkman.domain.SyncDetails;
 
+@Data
 public class NoSyncDetails extends SyncDetails {
 
-	@Override
-	public boolean isSyncActive() {
-		return false;
-	}
-	
+	private boolean syncActive = false;
+
 }
