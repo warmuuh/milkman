@@ -17,6 +17,8 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
-        java-package: jdk
+        java-package: jdk+fx
+    - name: Maven stats
+      run: mvn -version
     - name: Build with Maven
       run: mvn -B package --file pom.xml -DexcludedGroups=ui 
