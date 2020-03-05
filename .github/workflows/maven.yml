@@ -25,7 +25,7 @@ jobs:
     - name: Maven stats
       run: mvn -version
     - name: Bump to release version
-      run: mvn -B org.codehaus.mojo:build-helper-maven-plugin:3.0.0:parse-version versions:set versions:commit -DnewVersion="${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.patchVersion}"
+      run: mvn --% -B org.codehaus.mojo:build-helper-maven-plugin:3.0.0:parse-version versions:set versions:commit -DnewVersion="${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}"
     - name: Package
       run: mvn -B package -DexcludedGroups=ui
     - name: Commit files
@@ -47,7 +47,7 @@ jobs:
     - name: Deploy
       run: mvn -B deploy -DskipTests
     - name: Bump version to next dev version
-      run: mvn -B org.codehaus.mojo:build-helper-maven-plugin:3.0.0:parse-version versions:set versions:commit -DnewVersion="${parsedVersion.majorVersion}.${parsedVersion.nextMinorVersion}.0-SNAPSHOT"
+      run: mvn --% -B org.codehaus.mojo:build-helper-maven-plugin:3.0.0:parse-version versions:set versions:commit -DnewVersion="${parsedVersion.majorVersion}.${parsedVersion.nextMinorVersion}.0-SNAPSHOT"
     - name: Commit files
       run: |
         git config --local user.email "action@github.com"
