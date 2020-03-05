@@ -37,6 +37,13 @@ jobs:
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
+    - name: create tag
+      run: mvn -B org.honton.chas:git-tag-maven-plugin:0.0.3:tag -Dgit.tagName="${project.version}" -Dgit.skipPush=true
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        tags: true
+        github_token: ${{ secrets.GITHUB_TOKEN }}
     - name: Deploy
       run: mvn -B deploy -DskipTests
     - name: Bump version to next dev version
