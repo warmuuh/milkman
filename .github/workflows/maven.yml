@@ -18,7 +18,11 @@ jobs:
       with:
         java-version: openjdk11
         architecture: x64
+    - name: maven-settings-xml-action
+      uses: whelk-io/maven-settings-xml-action@v4
+      with:
+        servers: '[{ "id": "github", "privateKey": "${{ secrets.GITHUB_TOKEN }}" }]'
     - name: Maven stats
       run: mvn -version
     - name: Build with Maven
-      run: mvn -B package --file pom.xml -DexcludedGroups=ui 
+      run: mvn -B org.codehaus.mojo:build-helper-maven-plugin:3.1.0:parse-version release:prepare release:perform -Darguments="-DexcludedGroups=ui" -DdevelopmentVersion=${parsedVersion.majorVersion}.${parsedVersion.nextMinorVersion}.0-SNAPSHOT
