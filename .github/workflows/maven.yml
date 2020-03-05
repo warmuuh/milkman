@@ -24,5 +24,29 @@ jobs:
         servers: '[{ "id": "github", "privateKey": "${{ secrets.GITHUB_TOKEN }}" }]'
     - name: Maven stats
       run: mvn -version
-    - name: Build with Maven
-      run: mvn -B org.codehaus.mojo:build-helper-maven-plugin:3.0.0:parse-version release:prepare release:perform -Darguments="-DexcludedGroups=ui" -DdevelopmentVersion="${parsedVersion.majorVersion}.${parsedVersion.nextMinorVersion}.0-SNAPSHOT"
+    - name: Bump to release version
+      run: mvn -B org.codehaus.mojo:build-helper-maven-plugin:3.0.0:parse-version versions:set versions:commit -DnewVersion="${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.patchVersion}"
+    - name: Package
+      run: mvn -B package -DexcludedGroups=ui
+    - name: Commit files
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git commit -m "release version" -a
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Deploy
+      run: mvn -B deploy -DskipTests
+    - name: Bump version to next dev version
+      run: mvn -B org.codehaus.mojo:build-helper-maven-plugin:3.0.0:parse-version versions:set versions:commit -DnewVersion="${parsedVersion.majorVersion}.${parsedVersion.nextMinorVersion}.0-SNAPSHOT"
+    - name: Commit files
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git commit -m "preparing next version" -a
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
