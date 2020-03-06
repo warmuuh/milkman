@@ -16,12 +16,7 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - uses: actions/cache@v1
-        with:
-          path: ~/.mvnJlinkCache
-          key: ${{ runner.os }}-mvnJlinkCache-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-mvnJlinkCache-
+
       - uses: DeLaGuardo/setup-graalvm@3
         with:
           graalvm-version: '20.0.0.java11'
@@ -52,3 +47,8 @@ jobs:
         with:
           name: logs
           path: target/client/log
+      - name: Upload Native Image
+        uses: actions/upload-artifact@v1
+        with:
+          name: milkman-native
+          path: milkman-dist-graal/target/client/x86_64-darwin/milkman-dist-graal
