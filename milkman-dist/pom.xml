@@ -383,6 +383,21 @@
 						</goals>
 						<phase>deploy</phase>
 					</execution>
+					<execution>
+						<id>deploy-nightly</id>
+						<goals>
+							<goal>release</goal>
+						</goals>
+						<phase>none</phase>
+						<configuration>
+							<overwriteArtifact>true</overwriteArtifact>
+							<tag>nightly</tag>
+							<description>
+								Nightly Release of Milkman.
+								See [Changelog](/changelog.md) for changes.
+							</description>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>
