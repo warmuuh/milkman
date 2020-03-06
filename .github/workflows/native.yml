@@ -32,11 +32,15 @@ jobs:
         uses: whelk-io/maven-settings-xml-action@v4
         with:
           servers: '[{ "id": "github", "privateKey": "${{ secrets.DEPLOYMENT_KEY }}" }]'
+      - name: setup envs
+        run: |
+          ls ${{ env.JAVA_HOME }}
+          echo "::set-env name=GRAALVM_HOME::${{ env.JAVA_HOME }}"
+          echo "::add-path::${{ env.JAVA_HOME }}/bin"
       - name: Maven stats
         run: mvn -version
+        
       - name: Package
-        env:
-          GRAALVM_HOME: ${{ env.JAVA_HOME }}
         run: mvn package -Pnative -pl milkman,milkman-cli,milkman-rest,milkman-dist-graal -DskipTests
 #      - name: Deploy to nightly
 #        run: mvn --% -B de.jutzig:github-release-plugin:release@deploy-nightly -pl milkman-dist
