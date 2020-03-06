@@ -51,4 +51,4 @@ jobs:
         if: failure()
         with:
           name: logs
-          path: milkman/target/client/log
+          path: target/client/log
