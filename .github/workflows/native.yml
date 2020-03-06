@@ -1,0 +1,40 @@
+name: native
+
+on:
+  push:
+    branches:
+      - feature/graal
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - uses: actions/cache@v1
+        with:
+          path: ~/.mvnJlinkCache
+          key: ${{ runner.os }}-mvnJlinkCache-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-mvnJlinkCache-
+      - uses: DeLaGuardo/setup-graalvm@3
+        with:
+          graalvm-version: '20.0.0.java11'
+      - name: setup-native-image
+        run: |
+          gu install native-image
+      - name: maven-settings-xml-action
+        uses: whelk-io/maven-settings-xml-action@v4
+        with:
+          servers: '[{ "id": "github", "privateKey": "${{ secrets.DEPLOYMENT_KEY }}" }]'
+      - name: Maven stats
+        run: mvn -version
+      - name: Package
+        run: mvn package -Pnative -pl milkman,milkman-cli,milkman-rest,milkman-dist-graal
+#      - name: Deploy to nightly
+#        run: mvn --% -B de.jutzig:github-release-plugin:release@deploy-nightly -pl milkman-dist

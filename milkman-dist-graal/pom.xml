@@ -5,7 +5,7 @@
     <parent>
         <artifactId>milkman-parent</artifactId>
         <groupId>com.github.warmuuh</groupId>
-        <version>4.2.0-SNAPSHOT</version>
+        <version>4.3.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -16,12 +16,12 @@
         <dependency>
             <groupId>com.github.warmuuh</groupId>
             <artifactId>milkman</artifactId>
-            <version>4.2.0-SNAPSHOT</version>
+            <version>4.3.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.github.warmuuh</groupId>
             <artifactId>milkman-rest</artifactId>
-            <version>4.2.0-SNAPSHOT</version>
+            <version>4.3.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
@@ -34,7 +34,7 @@
                     <plugin>
                         <groupId>com.gluonhq</groupId>
                         <artifactId>client-maven-plugin</artifactId>
-                        <version>0.1.15</version>
+                        <version>0.1.16</version>
                         <configuration>
                             <!-- Uncomment to run on iOS: -->
                             <!-- <target>ios</target>-->
