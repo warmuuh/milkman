@@ -35,6 +35,6 @@ jobs:
       - name: Maven stats
         run: mvn -version
       - name: Package
-        run: mvn package -Pnative -pl milkman,milkman-cli,milkman-rest,milkman-dist-graal
+        run: mvn package -Pnative -pl milkman,milkman-cli,milkman-rest,milkman-dist-graal -DskipTests
 #      - name: Deploy to nightly
 #        run: mvn --% -B de.jutzig:github-release-plugin:release@deploy-nightly -pl milkman-dist
