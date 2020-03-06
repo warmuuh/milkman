@@ -37,10 +37,12 @@ jobs:
           ls ${{ env.JAVA_HOME }}
           echo "::set-env name=GRAALVM_HOME::${{ env.JAVA_HOME }}"
           echo "::add-path::${{ env.JAVA_HOME }}/bin"
+      - name: setup envs
+        run: jar --help
       - name: Maven stats
         run: mvn -version
         
       - name: Package
-        run: mvn package -Pnative -pl milkman,milkman-cli,milkman-rest,milkman-dist-graal -DskipTests
+        run: mvn package -Pnative -pl milkman,milkman-cli,milkman-rest,milkman-dist-graal -DskipTests -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 #      - name: Deploy to nightly
 #        run: mvn --% -B de.jutzig:github-release-plugin:release@deploy-nightly -pl milkman-dist
