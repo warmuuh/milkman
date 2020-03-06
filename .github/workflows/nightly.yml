@@ -36,4 +36,4 @@ jobs:
       - name: Package
         run: mvn -B package -DexcludedGroups=ui
       - name: Deploy to nightly
-        run: mvn --% -B de.jutzig:github-release-plugin@deploy-nightly
+        run: mvn --% -B de.jutzig:github-release-plugin@deploy-nightly -pl milkman-dist
