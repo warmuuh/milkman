@@ -17,11 +17,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - uses: actions/cache@v1
-          with:
-            path: ~/.mvnJlinkCache
-            key: ${{ runner.os }}-mvnJlinkCache-${{ hashFiles('**/pom.xml') }}
-            restore-keys: |
-              ${{ runner.os }}-mvnJlinkCache-
+        with:
+          path: ~/.mvnJlinkCache
+          key: ${{ runner.os }}-mvnJlinkCache-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-mvnJlinkCache-
       - name: Set up JDK 11
         uses: joschi/setup-jdk@v1
         with:
