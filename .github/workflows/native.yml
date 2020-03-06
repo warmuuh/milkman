@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    if: contains(github.event.head_commit.message, '[NOBUILD]]') == false
+    if: contains(github.event.head_commit.message, '[NOBUILD]') == false
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
@@ -51,5 +51,5 @@ jobs:
       - name: Upload Native Image
         uses: actions/upload-artifact@v1
         with:
-          name: milkman-native
+          name: milkman-native-x86_64-darwin
           path: milkman-dist-graal/target/client/x86_64-darwin/milkman-dist-graal
