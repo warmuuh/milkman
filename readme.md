@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/warmuuh/milkman.svg?style=svg)](https://circleci.com/gh/warmuuh/milkman)
+![Nightly](https://github.com/warmuuh/milkman/workflows/Nightly/badge.svg?branch=master)
 [![Donate](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/warmuuh/donate)
 [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/milkman-project/community)
 
@@ -11,16 +11,10 @@ everything being a plugin, other things are possible, like database-requests or 
 
 # Download
 
- * Download latest version in [Release Section](https://github.com/warmuuh/milkman/releases). 
+ * Download latest version in [Release Section](https://github.com/warmuuh/milkman/releases). Or download [Nightly version](https://github.com/warmuuh/milkman/releases/tag/nightly) for latest changes.
  * **Download plugin archive as well**, if you want to use any of those plugins.
  * unzip everything into the same directory and start application via either the supplied start-scripts or `milkman.exe`
 
-For downloading the nightly build:
-
- * Login to circleci.com (e.g. via github-authentication)
- * Go to [Milkman Builds](https://circleci.com/gh/warmuuh/milkman/tree/master)
- * Choose latest build and Download the build from the artifacts tab
- 
 # Install via Chocolatey (Win)
  * To install just Milkman run `Choco install milkman`
  * To install a plugin run `Choco install milkman-<plugin name>` ex. `Choco install milkman-explore`
@@ -28,6 +22,7 @@ For downloading the nightly build:
 
 # Install via Homebrew (MacOs)
  * To install, run `brew cask install milkman`. All plugins are included.
+ * To update, run `brew cask upgrade`
 
 # Changes
 

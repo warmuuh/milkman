@@ -10,6 +10,11 @@
 
 # Changelog
 
+version 4.2.0 
+  * removed FXML dependency (small performance improvement, preparation for native image)
+  * added support for TLS1.0. #41
+  * setup build and release process via github actions
+
 version 4.1.0 
   * added import/export of whole workspace
   * fixed crash caused by disclosure node in tree view
