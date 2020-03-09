@@ -32,6 +32,7 @@ You can download latest native build from the latest ['native' workflow artifact
 No support for dynamically adding plugins besides the included ones.
 
 * [Http Request Plugin](https://github.com/warmuuh/milkman/blob/master/milkman-rest) is included
+  * Postman export is not yet working though
 * Others planned (explore, scripting (replacing nashorn with graal), privatebin, GraphQl, Note)
 * [JDBC Plugin](https://github.com/warmuuh/milkman/blob/master/milkman-jdbc) not possible as it requires dynamically loaded database drivers
 
