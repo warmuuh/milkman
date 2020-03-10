@@ -1,10 +1,10 @@
-﻿# Graal Native Image Build of Milkman
+# GraalVm Native Image Build of Milkman
 
 :exclamation: this is an experimental feature. it is not compatible with existing milkman installations (as persistence layer was changed) and might break it again in future versions of native release.
 
 This package contains setup for building a native image of milkman, bundled with some plugins. 
 Because of the [limitations](https://github.com/oracle/graal/blob/master/substratevm/LIMITATIONS.md) 
-of graal, several features are a bit different / missing.
+of GraalVm , several features are a bit different / missing.
 
 # Why
 Startup time (as in `time until usable`) was always of high importance in Milkman. 
@@ -33,12 +33,12 @@ No support for dynamically adding plugins besides the included ones.
 
 * [Http Request Plugin](https://github.com/warmuuh/milkman/blob/master/milkman-rest) is included
   * Postman export is not yet working though
-* Others planned (explore, scripting (replacing nashorn with graal), privatebin, GraphQl, Note)
+* Others planned (explore, scripting (replacing nashorn with GraalVm), privatebin, GraphQl, Note)
 * [JDBC Plugin](https://github.com/warmuuh/milkman/blob/master/milkman-jdbc) not possible as it requires dynamically loaded database drivers
 
 # Changes / Limitations
 
-Due to the limitations of graal, several changes to milkman were necessary:
+Due to the limitations of GraalVm, several changes to milkman were necessary:
 
 * Persistence: because [Nitrite](https://github.com/dizitart/nitrite-database) uses serialization, 
 the persistence layer was exchanged and uses [MapDB](http://www.mapdb.org/). (Might not be the final solution though)
