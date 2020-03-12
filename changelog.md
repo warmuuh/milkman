@@ -10,6 +10,9 @@
 
 # Changelog
 
+version 4.3.0 - upcoming 
+  * made search case-insensitive
+
 version 4.2.0 
   * removed FXML dependency (small performance improvement, preparation for native image)
   * added support for TLS1.0. #41
