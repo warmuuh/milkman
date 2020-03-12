@@ -1,5 +1,35 @@
 package milkman.ui.components;
 
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXComboBox;
+import javafx.concurrent.Task;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.util.StringConverter;
+import lombok.val;
+import milkman.ui.main.options.CoreApplicationOptionsProvider;
+import milkman.ui.plugin.ContentTypePlugin;
+import milkman.utils.Stopwatch;
+import milkman.utils.fxml.GenericBinding;
+import org.apache.commons.lang3.time.StopWatch;
+import org.fxmisc.flowless.VirtualizedScrollPane;
+import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.LineNumberFactory;
+import org.fxmisc.richtext.model.StyleSpans;
+import org.fxmisc.richtext.model.StyleSpansBuilder;
+import org.reactfx.EventStream;
+import org.reactfx.EventStreams;
+import org.reactfx.Subscription;
+
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.time.Duration;
@@ -11,53 +41,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.function.Consumer;
-import java.util.function.IntFunction;
 import java.util.function.Supplier;
-
-import org.apache.commons.lang3.time.StopWatch;
-import org.fxmisc.flowless.VirtualizedScrollPane;
-import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.LineNumberFactory;
-import org.fxmisc.richtext.model.StyleSpans;
-import org.fxmisc.richtext.model.StyleSpansBuilder;
-import org.reactfx.EventStream;
-import org.reactfx.EventStreams;
-import org.reactfx.Subscription;
-
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXComboBox;
-
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import javafx.concurrent.Task;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.ScrollPane.ScrollBarPolicy;
-import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Polygon;
-import javafx.util.StringConverter;
-import lombok.val;
-import milkman.ui.main.options.CoreApplicationOptionsProvider;
-import milkman.ui.plugin.ContentTypePlugin;
-import milkman.utils.Stopwatch;
-import milkman.utils.fxml.GenericBinding;
-import milkman.utils.javafx.JavaFxUtils;
 
 /**
  * @author peter
  *
- * @param <T>
  */
 public class ContentEditor extends VBox {
 
@@ -82,6 +70,8 @@ public class ContentEditor extends VBox {
 	protected HBox header;
 
 	private SearchBox search;
+	private ContentSearch contentSearch;
+
 	protected final VirtualizedScrollPane scrollPane;
 
 	public ContentEditor() {
@@ -146,28 +136,12 @@ public class ContentEditor extends VBox {
 
 	private void setupSearch() {
 		search = new SearchBox();
+		contentSearch = new ContentSearch(codeArea);
 		search.onSearch((text, forward) -> {
-			int sIdx = -1;
-			if (forward) {
-				sIdx = codeArea.getText().indexOf(text, codeArea.getCaretPosition());
-				if (sIdx < 0) {
-					// wrap search:
-					sIdx = codeArea.getText().substring(0, codeArea.getCaretPosition()).indexOf(text);
-				}
+			if (forward){
+				contentSearch.moveToNextMatch(text);
 			} else {
-				int caretPos = codeArea.getCaretPosition() - codeArea.getSelectedText().length();
-				sIdx = codeArea.getText().substring(0, caretPos).lastIndexOf(text);
-				if (sIdx < 0) {
-					// wrap search:
-					sIdx = codeArea.getText().substring(codeArea.getCaretPosition()).lastIndexOf(text);
-					if (sIdx >= 0) {
-						sIdx += codeArea.getCaretPosition();
-					}
-				}
-			}
-			if (sIdx >= 0) {
-				codeArea.selectRange(sIdx, sIdx + text.length());
-				codeArea.requestFollowCaret();
+				contentSearch.moveToPrevMatch(text);
 			}
 		});
 		search.onCloseRequest(this::hideSearch);
