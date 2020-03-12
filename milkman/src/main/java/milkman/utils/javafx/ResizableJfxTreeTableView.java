@@ -23,19 +23,20 @@ public class ResizableJfxTreeTableView<R extends RecursiveTreeObject<R>> extends
 //	}
 
 	public void resizeColumns() {
-		try {
-			Method method = getClass().getClassLoader()
-						.loadClass("javafx.scene.control.skin.TableSkinUtils")
-						.getMethod("resizeColumnToFitContent", TableViewSkinBase.class, TableColumnBase.class, int.class);
-			method.setAccessible(true);
-	
-			for (TreeTableColumn<R, ?> column : this.getColumns()) {
-				method.invoke(null,  getSkin(), column, -1);
-			}
-		} catch (Throwable t) {
-			//for some reason, a NPE will be thrown now and then, some racing condition?
-			log.warn("Failed to resize columns");
-		}
+		//TODO: with javafx 14, this method got removed :C  have to find a replacement for this.
+//		try {
+//			Method method = getClass().getClassLoader()
+//						.loadClass("javafx.scene.control.skin.TableSkinUtils")
+//						.getMethod("resizeColumnToFitContent", TableViewSkinBase.class, TableColumnBase.class, int.class);
+//			method.setAccessible(true);
+//
+//			for (TreeTableColumn<R, ?> column : this.getColumns()) {
+//				method.invoke(null,  getSkin(), column, -1);
+//			}
+//		} catch (Throwable t) {
+//			//for some reason, a NPE will be thrown now and then, some racing condition?
+//			log.warn("Failed to resize columns");
+//		}
 //		TableSkinUtils.resizeColumnToFitContent((TableViewSkinBase<?, ?, ?, ?, ?>) getSkin(), getTreeColumn(), -1);
 //		((ResizableJfxTreeTableViewSkin<R>)getSkin()).resizeAllColumns();
 	}

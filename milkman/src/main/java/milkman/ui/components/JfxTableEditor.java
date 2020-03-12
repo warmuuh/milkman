@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.cells.editors.TextFieldEditorBuilder;
+import com.jfoenix.controls.cells.editors.base.EditorNodeBuilder;
 import com.jfoenix.controls.cells.editors.base.GenericEditableTreeTableCell;
 import com.jfoenix.controls.cells.editors.base.JFXTreeTableCell;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
@@ -162,7 +163,7 @@ public class JfxTableEditor<T> extends StackPane {
 	public void addReadOnlyColumn(String name, Function<T, String> getter) {
 		TreeTableColumn<RecursiveWrapper<T>, String> column = new TreeTableColumn<>(name);
 		column.setCellFactory((TreeTableColumn<RecursiveWrapper<T>, String> param) -> {
-			return new GenericEditableTreeTableCell<RecursiveWrapper<T>, String>(new SelectableTextFieldBuilder());
+			return new AutoCommitEditor<RecursiveWrapper<T>, String>(new SelectableTextFieldBuilder());
 		});
 		column.setCellValueFactory(param -> GenericBinding.of(getter, (e, o) -> {}, param.getValue().getValue().getData()));
 		
@@ -175,7 +176,7 @@ public class JfxTableEditor<T> extends StackPane {
 	public void addColumn(String name, Function<T, String> getter, BiConsumer<T, String> setter) {
 		TreeTableColumn<RecursiveWrapper<T>, String> column = new TreeTableColumn<>(name);
 		column.setCellFactory((TreeTableColumn<RecursiveWrapper<T>, String> param) -> {
-			var cell = new GenericEditableTreeTableCell<RecursiveWrapper<T>, String>(new TextFieldEditorBuilderPatch());
+			var cell = new AutoCommitEditor<RecursiveWrapper<T>, String>(new TextFieldEditorBuilderPatch());
 			cell.setStepFunction(getStepFunction());
 			return cell;
 		});
@@ -209,7 +210,7 @@ public class JfxTableEditor<T> extends StackPane {
 	public void addColumn(String name, Function<T, String> getter, BiConsumer<T, String> setter, Consumer<TextField> textFieldInitializer) {
 		TreeTableColumn<RecursiveWrapper<T>, String> column = new TreeTableColumn<>(name);
 		column.setCellFactory((TreeTableColumn<RecursiveWrapper<T>, String> param) -> {
-			var cell = new GenericEditableTreeTableCell<RecursiveWrapper<T>, String>(new InitializingCellBuilder(textFieldInitializer));
+			var cell = new AutoCommitEditor<RecursiveWrapper<T>, String>(new InitializingCellBuilder(textFieldInitializer));
 			cell.setStepFunction(getStepFunction());
 			return cell;
 		});
@@ -464,6 +465,26 @@ public class JfxTableEditor<T> extends StackPane {
 		// TODO Auto-generated method stub
 		
 	}
-	
+
+	class AutoCommitEditor<S, T> extends GenericEditableTreeTableCell<S, T>{
+		public AutoCommitEditor(EditorNodeBuilder builder) {
+			super(builder);
+			forceCommit();
+		}
+		public AutoCommitEditor() {
+			super();
+			forceCommit();
+		}
+		private void forceCommit(){
+			textProperty().addListener((o, old, newV) -> System.out.println("New value: " + newV));
+
+			treeTableViewProperty().addListener((o,oldVal,newVal)->{
+				if(newVal!=null)
+					newVal.getSelectionModel().selectedItemProperty().addListener((obj,oldItem,newItem)->{
+						commitHelper(true);
+					});
+			});
+		}
+	}
 	
 }
