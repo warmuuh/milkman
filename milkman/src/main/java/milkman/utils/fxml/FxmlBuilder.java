@@ -8,7 +8,6 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.scene.Node;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -63,11 +62,15 @@ public class FxmlBuilder {
 		validator.getIcon().setStyle("-fx-font-family: FontAwesome;");
 		return validator;
 	}
-	
-	public static TextField text(String id, String prompt) {
-		TextField txt = new JFXTextField();
+	public static JFXTextField text(String id, String prompt) {
+		return text(id, prompt, false);
+	}
+
+	public static JFXTextField text(String id, String prompt, boolean lblFloat) {
+		JFXTextField txt = new JFXTextField();
 		txt.setId(id);
 		txt.setPromptText(prompt);
+		txt.setLabelFloat(lblFloat);
 		return txt;
 	}
 

@@ -1,35 +1,13 @@
 package milkman.ctrl;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import javafx.application.Platform;
 import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import milkman.domain.Collection;
-import milkman.domain.Environment;
-import milkman.domain.Folder;
-import milkman.domain.RequestContainer;
+import milkman.domain.*;
 import milkman.domain.RequestContainer.UnknownRequestContainer;
-import milkman.domain.RequestExecutionContext;
-import milkman.domain.ResponseContainer;
-import milkman.domain.Workspace;
 import milkman.ui.commands.AppCommand;
 import milkman.ui.commands.EnvironmentTemplater;
 import milkman.ui.commands.UiCommand;
@@ -38,24 +16,22 @@ import milkman.ui.commands.UiCommand.CloseRequest.CloseType;
 import milkman.ui.commands.UiCommand.DeleteRequest;
 import milkman.ui.commands.UiCommand.RenameRequest;
 import milkman.ui.commands.UiCommand.SubmitCustomCommand;
-import milkman.ui.commands.UiCommand.SubmitRequest;
-import milkman.ui.main.HotkeyManager;
-import milkman.ui.main.RequestCollectionComponent;
-import milkman.ui.main.RequestComponent;
-import milkman.ui.main.Toaster;
-import milkman.ui.main.WorkingAreaComponent;
+import milkman.ui.main.*;
 import milkman.ui.main.dialogs.ExportDialog;
 import milkman.ui.main.dialogs.SaveRequestDialog;
 import milkman.ui.main.dialogs.StringInputDialog;
-import milkman.ui.plugin.CollectionExporterPlugin;
 import milkman.ui.plugin.CustomCommand;
 import milkman.ui.plugin.Exporter;
-import milkman.ui.plugin.RequestExporterPlugin;
 import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.UiPluginManager;
 import milkman.utils.Event;
 import milkman.utils.ObjectUtils;
-import milkman.utils.fxml.FxmlUtil;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_={@Inject})
@@ -532,20 +508,46 @@ public class WorkspaceController {
 		dialog.showAndWait();
 		if (dialog.isCancelled())
 			return;
-		
-		Optional<Collection> foundCollection = activeWorkspace.getCollections().stream()
-				.filter(c -> c.getName().equals(dialog.getCollectionName()))
-				.findAny();
-		Collection collection = foundCollection.orElseGet(() -> createNewCollection(dialog.getCollectionName()));
-		
+
 		request.setId(UUID.randomUUID().toString());
 		request.setName(dialog.getRequestName());
 		request.setDirty(false);
-		
 		request.setInStorage(true);
+
+		var collectionName = dialog.getCollectionName();
+		Optional<Collection> foundCollection = activeWorkspace.getCollections().stream()
+				.filter(c -> c.getName().equals(collectionName))
+				.findAny();
+		Collection collection = foundCollection.orElseGet(() -> createNewCollection(collectionName));
 		collection.getRequests().add(ObjectUtils.deepClone(request));
+
+		var folderPath = dialog.getFolderPath();
+		mkFolders(folderPath, collection)
+				.ifPresent(f -> f.getRequests().add(request.getId()));
+
+
 		loadCollections(activeWorkspace);
 		displayRequest(request);
+	}
+
+	private Optional<Folder> mkFolders(List<String> folderPath, Collection collection) {
+		List<String> stack = new LinkedList<>(folderPath);
+		List<Folder> folders = collection.getFolders();
+		Folder foundFolder = null;
+		while(!stack.isEmpty()){
+			String curPathSegment = stack.remove(0);
+			List<Folder> finalFolders = folders;
+			foundFolder =  folders.stream().filter(f -> f.getName().equals(curPathSegment)).findFirst().orElseGet(() -> {
+				var newFolder = new Folder();
+				newFolder.setId(UUID.randomUUID().toString());
+				newFolder.setName(curPathSegment);
+				finalFolders.add(newFolder);
+				return newFolder;
+			});
+			folders = foundFolder.getFolders();
+		}
+
+		return Optional.ofNullable(foundFolder);
 	}
 
 	private Collection createNewCollection(String collectionName) {

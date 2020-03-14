@@ -12,6 +12,10 @@
 
 version 4.3.0 - upcoming 
   * made search case-insensitive
+  * reworked "save as.." dialog.
+    * support folders
+    * more intelligent matching of collections, using given chars to match, not necessarily substring
+
 
 version 4.2.0 
   * removed FXML dependency (small performance improvement, preparation for native image)

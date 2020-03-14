@@ -10,10 +10,15 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import lombok.Getter;
 import milkman.domain.Collection;
+import milkman.domain.Folder;
 import milkman.domain.RequestContainer;
+import milkman.utils.StringUtils;
 import milkman.utils.fxml.FxmlBuilder;
 import milkman.utils.fxml.FxmlUtil;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,7 +48,7 @@ public class SaveRequestDialog {
 
 	public void initialize() {
 		requestName.setText(request.getName());
-		List<String> collectionNames = collections.stream().map(c -> c.getName()).collect(Collectors.toList());
+		List<String> collectionNames = getCollectionStrings();
 		FilteredList<String> filteredList = new FilteredList<String>(FXCollections.observableList(collectionNames));
 		collectionName.textProperty().addListener(obs-> {
 	        String filter = collectionName.getText(); 
@@ -51,7 +56,7 @@ public class SaveRequestDialog {
 	        	Platform.runLater(() -> filteredList.setPredicate(s -> true));
 	        }
 	        else {
-	        	Platform.runLater(() -> filteredList.setPredicate(s -> s.contains(filter)));
+	        	Platform.runLater(() -> filteredList.setPredicate(s -> StringUtils.containsLettersInOrder(s, filter)));
 	        }
 		});
 		collectionList.setItems(filteredList);
@@ -64,13 +69,37 @@ public class SaveRequestDialog {
 		});
 	}
 
-	
-	public String getRequestName() {
+    private List<String> getCollectionStrings() {
+        return collections.stream().flatMap(c -> {
+            var strings = new LinkedList<String>();
+            strings.add(c.getName());
+            c.getFolders().forEach(f -> addSubfolderStrings(c.getName(), f, strings));
+            return strings.stream();
+        }).collect(Collectors.toList());
+    }
+
+	private void addSubfolderStrings(String prefix, Folder folder, List<String> strings) {
+		var curId = prefix + "/" + folder.getName();
+		strings.add(curId);
+		folder.getFolders().forEach(sf ->  addSubfolderStrings(curId, sf, strings));
+	}
+
+    public String getRequestName() {
 		return requestName.getText();
 	}
 	public String getCollectionName() {
-		return collectionName.getText();
+		return collectionName.getText().split("/")[0];
 	}
+	public List<String> getFolderPath() {
+        var split = collectionName.getText().split("/");
+        if (split.length < 2){
+            return Collections.emptyList();
+        }
+
+        List<String> folders = new LinkedList<>(Arrays.asList(split));
+        folders.remove(0);
+	    return folders;
+    }
 	
 	 private void onSave() {
 		if (requestName.validate() && collectionName.validate()) {
@@ -90,16 +119,16 @@ public class SaveRequestDialog {
 			setHeading(label("Save Request"));
 
 			var vbox = new FxmlBuilder.VboxExt();
-			vbox.add(label("Request Name"));
-			controller.requestName = vbox.add(new JFXTextField());
+			vbox.setSpacing(25);
+			controller.requestName = vbox.add(text("requestName", "Request Name", true));
 			controller.requestName.setValidators(requiredValidator());
 
-			vbox.add(label("Collection:"));
-			controller.collectionName = vbox.add(new JFXTextField());
+			controller.collectionName = vbox.add(text("collectionName", "Collection Name", true));
 			controller.collectionName.setValidators(requiredValidator());
 
-			vbox.add(label("Existing Collections:"));
-			controller.collectionList = vbox.add(new ListView<>());
+			var collContainer = vbox.add(new FxmlBuilder.VboxExt());
+			collContainer.add(label("Existing Collections:"));
+			controller.collectionList = collContainer.add(new ListView<>());
 			setBody(vbox);
 
 			setActions(submit(controller::onSave, "Save"),
