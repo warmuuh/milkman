@@ -1,21 +1,19 @@
 package milkman.ui.plugin.rest.contenttype;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import lombok.extern.slf4j.Slf4j;
 import milkman.ui.components.CodeFoldingContentEditor;
+import milkman.ui.plugin.ContentTypePlugin;
 import org.apache.commons.lang3.StringUtils;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-
-import lombok.extern.slf4j.Slf4j;
-import milkman.ui.plugin.ContentTypePlugin;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 @Slf4j
@@ -30,6 +28,8 @@ public class JsonContentType implements ContentTypePlugin {
 
 	private static final Pattern FINAL_REGEX = Pattern.compile(JSON_CURLY + "|" + JSON_PROPERTY + "|" + JSON_VALUE + "|"
 			+ JSON_ARRAY + "|" + JSON_BOOL + "|" + JSON_NUMBER);
+
+	Pattern whiteSpace = Pattern.compile( "^\\s+" );
 
 	@Override
 	public String getName() {
@@ -117,5 +117,24 @@ public class JsonContentType implements ContentTypePlugin {
 		if (indentation == 0)
 			return s;
 		return s.replaceAll("(?m)^", StringUtils.repeat(' ', indentation)).trim(); //trim bc we dont want the beginning to be indented
+	}
+
+	@Override
+	public String computeIndentationForNextLine(String currentLine) {
+		Matcher m = whiteSpace.matcher(currentLine);
+		String curIndentation = "";
+		if (m.find()) {
+			curIndentation = m.group();
+		}
+		var trim = currentLine.trim();
+		if (trim.endsWith("{") || trim.endsWith("[")){
+			curIndentation += "  ";
+		}
+		if (trim.endsWith("}") || trim.endsWith("]")){
+			if (curIndentation.length() > 2){
+				curIndentation = curIndentation.substring(0, curIndentation.length() - 2);
+			}
+		}
+		return curIndentation;
 	}
 }

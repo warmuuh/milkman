@@ -27,4 +27,8 @@ public class StringUtils {
 
         return true;
     }
+
+    public static long countStartSpaces(String text) {
+        return text.chars().takeWhile(c -> c == ' ').count();
+    }
 }

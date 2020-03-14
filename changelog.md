@@ -15,6 +15,7 @@ version 4.3.0 - upcoming
   * reworked "save as.." dialog.
     * support folders
     * more intelligent matching of collections, using given chars to match, not necessarily substring
+  * improved behavior of code editor: auto-indent based on content, Tabs as spaces, outdenting supported
 
 
 version 4.2.0 

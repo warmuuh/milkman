@@ -2,14 +2,13 @@ package milkman.ui.components;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.geometry.Pos;
+import javafx.scene.control.IndexRange;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
@@ -19,6 +18,7 @@ import lombok.val;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.ui.plugin.ContentTypePlugin;
 import milkman.utils.Stopwatch;
+import milkman.utils.StringUtils;
 import milkman.utils.fxml.GenericBinding;
 import org.apache.commons.lang3.time.StopWatch;
 import org.fxmisc.flowless.VirtualizedScrollPane;
@@ -26,6 +26,9 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
+import org.fxmisc.wellbehaved.event.EventPattern;
+import org.fxmisc.wellbehaved.event.InputMap;
+import org.fxmisc.wellbehaved.event.Nodes;
 import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
 import org.reactfx.Subscription;
@@ -42,6 +45,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import static javafx.scene.input.KeyCombination.SHIFT_DOWN;
 
 /**
  * @author peter
@@ -102,6 +107,30 @@ public class ContentEditor extends VBox {
 		EventStream<Object> highLightTrigger = EventStreams.merge(codeArea.multiPlainChanges(),
 				EventStreams.changesOf(highlighters.getSelectionModel().selectedItemProperty()),
 				EventStreams.eventsOf(format, MouseEvent.MOUSE_CLICKED));
+
+
+		//behavior of TAB: 2 spaces, allow outdention via SHIFT-TAB, if cursor is at beginning
+		Nodes.addInputMap(codeArea, InputMap.consume(
+				EventPattern.keyPressed(KeyCode.TAB),
+				e -> codeArea.replaceSelection("  ")
+		));
+
+		Nodes.addInputMap(codeArea, InputMap.consume(
+				EventPattern.keyPressed(KeyCode.TAB, SHIFT_DOWN),
+				e -> {
+					var paragraph = codeArea.getParagraph(codeArea.getCurrentParagraph());
+					var indentation = StringUtils.countStartSpaces(paragraph.getText());
+
+					//is the cursor in the white spaces
+					if (codeArea.getCaretColumn() <= indentation){
+						var charsToRemove = Math.min(indentation, 2);
+
+						codeArea.replaceText(new IndexRange(codeArea.getAbsolutePosition(codeArea.getCurrentParagraph(), 0),
+								codeArea.getAbsolutePosition(codeArea.getCurrentParagraph(), (int) charsToRemove)),
+								"");
+					}
+				}
+		));
 
 		// sync highlighting:
 //		Subscription cleanupWhenNoLongerNeedIt = highLightTrigger
@@ -300,8 +329,21 @@ public class ContentEditor extends VBox {
 
 	public void setEditable(boolean editable) {
 		codeArea.setEditable(editable);
+		if (editable){
+			setupAutoIndentation();
+		}
 	}
-	
+
+	private void setupAutoIndentation() {
+		codeArea.addEventFilter(KeyEvent.KEY_PRESSED, ke -> {
+			if (ke.getCode() == KeyCode.ENTER){
+				String currentLine = codeArea.getParagraph( codeArea.getCurrentParagraph()).getText();
+				if (getCurrentContenttypePlugin() != null) {
+					Platform.runLater( () -> codeArea.insertText( codeArea.getCaretPosition(), getCurrentContenttypePlugin().computeIndentationForNextLine(currentLine) ) );
+				}
+			}
+		});
+	}
 
 	public void setContentTypePlugins(List<ContentTypePlugin> plugins) {
 		highlighters.getItems().addAll(plugins);
