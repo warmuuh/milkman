@@ -4,8 +4,10 @@ import com.jfoenix.controls.JFXTabPane;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Orientation;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
@@ -35,7 +37,9 @@ public class WorkingAreaComponent {
 
 	
 	public final Event<UiCommand> onCommand = new Event<UiCommand>();
-	 JFXTabPane tabPane;
+	@Getter
+	private Parent requestArea;
+	JFXTabPane tabPane;
 	private ChangeListener<? super Tab> tabChangeListener;
 	
 	public void display(RequestContainer activeRequest, List<RequestContainer> openedRequests) {
@@ -168,8 +172,9 @@ public class WorkingAreaComponent {
 			
 			SplitPane splitPane = add(new SplitPane(), true);
 			splitPane.setOrientation(Orientation.VERTICAL);
-			
-			splitPane.getItems().add(new RequestComponentFxml(controller.restRequestComponent));
+
+			controller.requestArea = new RequestComponentFxml(controller.restRequestComponent);
+			splitPane.getItems().add(controller.requestArea);
 			splitPane.getItems().add(new ResponseComponentFxml(controller.responseComponent));
 			
 			

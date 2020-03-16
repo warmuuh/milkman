@@ -275,10 +275,13 @@ public class WorkspaceController {
 			exportCollection(((UiCommand.ExportCollection) command).getCollection());
 		} else if (command instanceof  UiCommand.HighlightVariables) {
 			highlightVariables();
+		} else if (command instanceof  UiCommand.CancelHighlight) {
+			cancelHightlightedVariables();
 		} else {
 			throw new IllegalArgumentException("Unsupported command");
 		}
 	}
+
 
 
 	private void deleteFolderFromCollection(Collection collection, Folder folder) {
@@ -539,13 +542,16 @@ public class WorkspaceController {
 
 
 	private void highlightVariables() {
+		cancelHightlightedVariables();
+		highlighter = new VariableHighlighter(buildResolver());
+		highlighter.highlight(workingAreaView.getRequestArea());
+	}
+
+	private void cancelHightlightedVariables() {
 		if (highlighter != null){
 			highlighter.clear();
 		}
-		highlighter = new VariableHighlighter(buildResolver());
-		highlighter.highlight(requestView.getMainEditingArea());
 	}
-
 
 	private Optional<Folder> mkFolders(List<String> folderPath, Collection collection) {
 		List<String> stack = new LinkedList<>(folderPath);

@@ -20,6 +20,7 @@
   * <kbd>CTRL</kbd>+<kbd>W</kbd> - Close Active Request
   * <kbd>CTRL</kbd>+<kbd>S</kbd> - Save Active Request
   * <kbd>CTRL</kbd>+<kbd>E</kbd> - Edit current Environment
+  * <kbd>CTRL</kbd>+<kbd>Space</kbd> - Quick-Edit of Variables
   * <kbd>ESC</kbd> - Cancel running Request
   
 
@@ -29,3 +30,11 @@
 * You can <kbd>CTRL</kbd>+<kbd>V</kbd> multiple rows into a table
 
 ![copypaste-video](/img/gif/copypaste.gif)
+
+## Quick Edit for Variables
+
+* You can highlight variables.
+* Clicking on it opens popup for modification/creation
+* <kbd>ESC</kbd> hides highlighting
+
+![highlightvars-video](/img/gif/highlight-vars.gif)

@@ -19,7 +19,7 @@ version 4.3.0 - upcoming
     * auto-indent based on content (json supported for now)
     * Tabs as spaces
     * outdenting supported
-  * added quick-view&edit of template parameters (Ctrl-Space)
+  * added quick-view&edit of template parameters (Ctrl-Space) (see [Features](/docs/features.md))
 
 version 4.2.0 
   * removed FXML dependency (small performance improvement, preparation for native image)

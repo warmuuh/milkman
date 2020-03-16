@@ -37,10 +37,13 @@ public class HotkeyManager {
 
 		scene.getAccelerators().put(new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN), 
 				() -> onAppCommand.invoke(new EditCurrentEnvironment()));
-		
 
-		scene.getAccelerators().put(new KeyCodeCombination(KeyCode.ESCAPE), 
-				() -> onCommand.invoke(new CancelActiveRequest()));
+
+		scene.getAccelerators().put(new KeyCodeCombination(KeyCode.ESCAPE),
+				() -> {
+					onCommand.invoke(new CancelActiveRequest());
+					onCommand.invoke(new CancelHighlight());
+				});
 
 
 		scene.getAccelerators().put(new KeyCodeCombination(KeyCode.SPACE, KeyCombination.CONTROL_DOWN),

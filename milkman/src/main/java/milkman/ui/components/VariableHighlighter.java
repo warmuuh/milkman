@@ -19,7 +19,6 @@
 
 package milkman.ui.components;
 
-import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.utils.JFXUtilities;
 import com.sun.javafx.geom.RectBounds;
@@ -29,8 +28,6 @@ import com.sun.javafx.scene.text.TextLine;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.WeakInvalidationListener;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
@@ -40,8 +37,6 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.TextArea;
 import javafx.scene.effect.BlendMode;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.WindowEvent;
@@ -49,6 +44,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import milkman.ctrl.VariableResolver;
 import milkman.ctrl.VariableResolver.VariableData;
+import org.fxmisc.richtext.model.Paragraph;
+import org.reactfx.collection.LiveList;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -102,29 +99,76 @@ public class VariableHighlighter {
 
         this.parent = pane;
 
-        Set<Node> nodes = getTextNodes(pane);
+        ArrayList<Rectangle> allRectangles = new ArrayList<>(processAllTextNodes(pane));
 
-        ArrayList<Rectangle> allRectangles = new ArrayList<>();
+        allRectangles.addAll(processCodeAreas(parent));
+
+        JFXUtilities.runInFXAndWait(()-> getParentChildren(pane).addAll(allRectangles));
+    }
+
+    private List<Rectangle> processCodeAreas(Parent pane) {
+        var nodes = pane.lookupAll("ContentEditor");
+        ArrayList<Rectangle> result = new ArrayList<>();
+
+
+        for (Node node : nodes) {
+            ArrayList<TextBoundingBox> bboxes = new ArrayList<>();
+            var area = ((ContentEditor) node).getCodeArea();
+            LiveList<Paragraph<Collection<String>, String, Collection<String>>> visibleParagraphs = area.getVisibleParagraphs();
+            int visibleParIdx = 0;
+            for (Paragraph visiblePar : visibleParagraphs) {
+                int parIdx = area.visibleParToAllParIndex(visibleParIdx);
+                var parMatcher = tagPattern.matcher(visiblePar.getText());
+                if (parMatcher.find()){
+//                    var bounds = area.getVisibleParagraphBoundsOnScreen(visibleParIdx);
+                    var matchStartIdxAbs = area.getAbsolutePosition(parIdx, parMatcher.start());
+                    var bounds = area.getCharacterBoundsOnScreen(matchStartIdxAbs, matchStartIdxAbs + parMatcher.group().length());
+                    bounds.ifPresent(b -> {
+                        var localBounds = parent.sceneToLocal(area.localToScene(area.screenToLocal(b)));
+                        bboxes.add(new TextBoundingBox(parMatcher.group(1),
+                                localBounds.getMinX(), localBounds.getMinY(), localBounds.getWidth(), localBounds.getHeight()));
+                    });
+
+                }
+                visibleParIdx++;
+            }
+            var rectangles = getRectangles(area, bboxes);
+            if (rectangles.size() > 0){
+                result.addAll(rectangles);
+                boxes.put(node, rectangles);
+            }
+        }
+
+        return result;
+    }
+
+    private List<Rectangle> processAllTextNodes(Parent pane) {
+        ArrayList<Rectangle> result = new ArrayList<>();
+        Set<Node> nodes = getTextNodes(pane);
         for (Node node : nodes) {
             Text text = ((Text) node);
             var matcher = tagPattern.matcher(text.getText());
             if (matcher.find() && NodeHelper.isTreeVisible(node)) {
                 ArrayList<Rectangle> rectangles = getRectangles(text);
-                allRectangles.addAll(rectangles);
+                result.addAll(rectangles);
                 boxes.put(node, rectangles);
             }
         }
-
-        JFXUtilities.runInFXAndWait(()-> getParentChildren(pane).addAll(allRectangles));
+        return result;
     }
 
     private ArrayList<Rectangle> getRectangles(Text text) {
         ArrayList<TextBoundingBox> boundingBoxes = getMatchingBounds(text);
+        ArrayList<Rectangle> rectangles = getRectangles(text, boundingBoxes);
+        return rectangles;
+    }
+
+    private ArrayList<Rectangle> getRectangles(Node node, ArrayList<TextBoundingBox> boundingBoxes) {
         ArrayList<Rectangle> rectangles = new ArrayList<>();
         for (TextBoundingBox boundingBox : boundingBoxes) {
             var data = variableResolver.getVariableData(boundingBox.getText());
 
-            HighLightRectangle rect = new HighLightRectangle(text);
+            HighLightRectangle rect = new HighLightRectangle(node);
             rect.setCacheHint(CacheHint.SPEED);
             rect.setCache(true);
 //            rect.setMouseTransparent(true);
@@ -197,14 +241,18 @@ public class VariableHighlighter {
         // add listener to remove the current rectangle if text was changed
         private InvalidationListener listener;
 
-        public HighLightRectangle(Text text) {
-            listener = observable -> clear(text);
-            text.textProperty().addListener(new WeakInvalidationListener(listener));
-            text.localToSceneTransformProperty().addListener(new WeakInvalidationListener(listener));
+        public HighLightRectangle(Node node) {
+            if (node instanceof Text){
+                Text text = (Text) node;
+                listener = observable -> clear(node);
+                text.textProperty().addListener(new WeakInvalidationListener(listener));
+                text.localToSceneTransformProperty().addListener(new WeakInvalidationListener(listener));
+            }
+
         }
 
-        private void clear(Text text) {
-            final List<Rectangle> rectangles = boxes.get(text);
+        private void clear(Node node) {
+            final List<Rectangle> rectangles = boxes.get(node);
             if(rectangles != null && !rectangles.isEmpty())
                 Platform.runLater(() -> getParentChildren(parent).removeAll(rectangles));
         }

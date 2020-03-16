@@ -14,6 +14,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
+import lombok.Getter;
 import lombok.val;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.ui.plugin.ContentTypePlugin;
@@ -64,6 +65,7 @@ public class ContentEditor extends VBox {
 		}
 	});
 
+	@Getter
 	protected CodeArea codeArea;
 
 	private GenericBinding<Object, String> contentBinding;

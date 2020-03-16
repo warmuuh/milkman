@@ -41,6 +41,9 @@ public interface UiCommand {
 	public static class CancelActiveRequest implements UiCommand {
 	}
 	@Value
+	public static class CancelHighlight implements UiCommand {
+	}
+	@Value
 	public static class LoadRequest implements UiCommand {
 		String requestId;
 	}

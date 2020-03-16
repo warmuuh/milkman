@@ -202,12 +202,12 @@
 	 
 }
 
-#generalRequestEdit .variable-new {
+#requestComponent .variable-new {
     -fx-fill: transparent;
     -fx-stroke: #2192F2;
     -fx-stroke-width: 2;
 }
-#generalRequestEdit .variable {
+#requestComponent .variable {
     -fx-fill: #2192F2
 }
 

@@ -43,10 +43,6 @@ public class RequestComponent {
 		this.reqTypeManager = reqTypeManager;
 	}
 
-	public HBox getMainEditingArea(){
-		return mainEditingArea;
-	}
-	
 	public void display(RequestContainer request) {
 		this.currentRequest = request;
 		mainEditingArea.getChildren().clear();
