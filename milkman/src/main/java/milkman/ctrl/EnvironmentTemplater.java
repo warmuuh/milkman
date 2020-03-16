@@ -1,4 +1,8 @@
-package milkman.ui.commands;
+package milkman.ctrl;
+
+import milkman.domain.Environment;
+import milkman.domain.Environment.EnvironmentEntry;
+import milkman.ui.plugin.Templater;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -7,11 +11,6 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import lombok.RequiredArgsConstructor;
-import milkman.domain.Environment;
-import milkman.domain.Environment.EnvironmentEntry;
-import milkman.ui.plugin.Templater;
 
 public class EnvironmentTemplater implements Templater{
 

@@ -49,7 +49,10 @@ public interface UiCommand {
 	public static class SwitchToRequest implements UiCommand {
 		RequestContainer request;
 	}
-	
+	@Value
+	public static class HighlightVariables implements UiCommand {
+	}
+
 	@Value
 	public static class CloseRequest implements UiCommand {
 		RequestContainer request;

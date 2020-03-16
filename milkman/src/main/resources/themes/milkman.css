@@ -202,6 +202,15 @@
 	 
 }
 
+#generalRequestEdit .variable-new {
+    -fx-fill: transparent;
+    -fx-stroke: #2192F2;
+    -fx-stroke-width: 2;
+}
+#generalRequestEdit .variable {
+    -fx-fill: #2192F2
+}
+
 
 /**
 * working area > request aspect area
@@ -480,4 +489,12 @@
 
 .jfx-snackbar-action {
     -fx-text-fill: #ff4081;
-} 
+}
+
+/**
+* Popup
+*/
+
+.popup-title {
+    -fx-font-weight: BOLD;
+}

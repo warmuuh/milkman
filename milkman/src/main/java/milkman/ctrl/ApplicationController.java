@@ -13,7 +13,6 @@ import milkman.persistence.WorkbenchState;
 import milkman.ui.commands.AppCommand;
 import milkman.ui.commands.AppCommand.RenameEnvironment;
 import milkman.ui.commands.AppCommand.RenameWorkspace;
-import milkman.ui.commands.EnvironmentTemplater;
 import milkman.ui.main.HotkeyManager;
 import milkman.ui.main.Toaster;
 import milkman.ui.main.ToolbarComponent;

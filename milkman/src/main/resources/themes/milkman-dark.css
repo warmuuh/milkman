@@ -222,6 +222,16 @@
 	 
 }
 
+
+#generalRequestEdit .variable-new {
+    -fx-fill: transparent;
+    -fx-stroke: #2192F2;
+    -fx-stroke-width: 2;
+}
+#generalRequestEdit .variable {
+    -fx-fill: #2192F2
+}
+
 /**
 * working area > request aspect area
 */
@@ -680,4 +690,12 @@
 .scroll-bar:vertical:focused,
 .scroll-bar:horizontal:focused {
  -fx-background-color: transparent,rgb(96,96,96),rgb(96,96,96);
+}
+
+/**
+* Popup
+*/
+
+.popup-title {
+    -fx-font-weight: BOLD;
 }

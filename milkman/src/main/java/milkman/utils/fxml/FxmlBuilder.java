@@ -113,6 +113,12 @@ public class FxmlBuilder {
 		cb.setId(id);
 		return cb;
 	}
+
+	public static HboxExt hbox(Node... elements) {
+		HboxExt hBox = new HboxExt();
+		hBox.getChildren().addAll(elements);
+		return hBox;
+	}
 	
 	public static HboxExt hbox(String id) {
 		HboxExt hBox = new HboxExt();

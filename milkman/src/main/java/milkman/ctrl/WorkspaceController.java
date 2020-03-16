@@ -9,13 +9,13 @@ import milkman.domain.Collection;
 import milkman.domain.*;
 import milkman.domain.RequestContainer.UnknownRequestContainer;
 import milkman.ui.commands.AppCommand;
-import milkman.ui.commands.EnvironmentTemplater;
 import milkman.ui.commands.UiCommand;
 import milkman.ui.commands.UiCommand.CloseRequest;
 import milkman.ui.commands.UiCommand.CloseRequest.CloseType;
 import milkman.ui.commands.UiCommand.DeleteRequest;
 import milkman.ui.commands.UiCommand.RenameRequest;
 import milkman.ui.commands.UiCommand.SubmitCustomCommand;
+import milkman.ui.components.VariableHighlighter;
 import milkman.ui.main.*;
 import milkman.ui.main.dialogs.ExportDialog;
 import milkman.ui.main.dialogs.SaveRequestDialog;
@@ -51,7 +51,8 @@ public class WorkspaceController {
 	private RequestExecutor executor;
 	
 	private List<String> requestDisplayHistory = new LinkedList<>();
-	
+	private VariableHighlighter highlighter;
+
 	public void loadWorkspace(Workspace workspace) {
 		this.activeWorkspace = workspace;
 		loadCollections(workspace);
@@ -209,7 +210,12 @@ public class WorkspaceController {
 		EnvironmentTemplater templater = new EnvironmentTemplater(activeEnv, globalEnvs);
 		return templater;
 	}
-
+	private VariableResolver buildResolver() {
+		Optional<Environment> activeEnv = activeWorkspace.getEnvironments().stream().filter(e -> e.isActive()).findAny();
+		List<Environment> globalEnvs = activeWorkspace.getEnvironments().stream().filter(e -> e.isGlobal()).collect(Collectors.toList());
+		VariableResolver resolver = new VariableResolver(activeEnv, globalEnvs);
+		return resolver;
+	}
 
 	public void handleCommand(UiCommand command) {
 		log.info("Handling command: " + command);
@@ -267,13 +273,14 @@ public class WorkspaceController {
 			exportRequest(((UiCommand.ExportRequest) command).getRequest());
 		} else if (command instanceof UiCommand.ExportCollection) {
 			exportCollection(((UiCommand.ExportCollection) command).getCollection());
+		} else if (command instanceof  UiCommand.HighlightVariables) {
+			highlightVariables();
 		} else {
 			throw new IllegalArgumentException("Unsupported command");
 		}
 	}
-	
-	
-	
+
+
 	private void deleteFolderFromCollection(Collection collection, Folder folder) {
 		
 		deleteAllRequestsFromFolder(collection, folder);
@@ -529,6 +536,16 @@ public class WorkspaceController {
 		loadCollections(activeWorkspace);
 		displayRequest(request);
 	}
+
+
+	private void highlightVariables() {
+		if (highlighter != null){
+			highlighter.clear();
+		}
+		highlighter = new VariableHighlighter(buildResolver());
+		highlighter.highlight(requestView.getMainEditingArea());
+	}
+
 
 	private Optional<Folder> mkFolders(List<String> folderPath, Collection collection) {
 		List<String> stack = new LinkedList<>(folderPath);

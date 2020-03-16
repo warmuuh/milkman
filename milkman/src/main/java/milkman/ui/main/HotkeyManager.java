@@ -41,8 +41,14 @@ public class HotkeyManager {
 
 		scene.getAccelerators().put(new KeyCodeCombination(KeyCode.ESCAPE), 
 				() -> onCommand.invoke(new CancelActiveRequest()));
+
+
+		scene.getAccelerators().put(new KeyCodeCombination(KeyCode.SPACE, KeyCombination.CONTROL_DOWN),
+				() -> onCommand.invoke(new HighlightVariables()));
+
+
 	}
-	
-	
-	
+
+
+
 }

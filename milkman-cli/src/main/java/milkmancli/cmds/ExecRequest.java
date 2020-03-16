@@ -1,43 +1,29 @@
 package milkmancli.cmds;
 
-import static milkmancli.utils.StringUtil.*;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.apache.commons.io.IOUtils;
-import org.jline.builtins.Commands;
-import org.jline.builtins.Less;
-import org.jline.builtins.Source;
-
 import lombok.RequiredArgsConstructor;
+import milkman.ctrl.EnvironmentTemplater;
 import milkman.ctrl.RequestTypeManager;
 import milkman.domain.Environment;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseAspect;
 import milkman.domain.ResponseContainer;
-import milkman.domain.Workspace;
-import milkman.persistence.PersistenceManager;
-import milkman.ui.commands.EnvironmentTemplater;
 import milkman.ui.plugin.RequestTypePlugin;
-import milkman.ui.plugin.Templater;
 import milkman.ui.plugin.UiPluginManager;
 import milkmancli.AspectCliPresenter;
 import milkmancli.CliContext;
 import milkmancli.TerminalCommand;
 import milkmancli.TerminalUi;
-import milkmancli.utils.StringUtil;
+import org.apache.commons.io.IOUtils;
+import org.jline.builtins.Commands;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Command that clears the screen.

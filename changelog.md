@@ -15,8 +15,11 @@ version 4.3.0 - upcoming
   * reworked "save as.." dialog.
     * support folders
     * more intelligent matching of collections, using given chars to match, not necessarily substring
-  * improved behavior of code editor: auto-indent based on content, Tabs as spaces, outdenting supported
-
+  * improved behavior of code editor
+    * auto-indent based on content (json supported for now)
+    * Tabs as spaces
+    * outdenting supported
+  * added quick-view&edit of template parameters (Ctrl-Space)
 
 version 4.2.0 
   * removed FXML dependency (small performance improvement, preparation for native image)

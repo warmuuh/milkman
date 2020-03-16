@@ -1,16 +1,16 @@
 package milkman.ui.commands;
 
 
+import milkman.ctrl.EnvironmentTemplater;
+import milkman.domain.Environment;
+import milkman.domain.Environment.EnvironmentEntry;
+import org.junit.jupiter.api.Test;
+
 import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.*;
-
-import milkman.domain.Environment;
-import milkman.domain.Environment.EnvironmentEntry;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class EnvironmentTemplaterTest {
 
