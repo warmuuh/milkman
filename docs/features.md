@@ -37,4 +37,4 @@
 * Clicking on it opens popup for modification/creation
 * <kbd>ESC</kbd> hides highlighting
 
-![highlightvars-video](/img/gif/highlight-vars.gif)
+![highlightvars-video](/img/gif/hightlight-vars.gif)
