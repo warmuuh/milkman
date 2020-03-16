@@ -1,10 +1,5 @@
 package milkman.ui.plugin.rest.export;
 
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.SystemUtils;
-
 import javafx.scene.Node;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
@@ -20,6 +15,10 @@ import milkman.ui.plugin.rest.domain.HeaderEntry;
 import milkman.ui.plugin.rest.domain.RestBodyAspect;
 import milkman.ui.plugin.rest.domain.RestHeaderAspect;
 import milkman.ui.plugin.rest.domain.RestRequestContainer;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
+
+import java.util.stream.Collectors;
 
 public class CurlExporter implements RequestExporterPlugin {
 
@@ -101,8 +100,12 @@ public class CurlExporter implements RequestExporterPlugin {
 		
 		request.getAspect(RestBodyAspect.class).ifPresent(a -> {
 			if (StringUtils.isNotBlank(a.getBody())) {
-				b.append(lineBreak);		
-				b.append("-d " + quote);b.append(a.getBody());b.append(quote);
+				b.append(lineBreak);
+				String normalized = StringUtils.normalizeSpace(a.getBody());
+				if (isWindows){
+					normalized = normalized.replaceAll("\"", "\"\""); // replace all quotes with double quotes
+				}
+				b.append("-d " + quote);b.append(normalized);b.append(quote);
 			}
 		});
 		
