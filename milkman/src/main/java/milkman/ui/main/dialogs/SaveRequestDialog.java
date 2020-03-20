@@ -123,7 +123,7 @@ public class SaveRequestDialog {
 			controller.requestName = vbox.add(text("requestName", "Request Name", true));
 			controller.requestName.setValidators(requiredValidator());
 
-			controller.collectionName = vbox.add(text("collectionName", "Collection Name", true));
+			controller.collectionName = vbox.add(text("collectionName", "Path (collection/folder)", true));
 			controller.collectionName.setValidators(requiredValidator());
 
 			var collContainer = vbox.add(new FxmlBuilder.VboxExt());
