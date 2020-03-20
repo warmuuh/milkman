@@ -37,6 +37,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.TextArea;
 import javafx.scene.effect.BlendMode;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.WindowEvent;
@@ -44,6 +45,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import milkman.ctrl.VariableResolver;
 import milkman.ctrl.VariableResolver.VariableData;
+import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.model.Paragraph;
 import org.reactfx.collection.LiveList;
 
@@ -135,7 +137,7 @@ public class VariableHighlighter {
             var rectangles = getRectangles(area, bboxes);
             if (rectangles.size() > 0){
                 result.addAll(rectangles);
-                boxes.put(node, rectangles);
+                boxes.put(area, rectangles);
             }
         }
 
@@ -248,7 +250,20 @@ public class VariableHighlighter {
                 text.textProperty().addListener(new WeakInvalidationListener(listener));
                 text.localToSceneTransformProperty().addListener(new WeakInvalidationListener(listener));
             }
+            if (node instanceof CodeArea){
+                CodeArea codeArea = (CodeArea) node;
+                listener = observable -> clear(node);
+                codeArea.addEventFilter(ScrollEvent.ANY, evt -> listener.invalidated(null));
+//                codeArea.localToSceneTransformProperty().addListener(new WeakInvalidationListener(listener));
+                codeArea.textProperty().addListener(new WeakInvalidationListener(listener));
 
+//                codeArea.textProperty().addListener((obs, o, n) -> System.out.println("test"));
+//                var parent = (VirtualizedScrollPane) codeArea.getParent();
+//                parent.onScrollProperty().addListener(new WeakInvalidationListener(listener));
+//                parent.localToSceneTransformProperty().addListener(new WeakInvalidationListener(listener));
+//                parent.addEventFilter(ScrollEvent.ANY, evt -> listener.invalidated(null));
+
+            }
         }
 
         private void clear(Node node) {
