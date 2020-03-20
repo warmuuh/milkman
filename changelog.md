@@ -20,7 +20,9 @@ version 4.3.0 - upcoming
     * Tabs as spaces
     * outdenting supported
   * added quick-view&edit of template parameters (Ctrl-Space) (see [Features](/docs/features.md))
-
+  * added popup area for editing long urls
+  
+  
 version 4.2.0 
   * removed FXML dependency (small performance improvement, preparation for native image)
   * added support for TLS1.0. #41

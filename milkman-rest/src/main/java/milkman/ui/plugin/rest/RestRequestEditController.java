@@ -1,7 +1,6 @@
 package milkman.ui.plugin.rest;
 
 import com.jfoenix.controls.JFXComboBox;
-import com.jfoenix.controls.JFXTextField;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -9,6 +8,7 @@ import javafx.scene.layout.Priority;
 import lombok.SneakyThrows;
 import milkman.domain.RequestContainer;
 import milkman.ui.components.AutoCompleter;
+import milkman.ui.components.LongTextField;
 import milkman.ui.plugin.AutoCompletionAware;
 import milkman.ui.plugin.RequestTypeEditor;
 import milkman.ui.plugin.rest.domain.RestQueryParamAspect;
@@ -39,7 +39,7 @@ public class RestRequestEditController implements RequestTypeEditor, AutoComplet
 			throw new IllegalArgumentException("Other request types not yet supported");
 		
 		RestRequestContainer restRequest = (RestRequestContainer)request;
-		
+
 		urlBinding.bindTo(requestUrl.textProperty(), restRequest);
 		httpMethodBinding.bindTo(httpMethod.valueProperty(), restRequest);
 		
@@ -81,7 +81,7 @@ public class RestRequestEditController implements RequestTypeEditor, AutoComplet
 			methods.getItems().add("HEAD");
 			methods.getItems().add("OPTIONS");
 			
-			controller.requestUrl = add(new JFXTextField(), true);
+			controller.requestUrl = add(new LongTextField(), true);
 			controller.requestUrl.setId("requestUrl");
 		}
 	}
