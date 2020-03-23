@@ -4,6 +4,8 @@ package milkman.ui.main;
 import com.jfoenix.controls.JFXSnackbar;
 import com.jfoenix.controls.JFXSnackbarLayout;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.util.Duration;
 import lombok.RequiredArgsConstructor;
 
@@ -32,6 +34,13 @@ public class Toaster {
 		Platform.runLater(() -> { 
 			lazyInit();
 			snackbar.fireEvent(new JFXSnackbar.SnackbarEvent(new JFXSnackbarLayout(message), Duration.seconds(5), null));
+		});
+	}
+
+	public void showToast(String message, String action, EventHandler<ActionEvent> eventHandler) {
+		Platform.runLater(() -> {
+			lazyInit();
+			snackbar.fireEvent(new JFXSnackbar.SnackbarEvent(new JFXSnackbarLayout(message, action, eventHandler), Duration.seconds(5), null));
 		});
 	}
 }

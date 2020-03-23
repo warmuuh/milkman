@@ -116,8 +116,8 @@
 						</goals>
 						<configuration>
 							<arguments>
-								<argument>src/main/resources/themes/milkman.css</argument>
-								<argument>target/classes/themes/milkman.bss</argument>
+								<argument>src${file.separator}main${file.separator}resources${file.separator}themes${file.separator}milkman.css</argument>
+								<argument>target${file.separator}classes${file.separator}themes${file.separator}milkman.bss</argument>
 							</arguments>
 						</configuration>
 					</execution>
@@ -130,8 +130,8 @@
 						</goals>
 						<configuration>
 							<arguments>
-								<argument>src/main/resources/themes/milkman-dark.css</argument>
-								<argument>target/classes/themes/milkman-dark.bss</argument>
+								<argument>src${file.separator}main${file.separator}resources${file.separator}themes${file.separator}milkman-dark.css</argument>
+								<argument>target${file.separator}classes${file.separator}themes${file.separator}milkman-dark.bss</argument>
 							</arguments>
 						</configuration>
 					</execution>
@@ -144,8 +144,8 @@
 						</goals>
 						<configuration>
 							<arguments>
-								<argument>src/main/resources/themes/syntax/milkman-syntax.css</argument>
-								<argument>target/classes/themes/syntax/milkman-syntax.bss</argument>
+								<argument>src${file.separator}main${file.separator}resources${file.separator}themes${file.separator}syntax${file.separator}milkman-syntax.css</argument>
+								<argument>target${file.separator}classes${file.separator}themes${file.separator}syntax${file.separator}milkman-syntax.bss</argument>
 							</arguments>
 						</configuration>
 					</execution>
@@ -158,8 +158,8 @@
 						</goals>
 						<configuration>
 							<arguments>
-								<argument>src/main/resources/themes/syntax/milkman-dark-syntax.css</argument>
-								<argument>target/classes/themes/syntax/milkman-dark-syntax.bss</argument>
+								<argument>src${file.separator}main${file.separator}resources${file.separator}themes${file.separator}syntax${file.separator}milkman-dark-syntax.css</argument>
+								<argument>target${file.separator}classes${file.separator}themes${file.separator}syntax${file.separator}milkman-dark-syntax.bss</argument>
 							</arguments>
 						</configuration>
 					</execution>

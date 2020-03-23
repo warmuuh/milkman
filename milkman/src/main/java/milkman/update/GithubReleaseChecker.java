@@ -1,20 +1,14 @@
 package milkman.update;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.Optional;
 
 /**
  * checks the releases of the given repository if there is a newer version than
@@ -33,14 +27,14 @@ public class GithubReleaseChecker {
 		private String tagName;
 	}
 
-	public boolean hasNewerRelease(String releaseToCheck) throws IOException {
+	public Optional<String> getNewerRelease(String releaseToCheck) throws IOException {
 		ReleaseResponse response = fetchLatestRelease();
-		return compareVersions(releaseToCheck, response.getTagName()) < 0;
-
+		return Optional.of(response.getTagName())
+				.filter(rel -> compareVersions(releaseToCheck, rel) < 0);
 	}
 
 	private ReleaseResponse fetchLatestRelease()
-			throws IOException, JsonParseException, JsonMappingException, MalformedURLException {
+			throws IOException {
 		String url = "https://api.github.com/repos/" + owner + "/" + repository + "/releases/latest";
 		ObjectMapper mapper = new ObjectMapper();
 		ReleaseResponse response = mapper.readValue(new URL(url).openStream(), ReleaseResponse.class);

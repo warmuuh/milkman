@@ -1,16 +1,18 @@
 package milkman.update;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import milkman.ui.main.Toaster;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import milkman.ui.main.Toaster;
+import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Properties;
 
 @Slf4j
 @Singleton
@@ -25,9 +27,15 @@ public class UpdateChecker {
 	public void checkForUpdateAsync() {
 		new Thread(() -> {
 			try {
-				if (releaseChecker.hasNewerRelease(currentVersion)) {
-					toaster.showToast("New Version available at: github.com/warmuuh/milkman/releases");
-				}
+				releaseChecker.getNewerRelease(currentVersion).ifPresent(newVersion -> {
+					toaster.showToast("New Version available: Milkman " + newVersion, "What's new?", e -> {
+						try {
+							Desktop.getDesktop().browse(new URI("https://github.com/warmuuh/milkman/blob/master/changelog.md"));
+						} catch (IOException | URISyntaxException e1) {
+							e1.printStackTrace();
+						}
+					});
+				});
 			} catch (IOException e) {
 				log.error("Failed to fetch release information", e);
 			}
