@@ -110,21 +110,65 @@
 				<executions>
 					<execution>
 						<id>gen-binary-themes</id>
+						<phase>process-resources</phase>
 						<goals>
-							<goal>exec</goal>
+							<goal>java</goal>
 						</goals>
+						<configuration>
+							<arguments>
+								<argument>src/main/resources/themes/milkman.css</argument>
+								<argument>target/classes/themes/milkman.bss</argument>
+							</arguments>
+						</configuration>
 					</execution>
+
+					<execution>
+						<id>gen-binary-themes-dark</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<configuration>
+							<arguments>
+								<argument>src/main/resources/themes/milkman-dark.css</argument>
+								<argument>target/classes/themes/milkman-dark.bss</argument>
+							</arguments>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>gen-binary-themes-syntax</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<configuration>
+							<arguments>
+								<argument>src/main/resources/themes/syntax/milkman-syntax.css</argument>
+								<argument>target/classes/themes/syntax/milkman-syntax.bss</argument>
+							</arguments>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>gen-binary-themes-syntax-dark</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<configuration>
+							<arguments>
+								<argument>src/main/resources/themes/syntax/milkman-dark-syntax.css</argument>
+								<argument>target/classes/themes/syntax/milkman-dark-syntax.bss</argument>
+							</arguments>
+						</configuration>
+					</execution>
+
+
 				</executions>
+
 				<configuration>
-					<executable>${java.home}/bin/javapackager</executable>
-					<workingDirectory>./</workingDirectory>
-					<arguments>
-						<argument>-createbss</argument>
-						<argument>-srcdir</argument>
-						<argument>src/main/resources/themes</argument>
-						<argument>-outdir</argument>
-						<argument>target/classes/themes</argument>
-					</arguments>
+					<mainClass>com.sun.javafx.css.parser.Css2Bin</mainClass>
 				</configuration>
 			</plugin>
 
