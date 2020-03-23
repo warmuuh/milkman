@@ -102,6 +102,32 @@
 			</resource>
 		</resources>
 		<plugins>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.6.0</version>
+				<executions>
+					<execution>
+						<id>gen-binary-themes</id>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<executable>${java.home}/bin/javapackager</executable>
+					<workingDirectory>./</workingDirectory>
+					<arguments>
+						<argument>-createbss</argument>
+						<argument>-srcdir</argument>
+						<argument>src/main/resources/themes</argument>
+						<argument>-outdir</argument>
+						<argument>target/classes/themes</argument>
+					</arguments>
+				</configuration>
+			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
