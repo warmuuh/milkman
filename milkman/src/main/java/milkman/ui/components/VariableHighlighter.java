@@ -254,7 +254,7 @@ public class VariableHighlighter {
                 CodeArea codeArea = (CodeArea) node;
                 listener = observable -> clear(node);
                 codeArea.addEventFilter(ScrollEvent.ANY, evt -> listener.invalidated(null));
-//                codeArea.localToSceneTransformProperty().addListener(new WeakInvalidationListener(listener));
+                codeArea.localToSceneTransformProperty().addListener(new WeakInvalidationListener(listener));
                 codeArea.textProperty().addListener(new WeakInvalidationListener(listener));
 
 //                codeArea.textProperty().addListener((obs, o, n) -> System.out.println("test"));
