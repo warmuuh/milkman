@@ -1,4 +1,4 @@
-![Nightly](https://github.com/warmuuh/milkman/workflows/Nightly/badge.svg?branch=master)
+[![Nightly](https://github.com/warmuuh/milkman/workflows/Nightly/badge.svg?branch=master)](https://github.com/warmuuh/milkman/releases/tag/nightly)
 [![Donate](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/warmuuh/donate)
 [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/milkman-project/community)
 

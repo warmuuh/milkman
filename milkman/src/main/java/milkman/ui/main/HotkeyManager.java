@@ -3,7 +3,7 @@ package milkman.ui.main;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
+import milkman.PlatformUtil;
 import milkman.ui.commands.AppCommand;
 import milkman.ui.commands.AppCommand.EditCurrentEnvironment;
 import milkman.ui.commands.UiCommand;
@@ -19,23 +19,23 @@ public class HotkeyManager {
 	public final Event<UiCommand> onCommand = new Event<UiCommand>();
 	
 	public void registerGlobalHotkeys(Scene scene) {
-		scene.getAccelerators().put(new KeyCodeCombination(KeyCode.ENTER, KeyCombination.CONTROL_DOWN), 
+		scene.getAccelerators().put(PlatformUtil.getControlKeyCombination(KeyCode.ENTER),
 				() -> onCommand.invoke(new SubmitActiveRequest()));
 
-		scene.getAccelerators().put(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN), 
+		scene.getAccelerators().put(PlatformUtil.getControlKeyCombination(KeyCode.N),
 				() -> onCommand.invoke(new NewRequest(null)));
 
-		scene.getAccelerators().put(new KeyCodeCombination(KeyCode.W, KeyCombination.CONTROL_DOWN), 
+		scene.getAccelerators().put(PlatformUtil.getControlKeyCombination(KeyCode.W),
 				() -> onCommand.invoke(new CloseActiveRequest()));
 
-		scene.getAccelerators().put(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN), 
+		scene.getAccelerators().put(PlatformUtil.getControlKeyCombination(KeyCode.R),
 				() -> onCommand.invoke(new RenameActiveRequest()));
 		
-		scene.getAccelerators().put(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN), 
+		scene.getAccelerators().put(PlatformUtil.getControlKeyCombination(KeyCode.S),
 				() -> onCommand.invoke(new SaveActiveRequest()));
 		
 
-		scene.getAccelerators().put(new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN), 
+		scene.getAccelerators().put(PlatformUtil.getControlKeyCombination(KeyCode.E),
 				() -> onAppCommand.invoke(new EditCurrentEnvironment()));
 
 
@@ -46,7 +46,7 @@ public class HotkeyManager {
 				});
 
 
-		scene.getAccelerators().put(new KeyCodeCombination(KeyCode.SPACE, KeyCombination.CONTROL_DOWN),
+		scene.getAccelerators().put(PlatformUtil.getControlKeyCombination(KeyCode.SPACE),
 				() -> onCommand.invoke(new HighlightVariables()));
 
 

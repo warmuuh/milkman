@@ -1,10 +1,13 @@
 package milkman;
 
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import org.apache.commons.lang3.SystemUtils;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-
-import org.apache.commons.lang3.SystemUtils;
 
 public class PlatformUtil {
 
@@ -17,6 +20,14 @@ public class PlatformUtil {
 			return filename;
 		} 
 		return getOsSpecificAppDataFolder(filename);
+	}
+
+	public static KeyCombination getControlKeyCombination(KeyCode keyCode){
+		KeyCombination.Modifier controlKey = KeyCombination.CONTROL_DOWN;
+		if (SystemUtils.IS_OS_MAC){
+			controlKey = KeyCombination.META_DOWN;
+		}
+		return new KeyCodeCombination(keyCode, controlKey);
 	}
 
 	private static String getOsSpecificAppDataFolder(String filename) {

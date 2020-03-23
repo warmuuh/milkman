@@ -8,7 +8,10 @@ import javafx.geometry.Pos;
 import javafx.scene.control.IndexRange;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
-import javafx.scene.input.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
@@ -16,11 +19,13 @@ import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import lombok.Getter;
 import lombok.val;
+import milkman.PlatformUtil;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.ui.plugin.ContentTypePlugin;
 import milkman.utils.Stopwatch;
 import milkman.utils.StringUtils;
 import milkman.utils.fxml.GenericBinding;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
@@ -153,7 +158,11 @@ public class ContentEditor extends VBox {
 					}
 				}).subscribe(this::applyHighlighting);
 
-		val keyCombination = new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN);
+		KeyCombination.Modifier controlKey = KeyCombination.CONTROL_DOWN;
+		if (SystemUtils.IS_OS_MAC){
+			controlKey = KeyCombination.META_DOWN;
+		}
+		val keyCombination = PlatformUtil.getControlKeyCombination(KeyCode.F);
 		codeArea.setOnKeyPressed(e -> {
 			if (keyCombination.match(e)) {
 				focusSearch();
