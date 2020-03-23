@@ -102,6 +102,76 @@
 			</resource>
 		</resources>
 		<plugins>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.6.0</version>
+				<executions>
+					<execution>
+						<id>gen-binary-themes</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<configuration>
+							<arguments>
+								<argument>src/main/resources/themes/milkman.css</argument>
+								<argument>target/classes/themes/milkman.bss</argument>
+							</arguments>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>gen-binary-themes-dark</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<configuration>
+							<arguments>
+								<argument>src/main/resources/themes/milkman-dark.css</argument>
+								<argument>target/classes/themes/milkman-dark.bss</argument>
+							</arguments>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>gen-binary-themes-syntax</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<configuration>
+							<arguments>
+								<argument>src/main/resources/themes/syntax/milkman-syntax.css</argument>
+								<argument>target/classes/themes/syntax/milkman-syntax.bss</argument>
+							</arguments>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>gen-binary-themes-syntax-dark</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<configuration>
+							<arguments>
+								<argument>src/main/resources/themes/syntax/milkman-dark-syntax.css</argument>
+								<argument>target/classes/themes/syntax/milkman-dark-syntax.bss</argument>
+							</arguments>
+						</configuration>
+					</execution>
+
+
+				</executions>
+
+				<configuration>
+					<mainClass>com.sun.javafx.css.parser.Css2Bin</mainClass>
+				</configuration>
+			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
