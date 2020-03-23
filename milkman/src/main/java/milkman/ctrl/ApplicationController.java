@@ -143,9 +143,16 @@ public class ApplicationController {
 			syncWorkspace(((AppCommand.SyncWorkspace) command).getCallback());
 		} else if (command instanceof AppCommand.ExportWorkspace) {
 			exportWorkspace(((AppCommand.ExportWorkspace) command).getWorkspaceName());
+		} else if (command instanceof AppCommand.ShowAbout) {
+			showAboutDialog();
 		} else {
 			throw new IllegalArgumentException("Unsupported command: " + command);
 		}
+	}
+
+	private void showAboutDialog() {
+		var aboutDialog = new AboutDialog();
+		aboutDialog.showAndWait();
 	}
 
 	private void exportWorkspace(String workspaceName) {

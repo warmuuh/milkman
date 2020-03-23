@@ -7,6 +7,9 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import lombok.Value;
 import lombok.val;
 import milkman.domain.Environment;
@@ -151,7 +154,13 @@ public class ToolbarComponent {
 			syncBtn.setText("Sync");
 		}));
 	}
-	
+
+
+
+	private void onAbout() {
+		onCommand.invoke(new AppCommand.ShowAbout());
+	}
+
 	public static class ToolbarComponentFxml extends ToolBar {
 		public ToolbarComponentFxml(ToolbarComponent controller) {
 			this.setId("toolbar");
@@ -172,11 +181,13 @@ public class ToolbarComponent {
 			this.getItems().add(controller.environmentSelection);
 			
 			this.getItems().add( button(icon(FontAwesomeIcon.WRENCH), controller::onOptions));
-			
+			var spacer = new Region();
+			HBox.setHgrow(spacer, Priority.ALWAYS);
+			this.getItems().add(spacer);
+
+			this.getItems().add( button(icon(FontAwesomeIcon.QUESTION_CIRCLE), controller::onAbout));
 			
 			controller.initialize();
 		}
 	}
-	
-	
 }

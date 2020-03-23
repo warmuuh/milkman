@@ -3,16 +3,15 @@ package milkman.update;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import milkman.ui.main.Toaster;
+import milkman.utils.VersionLoader;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.awt.*;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Properties;
 
 @Slf4j
 @Singleton
@@ -45,19 +44,7 @@ public class UpdateChecker {
 	
 	@PostConstruct
 	public void loadCurrentVersion() {
-    	currentVersion = "0";
-		try {
-	        Properties p = new Properties();
-	        InputStream is = getClass().getResourceAsStream("/META-INF/maven/com.github.warmuuh/milkman/pom.properties");
-	        if (is != null) {
-	            p.load(is);
-	            currentVersion = p.getProperty("version", "");
-	            if (currentVersion.contains("-"))
-	            	currentVersion = currentVersion.split("-")[0]; //remove qualifier
-	        }
-	    } catch (Exception e) {
-	    	log.warn("Failed to load current version, default to 0");
-	    }
+    	currentVersion = VersionLoader.loadCurrentVersion();
 	}
 	
 }

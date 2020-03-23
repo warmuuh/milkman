@@ -88,4 +88,8 @@ public interface AppCommand {
 	public static class SyncWorkspace implements AppCommand {
 		Runnable callback;
 	}
+
+	@Value
+	public static class ShowAbout implements AppCommand {
+	}
 }
