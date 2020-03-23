@@ -80,6 +80,13 @@ public class JfxTableEditor<T> extends StackPane {
 		table.setShowRoot(false);
 		table.setEditable(true);
 		table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		table.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+			//propagate to parent so that dialog closes correctly / request actually stops
+			if (e.getCode() == KeyCode.ESCAPE){
+				var newEvt = e.copyFor(e.getSource(), JfxTableEditor.this.getParent());
+				JfxTableEditor.this.getParent().fireEvent(newEvt);
+			}
+		});
 		this.getChildren().add(table);
 		addItemBtn = new JFXButton();
 		addItemBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
