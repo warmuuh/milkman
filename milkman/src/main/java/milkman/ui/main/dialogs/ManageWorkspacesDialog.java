@@ -20,6 +20,7 @@ import milkman.ui.commands.AppCommand;
 import milkman.utils.Event;
 import milkman.utils.fxml.FxmlUtil;
 import milkman.utils.fxml.NoSelectionModel;
+import milkman.utils.javafx.JavaFxUtils;
 
 import java.util.List;
 
@@ -95,6 +96,8 @@ public class ManageWorkspacesDialog {
 	
 	public void showAndWait(List<String> workspaceNames) {
 		JFXDialogLayout content = new ManageWorkspacesDialogFxml(this);
+		JavaFxUtils.publishEscToParent(workspaceList);
+
 		workspaces = FXCollections.observableList(workspaceNames);
 		workspaceList.setItems(workspaces);
 		workspaceList.setCellFactory(l -> new WorkspaceCell());

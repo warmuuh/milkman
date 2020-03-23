@@ -16,6 +16,7 @@ import milkman.ui.commands.AppCommand;
 import milkman.utils.Event;
 import milkman.utils.fxml.FxmlUtil;
 import milkman.utils.fxml.NoSelectionModel;
+import milkman.utils.javafx.JavaFxUtils;
 
 import java.util.List;
 
@@ -100,6 +101,8 @@ public class ManageEnvironmentsDialog {
 	public void showAndWait(List<Environment> envs) {
 		this.originalList = envs;
 		JFXDialogLayout content = new ManageEnvironmentsDialogFxml(this);
+		JavaFxUtils.publishEscToParent(environmentList);
+
 		environments = FXCollections.observableList(envs);
 		environmentList.setItems(environments);
 		environmentList.setCellFactory(l -> new EnvironmentCell());
