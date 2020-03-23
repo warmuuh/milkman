@@ -1,22 +1,11 @@
 package milkman.ui.components;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.cells.editors.TextFieldEditorBuilder;
 import com.jfoenix.controls.cells.editors.base.GenericEditableTreeTableCell;
 import com.jfoenix.controls.cells.editors.base.JFXTreeTableCell;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
-
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.application.Platform;
@@ -27,20 +16,8 @@ import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeTableCell;
-import javafx.scene.control.TreeTableColumn;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.DataFormat;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.control.*;
+import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -48,7 +25,13 @@ import lombok.EqualsAndHashCode;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import milkman.utils.fxml.GenericBinding;
+import milkman.utils.javafx.JavaFxUtils;
 import milkman.utils.javafx.ResizableJfxTreeTableView;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.*;
+import java.util.stream.Collectors;
 
 @Value
 @EqualsAndHashCode(callSuper = true)
@@ -80,13 +63,8 @@ public class JfxTableEditor<T> extends StackPane {
 		table.setShowRoot(false);
 		table.setEditable(true);
 		table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		table.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
-			//propagate to parent so that dialog closes correctly / request actually stops
-			if (e.getCode() == KeyCode.ESCAPE){
-				var newEvt = e.copyFor(e.getSource(), JfxTableEditor.this.getParent());
-				JfxTableEditor.this.getParent().fireEvent(newEvt);
-			}
-		});
+
+		JavaFxUtils.publishEscToParent(table);
 		this.getChildren().add(table);
 		addItemBtn = new JFXButton();
 		addItemBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);

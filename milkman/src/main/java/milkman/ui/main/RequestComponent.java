@@ -15,6 +15,7 @@ import milkman.ui.plugin.UiPluginManager;
 import milkman.utils.Event;
 import milkman.utils.fxml.FxmlBuilder.HboxExt;
 import milkman.utils.fxml.FxmlBuilder.VboxExt;
+import milkman.utils.javafx.JavaFxUtils;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -115,6 +116,8 @@ public class RequestComponent {
 			controller.mainEditingArea = reqEdit.add(hbox("mainEditingArea"), true);
 			
 			controller.submitBtn = reqEdit.add(new SplitMenuButton());
+
+			JavaFxUtils.publishEscToParent(controller.submitBtn);
 			controller.submitBtn.setId("submitBtn");
 			controller.submitBtn.setText("submit");
 			controller.submitBtn.setOnAction(e -> controller.onSubmit());
