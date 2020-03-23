@@ -11,6 +11,7 @@
 # Changelog
 
 version 4.3.0 - upcoming 
+  * several UX enhancements / fixes
   * made search case-insensitive
   * reworked "save as.." dialog.
     * support folders
@@ -21,7 +22,7 @@ version 4.3.0 - upcoming
     * outdenting supported
   * added quick-view&edit of template parameters (Ctrl-Space) (see [Features](/docs/features.md))
   * added popup area for editing long urls
-  
+  * fixed proxy authentification, added realm info
   
 version 4.2.0 
   * removed FXML dependency (small performance improvement, preparation for native image)

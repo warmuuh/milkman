@@ -34,6 +34,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Pattern;
 
 @Slf4j
 public class JavaRequestProcessor implements RequestProcessor {
@@ -50,6 +51,7 @@ public class JavaRequestProcessor implements RequestProcessor {
 
 	
 	private static PasswordAuthentication proxyCredentials = null;
+	private final Pattern realmPattern = Pattern.compile("realm=(\".*\")");
 
 	@SneakyThrows
 	private HttpClient buildClient() {
@@ -142,14 +144,14 @@ public class JavaRequestProcessor implements RequestProcessor {
 			CountDownLatch latch = new CountDownLatch(1);
 			Platform.runLater(() -> {
 				CredentialsInputDialog dialog = new CredentialsInputDialog();
-				dialog.showAndWait("Proxy Authentication");
+				dialog.showAndWait("Proxy Authentication" + getRealmInfo(responseInfo));
 				if (!dialog.isCancelled()) {
 					proxyCredentials = new PasswordAuthentication(dialog.getUsername(), dialog.getPassword().toCharArray());
 					try {
 						var newRequest = toHttpRequest(request, templater);
 						startTime.set(System.currentTimeMillis());
 						//TODO i actually need a new flux here, no?
-						var proxyReq = new ChunkedRequest(buildClient(), httpRequest);
+						var proxyReq = new ChunkedRequest(buildClient(), newRequest);
 						proxyReq.executeRequest(asyncControl.onCancellationRequested);
 						responseHolder.set(proxyReq);
 					} catch (Exception e) {
@@ -181,6 +183,15 @@ public class JavaRequestProcessor implements RequestProcessor {
 																chReq.getEmitterProcessor(),
 																chReq.getResponseInfo(),
 																startTime);
+	}
+
+	private String getRealmInfo(ResponseInfo responseInfo) {
+		return (String) responseInfo.headers()
+							.firstValue("Proxy-Authenticate")
+							.map(v -> realmPattern.matcher(v))
+							.filter(m -> m.find())
+							.map(m -> " (" + m.group(1) + ")")
+							.orElse("");
 	}
 
 	@SneakyThrows
