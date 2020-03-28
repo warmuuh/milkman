@@ -176,7 +176,8 @@ public class WorkspaceController {
 		workingAreaView.showSpinner(() -> executor.cancel());
 		
 		RequestExecutionContext context = new RequestExecutionContext(activeWorkspace.getEnvironments().stream().filter(e -> e.isActive()).findAny());
-		
+		plugins.loadRequestAspectPlugins().forEach(a -> a.beforeRequestExecution(request, context));
+
 		long startTime = System.currentTimeMillis();
 		executor.setOnScheduled(e -> activeWorkspace.getEnqueuedRequestIds().put(request.getId(), executor));
 		executor.setOnCancelled(e -> {

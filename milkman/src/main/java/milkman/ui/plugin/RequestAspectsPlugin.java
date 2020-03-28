@@ -1,10 +1,10 @@
 package milkman.ui.plugin;
 
-import java.util.List;
-
 import milkman.domain.RequestContainer;
 import milkman.domain.RequestExecutionContext;
 import milkman.domain.ResponseContainer;
+
+import java.util.List;
 
 /**
 * extension point for adding aspects to a request.
@@ -29,6 +29,12 @@ public interface RequestAspectsPlugin extends Orderable {
      * Therefore you have to make sure that aspects are only added if they are not yet existing.
 	 */
 	void initializeRequestAspects(RequestContainer request);
+
+	/**
+	 * will be called just before execution of a request
+	 * @param request
+	 */
+	default void beforeRequestExecution(RequestContainer request, RequestExecutionContext context) {};
 
 	/**
 	 * will be called to add custom aspects to a container.

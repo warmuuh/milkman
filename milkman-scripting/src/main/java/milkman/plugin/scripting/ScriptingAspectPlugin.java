@@ -47,6 +47,13 @@ public class ScriptingAspectPlugin implements RequestAspectsPlugin, ToasterAware
 	}
 
 	@Override
+	public void beforeRequestExecution(RequestContainer request, RequestExecutionContext context) {
+		request.getAspect(ScriptingAspect.class).ifPresent(a -> {
+			executeScript(a.getPreRequestScript(), request, null, context);
+		});
+	}
+
+	@Override
 	public void initializeResponseAspects(RequestContainer request, ResponseContainer response, RequestExecutionContext context) {
 		request.getAspect(ScriptingAspect.class).ifPresent(a -> {
 			executeScript(a.getPostRequestScript(), request, response, context);
@@ -55,7 +62,7 @@ public class ScriptingAspectPlugin implements RequestAspectsPlugin, ToasterAware
 
 	private void executeScript(String postRequestScript, RequestContainer request, ResponseContainer response, RequestExecutionContext context) {
 		Bindings bindings = engine.createBindings();
-		bindings.put("milkman", new MilkmanScriptingFacade(response, context, toaster));
+		bindings.put("milkman", new MilkmanScriptingFacade(request, response, context, toaster));
 		try {
 			Object eval = engine.eval(postRequestScript, bindings);
 		} catch (ScriptException e) {

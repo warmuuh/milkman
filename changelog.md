@@ -3,14 +3,15 @@
   * Export of environment (privatebin)
   * jdbc -> explorer functionality (what tables are there? what columns does a table have?). partially implemetned already
   * jdbc -> lazy list loading
-  * javascript runner for pre
-  * UX: Long URL editor
-  * UX: highlighting of environment variables
-  * UX: closing request confirmation
+  * environment resolver plugin support (think pseudo-vars like `{{random:email}}`)
+  * Authorization support
 
 # Changelog
 
-version 4.3.0 - upcoming 
+version 4.4.0 - upcoming
+  * support for pre-request scripts
+
+version 4.3.0 
   * several UX enhancements / fixes
   * made search case-insensitive
   * reworked "save as.." dialog.
