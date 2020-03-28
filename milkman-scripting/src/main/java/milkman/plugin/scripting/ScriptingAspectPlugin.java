@@ -37,7 +37,7 @@ public class ScriptingAspectPlugin implements RequestAspectsPlugin, ToasterAware
 
 	@Override
 	public List<ResponseAspectEditor> getResponseTabs() {
-		return Collections.emptyList();
+		return Collections.singletonList(new ScriptingOutputEditor());
 	}
 
 	@Override
@@ -49,33 +49,36 @@ public class ScriptingAspectPlugin implements RequestAspectsPlugin, ToasterAware
 	@Override
 	public void beforeRequestExecution(RequestContainer request, RequestExecutionContext context) {
 		request.getAspect(ScriptingAspect.class).ifPresent(a -> {
-			executeScript(a.getPreRequestScript(), request, null, context);
+			var log = executeScript(a.getPreRequestScript(), request, null, context);
+			a.setPreScriptOutput(log);
 		});
 	}
 
 	@Override
 	public void initializeResponseAspects(RequestContainer request, ResponseContainer response, RequestExecutionContext context) {
 		request.getAspect(ScriptingAspect.class).ifPresent(a -> {
-			executeScript(a.getPostRequestScript(), request, response, context);
+			var log = executeScript(a.getPostRequestScript(), request, response, context);
+			response.getAspects().add(new ScriptingOutputAspect(a.getPreScriptOutput(), log));
 		});
 	}
 
-	private void executeScript(String postRequestScript, RequestContainer request, ResponseContainer response, RequestExecutionContext context) {
+	private String executeScript(String postRequestScript, RequestContainer request, ResponseContainer response, RequestExecutionContext context) {
 		Bindings bindings = engine.createBindings();
-		bindings.put("milkman", new MilkmanScriptingFacade(request, response, context, toaster));
+		var facade = new MilkmanScriptingFacade(request, response, context, toaster);
+		bindings.put("milkman", facade);
 		try {
 			Object eval = engine.eval(postRequestScript, bindings);
 		} catch (ScriptException e) {
 			String causeMessage = ExceptionUtils.getRootCauseMessage(e);
 			toaster.showToast("Failed to execute script: " + causeMessage);
 			log.error("failed to execute script", e);
-			
 		}
+		return facade.getLog();
 	}
 
 	@Override
 	public int getOrder() {
-		return 30;
+		return 40;
 	}
 
 	@Override

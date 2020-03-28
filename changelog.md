@@ -3,13 +3,14 @@
   * Export of environment (privatebin)
   * jdbc -> explorer functionality (what tables are there? what columns does a table have?). partially implemetned already
   * jdbc -> lazy list loading
-  * environment resolver plugin support (think pseudo-vars like `{{random:email}}`)
+  * environment resolver plugin support (think of pseudo-vars like `{{random:email}}` or `{{fn:base64("test:me"}}`))
   * Authorization support
 
 # Changelog
 
 version 4.4.0 - upcoming
-  * support for pre-request scripts
+  * added support for pre-request scripts
+  * added output method for scripts (logging)
 
 version 4.3.0 
   * several UX enhancements / fixes

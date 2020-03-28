@@ -18,6 +18,7 @@ public class MilkmanScriptingFacade {
 	private final MilkmanResponseFacade response;
 	private final Optional<Environment> activeEnv;
 	private final Toaster toaster;
+	private final StringBuilder log = new StringBuilder();
 
 	public MilkmanScriptingFacade(RequestContainer request, ResponseContainer response, RequestExecutionContext context, Toaster toaster) {
 		this.response = response != null ? new MilkmanResponseFacade(response) : null;
@@ -32,6 +33,15 @@ public class MilkmanScriptingFacade {
 	
 	public void setEnvironmentVariable(String varName, String varValue) {
 		activeEnv.ifPresent(e -> e.setOrAdd(varName, varValue));
+	}
+
+	public void log(String text) {
+		log.append(text);
+		log.append(System.lineSeparator());
+	}
+
+	/* package */ String getLog(){
+		return log.toString();
 	}
 
 	@RequiredArgsConstructor

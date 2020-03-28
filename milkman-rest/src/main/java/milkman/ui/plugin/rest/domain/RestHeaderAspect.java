@@ -1,11 +1,11 @@
 package milkman.ui.plugin.rest.domain;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import lombok.Data;
 import milkman.ui.plugin.Templater;
 import milkman.ui.plugin.rest.HttpRequestBuilder;
+
+import java.util.LinkedList;
+import java.util.List;
 
 @Data
 public class RestHeaderAspect  extends RestRequestAspect  {
@@ -22,4 +22,5 @@ public class RestHeaderAspect  extends RestRequestAspect  {
 			.filter(HeaderEntry::isEnabled)
 			.forEach(h -> builder.addHeader(templater.replaceTags(h.getName()), templater.replaceTags(h.getValue())));
 	}
+
 }
