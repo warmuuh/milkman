@@ -20,7 +20,7 @@ public class ScriptingOutputEditor implements ResponseAspectEditor {
             b.append("\n");
         }
 
-        if (StringUtils.isNotEmpty(output.getPreScriptOutput())){
+        if (StringUtils.isNotEmpty(output.getPostScriptOutput())){
             b.append("-- post script output -- \n");
             b.append(output.getPostScriptOutput());
             b.append("\n");

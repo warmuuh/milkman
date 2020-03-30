@@ -1,4 +1,4 @@
-package milkman.plugin.scripting;
+package milkman.plugin.scripting.graaljs;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -6,21 +6,25 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import milkman.domain.*;
 import milkman.ui.main.Toaster;
+import org.graalvm.polyglot.HostAccess;
+import org.graalvm.polyglot.Value;
+import org.graalvm.polyglot.proxy.Proxy;
+import org.graalvm.polyglot.proxy.ProxyObject;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Data
-public class MilkmanScriptingFacade {
+public class MilkmanGraalJsFacade {
 
 
-	private final MilkmanRequestFacade request;
-	private final MilkmanResponseFacade response;
-	private final Optional<Environment> activeEnv;
+	public final MilkmanRequestFacade request;
+	public final MilkmanResponseFacade response;
+	public final Optional<Environment> activeEnv;
 	private final Toaster toaster;
-	private final StringBuilder log = new StringBuilder();
 
-	public MilkmanScriptingFacade(RequestContainer request, ResponseContainer response, RequestExecutionContext context, Toaster toaster) {
+	public MilkmanGraalJsFacade(RequestContainer request, ResponseContainer response, RequestExecutionContext context, Toaster toaster) {
 		this.response = response != null ? new MilkmanResponseFacade(response) : null;
 		this.request = request != null ? new MilkmanRequestFacade(request) : null;
 		activeEnv = context.getActiveEnvironment();
@@ -35,25 +39,24 @@ public class MilkmanScriptingFacade {
 		activeEnv.ifPresent(e -> e.setOrAdd(varName, varValue));
 	}
 
-	public void log(String text) {
-		log.append(text);
-		log.append(System.lineSeparator());
-	}
-
-	/* package */ String getLog(){
-		return log.toString();
-	}
-
 	@RequiredArgsConstructor
-	public static class MilkmanResponseFacade extends jdk.nashorn.api.scripting.AbstractJSObject {
+	public static class MilkmanResponseFacade implements ProxyObject {
 		private final ResponseContainer response;
 		private final ObjectMapper mapper = new ObjectMapper();
+
 		@Override
 		public Object getMember(String name) {
 			Optional<ResponseAspect> aspect = findAspectByName(name);
-			if (aspect.isPresent())
+			if (aspect.isPresent()){
+				//deep copy so that e.g. streams are converted to a string property
 				return convertToMap(aspect);
-			return super.getMember(name);
+			}
+			return null;
+		}
+
+		@Override
+		public Object getMemberKeys() {
+			return response.getAspects().stream().map(ResponseAspect::getName).collect(Collectors.toList());
 		}
 
 		private Map<String, Object> convertToMap(Optional<ResponseAspect> aspect) {
@@ -67,33 +70,31 @@ public class MilkmanScriptingFacade {
 
 		@Override
 		public boolean hasMember(String name) {
-			Optional<ResponseAspect> aspect = findAspectByName(name);
-			if (aspect.isPresent())
-				return true;
-			return super.hasMember(name);
+			return findAspectByName(name).isPresent();
 		}
 
 		@Override
-		public void setMember(String name, Object value) {
-			super.setMember(name, value);
+		public void putMember(String key, Value value) {
+			throw new UnsupportedOperationException("Adding new aspects is not supported");
 		}
+
 	}
 
 
 	@RequiredArgsConstructor
-	public static class MilkmanRequestFacade extends jdk.nashorn.api.scripting.AbstractJSObject {
+	public static class MilkmanRequestFacade implements ProxyObject {
 		private final RequestContainer request;
 		private final ObjectMapper mapper = new ObjectMapper();
 		@Override
 		public Object getMember(String name) {
 			Optional<RequestAspect> aspect = findAspectByName(name);
-			if (aspect.isPresent())
-				return convertToMap(aspect);
-			return super.getMember(name);
+			//no deep copy to allow modifications
+			return aspect.orElse(null);
 		}
 
-		private Map<String, Object> convertToMap(Optional<RequestAspect> aspect) {
-			return mapper.convertValue(aspect.get(), new TypeReference<Map<String, Object>>() {});
+		@Override
+		public Object getMemberKeys() {
+			return request.getAspects().stream().map(RequestAspect::getName).collect(Collectors.toList());
 		}
 
 		private Optional<RequestAspect> findAspectByName(String name) {
@@ -103,15 +104,12 @@ public class MilkmanScriptingFacade {
 
 		@Override
 		public boolean hasMember(String name) {
-			Optional<RequestAspect> aspect = findAspectByName(name);
-			if (aspect.isPresent())
-				return true;
-			return super.hasMember(name);
+			return findAspectByName(name).isPresent();
 		}
 
 		@Override
-		public void setMember(String name, Object value) {
-			super.setMember(name, value);
+		public void putMember(String key, Value value) {
+			throw new UnsupportedOperationException("Adding new aspects is not supported");
 		}
 	}
 	
