@@ -6,6 +6,7 @@ import milkman.domain.RequestContainer;
 import milkman.domain.RequestExecutionContext;
 import milkman.domain.ResponseContainer;
 import milkman.plugin.scripting.ScriptExecutor;
+import milkman.plugin.scripting.ScriptOptionsProvider;
 import milkman.plugin.scripting.nashorn.MilkmanNashornFacade;
 import milkman.ui.main.Toaster;
 import org.apache.commons.io.IOUtils;
@@ -28,12 +29,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class GraaljsExecutor implements ScriptExecutor {
     private static Engine engine = initEngine();
-    private static List<String> preloadScripts = List.of(
-            "https://cdnjs.cloudflare.com/ajax/libs/mocha/7.1.1/mocha.js",
-            "https://cdnjs.cloudflare.com/ajax/libs/chai/4.2.0/chai.js"
-    );
     private static Map<String, Source> preloadScriptCache = new HashMap<>();
-
 
     private static Engine initEngine() {
         return Engine.newBuilder()
@@ -87,6 +83,8 @@ public class GraaljsExecutor implements ScriptExecutor {
     }
 
     private void updatePreloadCache() throws URISyntaxException, IOException {
+        List<String> preloadScripts = ScriptOptionsProvider.options().getPreloadScripts();
+
         for (String preloadScriptUrl : preloadScripts) {
             if (!preloadScriptCache.containsKey(preloadScriptUrl)){
                 URI uri = new URI(preloadScriptUrl);

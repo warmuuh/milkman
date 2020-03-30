@@ -6,10 +6,10 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import lombok.RequiredArgsConstructor;
+import milkman.ui.components.JfxTableEditor;
 import milkman.utils.fxml.GenericBinding;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -21,6 +21,7 @@ public class OptionDialogBuilder  {
 		OptionPaneBuilder<T> textInput(String name, Function<T, String> getter, BiConsumer<T, String> setter);
 		OptionPaneBuilder<T> numberInput(String name, Function<T, Integer> getter, BiConsumer<T, Integer> setter);
 		OptionPaneBuilder<T> button(String name, Runnable runnable);
+		OptionPaneBuilder<T> list(Function<T, List<String>> itemProvider);
 
 		OptionPaneBuilder<T> selection(String name, Function<T, String> getter, BiConsumer<T, String> setter, List<String> possibleValues);
 		OptionSectionBuilder<T> endSection();
@@ -154,6 +155,30 @@ public class OptionDialogBuilder  {
 			nodes.add(hbox);
 			return this;
 		}
+
+		@Override
+		public OptionPaneBuilder<T> list(Function<T, List<String>> itemProvider) {
+			List<String> items = itemProvider.apply(optionsObject);
+			List<Map.Entry<Integer, String>> zipWithIndex = new LinkedList<>();
+			for (int i = 0; i < items.size(); i++) {
+				zipWithIndex.add(new HashMap.SimpleEntry<>(i, items.get(i)));
+			}
+			JfxTableEditor<Map.Entry<Integer, String>> table = new JfxTableEditor<>();
+			table.addColumn("Script Url", Map.Entry::getValue, (e, v) -> {
+				e.setValue(v);
+				items.set(e.getKey(), v);
+			});
+			table.enableAddition(() -> {
+				items.add("");
+				return new HashMap.SimpleEntry<>(items.size()-1, "");
+			});
+			table.addDeleteColumn("remove", removed -> items.remove((int)removed.getKey()));
+			table.setItems(zipWithIndex);
+			nodes.add(table);
+			return this;
+		}
+
+
 	}
 	
 	

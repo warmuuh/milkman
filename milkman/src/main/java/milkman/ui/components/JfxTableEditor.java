@@ -223,7 +223,7 @@ public class JfxTableEditor<T> extends StackPane {
 		addDeleteColumn(name, null);
 	}
 	
-	public void addDeleteColumn(String name, Runnable listener) {
+	public void addDeleteColumn(String name, Consumer<T> listener) {
 		TreeTableColumn<RecursiveWrapper<T>, String> column = new TreeTableColumn<>(name);
 		column.setCellFactory(c -> new DeleteEntryCell(listener));
 		column.setMinWidth(100);
@@ -322,9 +322,9 @@ public class JfxTableEditor<T> extends StackPane {
 
 	private final class DeleteEntryCell extends TreeTableCell<RecursiveWrapper<T>, String> {
 		final JFXButton btn;
-		private Runnable listener;
+		private Consumer<T> listener;
 		
-		public DeleteEntryCell(Runnable listener) {
+		public DeleteEntryCell(Consumer<T> listener) {
 			this.listener = listener;
 			btn = new JFXButton();
 			btn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -344,12 +344,14 @@ public class JfxTableEditor<T> extends StackPane {
 					
 //						table.build().getChildren().remove(getTreeTableRow().getIndex());
 //						obsWrappedItems.remove(getTreeTableRow().getIndex());
-						obsWrappedItems.remove(getTreeTableRow().getItem());
+						RecursiveWrapper<T> removedItem = getTreeTableRow().getItem();
+						obsWrappedItems.remove(removedItem);
 //						table.build().getValue().setChildren(obsWrappedItems);
 //						table.setRoot(table.build());
 //						table.refresh();
-						if (listener != null)
-			        		listener.run();
+						if (listener != null) {
+							listener.accept(removedItem.getData());
+						}
 					});
 //                        T element = getTreeTableView().build().getChildren().get(getTreeTableRow().getIndex()).getValue();
 //                        getItems().remove(element);
