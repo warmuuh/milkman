@@ -10,7 +10,8 @@
 
 version 4.4.0 - upcoming
   * added support for pre-request scripts
-  * added output method for scripts (logging)
+  * added support for pre-loading scripts before executing pre/post request scripts (e.g. load chai before asserting things)
+  * added output method for scripts via console.log / print (logging)
 
 version 4.3.0 
   * several UX enhancements / fixes
