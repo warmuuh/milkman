@@ -19,9 +19,9 @@ import java.util.stream.Collectors;
 public class MilkmanGraalJsFacade {
 
 
-	public final MilkmanRequestFacade request;
-	public final MilkmanResponseFacade response;
-	public final Optional<Environment> activeEnv;
+	private final MilkmanRequestFacade request;
+	private final MilkmanResponseFacade response;
+	private final Optional<Environment> activeEnv;
 	private final Toaster toaster;
 
 	public MilkmanGraalJsFacade(RequestContainer request, ResponseContainer response, RequestExecutionContext context, Toaster toaster) {
@@ -49,7 +49,7 @@ public class MilkmanGraalJsFacade {
 			Optional<ResponseAspect> aspect = findAspectByName(name);
 			if (aspect.isPresent()){
 				//deep copy so that e.g. streams are converted to a string property
-				return convertToMap(aspect);
+				return DynamicReadonlyProxy.from(convertToMap(aspect));
 			}
 			return null;
 		}
