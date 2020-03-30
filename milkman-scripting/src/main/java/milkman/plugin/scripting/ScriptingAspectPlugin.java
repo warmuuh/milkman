@@ -70,7 +70,7 @@ public class ScriptingAspectPlugin implements RequestAspectsPlugin, ToasterAware
 	private String executeScript(String source, RequestContainer request, ResponseContainer response, RequestExecutionContext context) {
 		try{
 			if (executor == null){
-				executor = new GraaljsExecutor(toaster);
+				executor = new NashornExecutor(toaster);
 			}
 			return  executor.executeScript(source, request, response, context);
 		} catch (Throwable t){

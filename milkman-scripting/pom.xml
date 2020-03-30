@@ -24,20 +24,20 @@
 			<groupId>org.graalvm.sdk</groupId>
 			<artifactId>graal-sdk</artifactId>
 			<version>${graalvm.version}</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.graalvm.js</groupId>
 			<artifactId>js</artifactId>
 			<version>${graalvm.version}</version>
-<!--			<scope>runtime</scope>-->
+			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.graalvm.js</groupId>
-			<artifactId>js-scriptengine</artifactId>
-			<version>${graalvm.version}</version>
-<!--			<scope>runtime</scope>-->
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.graalvm.js</groupId>-->
+<!--			<artifactId>js-scriptengine</artifactId>-->
+<!--			<version>${graalvm.version}</version>-->
+<!--&lt;!&ndash;			<scope>runtime</scope>&ndash;&gt;-->
+<!--		</dependency>-->
 
 		<dependency>
 			<groupId>org.mockito</groupId>
