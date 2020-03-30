@@ -52,7 +52,7 @@ public class RequestHeaderTabController implements RequestAspectEditor, AutoComp
 				HeaderEntry::getValue,
 				run(HeaderEntry::setValue).andThen(() -> headers.setDirty(true)),
 				tf -> completer.attachVariableCompletionTo(tf));
-		editor.addDeleteColumn("Delete", () -> headers.setDirty(true));
+		editor.addDeleteColumn("Delete", (removed) -> headers.setDirty(true));
 
 		editor.setRowToStringConverter(this::headerToString);
 		editor.setStringToRowConverter(this::stringToHeader);

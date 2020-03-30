@@ -1,4 +1,4 @@
-package milkman.plugin.scripting;
+package milkman.plugin.scripting.nashorn;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,16 +11,15 @@ import java.util.Map;
 import java.util.Optional;
 
 @Data
-public class MilkmanScriptingFacade {
+public class MilkmanNashornFacade {
 
 
 	private final MilkmanRequestFacade request;
 	private final MilkmanResponseFacade response;
 	private final Optional<Environment> activeEnv;
 	private final Toaster toaster;
-	private final StringBuilder log = new StringBuilder();
 
-	public MilkmanScriptingFacade(RequestContainer request, ResponseContainer response, RequestExecutionContext context, Toaster toaster) {
+	public MilkmanNashornFacade(RequestContainer request, ResponseContainer response, RequestExecutionContext context, Toaster toaster) {
 		this.response = response != null ? new MilkmanResponseFacade(response) : null;
 		this.request = request != null ? new MilkmanRequestFacade(request) : null;
 		activeEnv = context.getActiveEnvironment();
@@ -35,14 +34,6 @@ public class MilkmanScriptingFacade {
 		activeEnv.ifPresent(e -> e.setOrAdd(varName, varValue));
 	}
 
-	public void log(String text) {
-		log.append(text);
-		log.append(System.lineSeparator());
-	}
-
-	/* package */ String getLog(){
-		return log.toString();
-	}
 
 	@RequiredArgsConstructor
 	public static class MilkmanResponseFacade extends jdk.nashorn.api.scripting.AbstractJSObject {

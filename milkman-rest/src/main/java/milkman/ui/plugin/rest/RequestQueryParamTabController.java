@@ -28,7 +28,7 @@ public class RequestQueryParamTabController implements RequestAspectEditor {
 		});
 		editor.addColumn("Name", QueryParamEntry::getName, run(QueryParamEntry::setName).andThen(() -> updateDirtyState(qryParams, request)));
 		editor.addColumn("Value", QueryParamEntry::getValue,run(QueryParamEntry::setValue).andThen(() -> updateDirtyState(qryParams, request)));
-		editor.addDeleteColumn("Delete", () -> updateDirtyState(qryParams, request));
+		editor.addDeleteColumn("Delete", (removed) -> updateDirtyState(qryParams, request));
 		
 		//TODO: the listener is fired before the item gets added
 		editor.setItems(qryParams.getEntries());
