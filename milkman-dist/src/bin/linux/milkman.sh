@@ -10,6 +10,7 @@ chmod +x "$BASE_DIR"/jre-linux64/bin/java
 	-XX:+UseCompressedClassPointers \
 	--add-exports javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED \
 	--add-exports javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED \
+  --add-exports javafx.controls/com.sun.javafx.scene.control.skin=ALL-UNNAMED \
 	--add-exports javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED \
 	--add-exports javafx.graphics/com.sun.javafx.scene.text=ALL-UNNAMED \
 	--add-exports javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED \

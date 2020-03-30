@@ -118,6 +118,7 @@
 									<!-- <opt>-Djava.endorsed.dirs=./endorsed</opt> --><!-- not yet supported with modules -->
 									<opt><![CDATA[--add-exports javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED]]></opt>
 									<opt><![CDATA[--add-exports javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED]]></opt>
+									<opt><![CDATA[--add-exports javafx.controls/com.sun.javafx.scene.control.skin=ALL-UNNAMED]]></opt>
 									<opt><![CDATA[--add-exports javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED]]></opt>
 									<opt><![CDATA[--add-exports javafx.graphics/com.sun.javafx.scene.text=ALL-UNNAMED]]></opt>
 									<opt><![CDATA[--add-exports javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED]]></opt>
