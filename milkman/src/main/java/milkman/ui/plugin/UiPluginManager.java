@@ -74,6 +74,10 @@ public class UiPluginManager {
 		if (o instanceof ToasterAware) {
 			((ToasterAware) o).setToaster(toaster.get());
 		}
+
+		if (o instanceof LifecycleAware) {
+			((LifecycleAware) o).onPostConstruct();
+		}
 	}
 	
 	public <T> List<T> loadSpiInstances(Class<T> type) {

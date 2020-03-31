@@ -7,16 +7,13 @@ import milkman.domain.ResponseContainer;
 import milkman.plugin.scripting.graaljs.GraaljsExecutor;
 import milkman.plugin.scripting.nashorn.NashornExecutor;
 import milkman.ui.main.Toaster;
-import milkman.ui.plugin.RequestAspectEditor;
-import milkman.ui.plugin.RequestAspectsPlugin;
-import milkman.ui.plugin.ResponseAspectEditor;
-import milkman.ui.plugin.ToasterAware;
+import milkman.ui.plugin.*;
 
 import java.util.Collections;
 import java.util.List;
 
 @Slf4j
-public class ScriptingAspectPlugin implements RequestAspectsPlugin, ToasterAware {
+public class ScriptingAspectPlugin implements RequestAspectsPlugin, ToasterAware, LifecycleAware {
 
 	private Toaster toaster;
 	private ScriptExecutor executor;
@@ -69,9 +66,6 @@ public class ScriptingAspectPlugin implements RequestAspectsPlugin, ToasterAware
 
 	private String executeScript(String source, RequestContainer request, ResponseContainer response, RequestExecutionContext context) {
 		try{
-			if (executor == null){
-				executor = new NashornExecutor(toaster);
-			}
 			return  executor.executeScript(source, request, response, context);
 		} catch (Throwable t){
 			t.printStackTrace();
@@ -80,4 +74,15 @@ public class ScriptingAspectPlugin implements RequestAspectsPlugin, ToasterAware
 		return "";
 	}
 
+	@Override
+	public void onPostConstruct() {
+		executor = new NashornExecutor(toaster);
+		new Thread(){
+			@Override
+			public void run() {
+				//already load scripts
+				((NashornExecutor)executor).initGlobalBindings();
+			}
+		}.start();
+	}
 }

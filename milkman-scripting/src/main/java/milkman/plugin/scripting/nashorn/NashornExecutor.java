@@ -10,24 +10,21 @@ import milkman.plugin.scripting.ScriptOptionsProvider;
 import milkman.ui.main.Toaster;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.graalvm.polyglot.Source;
 
 import javax.script.*;
-import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
 public class NashornExecutor implements ScriptExecutor {
     static ScriptEngine engine = initScriptEngine();
-    private static Map<String, String> preloadScriptCache = new HashMap<>();
+
+    private static Integer preloadScriptCacheHash = 0;
+    private static Bindings globalBindings;
 
     private final Toaster toaster;
 
@@ -39,30 +36,26 @@ public class NashornExecutor implements ScriptExecutor {
     @Override
     public String executeScript(String source, RequestContainer request, ResponseContainer response, RequestExecutionContext context) {
         ByteArrayOutputStream logStream = new ByteArrayOutputStream();
+        initGlobalBindings();
+
         Bindings bindings = engine.createBindings();
         engine.setContext(new SimpleScriptContext());
+
+        //we need to use globalBindings as engnine bindings and the normal bindings as globalBindings, otherwise things like chai dont work
+        //bc they modify object prototype and this change is not resolved if in global scope
+
+        engine.getContext().setBindings(bindings, ScriptContext.GLOBAL_SCOPE);
+        engine.getContext().setBindings(globalBindings, ScriptContext.ENGINE_SCOPE);
+
         engine.getContext().setErrorWriter(new OutputStreamWriter(logStream));
         engine.getContext().setWriter(new OutputStreamWriter(logStream));
+
         var facade = new MilkmanNashornFacade(request, response, context, toaster);
         bindings.put("milkman", facade);
         bindings.put("mm", facade);
 
         try {
-            //nashorn-polyfill.js
-            engine.eval("var global = this;\n" +
-                                "var window = this;\n" +
-                                "var process = {env:{}};\n" +
-                                "\n" +
-                                "var console = {};\n" +
-                                "console.debug = print;\n" +
-                                "console.log = print;\n" +
-                                "console.warn = print;\n" +
-                                "console.error = print;", bindings);
-            updatePreloadCache();
-            for (String preloadScript : preloadScriptCache.values()) {
-                engine.eval(preloadScript, bindings);
-            }
-            Object eval = engine.eval("with (global){" + source + "}", bindings);
+            Object eval = engine.eval(source);
         } catch (Exception e) {
             String causeMessage = ExceptionUtils.getRootCauseMessage(e);
             toaster.showToast("Failed to execute script: " + causeMessage);
@@ -71,19 +64,38 @@ public class NashornExecutor implements ScriptExecutor {
         return logStream.toString();
     }
 
-    private void updatePreloadCache() throws URISyntaxException, IOException {
+
+
+    public synchronized void initGlobalBindings() {
         List<String> preloadScripts = ScriptOptionsProvider.options().getPreloadScripts();
 
-        for (String preloadScriptUrl : preloadScripts) {
-            if (!preloadScriptCache.containsKey(preloadScriptUrl)){
+        int currentHash = preloadScripts.hashCode();
+        if (preloadScriptCacheHash == currentHash){
+            return;
+        }
+
+        try {
+            Bindings bindings = engine.createBindings();
+            engine.setContext(new SimpleScriptContext());
+            engine.eval(new InputStreamReader(getClass().getResourceAsStream("/nashorn-polyfill.js")), bindings);
+
+            for (String preloadScriptUrl : preloadScripts) {
                 URI uri = new URI(preloadScriptUrl);
                 String path = uri.getPath();
                 String filename = path.substring(path.lastIndexOf('/') + 1);
 
-                String libSrc = IOUtils.toString(uri);
-                preloadScriptCache.put(preloadScriptUrl, "with (global){" + libSrc + "}");
+                String libSrc = IOUtils.toString(uri); //"with (global){" + IOUtils.toString(uri) + "}";
+                engine.eval(libSrc, bindings);
             }
+
+//            ((ScriptObjectMirror)bindings).freeze();
+            this.globalBindings = bindings;
+            this.preloadScriptCacheHash = currentHash;
+            return;
+        } catch (Exception e) {
+            String causeMessage = ExceptionUtils.getRootCauseMessage(e);
+            toaster.showToast("Failed to initialize preloader scripts: " + causeMessage);
+            log.error("failed to execute script", e);
         }
-        preloadScriptCache.entrySet().removeIf(e -> !preloadScripts.contains(e.getKey()));
     }
 }
