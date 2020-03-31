@@ -8,6 +8,7 @@ import milkman.plugin.scripting.graaljs.GraaljsExecutor;
 import milkman.plugin.scripting.nashorn.NashornExecutor;
 import milkman.ui.main.Toaster;
 import milkman.ui.plugin.*;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -66,7 +67,9 @@ public class ScriptingAspectPlugin implements RequestAspectsPlugin, ToasterAware
 
 	private String executeScript(String source, RequestContainer request, ResponseContainer response, RequestExecutionContext context) {
 		try{
-			return  executor.executeScript(source, request, response, context);
+			if (StringUtils.isNotBlank(source)){
+				return  executor.executeScript(source, request, response, context);
+			}
 		} catch (Throwable t){
 			t.printStackTrace();
 			toaster.showToast("Failed to execute script: " + t.getMessage());

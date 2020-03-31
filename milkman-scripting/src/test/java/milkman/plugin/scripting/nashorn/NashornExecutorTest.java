@@ -58,6 +58,9 @@ class NashornExecutorTest {
         Bindings globalBindings = engine.createBindings();
         engine.eval("Object.prototype.test = function(arg){print(arg);}", globalBindings);
 
+        Bindings local = engine.createBindings();
+        engine.eval("var local = {}", local);
+
         //works as expected, printing "hello"
         engine.getContext().setBindings(globalBindings, ScriptContext.ENGINE_SCOPE);
         engine.eval("var x = {}; x.test('hello');");
