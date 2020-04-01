@@ -3,6 +3,7 @@ package milkman.plugin.scripting.nashorn;
 import milkman.domain.RequestExecutionContext;
 import milkman.plugin.scripting.ScriptOptionsProvider;
 import milkman.ui.main.Toaster;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -24,8 +25,8 @@ class NashornExecutorTest {
         String out1 = executor.executeScript("console.log(testVar); var testVar = 'testValue';", null, null, new RequestExecutionContext(Optional.empty()));
         String out2 = executor.executeScript("console.log(testVar); var testVar = 'testValue';", null, null, new RequestExecutionContext(Optional.empty()));
 
-        assertThat(out1).isEqualTo("undefined\n");
-        assertThat(out2).isEqualTo("undefined\n");
+        assertThat(out1.trim()).isEqualTo("undefined");
+        assertThat(out2.trim()).isEqualTo("undefined");
     }
 
     @Test()
@@ -48,7 +49,7 @@ class NashornExecutorTest {
         String out = executor.executeScript("var x = {}; x.test('hello');", null, null, new RequestExecutionContext(Optional.empty()));
 
         verify(mock, never()).showToast(anyString());
-        assertThat(out).isEqualTo("hello\n");
+        assertThat(out.trim()).isEqualTo("hello");
     }
 
 
