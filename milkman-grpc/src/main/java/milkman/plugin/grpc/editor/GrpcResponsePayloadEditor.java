@@ -12,6 +12,7 @@ import milkman.ui.components.ContentEditor;
 import milkman.ui.plugin.ContentTypeAwareEditor;
 import milkman.ui.plugin.ContentTypePlugin;
 import milkman.ui.plugin.ResponseAspectEditor;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.util.List;
 
@@ -41,7 +42,7 @@ public class GrpcResponsePayloadEditor implements ResponseAspectEditor, ContentT
 			throwable -> {
 				Platform.runLater(() -> {
 					root.addContent("\n");
-					root.addContent(throwable.toString());
+					root.addContent(ExceptionUtils.getRootCauseMessage(throwable));
 				});
 			}
 		);
