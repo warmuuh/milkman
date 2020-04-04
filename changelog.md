@@ -8,6 +8,7 @@
 # Changelog
 
 version 4.4.0 - upcoming
+  * added openApi v3.0 yaml importer
   * support for pluggable environment resolvers + script support
     * things like `{{js:base64("test:me"}}` is supported now, see [scripting plugin](/milkman-scripting) for more information
   * added support for pre-request scripts
