@@ -4,14 +4,10 @@ import javafx.scene.Node;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.Collection;
-import milkman.domain.Environment;
 import milkman.domain.Workspace;
 import milkman.ui.main.Toaster;
 import milkman.ui.plugin.ImporterPlugin;
 import milkman.ui.plugin.rest.postman.ImportControl;
-import milkman.ui.plugin.rest.postman.importers.PostmanDumpImporter;
-import milkman.ui.plugin.rest.postman.importers.PostmanImporterV10;
-import milkman.ui.plugin.rest.postman.importers.PostmanImporterV21;
 import org.apache.commons.io.IOUtils;
 import org.reactfx.util.Try;
 
