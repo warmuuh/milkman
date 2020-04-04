@@ -15,7 +15,10 @@ public class RestBodyAspect extends RestRequestAspect {
 	}
 	
 	public void enrichRequest(HttpRequestBuilder builder, Templater templater) throws Exception {
-		if (StringUtils.isNotBlank(body))
+		if (body != null) {
 			builder.setBody(templater.replaceTags(body));
+		} else {
+			builder.setBody("");
+		}
 	}
 }
