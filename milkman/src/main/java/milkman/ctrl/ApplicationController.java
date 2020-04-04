@@ -10,6 +10,8 @@ import milkman.domain.Workspace;
 import milkman.persistence.OptionEntry;
 import milkman.persistence.PersistenceManager;
 import milkman.persistence.WorkbenchState;
+import milkman.templater.EnvironmentTemplater;
+import milkman.templater.PrefixedTemplaterFactory;
 import milkman.ui.commands.AppCommand;
 import milkman.ui.commands.AppCommand.RenameEnvironment;
 import milkman.ui.commands.AppCommand.RenameWorkspace;
@@ -19,10 +21,7 @@ import milkman.ui.main.ToolbarComponent;
 import milkman.ui.main.dialogs.*;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.ui.main.sync.NoSyncDetails;
-import milkman.ui.plugin.Exporter;
-import milkman.ui.plugin.OptionPageProvider;
-import milkman.ui.plugin.OptionsObject;
-import milkman.ui.plugin.UiPluginManager;
+import milkman.ui.plugin.*;
 import milkman.update.UpdateChecker;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
@@ -46,7 +45,8 @@ public class ApplicationController {
 	private final HotkeyManager hotkeyManager;
 	private final ToolbarComponent toolbarComponent;
 	private final Toaster toaster;
-	
+	private final PrefixedTemplaterFactory templaterFactory;
+
 	public void initApplication() {
 		WorkbenchState state = persistence.loadWorkbenchState();
 		
@@ -347,11 +347,10 @@ public class ApplicationController {
 	}
 
 
-	private EnvironmentTemplater buildTemplater() {
+	private Templater buildTemplater() {
 		Optional<Environment> activeEnv = workspaceController.getActiveWorkspace().getEnvironments().stream().filter(e -> e.isActive()).findAny();
 		List<Environment> globalEnvs = workspaceController.getActiveWorkspace().getEnvironments().stream().filter(e -> e.isGlobal()).collect(Collectors.toList());
-		EnvironmentTemplater templater = new EnvironmentTemplater(activeEnv, globalEnvs);
-		return templater;
+		return templaterFactory.createTemplater(activeEnv, globalEnvs);
 	}
 
 }

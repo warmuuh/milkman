@@ -1,9 +1,12 @@
 package milkman.plugin.scripting;
 
+import lombok.Value;
 import milkman.domain.RequestContainer;
 import milkman.domain.RequestExecutionContext;
 import milkman.domain.ResponseContainer;
 import reactor.util.annotation.Nullable;
+
+import java.util.Optional;
 
 public interface ScriptExecutor {
 
@@ -16,6 +19,11 @@ public interface ScriptExecutor {
      * @param context
      * @return output of the script (via console.log  / print ...)
      */
-    String executeScript(String source, RequestContainer request, ResponseContainer response, RequestExecutionContext context);
+    ExecutionResult executeScript(String source, RequestContainer request, ResponseContainer response, RequestExecutionContext context);
 
+    @Value
+    class ExecutionResult {
+        String consoleOutput;
+        Optional<Object> result;
+    }
 }

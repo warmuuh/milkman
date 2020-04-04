@@ -1,6 +1,7 @@
 package milkman.plugin.scripting.nashorn;
 
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
 import milkman.domain.RequestExecutionContext;
@@ -17,6 +18,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -34,7 +36,7 @@ public class NashornExecutor implements ScriptExecutor {
     }
 
     @Override
-    public String executeScript(String source, RequestContainer request, ResponseContainer response, RequestExecutionContext context) {
+    public ExecutionResult executeScript(String source, RequestContainer request, ResponseContainer response, RequestExecutionContext context) {
         ByteArrayOutputStream logStream = new ByteArrayOutputStream();
         initGlobalBindings();
 
@@ -56,17 +58,18 @@ public class NashornExecutor implements ScriptExecutor {
 
         try {
             Object eval = engine.eval(source);
+            return new ExecutionResult(logStream.toString(), Optional.ofNullable(eval));
         } catch (Exception e) {
             String causeMessage = ExceptionUtils.getRootCauseMessage(e);
             toaster.showToast("Failed to execute script: " + causeMessage);
             log.error("failed to execute script", e);
         }
-        return logStream.toString();
+        return new ExecutionResult(logStream.toString(), Optional.empty());
     }
 
 
 
-    public synchronized void initGlobalBindings() {
+    public void initGlobalBindings() {
         List<String> preloadScripts = ScriptOptionsProvider.options().getPreloadScripts();
 
         int currentHash = preloadScripts.hashCode();
@@ -78,6 +81,8 @@ public class NashornExecutor implements ScriptExecutor {
             Bindings bindings = engine.createBindings();
             engine.setContext(new SimpleScriptContext());
             engine.eval(new InputStreamReader(getClass().getResourceAsStream("/nashorn-polyfill.js")), bindings);
+            engine.eval(new InputStreamReader(getClass().getResourceAsStream("/jsHashes.js")), bindings);
+            engine.eval(new InputStreamReader(getClass().getResourceAsStream("/custom-script-setup.js")), bindings);
 
             for (String preloadScriptUrl : preloadScripts) {
                 URI uri = new URI(preloadScriptUrl);
@@ -98,4 +103,6 @@ public class NashornExecutor implements ScriptExecutor {
             log.error("failed to execute script", e);
         }
     }
+
+
 }

@@ -3,12 +3,13 @@
   * Export of environment (privatebin)
   * jdbc -> explorer functionality (what tables are there? what columns does a table have?). partially implemetned already
   * jdbc -> lazy list loading
-  * environment resolver plugin support (think of pseudo-vars like `{{random:email}}` or `{{fn:base64("test:me"}}`))
   * Authorization support
 
 # Changelog
 
 version 4.4.0 - upcoming
+  * support for pluggable environment resolvers + script support
+    * things like `{{js:base64("test:me"}}` is supported now, see [scripting plugin](/milkman-scripting) for more information
   * added support for pre-request scripts
   * added support for pre-loading scripts before executing pre/post request scripts (e.g. load chai before asserting things)
   * added output method for scripts via console.log / print (logging)

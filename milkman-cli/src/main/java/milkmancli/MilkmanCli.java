@@ -6,6 +6,7 @@ import java.util.List;
 import milkman.ctrl.RequestTypeManager;
 import milkman.logback.LogbackConfiguration;
 import milkman.persistence.PersistenceManager;
+import milkman.templater.PrefixedTemplaterFactory;
 import milkman.ui.main.MainWindow;
 import milkman.ui.main.Toaster;
 import milkman.ui.plugin.OptionPageProvider;
@@ -57,7 +58,12 @@ public class MilkmanCli extends MilkmanCliBase {
 	protected UiPluginManager createUiPluginManager() {
 		return new UiPluginManager(null, null, () -> new NoOpToaster(null));
 	}
-	
+
+	@Override
+	protected PrefixedTemplaterFactory createPrefixedTemplaterFactory() {
+		return new PrefixedTemplaterFactory(getUiPluginManager());
+	}
+
 	@Override
 	protected void onInitialized() {
 		initOptions();

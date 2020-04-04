@@ -24,6 +24,7 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -49,7 +50,7 @@ public class GraaljsExecutor implements ScriptExecutor {
     }
 
     @Override
-    public String executeScript(String source, RequestContainer request, ResponseContainer response, RequestExecutionContext context) {
+    public ExecutionResult executeScript(String source, RequestContainer request, ResponseContainer response, RequestExecutionContext context) {
         ByteArrayOutputStream logStream = new ByteArrayOutputStream();
         try(Context ctx = createContext(logStream)){
             var facade = new MilkmanGraalJsFacade(request, response, context, toaster);
@@ -62,7 +63,8 @@ public class GraaljsExecutor implements ScriptExecutor {
                 updatePreloadCache();
                 ctx.eval(Source.create("js", "var global = {};"));
                 preloadScriptCache.values().forEach(ctx::eval);
-                ctx.eval(Source.create("js", "with(global){" + source + "}"));
+                Value js = ctx.eval(Source.create("js", "with(global){" + source + "}"));
+                return new ExecutionResult(logStream.toString(), Optional.ofNullable(js));
             } catch (PolyglotException e) {
                 String causemessage = ExceptionUtils.getRootCauseMessage(e);
                 //we cant access actual exception in js, so we need to do this to have a bit shorter exception
@@ -79,7 +81,7 @@ public class GraaljsExecutor implements ScriptExecutor {
             }
         }
 
-        return logStream.toString();
+        return new ExecutionResult(logStream.toString(), Optional.empty());
     }
 
     private void updatePreloadCache() throws URISyntaxException, IOException {

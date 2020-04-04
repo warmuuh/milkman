@@ -58,6 +58,11 @@ public class UiPluginManager {
 	public List<WorkspaceExporterPlugin> loadWorkspaceExportPlugins(){
 		return loadSpiInstances(WorkspaceExporterPlugin.class);
 	}
+
+	public List<TemplateParameterResolverPlugin> loadTemplaterPlugins(){
+		return loadSpiInstances(TemplateParameterResolverPlugin.class);
+	}
+
 	public void wireUp(Object o) {
 		if (o instanceof ContentTypeAwareEditor) {
 			((ContentTypeAwareEditor) o).setContentTypePlugins(loadContentTypePlugins());

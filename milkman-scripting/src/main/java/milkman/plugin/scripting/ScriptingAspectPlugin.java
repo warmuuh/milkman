@@ -17,8 +17,12 @@ import java.util.List;
 public class ScriptingAspectPlugin implements RequestAspectsPlugin, ToasterAware, LifecycleAware {
 
 	private Toaster toaster;
-	private ScriptExecutor executor;
-	
+	private static ScriptExecutor executor;
+
+	public static ScriptExecutor getGlobalExecutor(){
+		return executor;
+	}
+
 	@Override
 	public List<RequestAspectEditor> getRequestTabs() {
 		return Collections.singletonList(new ScriptingAspectEditor());
@@ -68,7 +72,8 @@ public class ScriptingAspectPlugin implements RequestAspectsPlugin, ToasterAware
 	private String executeScript(String source, RequestContainer request, ResponseContainer response, RequestExecutionContext context) {
 		try{
 			if (StringUtils.isNotBlank(source)){
-				return  executor.executeScript(source, request, response, context);
+				ScriptExecutor.ExecutionResult executionResult = executor.executeScript(source, request, response, context);
+				return executionResult.getConsoleOutput();
 			}
 		} catch (Throwable t){
 			t.printStackTrace();

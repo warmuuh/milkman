@@ -1,4 +1,4 @@
-package milkman.ctrl;
+package milkman.templater;
 
 import milkman.domain.Environment;
 import milkman.domain.Environment.EnvironmentEntry;
@@ -19,13 +19,13 @@ public class EnvironmentTemplater implements Templater{
 //	private final Pattern tagPattern = Pattern.compile("(?<=[\\{]{2})([^}]+)(?=[\\}]{2})");
 	private final Pattern tagPattern = Pattern.compile("([\\{]{2}[^}]+[\\}]{2})");
 	private Map<String, String> entries;
-	
-	
-	
-	
-	public EnvironmentTemplater(Optional<Environment> activeEnvironment, List<Environment> globalEnvironments) {
+	private PrefixedTemplaterResolver resolver;
+
+
+	public EnvironmentTemplater(Optional<Environment> activeEnvironment, List<Environment> globalEnvironments, PrefixedTemplaterResolver resolver) {
 		super();
-		
+		this.resolver = resolver;
+
 		List<EnvironmentEntry> envEntries = activeEnvironment.map(env -> new LinkedList<>(env.getEntries())).orElse(new LinkedList<>());
 		globalEnvironments.forEach(ge -> envEntries.addAll(ge.getEntries()));
 		
@@ -60,10 +60,12 @@ public class EnvironmentTemplater implements Templater{
 
 
 	private String getValueForTag(String tagName) {
-		if (entries.containsKey(tagName))
+		if (entries.containsKey(tagName)){
 			return replaceTags(entries.get(tagName));
-		else
-			return "{{" + tagName + "}}";
+		} else {
+			return resolver.resolveViaPluginTemplater(tagName)
+					.orElse("{{" + tagName + "}}");
+		}
 	}
 
 }

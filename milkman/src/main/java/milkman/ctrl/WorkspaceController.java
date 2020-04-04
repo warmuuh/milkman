@@ -8,6 +8,8 @@ import lombok.val;
 import milkman.domain.Collection;
 import milkman.domain.*;
 import milkman.domain.RequestContainer.UnknownRequestContainer;
+import milkman.templater.EnvironmentTemplater;
+import milkman.templater.PrefixedTemplaterFactory;
 import milkman.ui.commands.AppCommand;
 import milkman.ui.commands.UiCommand;
 import milkman.ui.commands.UiCommand.CloseRequest;
@@ -20,10 +22,7 @@ import milkman.ui.main.*;
 import milkman.ui.main.dialogs.ExportDialog;
 import milkman.ui.main.dialogs.SaveRequestDialog;
 import milkman.ui.main.dialogs.StringInputDialog;
-import milkman.ui.plugin.CustomCommand;
-import milkman.ui.plugin.Exporter;
-import milkman.ui.plugin.RequestTypePlugin;
-import milkman.ui.plugin.UiPluginManager;
+import milkman.ui.plugin.*;
 import milkman.utils.Event;
 import milkman.utils.ObjectUtils;
 
@@ -44,7 +43,8 @@ public class WorkspaceController {
 	private final RequestTypeManager requestTypeManager;
 	private final HotkeyManager hotkeys;
 	private final Toaster toaster;
-	
+	private final PrefixedTemplaterFactory templaterFactory;
+
 	private final UiPluginManager plugins;
 	@Getter private Workspace activeWorkspace;
 	public final Event<AppCommand> onCommand = new Event<AppCommand>();
@@ -205,12 +205,12 @@ public class WorkspaceController {
 		executor.start();
 	}
 
-	private EnvironmentTemplater buildTemplater() {
+	private Templater buildTemplater() {
 		Optional<Environment> activeEnv = activeWorkspace.getEnvironments().stream().filter(e -> e.isActive()).findAny();
 		List<Environment> globalEnvs = activeWorkspace.getEnvironments().stream().filter(e -> e.isGlobal()).collect(Collectors.toList());
-		EnvironmentTemplater templater = new EnvironmentTemplater(activeEnv, globalEnvs);
-		return templater;
+		return templaterFactory.createTemplater(activeEnv, globalEnvs);
 	}
+
 	private VariableResolver buildResolver() {
 		Optional<Environment> activeEnv = activeWorkspace.getEnvironments().stream().filter(e -> e.isActive()).findAny();
 		List<Environment> globalEnvs = activeWorkspace.getEnvironments().stream().filter(e -> e.isGlobal()).collect(Collectors.toList());

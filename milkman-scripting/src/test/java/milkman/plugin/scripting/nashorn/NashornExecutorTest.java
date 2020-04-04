@@ -22,8 +22,8 @@ class NashornExecutorTest {
     @Test @Disabled("no solution yet")
     void shouldUseGlobalScope(){
         NashornExecutor executor = new NashornExecutor(mock(Toaster.class));
-        String out1 = executor.executeScript("console.log(testVar); var testVar = 'testValue';", null, null, new RequestExecutionContext(Optional.empty()));
-        String out2 = executor.executeScript("console.log(testVar); var testVar = 'testValue';", null, null, new RequestExecutionContext(Optional.empty()));
+        String out1 = executor.executeScript("console.log(testVar); var testVar = 'testValue';", null, null, new RequestExecutionContext(Optional.empty())).getConsoleOutput();
+        String out2 = executor.executeScript("console.log(testVar); var testVar = 'testValue';", null, null, new RequestExecutionContext(Optional.empty())).getConsoleOutput();
 
         assertThat(out1.trim()).isEqualTo("undefined");
         assertThat(out2.trim()).isEqualTo("undefined");
@@ -46,7 +46,7 @@ class NashornExecutorTest {
         Toaster mock = mock(Toaster.class);
         NashornExecutor executor = new NashornExecutor(mock);
 
-        String out = executor.executeScript("var x = {}; x.test('hello');", null, null, new RequestExecutionContext(Optional.empty()));
+        String out = executor.executeScript("var x = {}; x.test('hello');", null, null, new RequestExecutionContext(Optional.empty())).getConsoleOutput();
 
         verify(mock, never()).showToast(anyString());
         assertThat(out.trim()).isEqualTo("hello");

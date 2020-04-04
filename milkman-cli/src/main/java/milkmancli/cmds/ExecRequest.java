@@ -1,13 +1,16 @@
 package milkmancli.cmds;
 
 import lombok.RequiredArgsConstructor;
-import milkman.ctrl.EnvironmentTemplater;
+import milkman.templater.EnvironmentTemplater;
 import milkman.ctrl.RequestTypeManager;
 import milkman.domain.Environment;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseAspect;
 import milkman.domain.ResponseContainer;
+import milkman.templater.PrefixedTemplaterFactory;
+import milkman.templater.PrefixedTemplaterResolver;
 import milkman.ui.plugin.RequestTypePlugin;
+import milkman.ui.plugin.Templater;
 import milkman.ui.plugin.UiPluginManager;
 import milkmancli.AspectCliPresenter;
 import milkmancli.CliContext;
@@ -35,6 +38,7 @@ public class ExecRequest extends TerminalCommand {
 	private final RequestTypeManager requestTypeManager;
 	private final UiPluginManager plugins;
 	private final CliContext context;
+	private  final PrefixedTemplaterFactory templaterFactory;
 
 	public Void call() throws IOException {
 		var reqName = getParameterValue("request");
@@ -94,11 +98,10 @@ public class ExecRequest extends TerminalCommand {
 		RequestTypePlugin requestTypePlugin = requestTypeManager.getPluginFor(req);
 		return requestTypePlugin.executeRequest(req, buildTemplater());
 	}
-	private EnvironmentTemplater buildTemplater() {
+	private Templater buildTemplater() {
 		Optional<Environment> activeEnv = context.getCurrentWorkspace().getEnvironments().stream().filter(e -> e.isActive()).findAny();
 		List<Environment> globalEnvs = context.getCurrentWorkspace().getEnvironments().stream().filter(e -> e.isGlobal()).collect(Collectors.toList());
-		EnvironmentTemplater templater = new EnvironmentTemplater(activeEnv, globalEnvs);
-		return templater;
+		return templaterFactory.createTemplater(activeEnv, globalEnvs);
 	}
 
 
