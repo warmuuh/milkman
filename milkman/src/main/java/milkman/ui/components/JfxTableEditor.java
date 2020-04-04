@@ -24,6 +24,7 @@ import javafx.scene.layout.StackPane;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
+import milkman.PlatformUtil;
 import milkman.utils.fxml.GenericBinding;
 import milkman.utils.javafx.JavaFxUtils;
 import milkman.utils.javafx.ResizableJfxTreeTableView;
@@ -74,8 +75,8 @@ public class JfxTableEditor<T> extends StackPane {
 		StackPane.setMargin(addItemBtn, new Insets(0, 20, 20, 0));
 		this.getChildren().add(addItemBtn);
 
-		final KeyCodeCombination keyCodeCopy = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_ANY);
-		final KeyCodeCombination keyCodePaste = new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_ANY);
+		final KeyCombination keyCodeCopy = PlatformUtil.getControlKeyCombination(KeyCode.C);
+		final KeyCombination keyCodePaste = PlatformUtil.getControlKeyCombination(KeyCode.V);
 	    table.setOnKeyPressed(event -> {
 	        if (keyCodeCopy.match(event)) {
 	            copySelectionToClipboard();
