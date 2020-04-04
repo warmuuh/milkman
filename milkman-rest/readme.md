@@ -17,5 +17,6 @@ Introduces Http request (despite the wrong naming) capabilities to milkman. Cons
  * Highlighting/formatting for json
  * Proxy-Authentication support (BASIC for now)
  * Importers for Postman exports (Collections, Environments, Data-Dump)
+ * Importers for OpenApi v3.0
  * (planned) Exporters
 
