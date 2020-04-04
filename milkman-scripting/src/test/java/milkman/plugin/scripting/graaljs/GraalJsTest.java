@@ -4,9 +4,6 @@ import milkman.domain.RequestExecutionContext;
 import milkman.ui.main.Toaster;
 import org.junit.jupiter.api.Test;
 
-import org.graalvm.polyglot.Context;
-import org.graalvm.polyglot.Source;
-
 import java.io.IOException;
 import java.util.Optional;
 
@@ -21,7 +18,7 @@ public class GraalJsTest {
     @Test
     void shouldExecJs() throws IOException {
         var executor = new GraaljsExecutor(mock(Toaster.class));
-        var output = executor.executeScript(SOURCE, null, null, new RequestExecutionContext(Optional.empty()));
+        var output = executor.executeScript(SOURCE, null, null, new RequestExecutionContext(Optional.empty())).getConsoleOutput();
 
         assertThat(output).isEqualTo("test\n");
     }
