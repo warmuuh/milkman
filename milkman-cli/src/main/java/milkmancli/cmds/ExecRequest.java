@@ -1,13 +1,12 @@
 package milkmancli.cmds;
 
 import lombok.RequiredArgsConstructor;
-import milkman.templater.EnvironmentTemplater;
 import milkman.ctrl.RequestTypeManager;
 import milkman.domain.Environment;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseAspect;
 import milkman.domain.ResponseContainer;
-import milkman.templater.PrefixedTemplaterFactory;
+import milkman.templater.EnvironmentTemplater;
 import milkman.templater.PrefixedTemplaterResolver;
 import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.Templater;
@@ -38,7 +37,6 @@ public class ExecRequest extends TerminalCommand {
 	private final RequestTypeManager requestTypeManager;
 	private final UiPluginManager plugins;
 	private final CliContext context;
-	private  final PrefixedTemplaterFactory templaterFactory;
 
 	public Void call() throws IOException {
 		var reqName = getParameterValue("request");
@@ -101,7 +99,7 @@ public class ExecRequest extends TerminalCommand {
 	private Templater buildTemplater() {
 		Optional<Environment> activeEnv = context.getCurrentWorkspace().getEnvironments().stream().filter(e -> e.isActive()).findAny();
 		List<Environment> globalEnvs = context.getCurrentWorkspace().getEnvironments().stream().filter(e -> e.isGlobal()).collect(Collectors.toList());
-		return templaterFactory.createTemplater(activeEnv, globalEnvs);
+		return new EnvironmentTemplater(activeEnv, globalEnvs, new PrefixedTemplaterResolver(plugins.loadTemplaterPlugins()));
 	}
 
 

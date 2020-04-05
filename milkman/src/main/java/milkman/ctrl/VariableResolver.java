@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import milkman.domain.Environment;
+import milkman.templater.PrefixedTemplaterResolver;
+import milkman.ui.plugin.Templater;
 import org.reactfx.value.Var;
 
 import java.util.LinkedList;
@@ -15,16 +17,19 @@ public class VariableResolver {
 
     private Optional<Environment> activeEnvironment;
     private List<Environment> globalEnvironments;
+    private PrefixedTemplaterResolver resolver;
 
-    public VariableResolver(Optional<Environment> activeEnvironment, List<Environment> globalEnvironments) {
+    public VariableResolver(Optional<Environment> activeEnvironment, List<Environment> globalEnvironments, PrefixedTemplaterResolver resolver) {
         this.activeEnvironment = activeEnvironment;
         this.globalEnvironments = globalEnvironments;
+        this.resolver = resolver;
     }
 
     public VariableData getVariableData(String variableName){
         List<Environment> allEnvs = new LinkedList<>(globalEnvironments);
         activeEnvironment.ifPresent(e -> allEnvs.add(0, e));
 
+        //step1: lookup in envs:
         for (Environment env : allEnvs) {
             var foundEntry = env.getEntries().stream()
                         .filter(entry -> entry.getName().equals(variableName))
@@ -33,8 +38,10 @@ public class VariableResolver {
                 return new VariableData(variableName, foundEntry.get().getValue(), env, false);
             }
         }
-
-        return new VariableData(variableName, "", activeEnvironment.orElse(null), true);
+        //step2: try to resolve via templater or return "new variable"
+        return resolver.resolveViaPluginTemplater(variableName)
+                .map(value -> new VariableData(variableName, value, null, false))
+                .orElseGet(() ->  new VariableData(variableName, "", activeEnvironment.orElse(null), true));
     }
 
     @RequiredArgsConstructor

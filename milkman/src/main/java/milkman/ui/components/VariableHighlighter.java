@@ -221,6 +221,7 @@ public class VariableHighlighter {
 
         var replTxt = vBox.add(new TextArea(varData.getValue()));
         replTxt.setMaxHeight(50);
+        replTxt.setEditable(varData.isWriteable());
 
         popup = new JFXPopup(vBox);
 

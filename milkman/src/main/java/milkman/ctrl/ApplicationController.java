@@ -11,7 +11,7 @@ import milkman.persistence.OptionEntry;
 import milkman.persistence.PersistenceManager;
 import milkman.persistence.WorkbenchState;
 import milkman.templater.EnvironmentTemplater;
-import milkman.templater.PrefixedTemplaterFactory;
+import milkman.templater.PrefixedTemplaterResolver;
 import milkman.ui.commands.AppCommand;
 import milkman.ui.commands.AppCommand.RenameEnvironment;
 import milkman.ui.commands.AppCommand.RenameWorkspace;
@@ -45,7 +45,6 @@ public class ApplicationController {
 	private final HotkeyManager hotkeyManager;
 	private final ToolbarComponent toolbarComponent;
 	private final Toaster toaster;
-	private final PrefixedTemplaterFactory templaterFactory;
 
 	public void initApplication() {
 		WorkbenchState state = persistence.loadWorkbenchState();
@@ -350,7 +349,7 @@ public class ApplicationController {
 	private Templater buildTemplater() {
 		Optional<Environment> activeEnv = workspaceController.getActiveWorkspace().getEnvironments().stream().filter(e -> e.isActive()).findAny();
 		List<Environment> globalEnvs = workspaceController.getActiveWorkspace().getEnvironments().stream().filter(e -> e.isGlobal()).collect(Collectors.toList());
-		return templaterFactory.createTemplater(activeEnv, globalEnvs);
+		return new EnvironmentTemplater(activeEnv, globalEnvs, new PrefixedTemplaterResolver(plugins.loadTemplaterPlugins()));
 	}
 
 }

@@ -9,7 +9,7 @@ import milkman.domain.Collection;
 import milkman.domain.*;
 import milkman.domain.RequestContainer.UnknownRequestContainer;
 import milkman.templater.EnvironmentTemplater;
-import milkman.templater.PrefixedTemplaterFactory;
+import milkman.templater.PrefixedTemplaterResolver;
 import milkman.ui.commands.AppCommand;
 import milkman.ui.commands.UiCommand;
 import milkman.ui.commands.UiCommand.CloseRequest;
@@ -43,7 +43,6 @@ public class WorkspaceController {
 	private final RequestTypeManager requestTypeManager;
 	private final HotkeyManager hotkeys;
 	private final Toaster toaster;
-	private final PrefixedTemplaterFactory templaterFactory;
 
 	private final UiPluginManager plugins;
 	@Getter private Workspace activeWorkspace;
@@ -208,13 +207,13 @@ public class WorkspaceController {
 	private Templater buildTemplater() {
 		Optional<Environment> activeEnv = activeWorkspace.getEnvironments().stream().filter(e -> e.isActive()).findAny();
 		List<Environment> globalEnvs = activeWorkspace.getEnvironments().stream().filter(e -> e.isGlobal()).collect(Collectors.toList());
-		return templaterFactory.createTemplater(activeEnv, globalEnvs);
+		return new EnvironmentTemplater(activeEnv, globalEnvs, new PrefixedTemplaterResolver(plugins.loadTemplaterPlugins()));
 	}
 
 	private VariableResolver buildResolver() {
 		Optional<Environment> activeEnv = activeWorkspace.getEnvironments().stream().filter(e -> e.isActive()).findAny();
 		List<Environment> globalEnvs = activeWorkspace.getEnvironments().stream().filter(e -> e.isGlobal()).collect(Collectors.toList());
-		VariableResolver resolver = new VariableResolver(activeEnv, globalEnvs);
+		VariableResolver resolver = new VariableResolver(activeEnv, globalEnvs, new PrefixedTemplaterResolver(plugins.loadTemplaterPlugins()));
 		return resolver;
 	}
 
