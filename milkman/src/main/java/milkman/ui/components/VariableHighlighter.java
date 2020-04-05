@@ -212,11 +212,17 @@ public class VariableHighlighter {
         vBox.setSpacing(10);
         vBox.setPadding(new Insets(10));
 
-        String title = varData.isNewVariable() ? "New Variable" : "Modify Variable";
+        String title = varData.isNewVariable() ? "New Variable"
+                : varData.isWriteable() ? "Modify Variable"
+                : "View Variable";
+
+
 
         vBox.add(label(title)).getStyleClass().add("popup-title");
         vBox.add(hbox(label("Name"), label(varData.getName()))).setSpacing(20);
-        vBox.add(hbox(label("Environment"), label(varData.getEnvironmentName()))).setSpacing(20);
+        if (varData.isWriteable()){
+            vBox.add(hbox(label("Environment"), label(varData.getEnvironmentName()))).setSpacing(20);
+        }
         vBox.add(label("Value"));
 
         var replTxt = vBox.add(new TextArea(varData.getValue()));
