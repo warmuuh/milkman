@@ -3,6 +3,7 @@ package milkman.ui.plugin.rest.openapi;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.PathItem.HttpMethod;
 import io.swagger.v3.parser.OpenAPIV3Parser;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
 import milkman.domain.Collection;
@@ -47,7 +48,7 @@ public class OpenapiImporterV30 {
                 .collect(Collectors.toList());
     }
 
-    private RequestContainer toRequests(String host, PathItem.HttpMethod method, String path, Operation operation) {
+    private RequestContainer toRequests(String host, HttpMethod method, String path, Operation operation) {
 
         String qryStr = "";
         if (operation.getParameters() != null){
@@ -78,7 +79,7 @@ public class OpenapiImporterV30 {
 
         RestBodyAspect body = new RestBodyAspect();
         container.addAspect(body);
-
+        container.setInStorage(true);
         return container;
     }
 
