@@ -17,13 +17,12 @@ public class EnvironmentTemplater implements Templater{
 	Map<String, String> values;
 	
 //	private final Pattern tagPattern = Pattern.compile("(?<=[\\{]{2})([^}]+)(?=[\\}]{2})");
-	private final Pattern tagPattern = Pattern.compile("([\\{]{2}[^}]+[\\}]{2})");
-	private Map<String, String> entries;
-	private PrefixedTemplaterResolver resolver;
+	private final Pattern tagPattern = Pattern.compile("([\\{]{2}[^{]+?[\\}]{2})");
+	private final Map<String, String> entries;
+	private final PrefixedTemplaterResolver resolver;
 
 
 	public EnvironmentTemplater(Optional<Environment> activeEnvironment, List<Environment> globalEnvironments, PrefixedTemplaterResolver resolver) {
-		super();
 		this.resolver = resolver;
 
 		List<EnvironmentEntry> envEntries = activeEnvironment.map(env -> new LinkedList<>(env.getEntries())).orElse(new LinkedList<>());
@@ -41,29 +40,39 @@ public class EnvironmentTemplater implements Templater{
 
 	@Override
 	public String replaceTags(String input) {
-		Matcher matcher = tagPattern.matcher(input);
-		
-		StringBuffer bufStr = new StringBuffer();
-		while(matcher.find()) {
-			String matchedGroup = matcher.group();
-			String value = getValueForTag(matchedGroup.substring(2, matchedGroup.length()-2));
-			matcher.appendReplacement(bufStr, value);
-		}
-		matcher.appendTail(bufStr);
+		boolean matched;
+		String oldInput;
+		String curInput = input;
+		do{
+			oldInput = curInput;
+			Matcher matcher = tagPattern.matcher(curInput);
+			matched = false;
+			StringBuffer bufStr = new StringBuffer();
+			while(matcher.find()) {
+				String matchedGroup = matcher.group();
+				String value = getValueForTag(matchedGroup.substring(2, matchedGroup.length()-2));
+				matcher.appendReplacement(bufStr, value);
+				matched = true;
+			}
+			matcher.appendTail(bufStr);
+			curInput = bufStr.toString();
+		} while(matched && !oldInput.equals(curInput));
+
 //		for(int i = 1; i <= matcher.groupCount(); ++i) {
 //			String replacementValue = getValueForTag(matcher.group(i));
 //			
 //			matcher.replaceAll(replacement)
 //		}
-		return bufStr.toString();
+		return curInput;
 	}
 
 
 	private String getValueForTag(String tagName) {
-		if (entries.containsKey(tagName)){
-			return replaceTags(entries.get(tagName));
+		String trimmed = tagName.trim();
+		if (entries.containsKey(trimmed)){
+			return replaceTags(entries.get(trimmed));
 		} else {
-			return resolver.resolveViaPluginTemplater(tagName)
+			return resolver.resolveViaPluginTemplater(trimmed)
 					.orElse("{{" + tagName + "}}");
 		}
 	}
