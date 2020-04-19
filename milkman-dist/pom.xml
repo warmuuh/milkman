@@ -285,6 +285,7 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
+							<tarLongFileMode>posix</tarLongFileMode>
 							<finalName>${project.artifactId}-linux64</finalName>
 							<descriptors>
 								<descriptor>src/assembly/bin-linux.xml</descriptor>
@@ -298,6 +299,7 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
+							<tarLongFileMode>posix</tarLongFileMode>
 							<finalName>${project.artifactId}-macos64</finalName>
 							<descriptors>
 								<descriptor>src/assembly/bin-macos.xml</descriptor>
@@ -311,6 +313,7 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
+							<tarLongFileMode>posix</tarLongFileMode>
 							<finalName>${project.artifactId}-appbundle-macos64</finalName>
 							<descriptors>
 								<descriptor>src/assembly/bundle-macos.xml</descriptor>
@@ -337,6 +340,7 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
+							<tarLongFileMode>posix</tarLongFileMode>
 							<finalName>${project.artifactId}-cli</finalName>
 							<descriptors>
 								<descriptor>src/assembly/bin-cli.xml</descriptor>
