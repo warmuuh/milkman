@@ -70,7 +70,7 @@ import static milkman.utils.fxml.FxmlBuilder.*;
 public class VariableHighlighter {
 
     private final VariableResolver variableResolver;
-    private final Pattern tagPattern = Pattern.compile("([\\{]{2}[^{]+?[\\}]{2})");
+    private final Pattern tagPattern = Pattern.compile("[\\{]{2}([^{]+?)[\\}]{2}");
 
     private Parent parent;
     private HashMap<Node, List<Rectangle>> boxes = new HashMap<>();
