@@ -48,7 +48,7 @@ public class GrpcRequestProcessor extends BaseGrpcProcessor {
 	    GrpcHeaderAspect headerAspect = request.getAspect(GrpcHeaderAspect.class).orElseThrow(() -> new IllegalArgumentException("Header Aspect missing"));
 		
 		
-		var responseData = makeRequest(request, operationAspect, headerAspect, payloadAspect, asyncControl);
+		var responseData = makeRequest(request, templater, operationAspect, headerAspect, payloadAspect, asyncControl);
     	
 		var response = new GrpcResponseContainer(request.getEndpoint());
 
@@ -65,13 +65,14 @@ public class GrpcRequestProcessor extends BaseGrpcProcessor {
 		return response;
 	}
 
-	protected ResponseDataHolder makeRequest(GrpcRequestContainer request, 
-			GrpcOperationAspect operationAspect,
-			GrpcHeaderAspect headerAspect,
-			GrpcPayloadAspect payloadAspect, 
-			AsyncControl asyncControl) throws InterruptedException, ExecutionException {
+	protected ResponseDataHolder makeRequest(GrpcRequestContainer request,
+											 Templater templater,
+											 GrpcOperationAspect operationAspect,
+											 GrpcHeaderAspect headerAspect,
+											 GrpcPayloadAspect payloadAspect,
+											 AsyncControl asyncControl) throws InterruptedException, ExecutionException {
 	   
-		HeaderClientInterceptor clientInterceptor = createHeaderInterceptor(headerAspect);
+		HeaderClientInterceptor clientInterceptor = createHeaderInterceptor(headerAspect, templater);
 	    var managedChannel = createChannel(request);
 		Channel channel = ClientInterceptors.intercept(managedChannel, clientInterceptor);
 		
@@ -87,7 +88,7 @@ public class GrpcRequestProcessor extends BaseGrpcProcessor {
 
 		ReplayProcessor<DynamicMessage> publisher = ReplayProcessor.create();
 
-		var requestMessages = deenc.deserializeFromJson(payloadAspect.getPayload());
+		var requestMessages = deenc.deserializeFromJson(templater.replaceTags(payloadAspect.getPayload()));
 	    var dynamicClient  = DynamicGrpcClient.create(deenc.getMethodDefinition(), channel);
 	    long startTime = System.currentTimeMillis();
 	    CompletableFuture<Long> requestTime = new CompletableFuture<>();
@@ -122,10 +123,10 @@ public class GrpcRequestProcessor extends BaseGrpcProcessor {
 	}
 	
 
-	protected HeaderClientInterceptor createHeaderInterceptor(GrpcHeaderAspect headerAspect) {
+	protected HeaderClientInterceptor createHeaderInterceptor(GrpcHeaderAspect headerAspect, Templater templater) {
 		var requestHeaders = headerAspect.getEntries().stream()
 				.filter(e -> e.isEnabled())
-				.collect(Collectors.toMap(e -> e.getName(), e -> e.getValue()));
+				.collect(Collectors.toMap(e -> templater.replaceTags(e.getName()), e -> templater.replaceTags(e.getValue())));
 		return new HeaderClientInterceptor(requestHeaders);
 	}
 
