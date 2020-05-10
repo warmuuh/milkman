@@ -1,15 +1,6 @@
 package milkman.ui.plugin.rest.postman;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import com.jfoenix.controls.JFXTabPane;
-
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
@@ -21,6 +12,13 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import lombok.extern.slf4j.Slf4j;
 import milkman.utils.fxml.FxmlUtil;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 /**
  * a control that allows for different ways of importing a file
@@ -37,8 +35,12 @@ public class ImportControl extends JFXTabPane {
 	TextField selectedFile;
 	
 	FileChooser fileChooser;
-	
+
 	public ImportControl() {
+		this(true);
+	}
+
+	public ImportControl(boolean allowFile) {
 		fileChooser = new FileChooser();
 		rawContent = new TextArea();
 		selectedFile = new TextField();
@@ -54,7 +56,9 @@ public class ImportControl extends JFXTabPane {
 		HBox.setHgrow(selectedFile, Priority.ALWAYS);
 		HBox selectionCtrl = new HBox(selectedFile, openFileSelectionBtn);
 		selectionCtrl.setPadding(new Insets(10));
-		getTabs().add(new Tab("File", selectionCtrl));
+		if (allowFile){
+			getTabs().add(new Tab("File", selectionCtrl));
+		}
 		getTabs().add(new Tab("Raw", rawContent));
 		VBox.setVgrow(this, Priority.ALWAYS);
 	}

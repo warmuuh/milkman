@@ -1,4 +1,4 @@
-package milkman.ui.plugin.rest.export;
+package milkman.ui.plugin.rest.curl;
 
 import javafx.scene.Node;
 import javafx.scene.control.RadioButton;

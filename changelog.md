@@ -7,6 +7,9 @@
 
 # Changelog
 
+version 4.5.0 - upcomming
+  * added curl import 
+
 version 4.4.0
   * added openApi v3.0 yaml importer
   * support for pluggable environment resolvers + script support

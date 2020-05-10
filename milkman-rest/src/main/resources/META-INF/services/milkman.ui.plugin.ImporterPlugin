@@ -1,2 +1,3 @@
 milkman.ui.plugin.rest.postman.PostmanImporterPlugin
 milkman.ui.plugin.rest.openapi.OpenapiImporterPlugin
+milkman.ui.plugin.rest.curl.CurlImporter
