@@ -44,6 +44,11 @@ public class JavaRequestProcessor implements RequestProcessor {
 		//this enables using "Basic" authentication for https-requests over http proxy (disabled by default)
 		//see https://bugs.openjdk.java.net/browse/JDK-8229962 for more details
 //		System.setProperty("jdk.http.auth.tunneling.disabledSchemes", "");
+
+		// allows to call https endpoints by different names, such as IP
+		// although this should be behind the validate-certificate option, this has to be set here already,
+		// otherwise, it will not be picked up by httpclient.
+		System.setProperty("jdk.internal.httpclient.disableHostnameVerification", Boolean.TRUE.toString());
 	}
 	
 	private static final String PROXY_AUTHORIZATION_HEADER = "Proxy-Authorization";
@@ -98,6 +103,7 @@ public class JavaRequestProcessor implements RequestProcessor {
 	}
 
 	private void disableSsl(Builder builder) {
+
 		// Create a trust manager that does not validate certificate chains
 		TrustManager[] trustAllCerts = new TrustManager[]{
 		    new X509TrustManager() {
@@ -117,7 +123,8 @@ public class JavaRequestProcessor implements RequestProcessor {
 		try {
 		    SSLContext sc = SSLContext.getInstance("SSL");
 		    sc.init(null, trustAllCerts, new java.security.SecureRandom());
-		    builder.sslContext(sc);
+
+			builder.sslContext(sc);
 		} catch (Exception e) {
 			/* */
 		}
