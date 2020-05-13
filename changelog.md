@@ -9,6 +9,7 @@
 
 version 4.5.0 - upcomming
   * added curl import 
+  * fixing grpc plugin on macos
 
 version 4.4.0
   * added openApi v3.0 yaml importer

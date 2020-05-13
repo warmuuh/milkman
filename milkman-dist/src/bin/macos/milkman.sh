@@ -1,5 +1,6 @@
 #!/bin/sh
 chmod +x jre-macos64/bin/java
+chmod +x jre-macos64/lib/jspawnhelper
 
 ./jre-macos64/bin/java -XX:SharedArchiveFile=app-cds.jsa \
 	-client \

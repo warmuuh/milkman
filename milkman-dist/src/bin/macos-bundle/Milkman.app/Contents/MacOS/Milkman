@@ -5,6 +5,7 @@ BASE_DIR="$(cd "$(dirname "$0")"; pwd)" || exit 2
 RES_DIR="$BASE_DIR/../Resources"
 
 chmod +x "$RES_DIR/jre/bin/java"
+chmod +x "$RES_DIR/jre/lib/jspawnhelper"
 
 "$RES_DIR/jre/bin/java" \
     -XX:SharedArchiveFile="$RES_DIR/app-cds.jsa" \
