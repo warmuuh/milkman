@@ -1,37 +1,29 @@
 package milkman.ui.plugin.rest.postman.exporters;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-
-import org.reactfx.util.Try;
-
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.milkman.rest.postman.schema.v21.Body;
+import com.milkman.rest.postman.schema.v21.*;
 import com.milkman.rest.postman.schema.v21.Body.Mode;
-import com.milkman.rest.postman.schema.v21.Header;
-import com.milkman.rest.postman.schema.v21.Info;
-import com.milkman.rest.postman.schema.v21.ItemGroup;
-import com.milkman.rest.postman.schema.v21.PostmanCollection210;
-import com.milkman.rest.postman.schema.v21.Query;
-import com.milkman.rest.postman.schema.v21.Request;
-import com.milkman.rest.postman.schema.v21.Url;
-
 import lombok.SneakyThrows;
 import milkman.domain.Collection;
 import milkman.ui.plugin.rest.domain.HeaderEntry;
 import milkman.ui.plugin.rest.domain.RestBodyAspect;
 import milkman.ui.plugin.rest.domain.RestHeaderAspect;
 import milkman.ui.plugin.rest.domain.RestRequestContainer;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 //TODO: needs to support folder-export as well
 public class PostmanExporterV21 {
+
+	private final static Pattern urlPattern = Pattern.compile("(?<protocol>.+?):\\/\\/(?<host>[^$\\/?:]+)(?::(?<port>[\\d]+))?(?<path>\\/[^$\\?]*)?(?:\\?(?<query>.*))?");
 
 	@SneakyThrows
 	public String export(Collection collection) {
@@ -80,38 +72,53 @@ public class PostmanExporterV21 {
 		body.setMode(Mode.RAW);
 		body.setRaw(bodyStr);
 		r.setBody(body);
-		
-		
-		Url url = new Url();
-		url.setRaw(request.getUrl());
-		
-		Try<URI> tUri = Try.tryGet(() -> new URI(request.getUrl()));
-		
-		url.setHost(tUri.map(u -> u.getHost().split("\\.")).getOrElse(new String[] {}));
 
-		url.setProtocol(tUri.map(u -> u.getScheme()).getOrElse((String)null));
-		url.setPath(tUri.map(u -> u.getPath().split("/")).getOrElse(new String[] {}));
-		
-		String[] qry = tUri.map(u -> Optional.ofNullable(u.getQuery()).orElse("").split("&")).getOrElse(new String[] {});
-		for(String q : qry) {
-			String[] strings = q.split("=");
-			if(strings.length == 2) {
-				if (url.getQuery() == null)
-					url.setQuery(new LinkedList<Query>());
-				Query pmQuery = new Query();
-				pmQuery.setKey(strings[0]);
-				pmQuery.setValue(strings[1]);
-				url.getQuery().add(pmQuery);
-			}
+
+		var requestUrl = request.getUrl();
+		if (StringUtils.isNotBlank(requestUrl)){
+			Url url = parseUrl(requestUrl);
+			r.setUrl(url);
 		}
-		
-		url.setPort(tUri.map(u -> u.getPort()).map(p -> p > 0 ? Integer.toString(p) : null).getOrElse((String)null));
-		
-		r.setUrl(url);
-		
+
+
 		ItemGroup itm = new ItemGroup();
 		itm.setName(request.getName());
 		itm.setRequest(r);
 		return itm;
+	}
+
+	/* package */ Url parseUrl(String requestUrl) {
+		Url url = new Url();
+		url.setRaw(requestUrl);
+
+		var matcher = urlPattern.matcher(requestUrl);
+		if (matcher.find()){
+			url.setHost(matcher.group("host"));
+			url.setProtocol(matcher.group("protocol"));
+			url.setPath(matcher.group("path"));
+			if (matcher.group("query") != null){
+				String[] qry = matcher.group("query").split("&");
+				for(String q : qry) {
+					String[] strings = q.split("=");
+					if(strings.length == 2) {
+						if (url.getQuery() == null)
+							url.setQuery(new LinkedList<Query>());
+						Query pmQuery = new Query();
+						pmQuery.setKey(strings[0]);
+						pmQuery.setValue(strings[1]);
+						url.getQuery().add(pmQuery);
+					} else if (strings.length == 1) {
+						if (url.getQuery() == null)
+							url.setQuery(new LinkedList<Query>());
+						Query pmQuery = new Query();
+						pmQuery.setKey(strings[0]);
+						pmQuery.setValue("");
+						url.getQuery().add(pmQuery);
+					}
+				}
+			}
+			url.setPort(matcher.group("port"));
+		}
+		return url;
 	}
 }
