@@ -1,19 +1,19 @@
 package milkman.plugin.jdbc;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
-import java.util.Map;
-
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 import milkman.plugin.jdbc.domain.JdbcRequestContainer;
-import milkman.plugin.jdbc.domain.JdbcResponseContainer;
 import milkman.plugin.jdbc.domain.JdbcSqlAspect;
 import milkman.plugin.jdbc.domain.RowSetResponseAspect;
+import milkman.plugin.jdbc.domain.TableResponseContainer;
 import milkman.ui.plugin.Templater;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+import java.util.Map;
 
 @Slf4j
 public class JdbcQueryProcessor extends AbstractJdbcProcessor {
@@ -25,9 +25,9 @@ public class JdbcQueryProcessor extends AbstractJdbcProcessor {
 			throw new IllegalArgumentException("Unsupported request container: " + request.getType());
 		}
 		
-		JdbcSqlAspect sqlAspect = request.getAspect(JdbcSqlAspect.class)
+		JdbcSqlAspect jdbcSqlAspect = request.getAspect(JdbcSqlAspect.class)
 				.orElseThrow(() -> new IllegalArgumentException("Missing Sql Aspect"));
-		String finalSql = templater.replaceTags(sqlAspect.getSql());
+		String finalSql = templater.replaceTags(jdbcSqlAspect.getSql());
 		
 		
 		JdbcRequestContainer jdbcRequest = (JdbcRequestContainer)request;
@@ -41,7 +41,7 @@ public class JdbcQueryProcessor extends AbstractJdbcProcessor {
 		boolean isResultSet = statement.execute(finalSql);
 		long requestTimeInMs = System.currentTimeMillis() - startTime;
 		
-		JdbcResponseContainer response = new JdbcResponseContainer();
+		TableResponseContainer response = new TableResponseContainer();
 		RowSetResponseAspect rowSetAspect = new RowSetResponseAspect();
 		
 		if (isResultSet) {

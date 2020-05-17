@@ -1,23 +1,21 @@
 package milkman.plugin.jdbc;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
-
-
 import javafx.application.Platform;
 import lombok.SneakyThrows;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 import milkman.plugin.jdbc.domain.JdbcRequestContainer;
-import milkman.plugin.jdbc.domain.JdbcResponseContainer;
 import milkman.plugin.jdbc.domain.RowSetResponseAspect;
+import milkman.plugin.jdbc.domain.TableResponseContainer;
 import milkman.ui.main.dialogs.StringInputDialog;
 import milkman.ui.plugin.Templater;
+
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 public class JdbcMetaProcessor extends AbstractJdbcProcessor {
 	@SneakyThrows
@@ -33,7 +31,7 @@ public class JdbcMetaProcessor extends AbstractJdbcProcessor {
 		DatabaseMetaData md = connection.getMetaData();
 		ResultSet rs = md.getTables(null, null, "%", null);
 		
-		JdbcResponseContainer response = new JdbcResponseContainer();
+		TableResponseContainer response = new TableResponseContainer();
 		RowSetResponseAspect rowSetAspect = new RowSetResponseAspect();
 		extractRows(rs, rowSetAspect);
 		response.getAspects().add(rowSetAspect);
@@ -58,7 +56,7 @@ public class JdbcMetaProcessor extends AbstractJdbcProcessor {
 		DatabaseMetaData md = connection.getMetaData();
 		ResultSet rs = md.getColumns(null, null, tableName, "%");
 		
-		JdbcResponseContainer response = new JdbcResponseContainer();
+		TableResponseContainer response = new TableResponseContainer();
 		RowSetResponseAspect rowSetAspect = new RowSetResponseAspect();
 		extractRows(rs, rowSetAspect);
 		response.getAspects().add(rowSetAspect);

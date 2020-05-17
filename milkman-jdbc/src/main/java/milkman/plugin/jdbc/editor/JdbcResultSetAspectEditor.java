@@ -1,16 +1,6 @@
 package milkman.plugin.jdbc.editor;
 
-import java.io.IOException;
-import java.sql.Blob;
-import java.sql.SQLException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.function.Function;
-
-import org.apache.commons.io.IOUtils;
-
 import com.jfoenix.controls.JFXButton;
-
 import javafx.scene.control.Tab;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
@@ -23,9 +13,13 @@ import milkman.plugin.jdbc.domain.RowSetResponseAspect;
 import milkman.ui.components.JfxTableEditor;
 import milkman.ui.plugin.ResponseAspectEditor;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.function.Function;
+
 public class JdbcResultSetAspectEditor implements ResponseAspectEditor {
 
-	private JfxTableEditor<List<Object>> editor;
+	private JfxTableEditor<List<String>> editor;
 
 	private boolean contentIsTransposed = false;
 
@@ -33,7 +27,7 @@ public class JdbcResultSetAspectEditor implements ResponseAspectEditor {
 
 	@Override
 	public Tab getRoot(RequestContainer request, ResponseContainer response) {
-		editor = new JfxTableEditor<List<Object>>();
+		editor = new JfxTableEditor<>();
 		editor.disableAddition();
 		editor.setRowToStringConverter(this::rowToString);
 		VBox.setVgrow(editor, Priority.ALWAYS);
@@ -86,8 +80,8 @@ public class JdbcResultSetAspectEditor implements ResponseAspectEditor {
 
 
 	private RowSetResponseAspect createTransposedContent(RowSetResponseAspect rowSetAspect) {
-		List<String> columnNames = new LinkedList<String>();
-		List<List<Object>> rows = new LinkedList<List<Object>>();
+		List<String> columnNames = new LinkedList<>();
+		List<List<String>> rows = new LinkedList<>();
 		
 		columnNames.add("Key");
 		for(int idx = 1; idx <= rowSetAspect.getRows().size(); ++idx) {
@@ -95,7 +89,7 @@ public class JdbcResultSetAspectEditor implements ResponseAspectEditor {
 		}
 		
 		for(int curRow = 0; curRow < rowSetAspect.getColumnNames().size(); ++curRow) {
-			LinkedList<Object> curRowL = new LinkedList<Object>();
+			LinkedList<String> curRowL = new LinkedList<>();
 			rows.add(curRowL);
 			curRowL.add(rowSetAspect.getColumnNames().get(curRow));
 			for(int curCol = 0; curCol < rowSetAspect.getRows().size(); ++curCol) {
@@ -113,7 +107,7 @@ public class JdbcResultSetAspectEditor implements ResponseAspectEditor {
 		RowSetResponseAspect source = contentIsTransposed ? transposedContent : rowSetAspect;
 		StringBuilder b = new StringBuilder();
 		b.append(rowToString(source.getColumnNames()));
-		for (List<Object> row : source.getRows()) {
+		for (List<String> row : source.getRows()) {
 			b.append(System.lineSeparator());
 			b.append(rowToString(row));
 		}
@@ -123,35 +117,19 @@ public class JdbcResultSetAspectEditor implements ResponseAspectEditor {
 	}
 
 
-	private Function<List<Object>, String> getRowValue(int columnIdx) {
-		return row -> {
-			Object value = row.get(columnIdx);
-			String stringValue = valueToString(value);
-			return stringValue;
-		};
+	private Function<List<String>, String> getRowValue(int columnIdx) {
+		return row -> row.get(columnIdx);
 	}
 
 
-	private String valueToString(Object value) {
-		if (value instanceof Blob) {
-			try {
-				value = IOUtils.toString(((Blob) value).getBinaryStream());
-			} catch (IOException | SQLException e) {
-				value = "BLOB";
-			}
-		}
-		String stringValue = value != null ? value.toString() : "NULL";
-		return stringValue;
-	}
-	
-	private String rowToString(List<? extends Object> row) {
+	private String rowToString(List<String> row) {
 		StringBuilder b = new StringBuilder();
 		boolean first = true;
 		for (Object value : row) {
 			if (!first)
 				b.append("\t");
 			first = false;
-			b.append(valueToString(value));
+			b.append(value);
 		}
 		return b.toString();
 	}

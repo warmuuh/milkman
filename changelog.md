@@ -8,6 +8,7 @@
 # Changelog
 
 version 4.5.0 - upcomming
+  * added [cassandra plugin](/milkman-cassandra)
   * added curl import 
   * fixing grpc plugin on macos
 

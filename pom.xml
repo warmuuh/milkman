@@ -16,6 +16,7 @@
 		<module>milkman-scripting</module>
 		<module>milkman-explore</module>
 		<module>milkman-jdbc</module>
+		<module>milkman-cassandra</module>
 		<module>milkman-sync-git</module>
 		<module>milkman-privatebin</module>
 		<module>milkman-graphql</module>

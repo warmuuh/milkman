@@ -37,7 +37,6 @@ public class JdbcRequestEditor implements RequestTypeEditor, AutoCompletionAware
 			throw new IllegalArgumentException("Other request types not yet supported");
 		
 		JdbcRequestContainer restRequest = (JdbcRequestContainer)request;
-		
 		urlBinding.bindTo(jdbcUrl.textProperty(), restRequest);
 		urlBinding.addListener(s -> request.setDirty(true));
 		completer.attachVariableCompletionTo(jdbcUrl);
@@ -55,9 +54,9 @@ public class JdbcRequestEditor implements RequestTypeEditor, AutoCompletionAware
 		public JdbcRequestEditorFxml(JdbcRequestEditor controller) {
 			this.controller = controller;
 			HBox.setHgrow(this, Priority.ALWAYS);
-		
 			controller.jdbcUrl = add(new JFXTextField(), true);
 			controller.jdbcUrl.setId("jdbcUrl");
+			controller.jdbcUrl.setPromptText("jdbc:type://host[:port][/database][?parameters]");
 		}
 	}
 	
