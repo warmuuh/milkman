@@ -57,6 +57,9 @@ Grpc plugin with [server-reflection](https://github.com/grpc/grpc/blob/master/do
 ### [JDBC Plugin](/milkman-jdbc)
 This plugin introduces SQL capability to milkman. You can query SQL databases via milkman as well, using JDBC drivers.
 
+### [Cassandra Plugin](/milkman-cassandra):
+Allows to execute CQL queries for given cassandra databases.
+
 ### [Git Team Synchronization Plugin](/milkman-sync-git)
 This plugin allows to synchronize workspaces via Git (using Differential Synchronization). Teams can use this plugin to have a shared workspace that synchronizes between members.
 
