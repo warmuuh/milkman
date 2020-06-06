@@ -43,15 +43,22 @@ public class CassandraQueryProcessor {
 
 		var url = new URI(cassandraUrl);
 		var params = splitQuery(url);
-		String datacenter = params.getOrDefault("dc", "datacenter1");
+		String datacenter = params.get("dc");
+		if (datacenter == null) {
+			throw new IllegalArgumentException("Missing datacenter name (parameter 'dc')");
+		}
+
+		String username = params.get("username");
+		String password = params.get("password");
+
 		String cassandraHost = url.getHost();
 		int port = url.getPort() < 0 ? 9042 : url.getPort();
 		String keyspace = Optional.ofNullable(url.getPath()).map(p -> p.substring(1)).orElse("");
 
-		return executeCql(finalCql, datacenter, cassandraHost, port, keyspace);
+		return executeCql(finalCql, datacenter, cassandraHost, port, keyspace, username, password);
 	}
 
-	private TableResponseContainer executeCql(String finalCql, String datacenter, String cassandraHost, int port, String keyspace) {
+	private TableResponseContainer executeCql(String finalCql, String datacenter, String cassandraHost, int port, String keyspace, String username, String password) {
 		TableResponseContainer response = new TableResponseContainer();
 
 
@@ -63,6 +70,11 @@ public class CassandraQueryProcessor {
 		if (StringUtils.isNotBlank(keyspace)) {
 			builder = builder.withKeyspace("\"" + keyspace + "\"");
 		}
+
+		if (StringUtils.isNotBlank(username)) {
+			builder = builder.withAuthCredentials(username, password == null ? "" : password);
+		}
+
 		long requestTimeInMs = 0;
 		try (CqlSession session = builder.build()) {
 			long startTime = System.currentTimeMillis();
@@ -101,6 +113,9 @@ public class CassandraQueryProcessor {
 	private static Map<String, String> splitQuery(URI url)  {
 		Map<String, String> query_pairs = new LinkedHashMap<String, String>();
 		String query = url.getQuery();
+		if (StringUtils.isBlank(query)){
+			return Collections.emptyMap();
+		}
 		String[] pairs = query.split("&");
 		for (String pair : pairs) {
 			int idx = pair.indexOf("=");
