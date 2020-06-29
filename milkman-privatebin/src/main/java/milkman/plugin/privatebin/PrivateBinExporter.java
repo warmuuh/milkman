@@ -3,8 +3,8 @@ package milkman.plugin.privatebin;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXTextField;
-
 import javafx.scene.Node;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
@@ -19,6 +19,8 @@ public class PrivateBinExporter implements RequestExporterPlugin {
 	private JFXTextField textField;
 	private PrivateBinApi api = new PrivateBinApi(PrivateBinOptionsPluginProvider.options().getPrivateBinUrl());
 	private JFXCheckBox burnCheckbox;
+	private JFXCheckBox resolveCheckbox;
+
 	
 	@Override
 	public String getName() {
@@ -35,7 +37,9 @@ public class PrivateBinExporter implements RequestExporterPlugin {
 		textField = new JFXTextField();
 		textField.setEditable(false);
 		burnCheckbox = new JFXCheckBox("Burn after reading");
-		VBox vBox = new VBox(burnCheckbox, textField);
+		resolveCheckbox = new JFXCheckBox("resolve variables");
+		resolveCheckbox.setSelected(true);
+		VBox vBox = new VBox(new HBox(burnCheckbox, resolveCheckbox), textField);
 		return vBox;
 	}
 
@@ -49,6 +53,9 @@ public class PrivateBinExporter implements RequestExporterPlugin {
 		ObjectMapper objectMapper = createMapper();
 		try {
 			String content = objectMapper.writeValueAsString(new RequestDataContainer(request));
+			if (resolveCheckbox.isSelected()){
+				content = templater.replaceTags(content);
+			}
 			String pasteUrl = api.createPaste(content, burnCheckbox.isSelected());
 			textField.setText(pasteUrl);
 		} catch (Exception e) {
@@ -57,6 +64,7 @@ public class PrivateBinExporter implements RequestExporterPlugin {
 		}
 		return false;
 	}
+
 	private ObjectMapper createMapper() {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.addHandler(new UnknownPluginHandler());

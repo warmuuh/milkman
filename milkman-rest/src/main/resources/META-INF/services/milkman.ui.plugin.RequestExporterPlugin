@@ -1,1 +1,2 @@
 milkman.ui.plugin.rest.curl.CurlExporter
+milkman.ui.plugin.rest.curl.HttpExporter
