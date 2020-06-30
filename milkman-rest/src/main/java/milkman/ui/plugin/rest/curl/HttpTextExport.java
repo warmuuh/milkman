@@ -22,13 +22,13 @@ public class HttpTextExport implements TextExport {
         b.append(request.getHttpMethod().toUpperCase())
                 .append(" ");
 
-        if (uri.getPath() != null){
+        if (StringUtils.isNotBlank(uri.getPath())){
             b.append(uri.getPath());
         } else {
             b.append("/");
         }
 
-        if (uri.getQuery() != null) {
+        if (StringUtils.isNotBlank(uri.getQuery())) {
             b.append("?").append(uri.getQuery());
         }
         b.append('\n');
@@ -42,7 +42,7 @@ public class HttpTextExport implements TextExport {
 
         var bodyAspect = request.getAspect(RestBodyAspect.class).orElseThrow(() -> new IllegalArgumentException("missing aspect"));
         if (StringUtils.isNotBlank(bodyAspect.getBody())) {
-            b.append("\n\n");
+            b.append("\n");
             b.append(bodyAspect.getBody());
         }
 
