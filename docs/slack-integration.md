@@ -27,3 +27,11 @@ and users can choose how to view the request:
 it also supports all other request types, such as gRPC:
 
 ![Slack Grpc](/img/slack-grpc-render.png)
+
+# Planned
+
+More features are planned, such as:
+
+* execution of requests on backend
+* support for burn-after-reading in privatebin
+* more templates
