@@ -2,7 +2,6 @@ package milkman.plugin.graphql;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import lombok.SneakyThrows;
 import lombok.Value;
 import milkman.plugin.graphql.domain.GraphqlAspect;
@@ -29,20 +28,24 @@ public class GraphqlProcessor {
 	}
 	
 	public RestResponseContainer executeRequest(GraphqlRequestContainer request, Templater templater, AsyncControl asyncControl) {
-		
-		RestRequestContainer restContainer = new RestRequestContainer(request.getUrl(), "POST");
-		request.getAspect(RestHeaderAspect.class).ifPresent(restContainer::addAspect);
-		
-		RestBodyAspect body = getBodyAspect(request);
-		
-		restContainer.addAspect(body);
-		
+
+		RestRequestContainer restContainer = toRestRequest(request);
+
 		return requestProcessor.executeRequest(restContainer, templater, asyncControl);
 	}
 
-	
+	public static RestRequestContainer toRestRequest(GraphqlRequestContainer request) {
+		RestRequestContainer restContainer = new RestRequestContainer(request.getUrl(), "POST");
+		request.getAspect(RestHeaderAspect.class).ifPresent(restContainer::addAspect);
 
-	private RestBodyAspect getBodyAspect(GraphqlRequestContainer request) {
+		RestBodyAspect body = getBodyAspect(request);
+
+		restContainer.addAspect(body);
+		return restContainer;
+	}
+
+
+	private static RestBodyAspect getBodyAspect(GraphqlRequestContainer request) {
 		GraphqlAspect gqlAspect = request.getAspect(GraphqlAspect.class).orElseThrow(() -> new IllegalArgumentException("Graphql Aspect not found"));
 		
 		String bodyStr = serializeGqlQuery(gqlAspect);
@@ -55,7 +58,7 @@ public class GraphqlProcessor {
 
 
 	@SneakyThrows
-	protected String serializeGqlQuery(GraphqlAspect gqlAspect) {
+	protected static String serializeGqlQuery(GraphqlAspect gqlAspect) {
 		var mapper = new ObjectMapper();
 		String bodyStr = mapper.writeValueAsString(new GraphqlBody(gqlAspect.getQuery(), gqlAspect.getVariables()));
 		return bodyStr;

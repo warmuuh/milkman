@@ -1,4 +1,4 @@
-package milkman.ui.plugin.rest.curl;
+package milkman.ui.plugin;
 
 import javafx.scene.Node;
 import javafx.scene.control.RadioButton;
@@ -10,13 +10,12 @@ import javafx.scene.layout.VBox;
 import lombok.RequiredArgsConstructor;
 import milkman.domain.RequestContainer;
 import milkman.ui.main.Toaster;
-import milkman.ui.plugin.RequestExporterPlugin;
-import milkman.ui.plugin.Templater;
-import milkman.ui.plugin.rest.domain.RestRequestContainer;
 import org.apache.commons.lang3.SystemUtils;
 
+import java.lang.reflect.ParameterizedType;
+
 @RequiredArgsConstructor
-public abstract class AbstractTextExporter implements RequestExporterPlugin {
+public abstract class AbstractTextExporter<T extends RequestContainer> implements RequestExporterPlugin {
 
 	private TextArea textArea;
 
@@ -25,7 +24,7 @@ public abstract class AbstractTextExporter implements RequestExporterPlugin {
 	private RequestContainer request;
 
 	private final String name;
-	private final TextExport export;
+	private final TextExport<T> export;
 
 	@Override
 	public String getName() {
@@ -34,7 +33,7 @@ public abstract class AbstractTextExporter implements RequestExporterPlugin {
 
 	@Override
 	public boolean canHandle(RequestContainer request) {
-		return request instanceof RestRequestContainer;
+		return getRequestContainerType().isAssignableFrom(request.getClass());
 	}
 
 	@Override
@@ -73,7 +72,7 @@ public abstract class AbstractTextExporter implements RequestExporterPlugin {
 	}
 
 	public void refreshCommand(Templater templater) {
-		textArea.setText(export.export(isWindows, (RestRequestContainer) request, templater));
+		textArea.setText(export.export(isWindows, (T) request, templater));
 	}
 
 	@Override
@@ -84,6 +83,11 @@ public abstract class AbstractTextExporter implements RequestExporterPlugin {
 	@Override
 	public boolean doExport(RequestContainer request, Templater templater, Toaster toaster) {
 		throw new UnsupportedOperationException("not implemented bc adhoc exporter");
+	}
+
+	private Class<T> getRequestContainerType() {
+		return ((Class<T>) ((ParameterizedType) getClass()
+				.getGenericSuperclass()).getActualTypeArguments()[0]);
 	}
 
 }

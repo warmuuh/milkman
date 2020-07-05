@@ -8,7 +8,9 @@
 # Changelog
 
 version 4.6.0 - upcomming
-  * added http export
+  * added cqlsh export for cassandra
+  * added curl, http export for graphql
+  * added [grpcurl](https://github.com/fullstorydev/grpcurl) export
   * added full resolve for privatebin export
 
 version 4.5.0

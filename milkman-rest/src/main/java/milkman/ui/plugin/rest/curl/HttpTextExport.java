@@ -2,6 +2,7 @@ package milkman.ui.plugin.rest.curl;
 
 import lombok.RequiredArgsConstructor;
 import milkman.ui.plugin.Templater;
+import milkman.ui.plugin.TextExport;
 import milkman.ui.plugin.rest.domain.HeaderEntry;
 import milkman.ui.plugin.rest.domain.RestBodyAspect;
 import milkman.ui.plugin.rest.domain.RestHeaderAspect;
@@ -11,7 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.net.URI;
 
 @RequiredArgsConstructor
-public class HttpTextExport implements TextExport {
+public class HttpTextExport implements TextExport<RestRequestContainer> {
 
     @Override
     public String export(boolean isWindows, RestRequestContainer request, Templater templater) {

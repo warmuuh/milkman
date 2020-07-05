@@ -17,8 +17,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.net.InetSocketAddress;
 import java.net.URI;
-import java.net.URLDecoder;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -42,37 +43,25 @@ public class CassandraQueryProcessor {
 
 
 		var url = new URI(cassandraUrl);
-		var params = splitQuery(url);
-		String datacenter = params.get("dc");
-		if (datacenter == null) {
-			throw new IllegalArgumentException("Missing datacenter name (parameter 'dc')");
-		}
-
-		String username = params.get("username");
-		String password = params.get("password");
-
-		String cassandraHost = url.getHost();
-		int port = url.getPort() < 0 ? 9042 : url.getPort();
-		String keyspace = Optional.ofNullable(url.getPath()).map(p -> p.substring(1)).orElse("");
-
-		return executeCql(finalCql, datacenter, cassandraHost, port, keyspace, username, password);
+		var conProps = CassandraConnectionProperties.fromUri(url);
+		return executeCql(finalCql, conProps);
 	}
 
-	private TableResponseContainer executeCql(String finalCql, String datacenter, String cassandraHost, int port, String keyspace, String username, String password) {
+	private TableResponseContainer executeCql(String finalCql, CassandraConnectionProperties conProps) {
 		TableResponseContainer response = new TableResponseContainer();
 
 
 		RowSetResponseAspect rowSetAspect = new RowSetResponseAspect();
 		var builder = CqlSession.builder()
-				.withLocalDatacenter(datacenter)
-				.addContactPoint(InetSocketAddress.createUnresolved(cassandraHost, port));
+				.withLocalDatacenter(conProps.getDatacenter())
+				.addContactPoint(InetSocketAddress.createUnresolved(conProps.getHost(), conProps.getPort()));
 
-		if (StringUtils.isNotBlank(keyspace)) {
-			builder = builder.withKeyspace("\"" + keyspace + "\"");
+		if (StringUtils.isNotBlank(conProps.getKeyspace())) {
+			builder = builder.withKeyspace("\"" + conProps.getKeyspace() + "\"");
 		}
 
-		if (StringUtils.isNotBlank(username)) {
-			builder = builder.withAuthCredentials(username, password == null ? "" : password);
+		if (StringUtils.isNotBlank(conProps.getUser())) {
+			builder = builder.withAuthCredentials(conProps.getUser(), conProps.getPassword() == null ? "" : conProps.getPassword());
 		}
 
 		long requestTimeInMs = 0;
@@ -109,19 +98,6 @@ public class CassandraQueryProcessor {
 	}
 
 
-	@SneakyThrows
-	private static Map<String, String> splitQuery(URI url)  {
-		Map<String, String> query_pairs = new LinkedHashMap<String, String>();
-		String query = url.getQuery();
-		if (StringUtils.isBlank(query)){
-			return Collections.emptyMap();
-		}
-		String[] pairs = query.split("&");
-		for (String pair : pairs) {
-			int idx = pair.indexOf("=");
-			query_pairs.put(URLDecoder.decode(pair.substring(0, idx), "UTF-8"), URLDecoder.decode(pair.substring(idx + 1), "UTF-8"));
-		}
-		return query_pairs;
-	}
+
 
 }
