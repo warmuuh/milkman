@@ -24,3 +24,6 @@ and users can choose how to view the request:
 
 ![Slack Render](/img/slack-render.png)
 
+it also supports all other request types, such as gRPC:
+
+![Slack Grpc](/img/slack-grpc-render.png)
