@@ -10,28 +10,22 @@ import java.util.stream.Collectors;
 public class GrpcurlTextExport implements TextExport<GrpcRequestContainer> {
     @Override
     public String export(boolean isWindows, GrpcRequestContainer request, Templater templater) {
-
         String lineBreak = isWindows ? " ^\n  " : " \\\n  ";
         String quote = isWindows ? "\"" : "'";
-
-
-
 
         StringBuilder b = new StringBuilder();
         b.append("grpcurl ");
 
-
-
         request.getAspect(GrpcHeaderAspect.class).ifPresent(a -> {
-            if (!a.getEntries().isEmpty())
+            if (!a.getEntries().isEmpty()) {
                 b.append(lineBreak);
-            String headers = a.getEntries().stream()
-                    .filter(HeaderEntry::isEnabled)
-                    .map(h -> "-H " + quote + h.getName() + ": " + h.getValue() + quote)
-                    .collect(Collectors.joining(lineBreak));
-            b.append(headers);
-
-            b.append(lineBreak);
+                String headers = a.getEntries().stream()
+                        .filter(HeaderEntry::isEnabled)
+                        .map(h -> "-H " + quote + h.getName() + ": " + h.getValue() + quote)
+                        .collect(Collectors.joining(lineBreak));
+                b.append(headers);
+                b.append(lineBreak);
+            }
         });
 
         request.getAspect(GrpcPayloadAspect.class).ifPresent(a -> {
@@ -53,9 +47,6 @@ public class GrpcurlTextExport implements TextExport<GrpcRequestContainer> {
         request.getAspect(GrpcOperationAspect.class).ifPresent(operation -> {
             b.append(operation.getOperation());
         });
-
-
-
 
         return templater.replaceTags(b.toString());
     }
