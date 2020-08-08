@@ -8,6 +8,7 @@
 # Changelog
 
 version 4.6.0 - upcomming
+  * added option to disable ui animations
   * added cqlsh export for cassandra
   * added curl, http export for graphql
   * added [grpcurl](https://github.com/fullstorydev/grpcurl) export
