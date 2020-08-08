@@ -1,0 +1,20 @@
+
+/**
+* disable ripple animations
+*/
+
+.jfx-rippler {
+    -jfx-rippler-disabled: true;
+}
+
+.jfx-tab-pane {
+    -jfx-disable-animation: true;
+}
+
+.jfx-text-field {
+    -jfx-disable-animation: true;
+}
+
+.jfx-toggle-button {
+    -jfx-disable-visual-focus: true;
+}

@@ -12,6 +12,7 @@ public class CoreApplicationOptionsProvider implements OptionPageProvider<CoreAp
 		private boolean autoformatContent = true;
 		private boolean checkForUpdates = true;
 		private String theme = "Milkman";
+		private boolean disableAnimations = false;
 	} 
 
 	private static CoreApplicationOptions currentOptions = new CoreApplicationOptions();
@@ -42,18 +43,23 @@ public class CoreApplicationOptionsProvider implements OptionPageProvider<CoreAp
 				.section("General")
 					.toggle("Check for Updates", CoreApplicationOptions::isCheckForUpdates, CoreApplicationOptions::setCheckForUpdates)
 					.selection("Theme", CoreApplicationOptions::getTheme, this::setTheme, themeSwitcher.getThemes())
+					.toggle("Disable Animations", CoreApplicationOptions::isDisableAnimations, CoreApplicationOptions::setDisableAnimations)
 				.endSection()
 				.section("Code Editor/Viewer")
-					.toggle("Autoformat Content", CoreApplicationOptions::isAutoformatContent, CoreApplicationOptions::setAutoformatContent)
+					.toggle("Autoformat Content", CoreApplicationOptions::isAutoformatContent, this::toggleAnimations)
 				.endSection()
 				.build();
 	}
 	
 	private void setTheme(CoreApplicationOptions options, String themeName) {
-		themeSwitcher.setTheme(themeName);
+		themeSwitcher.setTheme(themeName, options.isDisableAnimations());
 		options.setTheme(themeName);
 	}
 
+	private void toggleAnimations(CoreApplicationOptions options, boolean disableAnimations){
+		themeSwitcher.setTheme(options.getTheme(), disableAnimations);
+		options.setDisableAnimations(disableAnimations);
+	}
 
 	@Override
 	public int getOrder() {

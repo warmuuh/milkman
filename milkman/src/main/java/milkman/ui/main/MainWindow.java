@@ -100,13 +100,18 @@ public class MainWindow {
 		
 	}
 
-	public void switchToTheme(UiThemePlugin theme) {
+	public void switchToTheme(UiThemePlugin theme, boolean disableAnimations) {
 
 		mainScene.getStylesheets().clear();
 //		mainScene.getStylesheets().add(getClass().getResource(theme.getMainCss()).toExternalForm());
 //		mainScene.getStylesheets().add(getClass().getResource(theme.getCodeCss()).toExternalForm());
+
 		mainScene.getStylesheets().add(theme.getMainCss());
 		mainScene.getStylesheets().add(theme.getCodeCss());
+
+		if (disableAnimations){
+			mainScene.getStylesheets().add("/themes/support/disable-animations.css");
+		}
 	}
 
 	

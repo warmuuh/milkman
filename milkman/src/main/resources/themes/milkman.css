@@ -1,12 +1,4 @@
-/**
-* disable ripple animations
-*/
-/*
-*.jfx-rippler {
-*    -jfx-rippler-disabled: true;
-*}
-*/
-.root { 
+.root {
 	-fx-focus-color: transparent; 
 	-fx-faint-focus-color: transparent;
 }

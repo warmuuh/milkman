@@ -1,20 +1,16 @@
 package milkman;
 
 
-
-import java.io.IOException;
-import java.lang.management.ManagementFactory;
-
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import milkman.logback.LogbackConfiguration;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
+
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
 
 @Slf4j
 public class MilkmanApplication extends Application {
@@ -42,7 +38,7 @@ public class MilkmanApplication extends Application {
 			try {
 				module.getMainWindow().start(primaryStage); // 1 sec
 				module.getApplicationController().initOptions();
-				module.getThemeSwitcher().setTheme(CoreApplicationOptionsProvider.options().getTheme());
+				module.getThemeSwitcher().setTheme(CoreApplicationOptionsProvider.options().getTheme(), CoreApplicationOptionsProvider.options().isDisableAnimations());
 				module.getApplicationController().initApplication(); // 1 sec
 				module.getAppCdsGenerator().initializeCds(false);
 				log.info("App Initialization time: {} ms", System.currentTimeMillis() - startInitializationTime);
