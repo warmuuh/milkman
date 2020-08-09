@@ -146,8 +146,10 @@
 .mm-request-dirty .label   {
 	 -fx-font-weight: bold;
 }
-.mm-request-dirty .tab-container .context-menu  {
-	 -fx-font-weight: normal;
+
+.context-menu .menu-item .label  {
+	-fx-font-weight: normal;
+    -fx-padding: 0 0 0 0;
 }
 
 
