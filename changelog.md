@@ -13,6 +13,8 @@ version 4.6.0 - upcomming
   * added curl, http export for graphql
   * added [grpcurl](https://github.com/fullstorydev/grpcurl) export
   * added full resolve for privatebin export
+  * fixed bug in grpc endpoint field
+  * improved grpc service discovery command
 
 version 4.5.0
   * added [cassandra plugin](/milkman-cassandra)
