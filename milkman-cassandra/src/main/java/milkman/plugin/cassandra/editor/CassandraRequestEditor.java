@@ -56,7 +56,7 @@ public class CassandraRequestEditor implements RequestTypeEditor, AutoCompletion
 			HBox.setHgrow(this, Priority.ALWAYS);
 			controller.cassandraUrl = add(new JFXTextField(), true);
 			controller.cassandraUrl.setId("cassandraUrl");
-			controller.cassandraUrl.setPromptText("cql://host[:port][/keyspace]?dc=datacenter");
+			controller.cassandraUrl.setPromptText("cql://host[:port][/keyspace]?dc=datacenter[&username=user&password=pass]");
 		}
 	}
 	

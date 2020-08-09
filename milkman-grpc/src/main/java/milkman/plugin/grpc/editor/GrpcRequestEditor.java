@@ -53,10 +53,14 @@ public class GrpcRequestEditor implements RequestTypeEditor, AutoCompletionAware
 
 	
 	public static class GrpcRequestEditControllerFxml extends HboxExt {
+		private GrpcRequestEditor controller; //avoid gc collection
+
 		public GrpcRequestEditControllerFxml(GrpcRequestEditor controller) {
+			this.controller = controller;
 			HBox.setHgrow(this, Priority.ALWAYS);
-			
+
 			controller.endpoint = add(new JFXTextField(), true);
+			controller.endpoint.setPromptText("host:port");
 			controller.endpoint.setId("endpoint");
 		}
 	}
