@@ -36,8 +36,8 @@ public class MilkmanApplication extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		if (!hasError) {
 			try {
-				module.getMainWindow().start(primaryStage); // 1 sec
 				module.getApplicationController().initOptions();
+				module.getMainWindow().start(primaryStage); // 1 sec
 				module.getThemeSwitcher().setTheme(CoreApplicationOptionsProvider.options().getTheme(), CoreApplicationOptionsProvider.options().isDisableAnimations());
 				module.getApplicationController().initApplication(); // 1 sec
 				module.getAppCdsGenerator().initializeCds(false);
