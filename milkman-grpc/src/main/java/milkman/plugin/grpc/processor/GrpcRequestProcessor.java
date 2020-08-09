@@ -73,7 +73,7 @@ public class GrpcRequestProcessor extends BaseGrpcProcessor {
 											 AsyncControl asyncControl) throws InterruptedException, ExecutionException {
 	   
 		HeaderClientInterceptor clientInterceptor = createHeaderInterceptor(headerAspect, templater);
-	    var managedChannel = createChannel(request);
+	    var managedChannel = createChannel(request, templater);
 		Channel channel = ClientInterceptors.intercept(managedChannel, clientInterceptor);
 		
 		

@@ -9,7 +9,6 @@ import io.grpc.ManagedChannel;
 import javafx.application.Platform;
 import lombok.SneakyThrows;
 import me.dinowernli.grpc.polyglot.grpc.ServerReflectionClient;
-import milkman.plugin.grpc.domain.GrpcOperationAspect;
 import milkman.plugin.grpc.domain.GrpcRequestContainer;
 import milkman.plugin.grpc.domain.GrpcResponseContainer;
 import milkman.plugin.grpc.domain.GrpcResponsePayloadAspect;
@@ -36,7 +35,7 @@ public class GrpcMetaProcessor extends BaseGrpcProcessor {
 		var response = new GrpcResponseContainer(templater.replaceTags(request.getEndpoint()));
 
 		ReplayProcessor<String> processor = ReplayProcessor.create();
-		fetchServiceList(processor.sink(), request);
+		fetchServiceList(processor.sink(), request, templater);
 	  
     	var responsePayloadAspect = new GrpcResponsePayloadAspect(processor);
 		response.getAspects().add(responsePayloadAspect);
@@ -46,11 +45,10 @@ public class GrpcMetaProcessor extends BaseGrpcProcessor {
 
 	@SneakyThrows
 	public GrpcResponseContainer showServiceDefinition(GrpcRequestContainer request, Templater templater) {
-		GrpcOperationAspect operationAspect = request.getAspect(GrpcOperationAspect.class).orElseThrow(() -> new IllegalArgumentException("Operation Aspect missing"));
-		String fullServiceName = queryServiceName(request, operationAspect);
+		String fullServiceName = queryServiceName(request, templater);
 
 		ReplayProcessor<String> processor = ReplayProcessor.create();
-		fetchServiceDefinition(processor.sink(), request, fullServiceName);
+		fetchServiceDefinition(processor.sink(), request, fullServiceName, templater);
 	    var response = new GrpcResponseContainer(templater.replaceTags(request.getEndpoint()));
     	var responsePayloadAspect = new GrpcResponsePayloadAspect(processor);
 		response.getAspects().add(responsePayloadAspect);
@@ -59,9 +57,9 @@ public class GrpcMetaProcessor extends BaseGrpcProcessor {
 	}
 
 	@SneakyThrows
-	private String queryServiceName(GrpcRequestContainer request, GrpcOperationAspect operationAspect) {
+	private String queryServiceName(GrpcRequestContainer request, Templater templater) {
 		ReplayProcessor<String> processor = ReplayProcessor.create();
-		fetchServiceList(processor.sink(), request);
+		fetchServiceList(processor.sink(), request, templater);
 		var serviceDefinitions = Flux.from(processor).collectList().block();
 
 		var inputDialog = new SelectValueDialog();
@@ -86,8 +84,8 @@ public class GrpcMetaProcessor extends BaseGrpcProcessor {
 
 
 	@SneakyThrows
-	private void fetchServiceDefinition(FluxSink<String> sink, GrpcRequestContainer request, String fullServiceName) {
-		ManagedChannel channel = createChannel(request);
+	private void fetchServiceDefinition(FluxSink<String> sink, GrpcRequestContainer request, String fullServiceName, Templater templater) {
+		ManagedChannel channel = createChannel(request, templater);
 		FileDescriptorSet descriptorSet = fetchServiceDescriptionViaReflection(channel, fullServiceName);
 		String protoContent = toProto(descriptorSet);
 		sink.next(protoContent);
@@ -102,8 +100,8 @@ public class GrpcMetaProcessor extends BaseGrpcProcessor {
 			.collect(Collectors.joining("\n---\n"));
 	}
 
-	protected void fetchServiceList(FluxSink<String> sink, GrpcRequestContainer request) {
-		ManagedChannel channel = createChannel(request);
+	protected void fetchServiceList(FluxSink<String> sink, GrpcRequestContainer request, Templater templater) {
+		ManagedChannel channel = createChannel(request, templater);
 	    var client = ServerReflectionClient.create(channel);
 
 	    

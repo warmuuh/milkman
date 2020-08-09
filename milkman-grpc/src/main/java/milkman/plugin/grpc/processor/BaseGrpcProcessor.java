@@ -9,6 +9,7 @@ import io.grpc.stub.ClientResponseObserver;
 import lombok.RequiredArgsConstructor;
 import me.dinowernli.grpc.polyglot.grpc.ServerReflectionClient;
 import milkman.plugin.grpc.domain.GrpcRequestContainer;
+import milkman.ui.plugin.Templater;
 import reactor.core.publisher.FluxSink;
 
 import java.net.InetSocketAddress;
@@ -25,8 +26,8 @@ public class BaseGrpcProcessor {
 		return addr;
 	}
 
-	protected ManagedChannel createChannel(GrpcRequestContainer request) {
-		InetSocketAddress endpoint = parseEndpoint(request.getEndpoint());
+	protected ManagedChannel createChannel(GrpcRequestContainer request, Templater templater) {
+		InetSocketAddress endpoint = parseEndpoint(templater.replaceTags(request.getEndpoint()));
 	    ManagedChannel channel = ManagedChannelBuilder.forAddress(endpoint.getHostName(), endpoint.getPort())
 	            .usePlaintext()
 	            .build();
