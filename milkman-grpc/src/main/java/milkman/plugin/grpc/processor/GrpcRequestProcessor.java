@@ -1,49 +1,39 @@
 package milkman.plugin.grpc.processor;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Flow.Publisher;
-import java.util.concurrent.SubmissionPublisher;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
-import org.apache.commons.io.IOUtils;
-
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.DescriptorProtos.FileDescriptorSet;
 import com.google.protobuf.DynamicMessage;
-
 import io.grpc.CallOptions;
 import io.grpc.Channel;
 import io.grpc.ClientInterceptors;
-import io.grpc.StatusRuntimeException;
 import lombok.SneakyThrows;
 import lombok.Value;
 import me.dinowernli.grpc.polyglot.grpc.DynamicGrpcClient;
 import me.dinowernli.grpc.polyglot.protobuf.ProtoMethodName;
 import me.dinowernli.grpc.polyglot.protobuf.ProtocInvoker;
-import milkman.plugin.grpc.domain.GrpcHeaderAspect;
-import milkman.plugin.grpc.domain.GrpcOperationAspect;
-import milkman.plugin.grpc.domain.GrpcPayloadAspect;
-import milkman.plugin.grpc.domain.GrpcRequestContainer;
-import milkman.plugin.grpc.domain.GrpcResponseContainer;
-import milkman.plugin.grpc.domain.GrpcResponseHeaderAspect;
-import milkman.plugin.grpc.domain.GrpcResponsePayloadAspect;
-import milkman.plugin.grpc.domain.HeaderEntry;
+import milkman.plugin.grpc.domain.*;
 import milkman.ui.plugin.Templater;
 import milkman.utils.AsyncResponseControl.AsyncControl;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.ReplayProcessor;
+
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 public class GrpcRequestProcessor extends BaseGrpcProcessor {
 
 	@SneakyThrows
 	public GrpcResponseContainer executeRequest(GrpcRequestContainer request, Templater templater, AsyncControl asyncControl) {
 	    GrpcOperationAspect operationAspect = request.getAspect(GrpcOperationAspect.class).orElseThrow(() -> new IllegalArgumentException("Operation Aspect missing"));
+	    validate(operationAspect);
+
 	    GrpcPayloadAspect payloadAspect = request.getAspect(GrpcPayloadAspect.class).orElseThrow(() -> new IllegalArgumentException("Payload Aspect missing"));
 	    GrpcHeaderAspect headerAspect = request.getAspect(GrpcHeaderAspect.class).orElseThrow(() -> new IllegalArgumentException("Header Aspect missing"));
 		
@@ -65,6 +55,16 @@ public class GrpcRequestProcessor extends BaseGrpcProcessor {
 		return response;
 	}
 
+	private void validate(GrpcOperationAspect operationAspect) {
+		if (StringUtils.isBlank(operationAspect.getOperation())){
+			throw new IllegalArgumentException("No Grpc Operation to call provided");
+		}
+
+		if (!operationAspect.isUseReflection() && StringUtils.isBlank(operationAspect.getProtoSchema())) {
+			throw new IllegalArgumentException("No Protobuf schema provided and grpc-reflection not enabled");
+		}
+	}
+
 	protected ResponseDataHolder makeRequest(GrpcRequestContainer request,
 											 Templater templater,
 											 GrpcOperationAspect operationAspect,
@@ -79,7 +79,7 @@ public class GrpcRequestProcessor extends BaseGrpcProcessor {
 		
 	    var protoMethod = ProtoMethodName.parseFullGrpcMethodName(operationAspect.getOperation());
 		FileDescriptorSet descriptorSet = operationAspect.isUseReflection() 
-						? fetchServiceDescriptionViaReflection(channel, protoMethod) 
+						? fetchServiceDescriptionViaReflection(channel, protoMethod.getFullServiceName())
 						: compileProtoSchema(operationAspect.getProtoSchema(), protoMethod);
 						
 						

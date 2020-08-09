@@ -1,22 +1,18 @@
 package milkman.plugin.grpc.processor;
 
-import java.net.InetSocketAddress;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.SubmissionPublisher;
-
 import com.google.protobuf.DescriptorProtos.FileDescriptorSet;
-
 import io.grpc.Channel;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.ClientCallStreamObserver;
 import io.grpc.stub.ClientResponseObserver;
-import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
 import me.dinowernli.grpc.polyglot.grpc.ServerReflectionClient;
-import me.dinowernli.grpc.polyglot.protobuf.ProtoMethodName;
 import milkman.plugin.grpc.domain.GrpcRequestContainer;
 import reactor.core.publisher.FluxSink;
+
+import java.net.InetSocketAddress;
+import java.util.concurrent.ExecutionException;
 
 public class BaseGrpcProcessor {
 
@@ -37,9 +33,9 @@ public class BaseGrpcProcessor {
 		return channel;
 	}
 	
-	protected FileDescriptorSet fetchServiceDescriptionViaReflection(Channel channel, ProtoMethodName protoMethod) throws InterruptedException, ExecutionException {
+	protected FileDescriptorSet fetchServiceDescriptionViaReflection(Channel channel, String fullServiceName) throws InterruptedException, ExecutionException {
 		var client = ServerReflectionClient.create(channel);
-		FileDescriptorSet descriptorSet = client.lookupService(protoMethod.getFullServiceName()).get();
+		FileDescriptorSet descriptorSet = client.lookupService(fullServiceName).get();
 		return descriptorSet;
 	}
 

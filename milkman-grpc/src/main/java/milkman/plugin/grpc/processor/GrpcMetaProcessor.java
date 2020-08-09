@@ -1,30 +1,31 @@
 package milkman.plugin.grpc.processor;
 
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Flow.Publisher;
-import java.util.concurrent.SubmissionPublisher;
-import java.util.stream.Collectors;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.DescriptorProtos.FileDescriptorSet;
-
 import io.grpc.ManagedChannel;
+import javafx.application.Platform;
 import lombok.SneakyThrows;
 import me.dinowernli.grpc.polyglot.grpc.ServerReflectionClient;
-import me.dinowernli.grpc.polyglot.protobuf.ProtoMethodName;
 import milkman.plugin.grpc.domain.GrpcOperationAspect;
 import milkman.plugin.grpc.domain.GrpcRequestContainer;
 import milkman.plugin.grpc.domain.GrpcResponseContainer;
 import milkman.plugin.grpc.domain.GrpcResponsePayloadAspect;
 import milkman.plugin.grpc.processor.ProtoDescriptorSerializer.FileContent;
+import milkman.ui.main.dialogs.SelectValueDialog;
 import milkman.ui.plugin.Templater;
+import org.apache.commons.lang3.StringUtils;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.ReplayProcessor;
+
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 public class GrpcMetaProcessor extends BaseGrpcProcessor {
 
@@ -32,7 +33,7 @@ public class GrpcMetaProcessor extends BaseGrpcProcessor {
 
 	@SneakyThrows
 	public GrpcResponseContainer listServices(GrpcRequestContainer request, Templater templater) {
-		var response = new GrpcResponseContainer(request.getEndpoint());
+		var response = new GrpcResponseContainer(templater.replaceTags(request.getEndpoint()));
 
 		ReplayProcessor<String> processor = ReplayProcessor.create();
 		fetchServiceList(processor.sink(), request);
@@ -46,24 +47,48 @@ public class GrpcMetaProcessor extends BaseGrpcProcessor {
 	@SneakyThrows
 	public GrpcResponseContainer showServiceDefinition(GrpcRequestContainer request, Templater templater) {
 		GrpcOperationAspect operationAspect = request.getAspect(GrpcOperationAspect.class).orElseThrow(() -> new IllegalArgumentException("Operation Aspect missing"));
-	    var protoMethod = ProtoMethodName.parseFullGrpcMethodName(operationAspect.getOperation());
+		String fullServiceName = queryServiceName(request, operationAspect);
 
 		ReplayProcessor<String> processor = ReplayProcessor.create();
-	    fetchServiceDefinition(processor.sink(), request, protoMethod);
-
-	    var response = new GrpcResponseContainer(request.getEndpoint());
+		fetchServiceDefinition(processor.sink(), request, fullServiceName);
+	    var response = new GrpcResponseContainer(templater.replaceTags(request.getEndpoint()));
     	var responsePayloadAspect = new GrpcResponsePayloadAspect(processor);
 		response.getAspects().add(responsePayloadAspect);
 		
 		return response;
 	}
 
-	
-	
 	@SneakyThrows
-	private void fetchServiceDefinition(FluxSink<String> sink, GrpcRequestContainer request, ProtoMethodName protoMethod) {
+	private String queryServiceName(GrpcRequestContainer request, GrpcOperationAspect operationAspect) {
+		ReplayProcessor<String> processor = ReplayProcessor.create();
+		fetchServiceList(processor.sink(), request);
+		var serviceDefinitions = Flux.from(processor).collectList().block();
+
+		var inputDialog = new SelectValueDialog();
+		CountDownLatch latch = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+			inputDialog.showAndWait("Service Name", "Choose Service", serviceDefinitions.stream().findFirst(), serviceDefinitions);
+			latch.countDown();
+		});
+		latch.await();
+
+		if (inputDialog.isCancelled()) {
+			throw new IllegalArgumentException("Operation manually cancelled.");
+		}
+
+		if (StringUtils.isBlank(inputDialog.getInput())) {
+			throw new IllegalArgumentException("No servicename provided.");
+		}
+
+		return inputDialog.getInput();
+	}
+
+
+	@SneakyThrows
+	private void fetchServiceDefinition(FluxSink<String> sink, GrpcRequestContainer request, String fullServiceName) {
 		ManagedChannel channel = createChannel(request);
-		FileDescriptorSet descriptorSet = fetchServiceDescriptionViaReflection(channel, protoMethod);
+		FileDescriptorSet descriptorSet = fetchServiceDescriptionViaReflection(channel, fullServiceName);
 		String protoContent = toProto(descriptorSet);
 		sink.next(protoContent);
 		sink.complete();
