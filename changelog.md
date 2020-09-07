@@ -9,7 +9,8 @@
 
 version 4.7.0 - upcomming
   * included [cassandra plugin](/milkman-cassandra) and [Grpc plugin](/milkman-grpc) into macos app bundle
-
+  * reordered toolbar-actions
+  
 version 4.6.0
   * added option to disable ui animations
   * added cqlsh export for cassandra

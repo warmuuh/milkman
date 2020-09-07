@@ -15,6 +15,7 @@ import lombok.val;
 import milkman.domain.Environment;
 import milkman.domain.Workspace;
 import milkman.ui.commands.AppCommand;
+import milkman.ui.commands.AppCommand.*;
 import milkman.utils.Event;
 
 import javax.inject.Singleton;
@@ -76,7 +77,7 @@ public class ToolbarComponent {
 		
 		val noEnvEntry = new ChoiceboxEntryImpl("No Environment", true, () -> {
 			if (!noActiveEnv)
-				onCommand.invoke(new AppCommand.ActivateEnvironment(Optional.empty()));	
+				onCommand.invoke(new ActivateEnvironment(Optional.empty()));
 		});
 		environmentSelection.getItems().add(noEnvEntry);
 
@@ -89,13 +90,12 @@ public class ToolbarComponent {
 			if (env.isActive()) {
 				activeEntry = newEntry = new ChoiceboxEntryImpl(env.getName(), true, () -> {});
 			} else {
-				newEntry = new ChoiceboxEntryImpl(env.getName(), true, () -> onCommand.invoke(new AppCommand.ActivateEnvironment(Optional.of(env))));
+				newEntry = new ChoiceboxEntryImpl(env.getName(), true, () -> onCommand.invoke(new ActivateEnvironment(Optional.of(env))));
 			}
 			environmentSelection.getItems().add(newEntry);
 		}
 		environmentSelection.getItems().add(new ChoiceBoxSeparator());
-		environmentSelection.getItems().add(new ChoiceboxEntryImpl("Manage Environments...", false, () ->  onCommand.invoke(new AppCommand.ManageEnvironments())));
-		environmentSelection.getItems().add(new ChoiceboxEntryImpl("Edit current Env...", false, () ->  onCommand.invoke(new AppCommand.EditCurrentEnvironment())));
+		environmentSelection.getItems().add(new ChoiceboxEntryImpl("Manage Environments...", false, () ->  onCommand.invoke(new ManageEnvironments())));
 		environmentSelection.setValue(activeEntry != null ? activeEntry : noEnvEntry);
 	}
 
@@ -107,12 +107,12 @@ public class ToolbarComponent {
 			if (ws.equals(activeWs.getName())) {
 				activeEntry = newEntry = new ChoiceboxEntryImpl(ws, true, () -> {});
 			} else {
-				newEntry = new ChoiceboxEntryImpl(ws, true, () -> onCommand.invoke(new AppCommand.LoadWorkspace(ws)));
+				newEntry = new ChoiceboxEntryImpl(ws, true, () -> onCommand.invoke(new LoadWorkspace(ws)));
 			}
 			workspaceSelection.getItems().add(newEntry);
 		}
 		workspaceSelection.getItems().add(new ChoiceBoxSeparator());
-		workspaceSelection.getItems().add(new ChoiceboxEntryImpl("Manage Workspaces...", false, () ->  onCommand.invoke(new AppCommand.ManageWorkspaces())));
+		workspaceSelection.getItems().add(new ChoiceboxEntryImpl("Manage Workspaces...", false, () ->  onCommand.invoke(new ManageWorkspaces())));
 		workspaceSelection.setValue(activeEntry);
 	}
 
@@ -139,17 +139,21 @@ public class ToolbarComponent {
 	}
 
 	 public void onImport() {
-		onCommand.invoke(new AppCommand.RequestImport());
+		onCommand.invoke(new RequestImport());
 	}
 
 	 public void onOptions() {
-		onCommand.invoke(new AppCommand.ManageOptions());
+		onCommand.invoke(new ManageOptions());
+	}
+
+	public void onEditCurEnv() {
+		onCommand.invoke(new EditCurrentEnvironment());
 	}
 
 	 public void onSync() {
 		syncBtn.setDisable(true);
 		syncBtn.setText("Syncing...");
-		onCommand.invoke(new AppCommand.SyncWorkspace(() -> {
+		onCommand.invoke(new SyncWorkspace(() -> {
 			syncBtn.setDisable(false);
 			syncBtn.setText("Sync");
 		}));
@@ -158,34 +162,35 @@ public class ToolbarComponent {
 
 
 	private void onAbout() {
-		onCommand.invoke(new AppCommand.ShowAbout());
+		onCommand.invoke(new ShowAbout());
 	}
 
 	public static class ToolbarComponentFxml extends ToolBar {
 		public ToolbarComponentFxml(ToolbarComponent controller) {
-			this.setId("toolbar");
-			this.getItems().add(new Label("Workspace:"));
+			setId("toolbar");
+			getItems().add(new Label("Workspace:"));
 
 			controller.workspaceSelection = choiceBox("workspaceSelection");
-			this.getItems().add(controller.workspaceSelection);
+			getItems().add(controller.workspaceSelection);
 			
 			controller.syncBtn = button("syncButton", "Sync", controller::onSync);
-			this.getItems().add(controller.syncBtn);
-			
-			this.getItems().add( button("Import", controller::onImport));
-			
+			getItems().add(controller.syncBtn);
 
-			this.getItems().add(new Label("Environment:"));
+			getItems().add( button("Import", controller::onImport));
+
+
+			getItems().add(new Label("Environment:"));
 			
 			controller.environmentSelection = choiceBox("environmentSelection");
-			this.getItems().add(controller.environmentSelection);
+			getItems().add(controller.environmentSelection);
+			getItems().add( button(icon(FontAwesomeIcon.PENCIL), controller::onEditCurEnv));
 			
-			this.getItems().add( button(icon(FontAwesomeIcon.WRENCH), controller::onOptions));
 			var spacer = new Region();
 			HBox.setHgrow(spacer, Priority.ALWAYS);
-			this.getItems().add(spacer);
+			getItems().add(spacer);
 
-			this.getItems().add( button(icon(FontAwesomeIcon.QUESTION_CIRCLE), controller::onAbout));
+			getItems().add( button(icon(FontAwesomeIcon.WRENCH), controller::onOptions));
+			getItems().add( button(icon(FontAwesomeIcon.QUESTION_CIRCLE), controller::onAbout));
 			
 			controller.initialize();
 		}
