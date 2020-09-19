@@ -5,14 +5,14 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import milkman.domain.ResponseAspect;
-import milkman.utils.json.BlockingFluxToStringConverter;
+import milkman.utils.json.BlockingFluxToByteConverter;
 import reactor.core.publisher.Flux;
 
 @Data
 @AllArgsConstructor
 public class GrpcResponsePayloadAspect implements ResponseAspect {
 
-	@JsonSerialize(converter = BlockingFluxToStringConverter.class)
+	@JsonSerialize(converter = BlockingFluxToByteConverter.class)
 	private Flux<String> payloads;
 
 	

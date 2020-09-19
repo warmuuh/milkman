@@ -12,7 +12,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.ResponseInfo;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -30,8 +29,8 @@ public class ChunkedRequest {
 	@Getter
 	private CompletableFuture<Void> requestDone;
 	
-	private ReplayProcessor<String> emitterProcessor;
-	private Flux<String> chunks;
+	private ReplayProcessor<byte[]> emitterProcessor;
+	private Flux<byte[]> chunks;
 
 	public void executeRequest(Event0 cancellationEvent){
 
@@ -61,7 +60,7 @@ public class ChunkedRequest {
 
 			@Override
 			public void onNext(List<ByteBuffer> item) {
-				String chunk = asString(item);
+				byte[] chunk = toBytes(item);
 //				System.out.println("Received chunk: " + chunk);
 				emitterProcessor.onNext(chunk);
 				subscription.request(1);
@@ -127,14 +126,14 @@ public class ChunkedRequest {
 
 	}
 	
-	public Flux<String> getEmitterProcessor(){
+	public Flux<byte[]> getEmitterProcessor(){
 		return chunks;
 	}
 
 
-	private static String asString(List<ByteBuffer> buffers) {
-		return new String(toBytes(buffers), StandardCharsets.UTF_8);
-	}
+//	private static String asString(List<ByteBuffer> buffers) {
+//		return new String(toBytes(buffers), StandardCharsets.UTF_8);
+//	}
 
 	private static byte[] toBytes(List<ByteBuffer> buffers) {
 		int size = buffers.stream().mapToInt(ByteBuffer::remaining).sum();

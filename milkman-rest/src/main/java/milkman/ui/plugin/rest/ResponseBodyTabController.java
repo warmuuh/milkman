@@ -18,6 +18,7 @@ import milkman.ui.plugin.rest.domain.RestResponseBodyAspect;
 import milkman.ui.plugin.rest.domain.RestResponseHeaderAspect;
 import reactor.core.scheduler.Schedulers;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -51,7 +52,7 @@ public class ResponseBodyTabController implements ResponseAspectEditor, ContentT
 //					System.out.println("receiving content: " + cidx );
 					Platform.runLater(() -> {
 //						System.out.println("adding content" + cidx + " " + value);
-						root.addContent(value);
+						root.addContent(new String(value, StandardCharsets.UTF_8));
 					});
 				},
 				throwable -> {
@@ -73,7 +74,10 @@ public class ResponseBodyTabController implements ResponseAspectEditor, ContentT
 
 	@Override
 	public boolean canHandleAspect(RequestContainer request, ResponseContainer response) {
-		return response.getAspect(RestResponseBodyAspect.class).isPresent();
+		return response.getAspect(RestResponseBodyAspect.class).isPresent()
+				&& response.getAspect(RestResponseHeaderAspect.class)
+				.map(a -> !BinaryResponseBodyTabController.isBinary(a.contentType()))
+				.orElse(true);
 	}
 
 	@Override
