@@ -225,7 +225,7 @@ public class JavaRequestProcessor implements RequestProcessor {
 	
 
 	@SneakyThrows
-	private RestResponseContainer toResponseContainer(String url, Flux<String> bodyPublisher, CompletableFuture<ResponseInfo> httpResponse, AtomicLong startTime) {
+	private RestResponseContainer toResponseContainer(String url, Flux<byte[]> bodyPublisher, CompletableFuture<ResponseInfo> httpResponse, AtomicLong startTime) {
 		RestResponseContainer response = new RestResponseContainer(url);
 		response.getAspects().add(new RestResponseBodyAspect(bodyPublisher));
 		

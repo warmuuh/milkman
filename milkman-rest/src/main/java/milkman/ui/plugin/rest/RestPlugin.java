@@ -1,22 +1,17 @@
 package milkman.ui.plugin.rest;
 
-import java.util.Arrays;
-import java.util.List;
-
 import milkman.domain.RequestContainer;
 import milkman.domain.RequestExecutionContext;
 import milkman.domain.ResponseContainer;
-import milkman.ui.plugin.RequestAspectEditor;
-import milkman.ui.plugin.RequestAspectsPlugin;
-import milkman.ui.plugin.RequestTypeEditor;
-import milkman.ui.plugin.RequestTypePlugin;
-import milkman.ui.plugin.ResponseAspectEditor;
-import milkman.ui.plugin.Templater;
+import milkman.ui.plugin.*;
 import milkman.ui.plugin.rest.domain.RestBodyAspect;
 import milkman.ui.plugin.rest.domain.RestHeaderAspect;
 import milkman.ui.plugin.rest.domain.RestQueryParamAspect;
 import milkman.ui.plugin.rest.domain.RestRequestContainer;
 import milkman.utils.AsyncResponseControl.AsyncControl;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class RestPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 
@@ -29,7 +24,7 @@ public class RestPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 
 	@Override
 	public List<ResponseAspectEditor> getResponseTabs() {
-		return Arrays.asList( new ResponseBodyTabController(), new ResponseHeaderTabController());
+		return Arrays.asList( new ResponseBodyTabController(), new BinaryResponseBodyTabController(), new ResponseHeaderTabController());
 	}
 
 	@Override

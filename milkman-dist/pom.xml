@@ -17,6 +17,7 @@
 
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>
+		<jdk.version>11.0.3</jdk.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -221,7 +222,7 @@
 
 							<provider>BELLSOFT</provider><!-- liberica contains javafx -->
 							<providerConfig>
-								<version>11.0.3</version>
+								<version>${jdk.version}</version>
 								<arch>amd64</arch>
 								<type>jdk</type>
 								<os>windows</os>
@@ -239,7 +240,7 @@
 
 							<provider>BELLSOFT</provider><!-- liberica contains javafx -->
 							<providerConfig>
-								<version>11.0.3</version>
+								<version>${jdk.version}</version>
 								<arch>amd64</arch>
 								<type>jdk</type>
 								<os>linux</os>
@@ -257,7 +258,7 @@
 
 							<provider>BELLSOFT</provider><!-- liberica contains javafx -->
 							<providerConfig>
-								<version>11.0.3</version>
+								<version>${jdk.version}</version>
 								<arch>amd64</arch>
 								<type>jdk</type>
 								<os>macos</os>

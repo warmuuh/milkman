@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import milkman.domain.ResponseAspect;
-import milkman.utils.json.BlockingFluxToStringConverter;
+import milkman.utils.json.BlockingFluxToByteConverter;
 import reactor.core.publisher.Flux;
 
 @Data
@@ -13,8 +13,8 @@ import reactor.core.publisher.Flux;
 @AllArgsConstructor
 public class RestResponseBodyAspect implements ResponseAspect {
 
-	@JsonSerialize(converter = BlockingFluxToStringConverter.class)
-	private Flux<String> body;
+	@JsonSerialize(converter = BlockingFluxToByteConverter.class)
+	private Flux<byte[]> body;
 
 	@Override
 	public String getName() {
