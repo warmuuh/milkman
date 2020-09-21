@@ -22,6 +22,7 @@
 		<module>milkman-graphql</module>
 		<module>milkman-grpc</module>
 		<module>milkman-cli</module>
+		<module>milkman-test</module>
 	</modules>
 
 	<properties>
