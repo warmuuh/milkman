@@ -1,8 +1,5 @@
 package milkman.plugin.test;
 
-import java.util.Collections;
-import java.util.List;
-
 import milkman.domain.RequestContainer;
 import milkman.domain.RequestExecutionContext;
 import milkman.domain.ResponseContainer;
@@ -10,9 +7,16 @@ import milkman.plugin.test.domain.TestAspect;
 import milkman.plugin.test.domain.TestContainer;
 import milkman.plugin.test.editor.TestAspectEditor;
 import milkman.plugin.test.editor.TestContainerEditor;
+import milkman.plugin.test.editor.TestResponseAspectEditor;
 import milkman.ui.plugin.*;
+import milkman.utils.AsyncResponseControl;
 
-public class TestPlugin implements RequestAspectsPlugin, RequestTypePlugin {
+import java.util.Collections;
+import java.util.List;
+
+public class TestPlugin implements RequestAspectsPlugin, RequestTypePlugin, RequestExecutorAware {
+
+	private PluginRequestExecutor requestExecutor;
 
 	@Override
 	public List<RequestAspectEditor> getRequestTabs() {
@@ -21,13 +25,11 @@ public class TestPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 
 	@Override
 	public List<ResponseAspectEditor> getResponseTabs() {
-		return Collections.emptyList();
+		return Collections.singletonList(new TestResponseAspectEditor());
 	}
 
 	@Override
 	public void initializeRequestAspects(RequestContainer request) {
-		if (!request.getAspect(TestAspect.class).isPresent())
-			request.addAspect(new TestAspect());
 	}
 
 	@Override
@@ -43,7 +45,9 @@ public class TestPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 
 	@Override
 	public RequestContainer createNewRequest() {
-		return new TestContainer();
+		var container = new TestContainer("New Test");
+		container.addAspect(new TestAspect());
+		return container;
 	}
 
 	@Override
@@ -53,8 +57,12 @@ public class TestPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 
 	@Override
 	public ResponseContainer executeRequest(RequestContainer request, Templater templater) {
-		return null;
+		throw new UnsupportedOperationException();
 	}
+
+	public ResponseContainer executeRequestAsync(RequestContainer request, Templater templater, AsyncResponseControl.AsyncControl asyncControl) {
+		return new TestRunner(requestExecutor).executeRequest((TestContainer)request, templater, asyncControl);
+	};
 
 	@Override
 	public String getRequestType() {
@@ -64,5 +72,10 @@ public class TestPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 	@Override
 	public boolean canHandle(RequestContainer request) {
 		return request instanceof TestContainer;
+	}
+
+	@Override
+	public void setRequestExecutor(PluginRequestExecutor executor) {
+		requestExecutor = executor;
 	}
 }

@@ -14,7 +14,8 @@ public class UiPluginManager {
 
 	private final AutoCompleter completer;
 	private final ActiveEnvironmentProvider envProvider;
-	private final Supplier<Toaster> toaster; 
+	private final Supplier<Toaster> toaster;
+	private final Supplier<PluginRequestExecutor> pluginRequestExecutor;
 	
 	Map<Class, List> cachedInstances = new HashMap<Class, List>();
 	
@@ -82,6 +83,10 @@ public class UiPluginManager {
 
 		if (o instanceof LifecycleAware) {
 			((LifecycleAware) o).onPostConstruct();
+		}
+
+		if (o instanceof RequestExecutorAware) {
+			((RequestExecutorAware) o).setRequestExecutor(pluginRequestExecutor.get());
 		}
 	}
 	

@@ -1,8 +1,5 @@
 package milkmancli;
 
-import java.io.IOException;
-import java.util.List;
-
 import milkman.ctrl.RequestTypeManager;
 import milkman.logback.LogbackConfiguration;
 import milkman.persistence.PersistenceManager;
@@ -12,6 +9,9 @@ import milkman.ui.plugin.OptionPageProvider;
 import milkman.ui.plugin.OptionsObject;
 import milkman.ui.plugin.UiPluginManager;
 import wrm.hardwire.Module;
+
+import java.io.IOException;
+import java.util.List;
 
 @Module
 public class MilkmanCli extends MilkmanCliBase {
@@ -55,7 +55,7 @@ public class MilkmanCli extends MilkmanCliBase {
 
 	@Override
 	protected UiPluginManager createUiPluginManager() {
-		return new UiPluginManager(null, null, () -> new NoOpToaster(null));
+		return new UiPluginManager(null, null, () -> new NoOpToaster(null), () -> new CliPluginRequestExecutorImpl());
 	}
 
 	@Override

@@ -1,0 +1,19 @@
+package milkmancli;
+
+import milkman.domain.RequestContainer;
+import milkman.domain.ResponseContainer;
+import milkman.ui.plugin.PluginRequestExecutor;
+
+import java.util.Optional;
+
+public class CliPluginRequestExecutorImpl implements PluginRequestExecutor {
+	@Override
+	public Optional<RequestContainer> getDetails(String requestId) {
+		return Optional.empty();
+	}
+
+	@Override
+	public Optional<ResponseContainer> executeRequest(String requestId) {
+		return Optional.empty();
+	}
+}

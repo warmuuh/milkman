@@ -1,6 +1,5 @@
 package milkman.utils.javafx;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jfoenix.controls.JFXTreeCell;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.TransformationList;
@@ -10,16 +9,16 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.*;
 import javafx.util.Callback;
-import lombok.SneakyThrows;
 import milkman.domain.Collection;
 import milkman.domain.Folder;
 import milkman.domain.RequestContainer;
-import milkman.persistence.UnknownPluginHandler;
 
 import java.util.Objects;
 
+import static milkman.utils.javafx.DndUtil.JAVA_FORMAT;
+import static milkman.utils.javafx.DndUtil.serialize;
+
 public class DnDCellFactory implements Callback<TreeView<Node>, TreeCell<Node>> {
-    private static final DataFormat JAVA_FORMAT = new DataFormat("application/x-java-serialized-object");
     private static final String DROP_HINT_STYLE = "-fx-border-color: #eea82f; -fx-border-width: 0 0 2 0; -fx-padding: 3 3 1 3";
     private TreeCell<Node> dropZone;
     private TreeItem<Node> draggedItem;
@@ -198,21 +197,7 @@ public class DnDCellFactory implements Callback<TreeView<Node>, TreeCell<Node>> 
         if (dropZone != null) dropZone.setStyle("");
     }
 
-    @SneakyThrows
-    private String serialize(Object obj) {
-    	return createMapper().writeValueAsString(obj);
-    }
-    
-    @SneakyThrows
-    private <T> T deserialize(String content, Class<T> type) {
-    	return createMapper().readValue(content, type);
-    }
-    
-    private ObjectMapper createMapper() {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.addHandler(new UnknownPluginHandler());
-		return mapper;
-	}
+
 
 
 }
