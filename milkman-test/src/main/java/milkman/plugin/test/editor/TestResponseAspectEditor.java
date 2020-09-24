@@ -34,7 +34,7 @@ public class TestResponseAspectEditor implements ResponseAspectEditor {
 		resultList = FXCollections.observableList(new LinkedList<>());
 
 		testResultAspect.getResults()
-				.subscribe(evt -> resultList.add(new TreeItem<>(new Label(evt.getRequestName() + ": " + evt.getResultState()))));
+				.subscribe(this::updateResultList);
 
 		root = new SettableTreeItem<Node>();
 		root.setChildren(resultList);
@@ -42,6 +42,24 @@ public class TestResponseAspectEditor implements ResponseAspectEditor {
 
 		var editor = new TestResponseAspectEditorFxml(this);
 		return editor;
+	}
+
+	private void updateResultList(TestResultAspect.TestResultEvent evt) {
+		var treeItem = new Label(evt.getRequestName() + ": " + evt.getResultState());
+		treeItem.setUserData(evt.getRequestId());
+
+		boolean updated = false;
+		for (TreeItem<Node> item : resultList) {
+			if (item.getValue().getUserData() == evt.getRequestId()) {
+				item.setValue(treeItem);
+				updated = true;
+				break;
+			}
+		}
+
+		if (!updated) {
+			resultList.add(new TreeItem<>(treeItem));
+		}
 	}
 
 	@Override
