@@ -13,7 +13,7 @@ public class CliPluginRequestExecutorImpl implements PluginRequestExecutor {
 	}
 
 	@Override
-	public Optional<ResponseContainer> executeRequest(String requestId) {
-		return Optional.empty();
+	public ResponseContainer executeRequest(RequestContainer request) {
+		return null;
 	}
 }

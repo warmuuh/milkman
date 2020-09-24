@@ -31,4 +31,6 @@ public class TestResultAspect implements ResponseAspect {
 		String requestName;
 		TestResultState resultState;
 	}
+
+
 }

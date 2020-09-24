@@ -25,12 +25,7 @@ public class PluginRequestExecutorImpl implements PluginRequestExecutor {
 	}
 
 	@Override
-	public Optional<ResponseContainer> executeRequest(String requestId) {
-		return workspaceController.findRequestById(requestId)
-				.map(this::executeRequest);
-	}
-
-	private ResponseContainer executeRequest(RequestContainer requestContainer) {
+	public ResponseContainer executeRequest(RequestContainer requestContainer) {
 		RequestTypePlugin requestTypePlugin = requestTypeManager.getPluginFor(requestContainer);
 		var responseControl = new AsyncResponseControl();
 		return requestTypePlugin.executeRequestAsync(requestContainer, workspaceController.buildTemplater(), responseControl.getCancellationControl());

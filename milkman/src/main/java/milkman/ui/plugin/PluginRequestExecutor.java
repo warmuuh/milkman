@@ -9,5 +9,5 @@ public interface PluginRequestExecutor {
 
 	Optional<RequestContainer> getDetails(String requestId);
 
-	Optional<ResponseContainer> executeRequest(String requestId);
+	ResponseContainer executeRequest(RequestContainer request);
 }
