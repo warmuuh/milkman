@@ -1,6 +1,7 @@
 package milkman.plugin.test.editor;
 
 import com.jfoenix.controls.JFXTreeView;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -17,6 +18,7 @@ import milkman.utils.javafx.SettableTreeItem;
 import java.util.LinkedList;
 
 import static milkman.utils.fxml.FxmlBuilder.hbox;
+import static milkman.utils.fxml.FxmlBuilder.icon;
 
 public class TestResponseAspectEditor implements ResponseAspectEditor {
 
@@ -45,12 +47,31 @@ public class TestResponseAspectEditor implements ResponseAspectEditor {
 	}
 
 	private void updateResultList(TestResultAspect.TestResultEvent evt) {
-		var treeItem = new Label(evt.getRequestName() + ": " + evt.getResultState());
+
+		var evtTypeIcon = FontAwesomeIcon.CLOCK_ALT;
+		switch (evt.getResultState()){
+			case STARTED:
+				evtTypeIcon = FontAwesomeIcon.CLOCK_ALT;
+				break;
+			case SUCCEEDED:
+				evtTypeIcon = FontAwesomeIcon.CHECK_CIRCLE_ALT;
+				break;
+			case FAILED:
+				evtTypeIcon = FontAwesomeIcon.BAN;
+				break;
+			case EXCEPTION:
+				evtTypeIcon = FontAwesomeIcon.EXCLAMATION_CIRCLE;
+				break;
+		}
+
+
+
+		var treeItem = hbox(icon(evtTypeIcon, "1.5em"), new Label(evt.getRequestName()));
 		treeItem.setUserData(evt.getRequestId());
 
 		boolean updated = false;
 		for (TreeItem<Node> item : resultList) {
-			if (item.getValue().getUserData() == evt.getRequestId()) {
+			if (item.getValue().getUserData().equals(evt.getRequestId())) {
 				item.setValue(treeItem);
 				updated = true;
 				break;
