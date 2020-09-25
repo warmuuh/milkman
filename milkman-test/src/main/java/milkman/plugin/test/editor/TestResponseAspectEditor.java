@@ -12,19 +12,21 @@ import javafx.scene.control.TreeItem;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 import milkman.plugin.test.domain.TestResultAspect;
+import milkman.plugin.test.domain.TestResultAspect.TestResultEvent;
 import milkman.ui.plugin.ResponseAspectEditor;
+import milkman.utils.fxml.FxmlBuilder;
 import milkman.utils.javafx.SettableTreeItem;
 
 import java.util.LinkedList;
 
-import static milkman.utils.fxml.FxmlBuilder.hbox;
-import static milkman.utils.fxml.FxmlBuilder.icon;
+import static milkman.utils.fxml.FxmlBuilder.*;
 
 public class TestResponseAspectEditor implements ResponseAspectEditor {
 
 	JFXTreeView<Node> resultView;
 	private SettableTreeItem<Node> root;
 	private ObservableList<TreeItem<Node>> resultList;
+	private FxmlBuilder.VboxExt resultDetails;
 
 
 	@Override
@@ -43,10 +45,18 @@ public class TestResponseAspectEditor implements ResponseAspectEditor {
 
 
 		var editor = new TestResponseAspectEditorFxml(this);
+
+		resultView.getSelectionModel().selectedIndexProperty().addListener((obs, old, newValue) -> {
+			if (newValue != null && !newValue.equals(old)){
+				this.onResultSelected((TestResultEvent) resultList.get(newValue.intValue()).getValue().getUserData());
+			}
+		});
+
 		return editor;
 	}
 
-	private void updateResultList(TestResultAspect.TestResultEvent evt) {
+
+	private void updateResultList(TestResultEvent evt) {
 
 		var evtTypeIcon = FontAwesomeIcon.CLOCK_ALT;
 		switch (evt.getResultState()){
@@ -67,11 +77,12 @@ public class TestResponseAspectEditor implements ResponseAspectEditor {
 
 
 		var treeItem = hbox(icon(evtTypeIcon, "1.5em"), new Label(evt.getRequestName()));
-		treeItem.setUserData(evt.getRequestId());
+		treeItem.setUserData(evt);
 
 		boolean updated = false;
 		for (TreeItem<Node> item : resultList) {
-			if (item.getValue().getUserData().equals(evt.getRequestId())) {
+			TestResultEvent oldEvent = (TestResultEvent) item.getValue().getUserData();
+			if (oldEvent.getRequestId().equals(evt.getRequestId())) {
 				item.setValue(treeItem);
 				updated = true;
 				break;
@@ -81,6 +92,16 @@ public class TestResponseAspectEditor implements ResponseAspectEditor {
 		if (!updated) {
 			resultList.add(new TreeItem<>(treeItem));
 		}
+	}
+
+
+	private void onResultSelected(TestResultEvent resultEvent) {
+		resultDetails.getChildren().clear();
+		resultDetails.add(new Label("Test Results: " + resultEvent.getRequestName()));
+		resultDetails.add(new Label("Outcome: " + resultEvent.getResultState()));
+		resultEvent.getDetails()
+				.forEach((key, val) -> resultDetails.add(new Label(key + ": " + val)));
+
 	}
 
 	@Override
@@ -102,8 +123,9 @@ public class TestResponseAspectEditor implements ResponseAspectEditor {
 			splitPane.setDividerPositions(0.2);
 
 			splitPane.getItems().add(controller.resultView);
-			splitPane.getItems().add(hbox());
 
+			controller.resultDetails = vbox();
+			splitPane.getItems().add(controller.resultDetails);
 
 			setContent(splitPane);
 		}

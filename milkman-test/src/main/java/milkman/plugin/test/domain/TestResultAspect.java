@@ -7,6 +7,8 @@ import lombok.Value;
 import milkman.domain.ResponseAspect;
 import reactor.core.publisher.Flux;
 
+import java.util.Map;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,6 +32,7 @@ public class TestResultAspect implements ResponseAspect {
 		String requestId;
 		String requestName;
 		TestResultState resultState;
+		Map<String, String> details;
 	}
 
 

@@ -1,13 +1,11 @@
 package milkman.plugin.test.editor;
 
 import com.jfoenix.controls.JFXTreeView;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TreeItem;
+import javafx.scene.control.*;
 import javafx.scene.input.TransferMode;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
@@ -18,20 +16,19 @@ import milkman.ui.plugin.RequestExecutorAware;
 import milkman.utils.javafx.MappedList;
 import milkman.utils.javafx.SettableTreeItem;
 
-import static milkman.utils.fxml.FxmlBuilder.HboxExt;
-import static milkman.utils.fxml.FxmlBuilder.hbox;
+import static milkman.utils.fxml.FxmlBuilder.*;
 import static milkman.utils.javafx.DndUtil.JAVA_FORMAT;
 import static milkman.utils.javafx.DndUtil.deserialize;
 
 @Slf4j
 public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAware {
 
-
 	JFXTreeView<Node> requestSequence;
 	private SettableTreeItem<Node> root;
-	private ObservableList<String> requests;
+	private ObservableList<TestAspect.TestDetails> requests;
 	private ObservableList<TreeItem<Node>> mappedRequests;
 	private PluginRequestExecutor requestExecutor;
+	private VboxExt requestDetails;
 
 
 	@Override
@@ -41,9 +38,9 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 
 
 		requests = FXCollections.observableList(testAspect.getRequests());
-		mappedRequests = new MappedList<>(requests, id -> {
+		mappedRequests = new MappedList<>(requests, reqDetails -> {
 			var treeItem = new SettableTreeItem<Node>();
-			treeItem.setValue(requestIdToNode(id));
+			treeItem.setValue(requestDetailsToNode(reqDetails));
 			return treeItem;
 		});
 
@@ -51,8 +48,19 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 		root.setChildren(mappedRequests);
 
 
+
 		var editor = new TestAspectEditorFxml(this);
+
+
 		setupDnD(requestSequence, testAspect);
+		requestSequence.getSelectionModel().selectedIndexProperty().addListener((obs, old, newValue) -> {
+			if (newValue != null && !newValue.equals(old)){
+				var testDetails = requests.get(newValue.intValue());
+				requestExecutor.getDetails(testDetails.getId())
+						.ifPresent(reqContainer -> this.onRequestSelected(reqContainer, testDetails));
+			}
+		});
+
 
 		if (requests.size() > 0){
 			//we have to do this in order for the component to refresh, otherwise, an empty treeView is rendered
@@ -62,6 +70,7 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 
 		return editor;
 	}
+
 
 	private void setupDnD(JFXTreeView<Node> target, TestAspect testAspect) {
 		target.setOnDragOver( e -> {
@@ -77,7 +86,7 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 					&& e.getDragboard().hasContent(JAVA_FORMAT)) {
 				try {
 					var content = deserialize((String) e.getDragboard().getContent(JAVA_FORMAT), RequestContainer.class);
-					requests.add(content.getId());
+					requests.add(new TestAspect.TestDetails(content.getId(), false));
 					testAspect.setDirty(true);
 					e.setDropCompleted(true);
 				} catch (Exception ex) {
@@ -89,8 +98,8 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 		});
 	}
 
-	private HboxExt requestIdToNode(String requestId) {
-		var requestName = requestExecutor.getDetails(requestId).get().getName();
+	private HboxExt requestDetailsToNode(TestAspect.TestDetails requestDetails) {
+		var requestName = requestExecutor.getDetails(requestDetails.getId()).get().getName();
 		return hbox(new Label(requestName));
 	}
 
@@ -104,6 +113,45 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 		this.requestExecutor = executor;
 	}
 
+
+	private void onRequestSelected(RequestContainer requestContainer, TestAspect.TestDetails details) {
+		requestDetails.getChildren().clear();
+		requestDetails.add(new Label(requestContainer.getName()));
+
+		var cbSkip = new CheckBox("skip test");
+		cbSkip.setSelected(details.isSkip());
+		cbSkip.selectedProperty().addListener((obs, o, n) -> {
+			if (n != null) {
+				details.setSkip(n);
+			}
+		});
+		requestDetails.add(cbSkip);
+	}
+
+	private void moveUp() {
+		var selectedIndex = requestSequence.getSelectionModel().getSelectedIndex();
+		if (selectedIndex > 0) {
+			requests.add(selectedIndex-1, requests.remove(selectedIndex));
+			requestSequence.getSelectionModel().select(selectedIndex-1);
+		}
+	}
+
+	private void moveDown() {
+		var selectedIndex = requestSequence.getSelectionModel().getSelectedIndex();
+		if (selectedIndex >= 0 && selectedIndex < requests.size()-1) {
+			requests.add(selectedIndex+1, requests.remove(selectedIndex));
+			requestSequence.getSelectionModel().select(selectedIndex+1);
+		}
+	}
+
+	private void delete() {
+		var selectedIndex = requestSequence.getSelectionModel().getSelectedIndex();
+		if (selectedIndex >= 0) {
+			requests.remove(selectedIndex);
+		}
+	}
+
+
 	public static class TestAspectEditorFxml extends Tab {
 		private final TestAspectEditor controller;
 
@@ -116,18 +164,21 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 			controller.requestSequence.setRoot(controller.root);
 
 			var splitPane = new SplitPane();
-			splitPane.setDividerPositions(0.2);
+			splitPane.setDividerPositions(0.3);
 
-			splitPane.getItems().add(controller.requestSequence);
-			splitPane.getItems().add(hbox());
+			var requestControls = vbox("testrequest-controls");
 
+			requestControls.add(button("testrequest-up", icon(FontAwesomeIcon.CHEVRON_UP), controller::moveUp));
+			requestControls.add(button("testrequest-down", icon(FontAwesomeIcon.CHEVRON_DOWN), controller::moveDown));
+			requestControls.add(button("testrequest-down", icon(FontAwesomeIcon.TRASH), controller::delete));
+			splitPane.getItems().add(hbox(controller.requestSequence, requestControls));
+
+			controller.requestDetails = vbox();
+			splitPane.getItems().add(controller.requestDetails);
 
 			setContent(splitPane);
 		}
 	}
-
-
-
 
 
 }

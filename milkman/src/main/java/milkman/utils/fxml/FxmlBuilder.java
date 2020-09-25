@@ -131,6 +131,13 @@ public class FxmlBuilder {
 		vbox.setId(id);
 		return vbox;
 	}
+
+	public static VboxExt vbox(Node... elements) {
+		VboxExt vBox = new VboxExt();
+		vBox.getChildren().addAll(elements);
+		return vBox;
+	}
+
 	public static <T extends Node> T anchorNode(T node, Double top, Double right, Double bottom, Double left) {
 		AnchorPane.setTopAnchor(node, top);
 		AnchorPane.setRightAnchor(node, right);

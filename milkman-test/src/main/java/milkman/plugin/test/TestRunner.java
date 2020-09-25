@@ -19,6 +19,8 @@ import reactor.core.publisher.ReplayProcessor;
 import reactor.core.scheduler.Schedulers;
 import reactor.util.function.Tuple2;
 
+import java.util.Map;
+
 import static milkman.plugin.test.domain.TestResultAspect.TestResultState.*;
 
 @Slf4j
@@ -40,14 +42,15 @@ public class TestRunner {
 		Flux<TestResultEvent> replay = ReplayProcessor.create(sink -> {
 			Flux.fromIterable(testAspect.getRequests())
 					.index()
-					.flatMap(tuple -> Mono.justOrEmpty(executor.getDetails(tuple.getT2()).map(r -> tuple.mapT2(id -> r))))
-					.doOnNext(tuple -> sink.next(new TestResultEvent(tuple.getT1().toString(), tuple.getT2().getName(), STARTED)))
+					.filter(t -> !t.getT2().isSkip())
+					.flatMap(tuple -> Mono.justOrEmpty(executor.getDetails(tuple.getT2().getId()).map(r -> tuple.mapT2(id -> r))))
+					.doOnNext(tuple -> sink.next(new TestResultEvent(tuple.getT1().toString(), tuple.getT2().getName(), STARTED, Map.of())))
 					.flatMap(tuple -> execute(tuple, sink))
 //				.switchIfEmpty(Mono.defer(() -> {
 //					log.error("Request could not be found");
 //					return Mono.just(new TestResultEvent("", "", TestResultAspect.TestResultState.EXCEPTION));
 //				}))
-					.doOnComplete(() -> {
+					.doFinally(s -> {
 						asyncControl.triggerRequestSucceeded();
 						sink.complete();
 					})
@@ -62,9 +65,9 @@ public class TestRunner {
 
 	private Mono<Void> execute(Tuple2<Long, RequestContainer> request, FluxSink<TestResultEvent> replay) {
 		return Mono.defer(() -> Mono.just(executor.executeRequest(request.getT2())))
-				.map(res -> Mono.fromFuture(res.getStatusInformations()))
-				.doOnNext(si -> replay.next(new TestResultEvent(request.getT1().toString(), request.getT2().getName(), SUCCEEDED)))
-				.doOnError(t -> replay.next(new TestResultEvent(request.getT1().toString(), request.getT2().getName(), FAILED)))
+				.flatMap(res -> Mono.fromFuture(res.getStatusInformations()))
+				.doOnNext(si -> replay.next(new TestResultEvent(request.getT1().toString(), request.getT2().getName(), SUCCEEDED, si)))
+				.doOnError(t -> replay.next(new TestResultEvent(request.getT1().toString(), request.getT2().getName(), FAILED, Map.of("exception", t.toString()))))
 				.then();
 	}
 }
