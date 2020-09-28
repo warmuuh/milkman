@@ -100,7 +100,11 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 
 	private HboxExt requestDetailsToNode(TestAspect.TestDetails requestDetails) {
 		var requestName = requestExecutor.getDetails(requestDetails.getId()).get().getName();
-		return hbox(new Label(requestName));
+		var label = new Label(requestName);
+		if (requestDetails.isSkip()){
+			label.setStyle("-fx-text-fill: grey;");
+		}
+		return hbox(label);
 	}
 
 	@Override
@@ -174,6 +178,7 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 			splitPane.getItems().add(hbox(controller.requestSequence, requestControls));
 
 			controller.requestDetails = vbox();
+			controller.requestDetails.getStyleClass().add("generic-content-pane");
 			splitPane.getItems().add(controller.requestDetails);
 
 			setContent(splitPane);

@@ -46,7 +46,7 @@ public class TestRunner {
 					.flatMap(tuple -> Mono.justOrEmpty(executor.getDetails(tuple.getT2().getId()).map(r -> tuple.mapT2(id -> r))))
 					.doOnNext(tuple -> sink.next(new TestResultEvent(tuple.getT1().toString(), tuple.getT2().getName(), STARTED, Map.of())))
 					.flatMap(tuple -> execute(tuple, sink))
-					.onErrorContinue((err, voidVal) -> {/* silently skip errors, they where signaled already */})
+					.onErrorContinue(err -> !testAspect.isStopOnFirstFailure(), (err, obj) -> {/* silently skip errors, they where signaled already */})
 //				.switchIfEmpty(Mono.defer(() -> {
 //					log.error("Request could not be found");
 //					return Mono.just(new TestResultEvent("", "", TestResultAspect.TestResultState.EXCEPTION));

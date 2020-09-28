@@ -6,6 +6,7 @@ import milkman.domain.ResponseContainer;
 import milkman.plugin.test.domain.TestAspect;
 import milkman.plugin.test.domain.TestContainer;
 import milkman.plugin.test.editor.TestAspectEditor;
+import milkman.plugin.test.editor.TestAspectScenarioEditor;
 import milkman.plugin.test.editor.TestContainerEditor;
 import milkman.plugin.test.editor.TestResponseAspectEditor;
 import milkman.ui.plugin.*;
@@ -20,7 +21,7 @@ public class TestPlugin implements RequestAspectsPlugin, RequestTypePlugin, Requ
 
 	@Override
 	public List<RequestAspectEditor> getRequestTabs() {
-		return Collections.singletonList(new TestAspectEditor());
+		return List.of(new TestAspectScenarioEditor(), new TestAspectEditor());
 	}
 
 	@Override

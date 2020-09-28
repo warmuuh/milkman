@@ -11,7 +11,8 @@ import java.util.List;
 @Data
 public class TestAspect extends RequestAspect {
 	private List<TestDetails> requests = new LinkedList<>();
-	
+	private boolean stopOnFirstFailure = false;
+
 	public TestAspect() {
 		super("test");
 	}

@@ -125,6 +125,7 @@ public class TestResponseAspectEditor implements ResponseAspectEditor {
 			splitPane.getItems().add(controller.resultView);
 
 			controller.resultDetails = vbox();
+			controller.resultDetails.getStyleClass().add("generic-content-pane");
 			splitPane.getItems().add(controller.resultDetails);
 
 			setContent(splitPane);
