@@ -8,10 +8,13 @@ import milkman.domain.RequestAspect;
 import java.util.LinkedList;
 import java.util.List;
 
+import static milkman.domain.Environment.EnvironmentEntry;
+
 @Data
 public class TestAspect extends RequestAspect {
 	private List<TestDetails> requests = new LinkedList<>();
 	private boolean stopOnFirstFailure = false;
+	private List<EnvironmentEntry> environmentOverride = new LinkedList<>();
 
 	public TestAspect() {
 		super("test");

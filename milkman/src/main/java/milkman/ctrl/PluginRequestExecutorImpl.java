@@ -2,6 +2,7 @@ package milkman.ctrl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import milkman.domain.Environment;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 import milkman.ui.plugin.PluginRequestExecutor;
@@ -29,10 +30,12 @@ public class PluginRequestExecutorImpl implements PluginRequestExecutor {
 
 	@Override
 	@SneakyThrows
-	public ResponseContainer executeRequest(RequestContainer requestContainer) {
+	public ResponseContainer executeRequest(RequestContainer requestContainer, Optional<Environment> environmentOverride) {
 		RequestTypePlugin requestTypePlugin = requestTypeManager.getPluginFor(requestContainer);
 		var responseControl = new AsyncResponseControl();
-		var responseContainer = requestTypePlugin.executeRequestAsync(requestContainer, workspaceController.buildTemplater(), responseControl.getCancellationControl());
+		var templater = environmentOverride.map(workspaceController::buildTemplater)
+				.orElseGet(workspaceController::buildTemplater);
+		var responseContainer = requestTypePlugin.executeRequestAsync(requestContainer, templater, responseControl.getCancellationControl());
 		try{
 			throw responseControl.onRequestFailed.get();
 		} catch (InterruptedException|ExecutionException|CancellationException e) {

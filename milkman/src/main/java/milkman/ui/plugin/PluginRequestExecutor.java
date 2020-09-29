@@ -1,5 +1,6 @@
 package milkman.ui.plugin;
 
+import milkman.domain.Environment;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 
@@ -9,5 +10,5 @@ public interface PluginRequestExecutor {
 
 	Optional<RequestContainer> getDetails(String requestId);
 
-	ResponseContainer executeRequest(RequestContainer request);
+	ResponseContainer executeRequest(RequestContainer request, Optional<Environment> environmentOverride);
 }

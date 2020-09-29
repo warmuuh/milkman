@@ -2,6 +2,7 @@ package milkman.plugin.test;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import milkman.domain.Environment;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 import milkman.plugin.test.domain.TestAspect;
@@ -20,6 +21,7 @@ import reactor.core.scheduler.Schedulers;
 import reactor.util.function.Tuple2;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static milkman.plugin.test.domain.TestResultAspect.TestResultState.*;
 
@@ -45,7 +47,7 @@ public class TestRunner {
 					.filter(t -> !t.getT2().isSkip())
 					.flatMap(tuple -> Mono.justOrEmpty(executor.getDetails(tuple.getT2().getId()).map(r -> tuple.mapT2(id -> r))))
 					.doOnNext(tuple -> sink.next(new TestResultEvent(tuple.getT1().toString(), tuple.getT2().getName(), STARTED, Map.of())))
-					.flatMap(tuple -> execute(tuple, sink))
+					.flatMap(tuple -> execute(tuple, getOverrideEnvironment(testAspect), sink))
 					.onErrorContinue(err -> !testAspect.isStopOnFirstFailure(), (err, obj) -> {/* silently skip errors, they where signaled already */})
 //				.switchIfEmpty(Mono.defer(() -> {
 //					log.error("Request could not be found");
@@ -64,8 +66,16 @@ public class TestRunner {
 		return container;
 	}
 
-	private Mono<Void> execute(Tuple2<Long, RequestContainer> request, FluxSink<TestResultEvent> replay) {
-		return Mono.defer(() -> Mono.just(executor.executeRequest(request.getT2())))
+
+	private Environment getOverrideEnvironment(TestAspect testAspect){
+		var environment = new Environment("override");
+		environment.setActive(true);
+		testAspect.getEnvironmentOverride().forEach(entry -> environment.setOrAdd(entry.getName(), entry.getValue()));
+		return environment;
+	}
+
+	private Mono<Void> execute(Tuple2<Long, RequestContainer> request, Environment overrideEnv, FluxSink<TestResultEvent> replay) {
+		return Mono.defer(() -> Mono.just(executor.executeRequest(request.getT2(), Optional.of(overrideEnv))))
 				.flatMap(res -> Mono.fromFuture(res.getStatusInformations()))
 				.doOnNext(si -> replay.next(new TestResultEvent(request.getT1().toString(), request.getT2().getName(), SUCCEEDED, si)))
 				.doOnError(t -> replay.next(new TestResultEvent(request.getT1().toString(), request.getT2().getName(), FAILED, Map.of("exception", t.toString()))))

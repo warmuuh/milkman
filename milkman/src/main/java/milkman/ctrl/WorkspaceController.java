@@ -214,6 +214,16 @@ public class WorkspaceController {
 		return new EnvironmentTemplater(activeEnv, globalEnvs, new PrefixedTemplaterResolver(plugins.loadTemplaterPlugins()));
 	}
 
+	public Templater buildTemplater(Environment overrideEnv) {
+		Optional<Environment> activeEnv = activeWorkspace.getEnvironments().stream().filter(e -> e.isActive()).findAny();
+		List<Environment> globalEnvs = activeWorkspace.getEnvironments().stream().filter(e -> e.isGlobal()).collect(Collectors.toList());
+
+		List<Environment> allEnvs = new LinkedList<>(activeEnv.stream().collect(Collectors.toList()));
+		allEnvs.addAll(globalEnvs);
+
+		return new EnvironmentTemplater(Optional.of(overrideEnv), allEnvs, new PrefixedTemplaterResolver(plugins.loadTemplaterPlugins()));
+	}
+
 	private VariableResolver buildResolver() {
 		Optional<Environment> activeEnv = activeWorkspace.getEnvironments().stream().filter(e -> e.isActive()).findAny();
 		List<Environment> globalEnvs = activeWorkspace.getEnvironments().stream().filter(e -> e.isGlobal()).collect(Collectors.toList());
