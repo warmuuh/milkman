@@ -59,24 +59,23 @@ public class GraaljsExecutor implements ScriptExecutor {
                 ctx.eval(Source.create("js", "var global = {};"));
                 preloadScriptCache.values().forEach(ctx::eval);
                 Value js = ctx.eval(Source.create("js", "with(global){" + source + "}"));
-                return new ExecutionResult(logStream.toString(), Optional.ofNullable(js.toString()));
+                return new ExecutionResult(logStream.toString(), Optional.ofNullable(js.toString()), Optional.empty());
             } catch (PolyglotException e) {
                 String causemessage = ExceptionUtils.getRootCauseMessage(e);
                 //we cant access actual exception in js, so we need to do this to have a bit shorter exception
-                var failedDueToIdx = causemessage.indexOf("failed due to:");
-                if (failedDueToIdx > 0){
-                    causemessage = causemessage.substring(failedDueToIdx);
-                }
-                toaster.showToast("Failed to execute script: " + causemessage);
+//                var failedDueToIdx = causemessage.indexOf("failed due to:");
+//                if (failedDueToIdx > 0){
+//                    causemessage = causemessage.substring(failedDueToIdx);
+//                }
+//                toaster.showToast("Failed to execute script: " + causemessage);
                 log.error("failed to execute script", e);
+                return new ExecutionResult(logStream.toString(), Optional.empty(), Optional.of(e));
             } catch (Exception e) {
                 String causeMessage = ExceptionUtils.getRootCauseMessage(e);
-                toaster.showToast("Failed to execute script: " + causeMessage);
                 log.error("failed to execute script", e);
+                return new ExecutionResult(logStream.toString(), Optional.empty(), Optional.of(e));
             }
         }
-
-        return new ExecutionResult(logStream.toString(), Optional.empty());
     }
 
     private void updatePreloadCache() throws URISyntaxException, IOException {

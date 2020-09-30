@@ -179,7 +179,11 @@ public class WorkspaceController {
 		executor = new RequestExecutor(request, plugin, buildTemplater(), command);
 
 		RequestExecutionContext context = getExecutionCtx();
-		plugins.loadRequestAspectPlugins().forEach(a -> a.beforeRequestExecution(request, context));
+		try {
+			plugins.loadRequestAspectPlugins().forEach(a -> a.beforeRequestExecution(request, context));
+		} catch (Throwable t) {
+			toaster.showToast("Failed to run pre hook: " + t);
+		}
 
 		long startTime = System.currentTimeMillis();
 		executor.setOnScheduled(e -> activeWorkspace.getEnqueuedRequestIds().put(request.getId(), executor));
@@ -198,7 +202,11 @@ public class WorkspaceController {
 		executor.setOnSucceeded(e -> {
 			var asyncCtrl = executor.getValue();
 			activeWorkspace.getEnqueuedRequestIds().remove(request.getId());
-			plugins.loadRequestAspectPlugins().forEach(a -> a.initializeResponseAspects(request, asyncCtrl.getResponse(), context));
+			try {
+				plugins.loadRequestAspectPlugins().forEach(a -> a.initializeResponseAspects(request, asyncCtrl.getResponse(), context));
+			} catch (Throwable ex) {
+				toaster.showToast("Failed to run post hook: " + ex);
+			}
 			activeWorkspace.getCachedResponses().put(request.getId(), asyncCtrl);
 			log.info("Received response");
 			workingAreaView.displayResponseFor(request, asyncCtrl);

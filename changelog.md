@@ -7,10 +7,11 @@
 
 # Changelog
 
-version 4.7.0 - upcomming
+version 5.0.0 - upcoming
   * included [cassandra plugin](/milkman-cassandra) and [Grpc plugin](/milkman-grpc) into macos app bundle
   * reordered toolbar-actions
   * added image-preview for responses
+  * added new plugin [testing plugin](/milkman-test) for running test suites
   
 version 4.6.0
   * added option to disable ui animations

@@ -1,7 +1,6 @@
 package milkman.plugin.scripting.nashorn;
 
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
 import milkman.domain.RequestExecutionContext;
@@ -58,13 +57,11 @@ public class NashornExecutor implements ScriptExecutor {
 
         try {
             Object eval = engine.eval(source);
-            return new ExecutionResult(logStream.toString(), Optional.ofNullable(eval));
+            return new ExecutionResult(logStream.toString(), Optional.ofNullable(eval), Optional.empty());
         } catch (Exception e) {
-            String causeMessage = ExceptionUtils.getRootCauseMessage(e);
-            toaster.showToast("Failed to execute script: " + causeMessage);
             log.error("failed to execute script", e);
+            return new ExecutionResult(logStream.toString(), Optional.empty(), Optional.of(e));
         }
-        return new ExecutionResult(logStream.toString(), Optional.empty());
     }
 
 

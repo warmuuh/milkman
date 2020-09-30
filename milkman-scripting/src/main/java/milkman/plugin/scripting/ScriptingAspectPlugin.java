@@ -1,10 +1,10 @@
 package milkman.plugin.scripting;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
 import milkman.domain.RequestExecutionContext;
 import milkman.domain.ResponseContainer;
-import milkman.plugin.scripting.graaljs.GraaljsExecutor;
 import milkman.plugin.scripting.nashorn.NashornExecutor;
 import milkman.ui.main.Toaster;
 import milkman.ui.plugin.*;
@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 public class ScriptingAspectPlugin implements RequestAspectsPlugin, ToasterAware, LifecycleAware {
@@ -41,20 +42,26 @@ public class ScriptingAspectPlugin implements RequestAspectsPlugin, ToasterAware
 	}
 
 	@Override
+	@SneakyThrows
 	public void beforeRequestExecution(RequestContainer request, RequestExecutionContext context) {
-		request.getAspect(ScriptingAspect.class).ifPresent(a -> {
-			var log = executeScript(a.getPreRequestScript(), request, null, context);
-			a.setPreScriptOutput(log);
-		});
+		var a = request.getAspect(ScriptingAspect.class).orElseThrow(() -> new IllegalArgumentException("script aspect not found"));
+		var result = executeScript(a.getPreRequestScript(), request, null, context);
+		a.setPreScriptOutput(result.getConsoleOutput());
+		if (result.getError().isPresent()){
+			throw result.getError().get();
+		}
 	}
 
 
 	@Override
+	@SneakyThrows
 	public void initializeResponseAspects(RequestContainer request, ResponseContainer response, RequestExecutionContext context) {
-		request.getAspect(ScriptingAspect.class).ifPresent(a -> {
-			var log = executeScript(a.getPostRequestScript(), request, response, context);
-			response.getAspects().add(new ScriptingOutputAspect(a.getPreScriptOutput(), log));
-		});
+		var a = request.getAspect(ScriptingAspect.class).orElseThrow(() -> new IllegalArgumentException("script aspect not found"));
+		var result = executeScript(a.getPostRequestScript(), request, response, context);
+		response.getAspects().add(new ScriptingOutputAspect(a.getPreScriptOutput(), result.getConsoleOutput()));
+		if (result.getError().isPresent()){
+			throw result.getError().get();
+		}
 	}
 
 
@@ -69,17 +76,17 @@ public class ScriptingAspectPlugin implements RequestAspectsPlugin, ToasterAware
 	}
 
 
-	private String executeScript(String source, RequestContainer request, ResponseContainer response, RequestExecutionContext context) {
+	private ScriptExecutor.ExecutionResult executeScript(String source, RequestContainer request, ResponseContainer response, RequestExecutionContext context) {
 		try{
 			if (StringUtils.isNotBlank(source)){
 				ScriptExecutor.ExecutionResult executionResult = executor.executeScript(source, request, response, context);
-				return executionResult.getConsoleOutput();
+				return executionResult;
 			}
+			return new ScriptExecutor.ExecutionResult("", Optional.empty(), Optional.empty());
 		} catch (Throwable t){
-			t.printStackTrace();
 			toaster.showToast("Failed to execute script: " + t.getMessage());
+			throw t;
 		}
-		return "";
 	}
 
 	@Override
