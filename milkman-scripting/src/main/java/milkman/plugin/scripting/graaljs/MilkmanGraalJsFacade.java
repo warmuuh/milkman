@@ -6,9 +6,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import milkman.domain.*;
 import milkman.ui.main.Toaster;
-import org.graalvm.polyglot.HostAccess;
 import org.graalvm.polyglot.Value;
-import org.graalvm.polyglot.proxy.Proxy;
 import org.graalvm.polyglot.proxy.ProxyObject;
 
 import java.util.Map;
@@ -22,12 +20,14 @@ public class MilkmanGraalJsFacade {
 	private final MilkmanRequestFacade request;
 	private final MilkmanResponseFacade response;
 	private final Optional<Environment> activeEnv;
+	private RequestExecutionContext context;
 	private final Toaster toaster;
 
 	public MilkmanGraalJsFacade(RequestContainer request, ResponseContainer response, RequestExecutionContext context, Toaster toaster) {
 		this.response = response != null ? new MilkmanResponseFacade(response) : null;
 		this.request = request != null ? new MilkmanRequestFacade(request) : null;
 		activeEnv = context.getActiveEnvironment();
+		this.context = context;
 		this.toaster = toaster;
 	}
 
@@ -37,6 +37,10 @@ public class MilkmanGraalJsFacade {
 	
 	public void setEnvironmentVariable(String varName, String varValue) {
 		activeEnv.ifPresent(e -> e.setOrAdd(varName, varValue));
+	}
+
+	public String getEnvironmentVariable(String varName) {
+		return context.lookupValue(varName).orElse(null);
 	}
 
 	@RequiredArgsConstructor

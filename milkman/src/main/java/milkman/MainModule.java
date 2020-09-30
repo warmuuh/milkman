@@ -1,12 +1,11 @@
 package milkman;
 
-import java.util.Collections;
-import java.util.stream.Collectors;
-
 import milkman.ui.components.AutoCompleter;
 import milkman.ui.main.ActiveEnvironmentProvider;
 import milkman.ui.plugin.UiPluginManager;
 import wrm.hardwire.Module;
+
+import java.util.stream.Collectors;
 
 @Module
 public class MainModule extends MainModuleBase {
@@ -28,7 +27,9 @@ public class MainModule extends MainModuleBase {
 
 	@Override
 	protected UiPluginManager createUiPluginManager() {
-		return new UiPluginManager(createAutoCompleter(), createActiveEnvironmentProvider(), () -> getToaster());
+		return new UiPluginManager(createAutoCompleter(), createActiveEnvironmentProvider(),
+				() -> getToaster(),
+				() -> getPluginRequestExecutorImpl());
 	}
 
 	

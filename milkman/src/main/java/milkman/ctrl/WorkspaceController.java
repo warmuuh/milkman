@@ -169,13 +169,21 @@ public class WorkspaceController {
 	public void executeRequest(RequestContainer request, Optional<CustomCommand> command) {
 		workingAreaView.clearResponse();
 		activeWorkspace.getCachedResponses().remove(request.getId());
+		workingAreaView.showSpinner(() -> executor.cancel());
+
+		scheduleRequestExecution(request, command);
+	}
+
+	public void scheduleRequestExecution(RequestContainer request, Optional<CustomCommand> command) {
 		RequestTypePlugin plugin = requestTypeManager.getPluginFor(request);
 		executor = new RequestExecutor(request, plugin, buildTemplater(), command);
-		
-		workingAreaView.showSpinner(() -> executor.cancel());
-		
-		RequestExecutionContext context = new RequestExecutionContext(activeWorkspace.getEnvironments().stream().filter(e -> e.isActive()).findAny());
-		plugins.loadRequestAspectPlugins().forEach(a -> a.beforeRequestExecution(request, context));
+
+		RequestExecutionContext context = getExecutionCtx();
+		try {
+			plugins.loadRequestAspectPlugins().forEach(a -> a.beforeRequestExecution(request, context));
+		} catch (Throwable t) {
+			toaster.showToast("Failed to run pre hook: " + t);
+		}
 
 		long startTime = System.currentTimeMillis();
 		executor.setOnScheduled(e -> activeWorkspace.getEnqueuedRequestIds().put(request.getId(), executor));
@@ -184,7 +192,7 @@ public class WorkspaceController {
 			activeWorkspace.getEnqueuedRequestIds().remove(request.getId());
 			executor = null;
 		});
-		
+
 		executor.setOnFailed(e -> {
 			workingAreaView.hideSpinner();
 			activeWorkspace.getEnqueuedRequestIds().remove(request.getId());
@@ -194,20 +202,40 @@ public class WorkspaceController {
 		executor.setOnSucceeded(e -> {
 			var asyncCtrl = executor.getValue();
 			activeWorkspace.getEnqueuedRequestIds().remove(request.getId());
-			plugins.loadRequestAspectPlugins().forEach(a -> a.initializeResponseAspects(request, asyncCtrl.getResponse(), context));
+			try {
+				plugins.loadRequestAspectPlugins().forEach(a -> a.initializeResponseAspects(request, asyncCtrl.getResponse(), context));
+			} catch (Throwable ex) {
+				toaster.showToast("Failed to run post hook: " + ex);
+			}
 			activeWorkspace.getCachedResponses().put(request.getId(), asyncCtrl);
 			log.info("Received response");
-			workingAreaView.displayResponseFor(request, asyncCtrl);	
+			workingAreaView.displayResponseFor(request, asyncCtrl);
 			executor = null;
 		});
-		
+
 		executor.start();
 	}
 
-	private Templater buildTemplater() {
+	private RequestExecutionContext getExecutionCtx() {
+		var activeEnv = activeWorkspace.getEnvironments().stream().filter(e -> e.isActive()).findAny();
+		var globalEnvs = new LinkedList<>(activeWorkspace.getEnvironments().stream().filter(e -> e.isGlobal()).collect(Collectors.toList()));
+		return new RequestExecutionContext(activeEnv, globalEnvs);
+	}
+
+	public Templater buildTemplater() {
 		Optional<Environment> activeEnv = activeWorkspace.getEnvironments().stream().filter(e -> e.isActive()).findAny();
 		List<Environment> globalEnvs = activeWorkspace.getEnvironments().stream().filter(e -> e.isGlobal()).collect(Collectors.toList());
 		return new EnvironmentTemplater(activeEnv, globalEnvs, new PrefixedTemplaterResolver(plugins.loadTemplaterPlugins()));
+	}
+
+	public Templater buildTemplater(Environment overrideEnv) {
+		Optional<Environment> activeEnv = activeWorkspace.getEnvironments().stream().filter(e -> e.isActive()).findAny();
+		List<Environment> globalEnvs = activeWorkspace.getEnvironments().stream().filter(e -> e.isGlobal()).collect(Collectors.toList());
+
+		List<Environment> allEnvs = new LinkedList<>(activeEnv.stream().collect(Collectors.toList()));
+		allEnvs.addAll(globalEnvs);
+
+		return new EnvironmentTemplater(Optional.of(overrideEnv), allEnvs, new PrefixedTemplaterResolver(plugins.loadTemplaterPlugins()));
 	}
 
 	private VariableResolver buildResolver() {
@@ -580,7 +608,14 @@ public class WorkspaceController {
 	}
 
 	
-	
+
+	public Optional<RequestContainer> findRequestById(String id) {
+		return activeWorkspace.getCollections().stream()
+				.flatMap(c -> c.getRequests().stream())
+				.filter(r -> r.getId().equals(id))
+				.findFirst();
+	}
+
 
 	@PostConstruct
 	public void setup() {

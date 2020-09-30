@@ -4,7 +4,6 @@ import lombok.Value;
 import milkman.domain.RequestContainer;
 import milkman.domain.RequestExecutionContext;
 import milkman.domain.ResponseContainer;
-import reactor.util.annotation.Nullable;
 
 import java.util.Optional;
 
@@ -25,5 +24,6 @@ public interface ScriptExecutor {
     class ExecutionResult {
         String consoleOutput;
         Optional<Object> result;
+        Optional<Throwable> error;
     }
 }
