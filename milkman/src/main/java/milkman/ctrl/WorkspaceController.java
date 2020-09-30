@@ -178,7 +178,7 @@ public class WorkspaceController {
 		RequestTypePlugin plugin = requestTypeManager.getPluginFor(request);
 		executor = new RequestExecutor(request, plugin, buildTemplater(), command);
 
-		RequestExecutionContext context = new RequestExecutionContext(activeWorkspace.getEnvironments().stream().filter(e -> e.isActive()).findAny());
+		RequestExecutionContext context = getExecutionCtx();
 		plugins.loadRequestAspectPlugins().forEach(a -> a.beforeRequestExecution(request, context));
 
 		long startTime = System.currentTimeMillis();
@@ -206,6 +206,12 @@ public class WorkspaceController {
 		});
 
 		executor.start();
+	}
+
+	private RequestExecutionContext getExecutionCtx() {
+		var activeEnv = activeWorkspace.getEnvironments().stream().filter(e -> e.isActive()).findAny();
+		var globalEnvs = new LinkedList<>(activeWorkspace.getEnvironments().stream().filter(e -> e.isGlobal()).collect(Collectors.toList()));
+		return new RequestExecutionContext(activeEnv, globalEnvs);
 	}
 
 	public Templater buildTemplater() {

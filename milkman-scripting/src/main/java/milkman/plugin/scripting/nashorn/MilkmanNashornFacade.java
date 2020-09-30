@@ -17,12 +17,14 @@ public class MilkmanNashornFacade {
 	private final MilkmanRequestFacade request;
 	private final MilkmanResponseFacade response;
 	private final Optional<Environment> activeEnv;
+	private RequestExecutionContext context;
 	private final Toaster toaster;
 
 	public MilkmanNashornFacade(RequestContainer request, ResponseContainer response, RequestExecutionContext context, Toaster toaster) {
 		this.response = response != null ? new MilkmanResponseFacade(response) : null;
 		this.request = request != null ? new MilkmanRequestFacade(request) : null;
 		activeEnv = context.getActiveEnvironment();
+		this.context = context;
 		this.toaster = toaster;
 	}
 
@@ -34,6 +36,9 @@ public class MilkmanNashornFacade {
 		activeEnv.ifPresent(e -> e.setOrAdd(varName, varValue));
 	}
 
+	public String getEnvironmentVariable(String varName) {
+		return context.lookupValue(varName).orElse(null);
+	}
 
 	@RequiredArgsConstructor
 	public static class MilkmanResponseFacade extends jdk.nashorn.api.scripting.AbstractJSObject {

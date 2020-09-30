@@ -3,7 +3,6 @@ package milkman.plugin.scripting.nashorn;
 import milkman.domain.RequestExecutionContext;
 import milkman.plugin.scripting.ScriptOptionsProvider;
 import milkman.ui.main.Toaster;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -11,10 +10,8 @@ import javax.script.*;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ScheduledExecutorService;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class NashornExecutorTest {
@@ -22,8 +19,8 @@ class NashornExecutorTest {
     @Test @Disabled("no solution yet")
     void shouldUseGlobalScope(){
         NashornExecutor executor = new NashornExecutor(mock(Toaster.class));
-        String out1 = executor.executeScript("console.log(testVar); var testVar = 'testValue';", null, null, new RequestExecutionContext(Optional.empty())).getConsoleOutput();
-        String out2 = executor.executeScript("console.log(testVar); var testVar = 'testValue';", null, null, new RequestExecutionContext(Optional.empty())).getConsoleOutput();
+        String out1 = executor.executeScript("console.log(testVar); var testVar = 'testValue';", null, null, new RequestExecutionContext(Optional.empty(), List.of())).getConsoleOutput();
+        String out2 = executor.executeScript("console.log(testVar); var testVar = 'testValue';", null, null, new RequestExecutionContext(Optional.empty(), List.of())).getConsoleOutput();
 
         assertThat(out1.trim()).isEqualTo("undefined");
         assertThat(out2.trim()).isEqualTo("undefined");
@@ -35,7 +32,7 @@ class NashornExecutorTest {
         Toaster mock = mock(Toaster.class);
         NashornExecutor executor = new NashornExecutor(mock);
 
-        executor.executeScript("chai.should(); ''.should.be.a('string')", null, null, new RequestExecutionContext(Optional.empty()));
+        executor.executeScript("chai.should(); ''.should.be.a('string')", null, null, new RequestExecutionContext(Optional.empty(), List.of()));
 
         verify(mock, never()).showToast(anyString());
     }
@@ -46,7 +43,7 @@ class NashornExecutorTest {
         Toaster mock = mock(Toaster.class);
         NashornExecutor executor = new NashornExecutor(mock);
 
-        String out = executor.executeScript("var x = {}; x.test('hello');", null, null, new RequestExecutionContext(Optional.empty())).getConsoleOutput();
+        String out = executor.executeScript("var x = {}; x.test('hello');", null, null, new RequestExecutionContext(Optional.empty(), List.of())).getConsoleOutput();
 
         verify(mock, never()).showToast(anyString());
         assertThat(out.trim()).isEqualTo("hello");
