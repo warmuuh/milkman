@@ -76,6 +76,9 @@ Adds capability to share requests via [PrivateBin](http://PrivateBin.net), inclu
 ### [Note Plugin](/milkman-note):
 This is a sample plugin that allows to add arbitrary description to every request. Serves as a starting point for learning to extend milkman.
 
+### [Test Plugin](/milkman-test)
+A testrunner plugin that allows to run multiple requests in sequence and verify the results
+
 # Showcase
 
 ![Milkman White](img/screenshot.png)
