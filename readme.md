@@ -33,6 +33,7 @@ latest changes can be seen in the [Changelog](changelog.md)
  * **Everything is a plugin:** Request-types (e.g. Http Request), request-aspects (e.g. Headers, Body, etc), editors for request aspects (e.g. table-based editors for headers), importers, whatever it is, you can extend it. The core application only handles Workspaces with Environments, Collections, Requests and their aspects.
  * **Http Request Plugin:** Several plugins are provided already that extend the core application to be a replacement for postman. Crafting and Executing Http/Rest requests with json highlighting. Support Proxy-server configuration and SSE.
  * **Grpc Plugin:** support of Grpc Services, Server Reflection and Streaming
+ * **Test Runner:** run several requests as separate test-scenario
  * **JavaFX Application:** as in: *fast* (compared to electron at least :D) and skinn-able (you can extend milkman with your own themes using simple CSS).
  * **Commandline Interface:** there is a [command line interface](/milkman-cli) for Milkman which allows to edit/execute requests on your command line.
  * **Slack Command:** you can use `/milkman <privatebin-url>` in slack to share requests in a better way. [More Info](docs/slack-integration.md).
