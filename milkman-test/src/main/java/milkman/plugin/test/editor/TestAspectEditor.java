@@ -10,6 +10,7 @@ import javafx.scene.input.TransferMode;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
 import milkman.plugin.test.domain.TestAspect;
+import milkman.plugin.test.domain.TestAspect.TestDetails;
 import milkman.ui.plugin.PluginRequestExecutor;
 import milkman.ui.plugin.RequestAspectEditor;
 import milkman.ui.plugin.RequestExecutorAware;
@@ -25,7 +26,7 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 
 	JFXTreeView<Node> requestSequence;
 	private SettableTreeItem<Node> root;
-	private ObservableList<TestAspect.TestDetails> requests;
+	private ObservableList<TestDetails> requests;
 	private ObservableList<TreeItem<Node>> mappedRequests;
 	private PluginRequestExecutor requestExecutor;
 	private VboxExt requestDetails;
@@ -57,7 +58,7 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 			if (newValue != null && !newValue.equals(old)){
 				var testDetails = requests.get(newValue.intValue());
 				requestExecutor.getDetails(testDetails.getId())
-						.ifPresent(reqContainer -> this.onRequestSelected(reqContainer, testDetails));
+						.ifPresent(reqContainer -> onRequestSelected(reqContainer, testDetails));
 			}
 		});
 
@@ -86,7 +87,7 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 					&& e.getDragboard().hasContent(JAVA_FORMAT)) {
 				try {
 					var content = deserialize((String) e.getDragboard().getContent(JAVA_FORMAT), RequestContainer.class);
-					requests.add(new TestAspect.TestDetails(content.getId(), false));
+					requests.add(new TestDetails(content.getId(), false));
 					testAspect.setDirty(true);
 					e.setDropCompleted(true);
 				} catch (Exception ex) {
@@ -98,7 +99,7 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 		});
 	}
 
-	private HboxExt requestDetailsToNode(TestAspect.TestDetails requestDetails) {
+	private HboxExt requestDetailsToNode(TestDetails requestDetails) {
 		var requestName = requestExecutor.getDetails(requestDetails.getId()).get().getName();
 		var label = new Label(requestName);
 		if (requestDetails.isSkip()){
@@ -118,7 +119,7 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 	}
 
 
-	private void onRequestSelected(RequestContainer requestContainer, TestAspect.TestDetails details) {
+	private void onRequestSelected(RequestContainer requestContainer, TestDetails details) {
 		requestDetails.getChildren().clear();
 		requestDetails.add(new Label(requestContainer.getName()));
 
@@ -175,7 +176,10 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 			requestControls.add(button("testrequest-up", icon(FontAwesomeIcon.CHEVRON_UP), controller::moveUp));
 			requestControls.add(button("testrequest-down", icon(FontAwesomeIcon.CHEVRON_DOWN), controller::moveDown));
 			requestControls.add(button("testrequest-down", icon(FontAwesomeIcon.TRASH), controller::delete));
-			splitPane.getItems().add(hbox(controller.requestSequence, requestControls));
+			var hbox = hbox();
+			hbox.add(controller.requestSequence, true);
+			hbox.add(requestControls);
+			splitPane.getItems().add(hbox);
 
 			controller.requestDetails = vbox();
 			controller.requestDetails.getStyleClass().add("generic-content-pane");
