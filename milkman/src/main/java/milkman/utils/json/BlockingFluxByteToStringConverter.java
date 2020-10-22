@@ -4,12 +4,15 @@ import com.fasterxml.jackson.databind.util.StdConverter;
 import milkman.utils.BinaryUtil;
 import reactor.core.publisher.Flux;
 
-public class BlockingFluxToByteConverter extends StdConverter<Flux<byte[]>, byte[]> {
+import java.nio.charset.StandardCharsets;
+
+public class BlockingFluxByteToStringConverter extends StdConverter<Flux<byte[]>, String> {
 
 	@Override
-	public byte[] convert(Flux<byte[]> value) {
+	public String convert(Flux<byte[]> value) {
 		return value.collectList()
 				.map(BinaryUtil::concat)
+				.map(bytes -> new String(bytes, StandardCharsets.UTF_8))
 				.block();
 	}
 

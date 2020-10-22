@@ -37,6 +37,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Optional;
@@ -134,7 +135,8 @@ public class JqlAspectResponseEditor implements ResponseAspectEditor {
 				.map(b -> {
 					var buffer = new StringBuffer();
 					var f = new CompletableFuture<String>();
-					b.subscribe(buffer::append, buffer::append, () -> f.complete(buffer.toString()));
+					b.subscribe(value -> buffer.append(new String(value, StandardCharsets.UTF_8)),
+							buffer::append, () -> f.complete(buffer.toString()));
 					return f;
 				}).orElse(CompletableFuture.completedFuture(""));
 
@@ -155,9 +157,7 @@ public class JqlAspectResponseEditor implements ResponseAspectEditor {
 			return;
 
 		request.getAspect(JqlQueryAspect.class).ifPresent(aspect -> {
-			if (aspect.getQueryHistory().contains(qry)) {
-				aspect.getQueryHistory().remove(qry);
-			}
+			aspect.getQueryHistory().remove(qry);
 			aspect.getQueryHistory().add(qry);
 
 			if (aspect.getQueryHistory().size() > 10) {
