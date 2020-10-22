@@ -11,12 +11,10 @@ import milkman.domain.RequestContainer.UnknownRequestContainer;
 import milkman.templater.EnvironmentTemplater;
 import milkman.templater.PrefixedTemplaterResolver;
 import milkman.ui.commands.AppCommand;
+import milkman.ui.commands.AppCommand.PersistWorkspace;
 import milkman.ui.commands.UiCommand;
-import milkman.ui.commands.UiCommand.CloseRequest;
+import milkman.ui.commands.UiCommand.*;
 import milkman.ui.commands.UiCommand.CloseRequest.CloseType;
-import milkman.ui.commands.UiCommand.DeleteRequest;
-import milkman.ui.commands.UiCommand.RenameRequest;
-import milkman.ui.commands.UiCommand.SubmitCustomCommand;
 import milkman.ui.components.VariableHighlighter;
 import milkman.ui.main.*;
 import milkman.ui.main.dialogs.ExportDialog;
@@ -49,7 +47,7 @@ public class WorkspaceController {
 	public final Event<AppCommand> onCommand = new Event<AppCommand>();
 	private RequestExecutor executor;
 	
-	private List<String> requestDisplayHistory = new LinkedList<>();
+	private final List<String> requestDisplayHistory = new LinkedList<>();
 	private VariableHighlighter highlighter;
 
 	public void loadWorkspace(Workspace workspace) {
@@ -247,63 +245,65 @@ public class WorkspaceController {
 
 	public void handleCommand(UiCommand command) {
 		log.info("Handling command: " + command);
-		if (command instanceof UiCommand.SubmitRequest) {
-			executeRequest(((UiCommand.SubmitRequest) command).getRequest());
-		} else if (command instanceof UiCommand.CancelActiveRequest) {
+		if (command instanceof SubmitRequest) {
+			executeRequest(((SubmitRequest) command).getRequest());
+		} else if (command instanceof CancelActiveRequest) {
 			cancelCurrentRequest();
-		} else if (command instanceof UiCommand.SubmitCustomCommand) {
-			SubmitCustomCommand customCmd = (UiCommand.SubmitCustomCommand) command;
+		} else if (command instanceof SubmitCustomCommand) {
+			SubmitCustomCommand customCmd = (SubmitCustomCommand) command;
 			executeRequest(customCmd.getRequest(), Optional.of(customCmd.getCommand()));
-		}else if (command instanceof UiCommand.SubmitActiveRequest) {
+		}else if (command instanceof SubmitActiveRequest) {
 			executeRequest(activeWorkspace.getActiveRequest());
-		} else if (command instanceof UiCommand.SaveRequestAsCommand) {
-			val saveCmd = ((UiCommand.SaveRequestAsCommand) command);
+		} else if (command instanceof SaveRequestAsCommand) {
+			val saveCmd = ((SaveRequestAsCommand) command);
 			saveAsRequest(saveCmd.getRequest());
-		} else if (command instanceof UiCommand.SaveRequestCommand) {
-			val saveCmd = ((UiCommand.SaveRequestCommand) command);
+		} else if (command instanceof SaveRequestCommand) {
+			val saveCmd = ((SaveRequestCommand) command);
 			saveRequest(saveCmd.getRequest());
-		} else if (command instanceof UiCommand.SaveActiveRequest) {
+		} else if (command instanceof SaveActiveRequest) {
 			saveRequest(activeWorkspace.getActiveRequest());
-		} else if (command instanceof UiCommand.CloseActiveRequest) {
+		} else if (command instanceof CloseActiveRequest) {
 			closeRequest(activeWorkspace.getActiveRequest(), CloseType.CLOSE_THIS);
-		} else if (command instanceof UiCommand.LoadRequest) {
-			val openCmd = ((UiCommand.LoadRequest) command);
+		} else if (command instanceof DuplicateRequest) {
+			duplicateRequest(((DuplicateRequest) command).getRequest());
+		} else if (command instanceof LoadRequest) {
+			val openCmd = ((LoadRequest) command);
 			loadRequestCopy(openCmd.getRequestId(), false);
-		} else if (command instanceof UiCommand.SwitchToRequest) {
-			displayRequest(((UiCommand.SwitchToRequest) command).getRequest());
-		} else if (command instanceof UiCommand.NewRequest) {
-			createNewRequest(((UiCommand.NewRequest) command).getQuickSelectNode());
-		} else if (command instanceof UiCommand.CloseRequest) {
-			CloseRequest closeRequest = (UiCommand.CloseRequest) command;
+		} else if (command instanceof SwitchToRequest) {
+			displayRequest(((SwitchToRequest) command).getRequest());
+		} else if (command instanceof NewRequest) {
+			createNewRequest(((NewRequest) command).getQuickSelectNode());
+		} else if (command instanceof CloseRequest) {
+			CloseRequest closeRequest = (CloseRequest) command;
 			closeRequest(closeRequest.getRequest(), closeRequest.getType());
-		} else if (command instanceof UiCommand.RenameRequest) {
-			RenameRequest renameRequest = (UiCommand.RenameRequest) command;
+		} else if (command instanceof RenameRequest) {
+			RenameRequest renameRequest = (RenameRequest) command;
 			renameRequest(renameRequest.getRequest());
-		} else if (command instanceof UiCommand.RenameActiveRequest) {
+		} else if (command instanceof RenameActiveRequest) {
 			renameRequest(activeWorkspace.getActiveRequest());
-		} else if (command instanceof UiCommand.DeleteRequest) {
-			DeleteRequest deleteRequest = (UiCommand.DeleteRequest) command;
+		} else if (command instanceof DeleteRequest) {
+			DeleteRequest deleteRequest = (DeleteRequest) command;
 			deleteRequest(deleteRequest.getCollection(), deleteRequest.getRequest());
-		} else if (command instanceof UiCommand.DeleteCollection) {
-			deleteCollection(((UiCommand.DeleteCollection) command).getCollection());
-		} else if (command instanceof UiCommand.AddFolder) {
-			var addFolderCmd = (UiCommand.AddFolder) command;
+		} else if (command instanceof DeleteCollection) {
+			deleteCollection(((DeleteCollection) command).getCollection());
+		} else if (command instanceof AddFolder) {
+			var addFolderCmd = (AddFolder) command;
 			if (addFolderCmd.getCollection() != null)
 				addFolderToCollection(addFolderCmd.getCollection());
 			else
 				addFolderToFolder(addFolderCmd.getFolder());
-		} else if (command instanceof UiCommand.DeleteFolder) {
-			var deleteFolder = (UiCommand.DeleteFolder) command;
+		} else if (command instanceof DeleteFolder) {
+			var deleteFolder = (DeleteFolder) command;
 			deleteFolderFromCollection(deleteFolder.getCollection(), deleteFolder.getFolder());
-		} else if (command instanceof UiCommand.RenameCollection) {
-			renameCollection(((UiCommand.RenameCollection) command).getCollection());
-		} else if (command instanceof UiCommand.ExportRequest) {
-			exportRequest(((UiCommand.ExportRequest) command).getRequest());
-		} else if (command instanceof UiCommand.ExportCollection) {
-			exportCollection(((UiCommand.ExportCollection) command).getCollection());
-		} else if (command instanceof  UiCommand.HighlightVariables) {
+		} else if (command instanceof RenameCollection) {
+			renameCollection(((RenameCollection) command).getCollection());
+		} else if (command instanceof ExportRequest) {
+			exportRequest(((ExportRequest) command).getRequest());
+		} else if (command instanceof ExportCollection) {
+			exportCollection(((ExportCollection) command).getCollection());
+		} else if (command instanceof  HighlightVariables) {
 			highlightVariables();
-		} else if (command instanceof  UiCommand.CancelHighlight) {
+		} else if (command instanceof  CancelHighlight) {
 			cancelHightlightedVariables();
 		} else {
 			throw new IllegalArgumentException("Unsupported command");
@@ -537,7 +537,7 @@ public class WorkspaceController {
 			}
 		}
 		
-		onCommand.invoke(new AppCommand.PersistWorkspace(activeWorkspace));
+		onCommand.invoke(new PersistWorkspace(activeWorkspace));
 	}
 
 
@@ -566,6 +566,16 @@ public class WorkspaceController {
 
 		loadCollections(activeWorkspace);
 		displayRequest(request);
+	}
+
+	private void duplicateRequest(RequestContainer request) {
+		var duplicate = ObjectUtils.deepClone(request);
+		duplicate.setId(UUID.randomUUID().toString());
+		duplicate.setName("Copy of " + request.getName());
+		request.setDirty(false);
+		request.setInStorage(false);
+
+		displayRequest(duplicate);
 	}
 
 

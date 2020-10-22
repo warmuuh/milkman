@@ -12,6 +12,8 @@ version 5.0.0 - upcoming
   * reordered toolbar-actions
   * added image-preview for responses
   * added new plugin [testing plugin](/milkman-test) for running test suites
+  * added duplicate request to tab context menu
+  * added cache for cassandra-connections
   
 version 4.6.0
   * added option to disable ui animations

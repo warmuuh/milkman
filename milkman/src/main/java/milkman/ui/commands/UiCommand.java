@@ -11,53 +11,53 @@ import milkman.ui.plugin.CustomCommand;
 public interface UiCommand {
 
 	@Value
-	public static class SaveRequestAsCommand implements UiCommand {
+	class SaveRequestAsCommand implements UiCommand {
 		RequestContainer request;
 	}
 	
 	@Value
-	public static class SaveRequestCommand implements UiCommand {
+	class SaveRequestCommand implements UiCommand {
 		RequestContainer request;
 	}
 	@Value
-	public static class SaveActiveRequest implements UiCommand {
+	class SaveActiveRequest implements UiCommand {
 		
 	}
 	
 	@Value
-	public static class SubmitRequest implements UiCommand {
+	class SubmitRequest implements UiCommand {
 		RequestContainer request;
 	}
 	@Value
-	public static class SubmitCustomCommand implements UiCommand {
+	class SubmitCustomCommand implements UiCommand {
 		RequestContainer request;
 		CustomCommand command;
 	}
 	
 	@Value
-	public static class SubmitActiveRequest implements UiCommand {
+	class SubmitActiveRequest implements UiCommand {
 	}
 	@Value
-	public static class CancelActiveRequest implements UiCommand {
+	class CancelActiveRequest implements UiCommand {
 	}
 	@Value
-	public static class CancelHighlight implements UiCommand {
+	class CancelHighlight implements UiCommand {
 	}
 	@Value
-	public static class LoadRequest implements UiCommand {
+	class LoadRequest implements UiCommand {
 		String requestId;
 	}
 
 	@Value
-	public static class SwitchToRequest implements UiCommand {
+	class SwitchToRequest implements UiCommand {
 		RequestContainer request;
 	}
 	@Value
-	public static class HighlightVariables implements UiCommand {
+	class HighlightVariables implements UiCommand {
 	}
 
 	@Value
-	public static class CloseRequest implements UiCommand {
+	class CloseRequest implements UiCommand {
 		RequestContainer request;
 		CloseType type;
 		public enum CloseType {
@@ -67,51 +67,56 @@ public interface UiCommand {
 			CLOSE_OTHERS
 		}
 	}
-	
+
 	@Value
-	public static class CloseActiveRequest implements UiCommand {
+	class DuplicateRequest implements UiCommand {
+		RequestContainer request;
+	}
+
+	@Value
+	class CloseActiveRequest implements UiCommand {
 	}
 	
 	@Value
-	public static class DeleteRequest implements UiCommand {
+	class DeleteRequest implements UiCommand {
 		RequestContainer request;
 		Collection collection;
 	}
 	
 	@Value
-	public static class RenameRequest implements UiCommand {
+	class RenameRequest implements UiCommand {
 		RequestContainer request;
 	}
 	
 	@Value
-	public static class RenameActiveRequest implements UiCommand {
+	class RenameActiveRequest implements UiCommand {
 	}
 	@Value
-	public static class NewRequest implements UiCommand {
+	class NewRequest implements UiCommand {
 		Node quickSelectNode;
 	}
 	
 	@Value
-	public static class DeleteCollection implements UiCommand {
+	class DeleteCollection implements UiCommand {
 		Collection collection;
 	}
 	@Value
-	public static class RenameCollection implements UiCommand {
+	class RenameCollection implements UiCommand {
 		Collection collection;
 	}
 	
 	@Value
-	public static class ExportRequest implements UiCommand {
+	class ExportRequest implements UiCommand {
 		RequestContainer request;
 	}
 	
 	@Value
-	public static class ExportCollection implements UiCommand {
+	class ExportCollection implements UiCommand {
 		Collection collection;
 	}
 
 	@Data
-	public static class AddFolder implements UiCommand {
+	class AddFolder implements UiCommand {
 		private final Collection collection;
 		private final Folder folder;
 		
@@ -129,7 +134,7 @@ public interface UiCommand {
 	
 
 	@Value
-	public static class DeleteFolder implements UiCommand {
+	class DeleteFolder implements UiCommand {
 		Collection collection;
 		Folder folder;
 	}

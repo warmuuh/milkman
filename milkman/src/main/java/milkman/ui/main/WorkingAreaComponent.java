@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
 import milkman.ui.commands.UiCommand;
+import milkman.ui.commands.UiCommand.*;
 import milkman.ui.commands.UiCommand.CloseRequest.CloseType;
 import milkman.ui.main.RequestComponent.RequestComponentFxml;
 import milkman.ui.main.ResponseComponent.ResponseComponentFxml;
@@ -87,29 +88,35 @@ public class WorkingAreaComponent {
 		});
 		
 		MenuItem closeEntry = new MenuItem("Close");
-		closeEntry.setOnAction(a -> onCommand.invoke(new UiCommand.CloseRequest(r, CloseType.CLOSE_THIS)));
+		closeEntry.setOnAction(a -> onCommand.invoke(new CloseRequest(r, CloseType.CLOSE_THIS)));
 		
 		MenuItem closeRightEntry = new MenuItem("Close Tabs to the Right");
-		closeRightEntry.setOnAction(a -> onCommand.invoke(new UiCommand.CloseRequest(r, CloseType.CLOSE_RIGHT)));
+		closeRightEntry.setOnAction(a -> onCommand.invoke(new CloseRequest(r, CloseType.CLOSE_RIGHT)));
 		
 		MenuItem closeAllEntry = new MenuItem("Close All");
-		closeAllEntry.setOnAction(a -> onCommand.invoke(new UiCommand.CloseRequest(r, CloseType.CLOSE_ALL)));
+		closeAllEntry.setOnAction(a -> onCommand.invoke(new CloseRequest(r, CloseType.CLOSE_ALL)));
 		
 
 		MenuItem closeOtherEntry = new MenuItem("Close Others");
-		closeOtherEntry.setOnAction(a -> onCommand.invoke(new UiCommand.CloseRequest(r, CloseType.CLOSE_OTHERS)));
+		closeOtherEntry.setOnAction(a -> onCommand.invoke(new CloseRequest(r, CloseType.CLOSE_OTHERS)));
 		
 		MenuItem renameEntry = new MenuItem("Rename");
 		renameEntry.setOnAction(a -> {
-			onCommand.invoke(new UiCommand.RenameRequest(r));
+			onCommand.invoke(new RenameRequest(r));
 		});
-		
-		tab.setContextMenu(new ContextMenu(closeEntry, closeRightEntry,closeAllEntry, closeOtherEntry, renameEntry));
+
+
+		MenuItem duplicateEntry = new MenuItem("Duplicate");
+		duplicateEntry.setOnAction(a -> {
+			onCommand.invoke(new DuplicateRequest(r));
+		});
+
+		tab.setContextMenu(new ContextMenu(closeEntry, closeRightEntry,closeAllEntry, closeOtherEntry, renameEntry, duplicateEntry));
 		tab.setUserData(r);
 
 		tab.getGraphic().setOnMouseClicked(e -> {
 			if (e.getButton() == MouseButton.MIDDLE) {
-				onCommand.invoke(new UiCommand.CloseRequest(r, CloseType.CLOSE_THIS));
+				onCommand.invoke(new CloseRequest(r, CloseType.CLOSE_THIS));
 				e.consume();
 			}
 		});
@@ -126,7 +133,7 @@ public class WorkingAreaComponent {
 	}
 	
 	 public void onNewRequestClick() {
-		onCommand.invoke(new UiCommand.NewRequest(tabPane));
+		onCommand.invoke(new NewRequest(tabPane));
 	}
 
 	public void clearResponse() {
@@ -147,7 +154,7 @@ public class WorkingAreaComponent {
 		tabChangeListener = (obs, o, n) -> {
 			if (n != null && o != n) {
 				RequestContainer r = (RequestContainer) n.getUserData();
-				onCommand.invoke(new UiCommand.SwitchToRequest(r));
+				onCommand.invoke(new SwitchToRequest(r));
 			}
 		};
 		tabPane.getSelectionModel().selectedItemProperty().addListener(tabChangeListener);
