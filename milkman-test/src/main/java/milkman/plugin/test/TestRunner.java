@@ -70,6 +70,7 @@ public class TestRunner {
 	private Environment getOverrideEnvironment(TestAspect testAspect){
 		var environment = new Environment("override");
 		environment.setActive(true);
+		environment.setOrAdd("__TEST__", "true");
 		testAspect.getEnvironmentOverride().forEach(entry -> environment.setOrAdd(entry.getName(), entry.getValue()));
 		return environment;
 	}
