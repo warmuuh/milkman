@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
-import milkman.domain.RequestAspect;
 import milkman.ui.main.dialogs.CredentialsInputDialog;
 import milkman.ui.plugin.Templater;
 import milkman.ui.plugin.rest.domain.*;
@@ -28,6 +27,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.ResponseInfo;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
@@ -53,10 +54,15 @@ public class JavaRequestProcessor implements RequestProcessor {
 	
 	private static final String PROXY_AUTHORIZATION_HEADER = "Proxy-Authorization";
 	private static final String USER_AGENT_HEADER = "User-Agent";
+	private static final String CONTENT_TYPE_HEADER = "Content-Type";
 
 	
-	private static PasswordAuthentication proxyCredentials = null;
+	private static PasswordAuthentication proxyCredentials;
 	private final Pattern realmPattern = Pattern.compile("realm=(\".*\")");
+
+	private boolean isMultipart(String contentType) {
+		return contentType.contains("multipart/");
+	}
 
 	@SneakyThrows
 	private HttpClient buildClient() {
@@ -105,16 +111,19 @@ public class JavaRequestProcessor implements RequestProcessor {
 	private void disableSsl(Builder builder) {
 
 		// Create a trust manager that does not validate certificate chains
-		TrustManager[] trustAllCerts = new TrustManager[]{
+		TrustManager[] trustAllCerts = {
 		    new X509TrustManager() {
-		        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+		        @Override
+				public X509Certificate[] getAcceptedIssuers() {
 		            return null;
 		        }
-		        public void checkClientTrusted(
-		            java.security.cert.X509Certificate[] certs, String authType) {
+		        @Override
+				public void checkClientTrusted(
+		            X509Certificate[] certs, String authType) {
 		        }
-		        public void checkServerTrusted(
-		            java.security.cert.X509Certificate[] certs, String authType) {
+		        @Override
+				public void checkServerTrusted(
+		            X509Certificate[] certs, String authType) {
 		        }
 		    }
 		};
@@ -122,7 +131,7 @@ public class JavaRequestProcessor implements RequestProcessor {
 		// Install the all-trusting trust manager
 		try {
 		    SSLContext sc = SSLContext.getInstance("SSL");
-		    sc.init(null, trustAllCerts, new java.security.SecureRandom());
+		    sc.init(null, trustAllCerts, new SecureRandom());
 
 			builder.sslContext(sc);
 		} catch (Exception e) {
@@ -193,7 +202,7 @@ public class JavaRequestProcessor implements RequestProcessor {
 	}
 
 	private String getRealmInfo(ResponseInfo responseInfo) {
-		return (String) responseInfo.headers()
+		return responseInfo.headers()
 							.firstValue("Proxy-Authenticate")
 							.map(v -> realmPattern.matcher(v))
 							.filter(m -> m.find())
@@ -206,19 +215,37 @@ public class JavaRequestProcessor implements RequestProcessor {
 		HttpRequest.Builder builder = HttpRequest.newBuilder();
 		builder.uri(new URI(HttpUtil.escapeUrl(request, templater)));
 
-		for (RequestAspect aspect : request.getAspects()) {
-			if (aspect instanceof RestRequestAspect) {
-				((RestRequestAspect) aspect).enrichRequest(new JavaRequestBuilder(builder, request.getHttpMethod()), templater);
+		request.getAspect(RestHeaderAspect.class)
+		.ifPresent(aspect -> {
+			aspect.getEntries().stream()
+					.filter(HeaderEntry::isEnabled)
+					.forEach(h -> builder.header(templater.replaceTags(h.getName()), templater.replaceTags(h.getValue())));
+		});
+
+		request.getAspect(RestBodyAspect.class)
+		.ifPresent(aspect -> {
+			if (request.getHttpMethod().equals("GET") || request.getHttpMethod().equals("DELETE")) {
+				builder.method(request.getHttpMethod(), BodyPublishers.noBody());
+			} else {
+				var bodyContent = templater.replaceTags(aspect.getBody());
+				if (builder.build().headers().firstValue(CONTENT_TYPE_HEADER).stream().anyMatch(this::isMultipart)) {
+					if (!bodyContent.contains("\r\n")){
+						bodyContent = bodyContent.replace("\n", "\r\n");
+					}
+				}
+				builder.method(request.getHttpMethod(), BodyPublishers.ofString(bodyContent));
 			}
-		}
-		
-		if (builder.build().headers().firstValue(USER_AGENT_HEADER).isEmpty())
+		});
+
+		if (builder.build().headers().firstValue(USER_AGENT_HEADER).isEmpty()) {
 			builder.setHeader(USER_AGENT_HEADER, "Milkman");
+		}
 
 		if (proxyCredentials != null) {
 			builder.setHeader(PROXY_AUTHORIZATION_HEADER, HttpUtil.authorizationHeaderValue(proxyCredentials));
 		}
-		
+
+
 		return builder.build();
 	}
 
@@ -265,28 +292,6 @@ public class JavaRequestProcessor implements RequestProcessor {
 		response.getStatusInformations().complete(statusKeys);
 	}
 
-	@RequiredArgsConstructor
-	private class JavaRequestBuilder implements HttpRequestBuilder{
-		private final HttpRequest.Builder builder;
-		private final String method;
-		
-		@Override
-		public void addHeader(String key, String value) {
-			builder.header(key, value);
-		}
-
-		@Override
-		public void setBody(String body) {
-			if (method.equals("GET") || method.equals("DELETE")) {
-				builder.method(method, BodyPublishers.noBody());
-			} else {
-				builder.method(method, BodyPublishers.ofString(body));
-			}
-		}
-	}
-	
-	
-	
 	@RequiredArgsConstructor
 	public static class StaticResponseInfo implements ResponseInfo {
 		@Delegate(types = ResponseInfo.class)

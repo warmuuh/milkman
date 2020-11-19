@@ -1,24 +1,14 @@
 package milkman.ui.plugin.rest.domain;
 
 import lombok.Data;
-import milkman.ui.plugin.Templater;
-import milkman.ui.plugin.rest.HttpRequestBuilder;
-import org.apache.commons.lang3.StringUtils;
+import milkman.domain.RequestAspect;
 
 @Data
-public class RestBodyAspect extends RestRequestAspect {
+public class RestBodyAspect extends RequestAspect {
 
 	String body;
 	
 	public RestBodyAspect() {
 		super("body");
-	}
-	
-	public void enrichRequest(HttpRequestBuilder builder, Templater templater) throws Exception {
-		if (body != null) {
-			builder.setBody(templater.replaceTags(body));
-		} else {
-			builder.setBody("");
-		}
 	}
 }
