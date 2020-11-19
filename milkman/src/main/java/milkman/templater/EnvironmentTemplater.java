@@ -51,7 +51,7 @@ public class EnvironmentTemplater implements Templater{
 			while(matcher.find()) {
 				String matchedGroup = matcher.group();
 				String value = getValueForTag(matchedGroup.substring(2, matchedGroup.length()-2));
-				matcher.appendReplacement(bufStr, value);
+				matcher.appendReplacement(bufStr, Matcher.quoteReplacement(value));
 				matched = true;
 			}
 			matcher.appendTail(bufStr);
