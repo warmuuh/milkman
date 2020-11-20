@@ -7,13 +7,14 @@
 
 # Changelog
 
-version 5.0.0 - upcoming
+version 5.0.0
   * included [cassandra plugin](/milkman-cassandra) and [Grpc plugin](/milkman-grpc) into macos app bundle
   * reordered toolbar-actions
-  * added image-preview for responses
+  * added image-preview for responses of picture-mimetype
   * added new plugin [testing plugin](/milkman-test) for running test suites
-  * added duplicate request to tab context menu
-  * added cache for cassandra-connections
+  * added `duplicate request` to tab context menu
+  * added cache for cassandra-connections, so subsequent calls are faster
+  * fixing multipart requests to use CRLF in body #76
   
 version 4.6.0
   * added option to disable ui animations
