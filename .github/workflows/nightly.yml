@@ -24,7 +24,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-mvnJlinkCache-
       - name: Set up JDK 11
-        uses: joschi/setup-jdk@v1
+        uses: joschi/setup-jdk@v2
         with:
           java-version: openjdk11
           architecture: x64
