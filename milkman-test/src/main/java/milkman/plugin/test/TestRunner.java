@@ -65,7 +65,7 @@ public class TestRunner {
 						asyncControl.triggerRequestSucceeded();
 						sink.complete();
 					})
-					.subscribeOn(Schedulers.parallel())
+					.subscribeOn(Schedulers.elastic())
 					.publish().connect();
 		});
 
