@@ -24,7 +24,7 @@ public class TestResultAspect implements ResponseAspect {
 
 
 	public enum TestResultState {
-		STARTED, SUCCEEDED, FAILED, EXCEPTION
+		STARTED, SUCCEEDED, FAILED, EXCEPTION, IGNORED, SKIPPED
 	}
 
 	@Value

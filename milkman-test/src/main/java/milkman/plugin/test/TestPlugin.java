@@ -7,7 +7,7 @@ import milkman.plugin.test.domain.TestAspect;
 import milkman.plugin.test.domain.TestContainer;
 import milkman.plugin.test.editor.*;
 import milkman.ui.plugin.*;
-import milkman.utils.AsyncResponseControl;
+import milkman.utils.AsyncResponseControl.AsyncControl;
 
 import java.util.Collections;
 import java.util.List;
@@ -18,7 +18,7 @@ public class TestPlugin implements RequestAspectsPlugin, RequestTypePlugin, Requ
 
 	@Override
 	public List<RequestAspectEditor> getRequestTabs() {
-		return List.of(new TestAspectScenarioEditor(), new TestAspectEditor(), new TestEnvironmentOverrideEditor());
+		return List.of( new TestAspectEditor(), new TestAspectScenarioEditor(), new TestEnvironmentOverrideEditor());
 	}
 
 	@Override
@@ -58,9 +58,10 @@ public class TestPlugin implements RequestAspectsPlugin, RequestTypePlugin, Requ
 		throw new UnsupportedOperationException();
 	}
 
-	public ResponseContainer executeRequestAsync(RequestContainer request, Templater templater, AsyncResponseControl.AsyncControl asyncControl) {
+	@Override
+	public ResponseContainer executeRequestAsync(RequestContainer request, Templater templater, AsyncControl asyncControl) {
 		return new TestRunner(requestExecutor).executeRequest((TestContainer)request, templater, asyncControl);
-	};
+	}
 
 	@Override
 	public String getRequestType() {

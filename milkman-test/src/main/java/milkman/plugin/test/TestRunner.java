@@ -6,19 +6,21 @@ import milkman.domain.Environment;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 import milkman.plugin.test.domain.TestAspect;
+import milkman.plugin.test.domain.TestAspect.TestDetails;
 import milkman.plugin.test.domain.TestContainer;
 import milkman.plugin.test.domain.TestResultAspect;
 import milkman.plugin.test.domain.TestResultAspect.TestResultEvent;
 import milkman.plugin.test.domain.TestResultContainer;
 import milkman.ui.plugin.PluginRequestExecutor;
 import milkman.ui.plugin.Templater;
-import milkman.utils.AsyncResponseControl;
+import milkman.utils.AsyncResponseControl.AsyncControl;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.ReplayProcessor;
 import reactor.core.scheduler.Schedulers;
-import reactor.util.function.Tuple2;
+import reactor.util.function.Tuple3;
+import reactor.util.function.Tuples;
 
 import java.util.Map;
 import java.util.Optional;
@@ -33,7 +35,7 @@ public class TestRunner {
 
 	public ResponseContainer executeRequest(TestContainer request,
 											Templater templater,
-											AsyncResponseControl.AsyncControl asyncControl) {
+											AsyncControl asyncControl) {
 
 		var testAspect = request.getAspect(TestAspect.class)
 				.orElseThrow(() -> new IllegalArgumentException("Missing test aspect"));
@@ -44,9 +46,15 @@ public class TestRunner {
 		Flux<TestResultEvent> replay = ReplayProcessor.create(sink -> {
 			Flux.fromIterable(testAspect.getRequests())
 					.index()
-					.filter(t -> !t.getT2().isSkip())
-					.flatMap(tuple -> Mono.justOrEmpty(executor.getDetails(tuple.getT2().getId()).map(r -> tuple.mapT2(id -> r))))
-					.doOnNext(tuple -> sink.next(new TestResultEvent(tuple.getT1().toString(), tuple.getT2().getName(), STARTED, Map.of())))
+					.flatMap(tuple -> Mono.justOrEmpty(executor.getDetails(tuple.getT2().getId()).map(r -> Tuples.of(tuple.getT1(), tuple.getT2(), r))))
+					.filter(t -> {
+						var skip = t.getT2().isSkip();
+						if (skip){
+							sink.next(new TestResultEvent(t.getT1().toString(), t.getT3().getName(), SKIPPED, Map.of()));
+						}
+						return !skip;
+					})
+					.doOnNext(tuple -> sink.next(new TestResultEvent(tuple.getT1().toString(), tuple.getT3().getName(), STARTED, Map.of())))
 					.flatMap(tuple -> execute(tuple, getOverrideEnvironment(testAspect), sink))
 					.onErrorContinue(err -> !testAspect.isStopOnFirstFailure(), (err, obj) -> {/* silently skip errors, they where signaled already */})
 //				.switchIfEmpty(Mono.defer(() -> {
@@ -75,11 +83,15 @@ public class TestRunner {
 		return environment;
 	}
 
-	private Mono<Void> execute(Tuple2<Long, RequestContainer> request, Environment overrideEnv, FluxSink<TestResultEvent> replay) {
-		return Mono.defer(() -> Mono.just(executor.executeRequest(request.getT2(), Optional.of(overrideEnv))))
+	private Mono<Void> execute(Tuple3<Long, TestDetails, RequestContainer> request, Environment overrideEnv, FluxSink<TestResultEvent> replay) {
+		return Mono.defer(() -> Mono.just(executor.executeRequest(request.getT3(), Optional.of(overrideEnv))))
 				.flatMap(res -> Mono.fromFuture(res.getStatusInformations()))
-				.doOnNext(si -> replay.next(new TestResultEvent(request.getT1().toString(), request.getT2().getName(), SUCCEEDED, si)))
-				.doOnError(t -> replay.next(new TestResultEvent(request.getT1().toString(), request.getT2().getName(), FAILED, Map.of("exception", t.toString()))))
-				.then();
+				.doOnNext(si -> replay.next(new TestResultEvent(request.getT1().toString(), request.getT3().getName(), SUCCEEDED, si)))
+				.then()
+				.onErrorResume(err -> request.getT2().isIgnore(), err -> {
+					replay.next(new TestResultEvent(request.getT1().toString(), request.getT3().getName(), IGNORED, Map.of("exception", err.toString())));
+					return Mono.empty();
+				})
+				.doOnError(t -> replay.next(new TestResultEvent(request.getT1().toString(), request.getT3().getName(), FAILED, Map.of("exception", t.toString()))));
 	}
 }

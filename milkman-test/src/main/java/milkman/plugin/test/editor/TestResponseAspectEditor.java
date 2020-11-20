@@ -4,17 +4,20 @@ import com.jfoenix.controls.JFXTreeView;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TreeItem;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 import milkman.plugin.test.domain.TestResultAspect;
 import milkman.plugin.test.domain.TestResultAspect.TestResultEvent;
 import milkman.ui.plugin.ResponseAspectEditor;
-import milkman.utils.fxml.FxmlBuilder;
+import milkman.utils.fxml.FxmlBuilder.*;
 import milkman.utils.javafx.SettableTreeItem;
 
 import java.util.LinkedList;
@@ -26,7 +29,7 @@ public class TestResponseAspectEditor implements ResponseAspectEditor {
 	JFXTreeView<Node> resultView;
 	private SettableTreeItem<Node> root;
 	private ObservableList<TreeItem<Node>> resultList;
-	private FxmlBuilder.VboxExt resultDetails;
+	private VboxExt resultDetails;
 
 
 	@Override
@@ -48,7 +51,7 @@ public class TestResponseAspectEditor implements ResponseAspectEditor {
 
 		resultView.getSelectionModel().selectedIndexProperty().addListener((obs, old, newValue) -> {
 			if (newValue != null && !newValue.equals(old)){
-				this.onResultSelected((TestResultEvent) resultList.get(newValue.intValue()).getValue().getUserData());
+				onResultSelected((TestResultEvent) resultList.get(newValue.intValue()).getValue().getUserData());
 			}
 		});
 
@@ -68,6 +71,12 @@ public class TestResponseAspectEditor implements ResponseAspectEditor {
 				break;
 			case FAILED:
 				evtTypeIcon = FontAwesomeIcon.BAN;
+				break;
+			case IGNORED:
+				evtTypeIcon = FontAwesomeIcon.LOW_VISION;
+				break;
+			case SKIPPED:
+				evtTypeIcon = FontAwesomeIcon.FILTER;
 				break;
 			case EXCEPTION:
 				evtTypeIcon = FontAwesomeIcon.EXCLAMATION_CIRCLE;
@@ -97,11 +106,28 @@ public class TestResponseAspectEditor implements ResponseAspectEditor {
 
 	private void onResultSelected(TestResultEvent resultEvent) {
 		resultDetails.getChildren().clear();
-		resultDetails.add(new Label("Test Results: " + resultEvent.getRequestName()));
-		resultDetails.add(new Label("Outcome: " + resultEvent.getResultState()));
-		resultEvent.getDetails()
-				.forEach((key, val) -> resultDetails.add(new Label(key + ": " + val)));
 
+		GridPane grid = new GridPane();
+		grid.setAlignment(Pos.TOP_LEFT);
+		grid.setHgap(10);
+		grid.setVgap(10);
+//		grid.setPadding(new Insets(25, 25, 25, 25));
+		grid.getColumnConstraints().add(new ColumnConstraints(100));
+
+		grid.add(new Label("Test Results for '" + resultEvent.getRequestName() + "'"), 0,0,2,1);
+		grid.add(new Label("Outcome"), 0, 1);
+		grid.add(new Label(resultEvent.getResultState().toString()), 1, 1);
+
+		int curRow = 2;
+		for (var entry : resultEvent.getDetails().entrySet()) {
+			grid.add(new Label(entry.getKey()), 0, curRow);
+			var valueLabel = new Label(entry.getValue());
+			valueLabel.setWrapText(true);
+			grid.add(valueLabel, 1, curRow);
+			curRow += 1;
+		}
+
+		resultDetails.add(grid, true);
 	}
 
 	@Override

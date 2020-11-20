@@ -13,7 +13,7 @@ import static milkman.domain.Environment.EnvironmentEntry;
 @Data
 public class TestAspect extends RequestAspect {
 	private List<TestDetails> requests = new LinkedList<>();
-	private boolean stopOnFirstFailure = false;
+	private boolean stopOnFirstFailure;
 	private List<EnvironmentEntry> environmentOverride = new LinkedList<>();
 
 	public TestAspect() {
@@ -26,5 +26,6 @@ public class TestAspect extends RequestAspect {
 	public static class TestDetails {
 		private String id;
 		private boolean skip;
+		private boolean ignore;
 	}
 }

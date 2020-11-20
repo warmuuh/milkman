@@ -1,11 +1,15 @@
 package milkman.plugin.test.editor;
 
+import com.jfoenix.controls.JFXToggleButton;
 import com.jfoenix.controls.JFXTreeView;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TreeItem;
 import javafx.scene.input.TransferMode;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
@@ -87,7 +91,7 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 					&& e.getDragboard().hasContent(JAVA_FORMAT)) {
 				try {
 					var content = deserialize((String) e.getDragboard().getContent(JAVA_FORMAT), RequestContainer.class);
-					requests.add(new TestDetails(content.getId(), false));
+					requests.add(new TestDetails(content.getId(), false, false));
 					testAspect.setDirty(true);
 					e.setDropCompleted(true);
 				} catch (Exception ex) {
@@ -121,9 +125,10 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 
 	private void onRequestSelected(RequestContainer requestContainer, TestDetails details) {
 		requestDetails.getChildren().clear();
-		requestDetails.add(new Label(requestContainer.getName()));
+		requestDetails.add(new Label("Test Options"));
 
-		var cbSkip = new CheckBox("skip test");
+		var cbSkip = new JFXToggleButton();
+		cbSkip.setText("skip test");
 		cbSkip.setSelected(details.isSkip());
 		cbSkip.selectedProperty().addListener((obs, o, n) -> {
 			if (n != null) {
@@ -131,6 +136,16 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 			}
 		});
 		requestDetails.add(cbSkip);
+
+		var cbIgnore = new JFXToggleButton();
+		cbIgnore.setText("ignore results");
+		cbIgnore.setSelected(details.isIgnore());
+		cbIgnore.selectedProperty().addListener((obs, o, n) -> {
+			if (n != null) {
+				details.setIgnore(n);
+			}
+		});
+		requestDetails.add(cbIgnore);
 	}
 
 	private void moveUp() {
