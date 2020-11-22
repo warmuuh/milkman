@@ -8,7 +8,7 @@ Just Drag-and-drop requests you want to execute into the test-tab and you are re
 
 ## Demo
 
-![Milkman Test Demo](img/gif/test-plugin-demo.gif)
+![Milkman Test Demo](/img/gif/test-plugin-demo.gif)
 
 
 ## Environment
