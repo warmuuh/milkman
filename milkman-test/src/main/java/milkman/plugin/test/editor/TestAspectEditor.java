@@ -104,7 +104,7 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 	}
 
 	private HboxExt requestDetailsToNode(TestDetails requestDetails) {
-		var requestName = requestExecutor.getDetails(requestDetails.getId()).get().getName();
+		var requestName = requestExecutor.getDetails(requestDetails.getId()).map(RequestContainer::getName).orElse("undefined");
 		var label = new Label(requestName);
 		if (requestDetails.isSkip()){
 			label.setStyle("-fx-text-fill: grey;");
