@@ -23,7 +23,7 @@ public class TestPlugin implements RequestAspectsPlugin, RequestTypePlugin, Requ
 
 	@Override
 	public List<ResponseAspectEditor> getResponseTabs() {
-		return Collections.singletonList(new TestResponseAspectEditor());
+		return List.of(new TestResponseAspectEditor(), new TestResponseEnvironmentEditor());
 	}
 
 	@Override

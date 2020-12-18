@@ -18,7 +18,7 @@ public class Collection extends Dirtyable implements Searchable {
 	private String id;
 	@Include private String name;
 	private boolean starred;
-	private List<RequestContainer> requests = new LinkedList<>();
+	private List<RequestContainer> requests;
 	private List<Folder> folders = new LinkedList<>(); //initialize bc of deserialization
 	
 	@Override

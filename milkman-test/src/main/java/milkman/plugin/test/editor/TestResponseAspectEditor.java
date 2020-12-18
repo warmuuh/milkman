@@ -40,11 +40,11 @@ public class TestResponseAspectEditor implements ResponseAspectEditor {
 
 		resultList = FXCollections.observableList(new LinkedList<>());
 
-		testResultAspect.getResults()
-				.subscribe(this::updateResultList);
-
 		root = new SettableTreeItem<Node>();
 		root.setChildren(resultList);
+
+		testResultAspect.getResults()
+				.subscribe(this::updateResultList);
 
 
 		var editor = new TestResponseAspectEditorFxml(this);

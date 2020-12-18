@@ -228,9 +228,9 @@ public class JavaRequestProcessor implements RequestProcessor {
 				builder.method(request.getHttpMethod(), BodyPublishers.noBody());
 			} else {
 				var bodyContent = templater.replaceTags(aspect.getBody());
-				if (builder.build().headers().firstValue(CONTENT_TYPE_HEADER).stream().anyMatch(this::isMultipart)) {
-					if (!bodyContent.contains("\r\n")){
-						bodyContent = bodyContent.replace("\n", "\r\n");
+				for (RequestBodyPostProcessor processor : RequestBodyPostProcessor.processors()) {
+					if (builder.build().headers().firstValue(CONTENT_TYPE_HEADER).stream().anyMatch(processor::canProcess)) {
+						bodyContent = processor.process(bodyContent);
 					}
 				}
 				builder.method(request.getHttpMethod(), BodyPublishers.ofString(bodyContent));

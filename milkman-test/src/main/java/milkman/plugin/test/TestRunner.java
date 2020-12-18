@@ -5,12 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import milkman.domain.Environment;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
-import milkman.plugin.test.domain.TestAspect;
+import milkman.plugin.test.domain.*;
 import milkman.plugin.test.domain.TestAspect.TestDetails;
-import milkman.plugin.test.domain.TestContainer;
-import milkman.plugin.test.domain.TestResultAspect;
 import milkman.plugin.test.domain.TestResultAspect.TestResultEvent;
-import milkman.plugin.test.domain.TestResultContainer;
 import milkman.ui.plugin.PluginRequestExecutor;
 import milkman.ui.plugin.Templater;
 import milkman.utils.AsyncResponseControl.AsyncControl;
@@ -40,10 +37,13 @@ public class TestRunner {
 		var testAspect = request.getAspect(TestAspect.class)
 				.orElseThrow(() -> new IllegalArgumentException("Missing test aspect"));
 
+		var testEnvironment = getOverrideEnvironment(testAspect);
+
 		asyncControl.triggerReqeuestStarted();
 
 
-		Flux<TestResultEvent> replay = ReplayProcessor.create(sink -> {
+		var replay = ReplayProcessor.<TestResultEvent>create();
+		Flux<TestResultEvent> resultFlux = Flux.<TestResultEvent>create(sink -> {
 			Flux.fromIterable(testAspect.getRequests())
 					.index()
 					.flatMap(tuple -> Mono.justOrEmpty(executor.getDetails(tuple.getT2().getId()).map(r -> Tuples.of(tuple.getT1(), tuple.getT2(), r))))
@@ -55,7 +55,7 @@ public class TestRunner {
 						return !skip;
 					})
 					.doOnNext(tuple -> sink.next(new TestResultEvent(tuple.getT1().toString(), tuple.getT3().getName(), STARTED, Map.of())))
-					.flatMap(tuple -> execute(tuple, getOverrideEnvironment(testAspect), sink))
+					.flatMap(tuple -> execute(tuple, testEnvironment, sink))
 					.onErrorContinue(err -> !testAspect.isStopOnFirstFailure(), (err, obj) -> {/* silently skip errors, they where signaled already */})
 //				.switchIfEmpty(Mono.defer(() -> {
 //					log.error("Request could not be found");
@@ -67,10 +67,11 @@ public class TestRunner {
 					})
 					.subscribeOn(Schedulers.elastic())
 					.publish().connect();
-		});
+		}).subscribeWith(replay);
 
 		var container = new TestResultContainer();
 		container.getAspects().add(new TestResultAspect(replay));
+		container.getAspects().add(new TestResultEnvAspect(testEnvironment));
 		return container;
 	}
 

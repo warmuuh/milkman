@@ -44,6 +44,10 @@ public class EnvironmentTemplater implements Templater{
 		String oldInput;
 		String curInput = input;
 		do{
+			if (curInput == null){
+				return "";
+			}
+
 			oldInput = curInput;
 			Matcher matcher = tagPattern.matcher(curInput);
 			matched = false;
