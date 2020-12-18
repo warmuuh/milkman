@@ -2,11 +2,14 @@ package milkman.ui.main;
 
 import com.jfoenix.controls.JFXTabPane;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Orientation;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.HBox;
+import javafx.scene.shape.Circle;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -73,19 +76,16 @@ public class WorkingAreaComponent {
 	}
 	private Tab createTestTab(RequestContainer r, boolean isActive) {
 		Tab tab = new Tab();
-		tab.setGraphic(new Label(r.getName()));
-		if (isActive)
+
+		tab.setGraphic(getTitleNode(r));
+
+		if (isActive) {
 			tab.getStyleClass().add(CSS_CLASS_REQUEST_ACTIVE);
-		
-		if (r.isDirty())
-			tab.getStyleClass().add(CSS_CLASS_REQUEST_DIRTY);
-		
-		r.onDirtyChange.add((o,n) -> {
-			if (n) 
-				tab.getStyleClass().add(CSS_CLASS_REQUEST_DIRTY);
-			else
-				tab.getStyleClass().remove(CSS_CLASS_REQUEST_DIRTY);
-		});
+		}
+
+		r.onDirtyChange.add((o,n) -> Platform.runLater(
+			() -> tab.setGraphic(getTitleNode(r))
+		));
 		
 		MenuItem closeEntry = new MenuItem("Close");
 		closeEntry.setOnAction(a -> onCommand.invoke(new CloseRequest(r, CloseType.CLOSE_THIS)));
@@ -122,6 +122,17 @@ public class WorkingAreaComponent {
 		});
 		
 		return tab;
+	}
+
+	private HBox getTitleNode(RequestContainer r) {
+		var title = new HBox();
+		title.getChildren().add(new Label(r.getName()));
+		if (r.isDirty()){
+			var dot = new Circle(4.0);
+			dot.getStyleClass().add(CSS_CLASS_REQUEST_DIRTY);
+			title.getChildren().add(dot);
+		}
+		return title;
 	}
 
 	public void displayResponseFor(RequestContainer request, AsyncResponseControl response) {

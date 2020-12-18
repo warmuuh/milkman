@@ -572,8 +572,8 @@ public class WorkspaceController {
 		var duplicate = ObjectUtils.deepClone(request);
 		duplicate.setId(UUID.randomUUID().toString());
 		duplicate.setName("Copy of " + request.getName());
-		request.setDirty(true);
-		request.setInStorage(false);
+		duplicate.setDirty(true);
+		duplicate.setInStorage(false);
 
 		displayRequest(duplicate);
 	}
