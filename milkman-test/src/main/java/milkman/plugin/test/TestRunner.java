@@ -67,7 +67,12 @@ public class TestRunner {
 					})
 					.subscribeOn(Schedulers.elastic())
 					.publish().connect();
-		}).subscribeWith(replay);
+		}).doOnComplete(() -> {
+			if (testAspect.isPropagateResultEnvironment()){
+
+			}
+		})
+		.subscribeWith(replay);
 
 		var container = new TestResultContainer();
 		container.getAspects().add(new TestResultAspect(replay));

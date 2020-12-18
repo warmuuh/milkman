@@ -14,6 +14,7 @@ import static milkman.domain.Environment.EnvironmentEntry;
 public class TestAspect extends RequestAspect {
 	private List<TestDetails> requests = new LinkedList<>();
 	private boolean stopOnFirstFailure;
+	private boolean propagateResultEnvironment;
 	private List<EnvironmentEntry> environmentOverride = new LinkedList<>();
 
 	public TestAspect() {

@@ -14,7 +14,10 @@ import static milkman.utils.fxml.FxmlBuilder.VboxExt;
 public class TestAspectScenarioEditor implements RequestAspectEditor {
 
 	private JFXCheckBox cbFailOnFirst;
-	private GenericBinding<TestAspect, Boolean> stopOnFirstFailureBinding = GenericBinding.of(TestAspect::isStopOnFirstFailure, TestAspect::setStopOnFirstFailure);
+	private JFXCheckBox cbPropagateEnvironment;
+
+	private final GenericBinding<TestAspect, Boolean> stopOnFirstFailureBinding = GenericBinding.of(TestAspect::isStopOnFirstFailure, TestAspect::setStopOnFirstFailure);
+	private final GenericBinding<TestAspect, Boolean> propagateEnvBinding = GenericBinding.of(TestAspect::isPropagateResultEnvironment, TestAspect::setPropagateResultEnvironment);
 
 
 	@Override
@@ -26,6 +29,9 @@ public class TestAspectScenarioEditor implements RequestAspectEditor {
 
 		stopOnFirstFailureBinding.bindTo(cbFailOnFirst.selectedProperty(), testAspect);
 		stopOnFirstFailureBinding.addListener(c -> request.setDirty(true));
+
+		propagateEnvBinding.bindTo(cbPropagateEnvironment.selectedProperty(), testAspect);
+		propagateEnvBinding.addListener(c -> request.setDirty(true));
 
 		return new Tab("Scenario", content);
 	}
@@ -45,7 +51,7 @@ public class TestAspectScenarioEditor implements RequestAspectEditor {
 		public TestAspectScenarioEditorFxml(TestAspectScenarioEditor controller) {
 			this.controller = controller;
 			controller.cbFailOnFirst = add(new JFXCheckBox("Stop on first failure"));
-
+			controller.cbPropagateEnvironment = add(new JFXCheckBox("Propagate environment changes"));
 			getStyleClass().add("generic-content-pane");
 
 		}
