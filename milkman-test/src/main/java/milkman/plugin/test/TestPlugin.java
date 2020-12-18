@@ -41,7 +41,7 @@ public class TestPlugin implements RequestAspectsPlugin, RequestTypePlugin, Requ
                 context.getActiveEnvironment().ifPresent(activeEnvironment -> {
                     testResultEnv.getEnvironment().getEntries().forEach(entry -> {
                         if (!entry.getName().equals("__TEST__")){
-                            activeEnvironment.setOrAdd(entry.getName(), entry.getId());
+                            activeEnvironment.setOrAdd(entry.getName(), entry.getValue());
                         }
                     });
                 });
