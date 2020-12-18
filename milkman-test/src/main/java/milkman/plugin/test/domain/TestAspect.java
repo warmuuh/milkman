@@ -28,5 +28,7 @@ public class TestAspect extends RequestAspect {
 		private String id;
 		private boolean skip;
 		private boolean ignore;
+		private int retries;
+		private int waitBetweenRetriesInMs;
 	}
 }

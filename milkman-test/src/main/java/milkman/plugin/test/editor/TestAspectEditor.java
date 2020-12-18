@@ -1,7 +1,9 @@
 package milkman.plugin.test.editor;
 
+import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXToggleButton;
 import com.jfoenix.controls.JFXTreeView;
+import com.jfoenix.validation.IntegerValidator;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -91,7 +93,7 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 					&& e.getDragboard().hasContent(JAVA_FORMAT)) {
 				try {
 					var content = deserialize((String) e.getDragboard().getContent(JAVA_FORMAT), RequestContainer.class);
-					requests.add(new TestDetails(content.getId(), false, false));
+					requests.add(new TestDetails(content.getId(), false, false, 0, 0));
 					testAspect.setDirty(true);
 					e.setDropCompleted(true);
 				} catch (Exception ex) {
@@ -146,6 +148,30 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 			}
 		});
 		requestDetails.add(cbIgnore);
+
+		var retries = new HboxExt();
+		retries.add(new Label("Retries"));
+		var retriesTxt = retries.add(new JFXTextField());
+		retriesTxt.setText(""+details.getRetries());
+		retriesTxt.setValidators(new IntegerValidator());
+		retriesTxt.textProperty().addListener((obs, o, n) -> {
+			if (n != null) {
+				details.setRetries(Integer.parseInt(n));
+			}
+		});
+		requestDetails.add(retries);
+
+		var delayInMs = new HboxExt();
+		delayInMs.add(new Label("Delay between retries in ms"));
+		var delayInMsTxt = delayInMs.add(new JFXTextField());
+		delayInMsTxt.setText(""+details.getWaitBetweenRetriesInMs());
+		delayInMsTxt.setValidators(new IntegerValidator());
+		delayInMsTxt.textProperty().addListener((obs, o, n) -> {
+			if (n != null) {
+				details.setWaitBetweenRetriesInMs(Integer.parseInt(n));
+			}
+		});
+		requestDetails.add(delayInMs);
 	}
 
 	private void moveUp() {

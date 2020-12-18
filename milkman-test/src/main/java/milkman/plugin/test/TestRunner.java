@@ -19,6 +19,7 @@ import reactor.core.scheduler.Schedulers;
 import reactor.util.function.Tuple3;
 import reactor.util.function.Tuples;
 
+import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
 
@@ -90,11 +91,14 @@ public class TestRunner {
 	}
 
 	private Mono<Void> execute(Tuple3<Long, TestDetails, RequestContainer> request, Environment overrideEnv, FluxSink<TestResultEvent> replay) {
+		var testDetails = request.getT2();
+		var retryDelay = Duration.ofMillis(testDetails.getWaitBetweenRetriesInMs());
 		return Mono.defer(() -> Mono.just(executor.executeRequest(request.getT3(), Optional.of(overrideEnv))))
+				.retryBackoff(testDetails.getRetries(), retryDelay, retryDelay, 0.0)
 				.flatMap(res -> Mono.fromFuture(res.getStatusInformations()))
 				.doOnNext(si -> replay.next(new TestResultEvent(request.getT1().toString(), request.getT3().getName(), SUCCEEDED, si)))
 				.then()
-				.onErrorResume(err -> request.getT2().isIgnore(), err -> {
+				.onErrorResume(err -> testDetails.isIgnore(), err -> {
 					replay.next(new TestResultEvent(request.getT1().toString(), request.getT3().getName(), IGNORED, Map.of("exception", err.toString())));
 					return Mono.empty();
 				})
