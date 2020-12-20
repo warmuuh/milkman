@@ -73,7 +73,8 @@
 .options-page .options-entry {
 	-fx-padding: 5
 }
-.options-page .options-entry .jfx-toggle-button * {
+
+.jfx-toggle-button * {
 	-fx-padding: 0;
 }
 

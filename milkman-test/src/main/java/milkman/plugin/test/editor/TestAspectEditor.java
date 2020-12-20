@@ -64,7 +64,7 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 			if (newValue != null && !newValue.equals(old)){
 				var testDetails = requests.get(newValue.intValue());
 				requestExecutor.getDetails(testDetails.getId())
-						.ifPresent(reqContainer -> onRequestSelected(reqContainer, testDetails));
+						.ifPresent(reqContainer -> onRequestSelected(reqContainer, testDetails, () -> testAspect.setDirty(true)));
 			}
 		});
 
@@ -125,7 +125,7 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 	}
 
 
-	private void onRequestSelected(RequestContainer requestContainer, TestDetails details) {
+	private void onRequestSelected(RequestContainer requestContainer, TestDetails details, Runnable markDirtyRunnable) {
 		requestDetails.getChildren().clear();
 		requestDetails.add(new Label("Test Options"));
 
@@ -135,6 +135,7 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 		cbSkip.selectedProperty().addListener((obs, o, n) -> {
 			if (n != null) {
 				details.setSkip(n);
+				markDirtyRunnable.run();
 			}
 		});
 		requestDetails.add(cbSkip);
@@ -145,6 +146,7 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 		cbIgnore.selectedProperty().addListener((obs, o, n) -> {
 			if (n != null) {
 				details.setIgnore(n);
+				markDirtyRunnable.run();
 			}
 		});
 		requestDetails.add(cbIgnore);
@@ -157,6 +159,7 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 		retriesTxt.textProperty().addListener((obs, o, n) -> {
 			if (n != null) {
 				details.setRetries(Integer.parseInt(n));
+				markDirtyRunnable.run();
 			}
 		});
 		requestDetails.add(retries);
@@ -169,6 +172,7 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 		delayInMsTxt.textProperty().addListener((obs, o, n) -> {
 			if (n != null) {
 				details.setWaitBetweenRetriesInMs(Integer.parseInt(n));
+				markDirtyRunnable.run();
 			}
 		});
 		requestDetails.add(delayInMs);

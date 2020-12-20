@@ -1,6 +1,7 @@
 package milkman.plugin.test.editor;
 
-import com.jfoenix.controls.JFXCheckBox;
+import com.jfoenix.controls.JFXToggleButton;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
@@ -13,8 +14,8 @@ import static milkman.utils.fxml.FxmlBuilder.VboxExt;
 @Slf4j
 public class TestAspectScenarioEditor implements RequestAspectEditor {
 
-	private JFXCheckBox cbFailOnFirst;
-	private JFXCheckBox cbPropagateEnvironment;
+	private JFXToggleButton cbFailOnFirst;
+	private JFXToggleButton cbPropagateEnvironment;
 
 	private final GenericBinding<TestAspect, Boolean> stopOnFirstFailureBinding = GenericBinding.of(TestAspect::isStopOnFirstFailure, TestAspect::setStopOnFirstFailure);
 	private final GenericBinding<TestAspect, Boolean> propagateEnvBinding = GenericBinding.of(TestAspect::isPropagateResultEnvironment, TestAspect::setPropagateResultEnvironment);
@@ -50,8 +51,11 @@ public class TestAspectScenarioEditor implements RequestAspectEditor {
 
 		public TestAspectScenarioEditorFxml(TestAspectScenarioEditor controller) {
 			this.controller = controller;
-			controller.cbFailOnFirst = add(new JFXCheckBox("Stop on first failure"));
-			controller.cbPropagateEnvironment = add(new JFXCheckBox("Propagate environment changes"));
+			add(new Label("Scenario Options"));
+			controller.cbFailOnFirst = add(new JFXToggleButton());
+			controller.cbFailOnFirst.setText("Stop on first failure");
+			controller.cbPropagateEnvironment = add(new JFXToggleButton());
+			controller.cbPropagateEnvironment.setText("Propagate environment changes");
 			getStyleClass().add("generic-content-pane");
 
 		}
