@@ -1,13 +1,8 @@
 package milkman.plugin.grpc.domain;
 
-import org.apache.commons.lang3.StringUtils;
-
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import milkman.domain.RequestContainer;
+import org.apache.commons.lang3.StringUtils;
 
 @Getter @Setter
 @AllArgsConstructor
@@ -16,6 +11,7 @@ import milkman.domain.RequestContainer;
 public class GrpcRequestContainer extends RequestContainer {
 
 	private String endpoint;
+	private boolean useTls;
 	
 	public GrpcRequestContainer(String name, String endpoint) {
 		super(name);
@@ -34,5 +30,6 @@ public class GrpcRequestContainer extends RequestContainer {
 	public String getType() {
 		return "grpc";
 	}
+
 
 }

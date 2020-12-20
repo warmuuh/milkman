@@ -3,10 +3,13 @@ package milkman.plugin.grpc.processor;
 import com.google.protobuf.DescriptorProtos.FileDescriptorSet;
 import io.grpc.Channel;
 import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
+import io.grpc.netty.GrpcSslContexts;
+import io.grpc.netty.NettyChannelBuilder;
 import io.grpc.stub.ClientCallStreamObserver;
 import io.grpc.stub.ClientResponseObserver;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import me.dinowernli.grpc.polyglot.grpc.ServerReflectionClient;
 import milkman.plugin.grpc.domain.GrpcRequestContainer;
 import milkman.ui.plugin.Templater;
@@ -26,14 +29,22 @@ public class BaseGrpcProcessor {
 		return addr;
 	}
 
+	@SneakyThrows
 	protected ManagedChannel createChannel(GrpcRequestContainer request, Templater templater) {
 		InetSocketAddress endpoint = parseEndpoint(templater.replaceTags(request.getEndpoint()));
-	    ManagedChannel channel = ManagedChannelBuilder.forAddress(endpoint.getHostName(), endpoint.getPort())
-	            .usePlaintext()
-	            .build();
-		return channel;
+
+		var chanBuilder = NettyChannelBuilder.forAddress(endpoint.getHostName(), endpoint.getPort());
+		if (request.isUseTls()) {
+			chanBuilder.sslContext(GrpcSslContexts.forClient()
+					.trustManager(InsecureTrustManagerFactory.INSTANCE)
+					.build());
+		}else {
+			chanBuilder.usePlaintext();
+		}
+
+		return chanBuilder.build();
 	}
-	
+
 	protected FileDescriptorSet fetchServiceDescriptionViaReflection(Channel channel, String fullServiceName) throws InterruptedException, ExecutionException {
 		var client = ServerReflectionClient.create(channel);
 		FileDescriptorSet descriptorSet = client.lookupService(fullServiceName).get();
@@ -41,8 +52,7 @@ public class BaseGrpcProcessor {
 	}
 
 	/**
-	 * bridges to a publisher and handles channel closing 
-	 *
+	 * bridges to a publisher and handles channel closing
 	 */
 	@RequiredArgsConstructor
 	class StreamObserverToPublisherBridge<ReqT, ResT> implements ClientResponseObserver<ReqT, ResT> {
@@ -54,13 +64,13 @@ public class BaseGrpcProcessor {
 		public void onNext(ResT value) {
 			publisher.next(value);
 		}
-		
+
 		@Override
 		public void onError(Throwable t) {
 			onClose.run();
 			publisher.error(t);
 		}
-		
+
 		@Override
 		public void onCompleted() {
 			onClose.run();
@@ -71,7 +81,7 @@ public class BaseGrpcProcessor {
 		public void beforeStart(ClientCallStreamObserver<ReqT> requestStream) {
 			this.requestStream = requestStream;
 		}
-		
+
 		public void cancel() {
 			requestStream.cancel("cancelled", new Exception("Cancellation Requested"));
 		}
