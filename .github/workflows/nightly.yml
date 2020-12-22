@@ -31,7 +31,7 @@ jobs:
       - name: maven-settings-xml-action
         uses: whelk-io/maven-settings-xml-action@v4
         with:
-          servers: '[{ "id": "github", "privateKey": "${{ secrets.DEPLOYMENT_KEY }}" }]'
+          servers: '[{ "id": "github", "privateKey": "${{ secrets.DEPLOYMENT_KEY }}", "username": "${{ github.actor }}", "password": "${{ secrets.GITHUB_TOKEN }}" }]'
       - name: Maven stats
         run: mvn -version
       - name: Package
