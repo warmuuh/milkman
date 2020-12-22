@@ -2,21 +2,21 @@ package milkman.ui.main.themes;
 
 import milkman.ui.plugin.UiThemePlugin;
 
-public class MilkmanDarkThemePlugin implements UiThemePlugin {
+public class TrumpThemePlugin implements UiThemePlugin {
 
 	@Override
 	public String getName() {
-		return "Milkman Dark";
+		return "Trump";
 	}
 
 	@Override
 	public String getMainCss() {
-		return "/themes/milkman-dark.css";
+		return "/themes/trump.css";
 	}
 
 	@Override
 	public String getCodeCss() {
-		return "/src/main/sass/themes/syntax/milkman-dark-syntax.css";
+		return "/themes/syntax/milkman-syntax.css";
 	}
 
 }

@@ -1,0 +1,44 @@
+
+$main-accent: $main-accent;
+$secondary-accent: $secondary-accent;
+
+
+
+.selection {
+    -fx-fill: darkgrey !important;
+}
+
+.plain {
+	-fx-fill: $foreground !important;
+}
+.object {
+    -fx-fill: $foreground !important;
+}
+
+
+.value {
+    -fx-fill: $tertiary-accent !important;
+}
+
+.array {
+    -fx-fill: $foreground !important;
+}
+
+.bool {
+    -fx-fill: $tertiary-accent !important;
+    -fx-font-weight: bold;
+}
+
+.number {
+    -fx-fill: $tertiary-accent !important;
+    -fx-font-weight: bold;
+}
+
+.comment {
+	-fx-fill: grey !important;
+}
+
+.keyword {
+    -fx-fill: $main-accent !important;
+    -fx-font-weight: bold;
+}

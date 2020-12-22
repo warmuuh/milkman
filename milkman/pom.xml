@@ -89,8 +89,6 @@
 			<artifactId>commons-io</artifactId>
 			<version>2.4</version>
 		</dependency>
-
-
 	</dependencies>
 
 
@@ -102,75 +100,107 @@
 			</resource>
 		</resources>
 		<plugins>
-
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.6.0</version>
+				<groupId>com.github.warmuuh</groupId>
+				<artifactId>libsass-maven-plugin</artifactId>
+				<version>0.2.10-libsass_3.5.3</version>
 				<executions>
 					<execution>
-						<id>gen-binary-themes</id>
-						<phase>process-resources</phase>
+						<phase>generate-resources</phase>
 						<goals>
-							<goal>java</goal>
+							<goal>compile</goal>
 						</goals>
-						<configuration>
-							<arguments>
-								<argument>${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}themes${file.separator}milkman.css</argument>
-								<argument>${project.basedir}${file.separator}target${file.separator}classes${file.separator}themes${file.separator}milkman.bss</argument>
-							</arguments>
-						</configuration>
 					</execution>
-
-					<execution>
-						<id>gen-binary-themes-dark</id>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>java</goal>
-						</goals>
-						<configuration>
-							<arguments>
-								<argument>${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}themes${file.separator}milkman-dark.css</argument>
-								<argument>${project.basedir}${file.separator}target${file.separator}classes${file.separator}themes${file.separator}milkman-dark.bss</argument>
-							</arguments>
-						</configuration>
-					</execution>
-
-					<execution>
-						<id>gen-binary-themes-syntax</id>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>java</goal>
-						</goals>
-						<configuration>
-							<arguments>
-								<argument>${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}themes${file.separator}syntax${file.separator}milkman-syntax.css</argument>
-								<argument>${project.basedir}${file.separator}target${file.separator}classes${file.separator}themes${file.separator}syntax${file.separator}milkman-syntax.bss</argument>
-							</arguments>
-						</configuration>
-					</execution>
-
-					<execution>
-						<id>gen-binary-themes-syntax-dark</id>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>java</goal>
-						</goals>
-						<configuration>
-							<arguments>
-								<argument>${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}themes${file.separator}syntax${file.separator}milkman-dark-syntax.css</argument>
-								<argument>${project.basedir}${file.separator}target${file.separator}classes${file.separator}themes${file.separator}syntax${file.separator}milkman-dark-syntax.bss</argument>
-							</arguments>
-						</configuration>
-					</execution>
-
-
 				</executions>
-
 				<configuration>
-					<mainClass>com.sun.javafx.css.parser.Css2Bin</mainClass>
+					<inputPath>${basedir}/src/main/sass/</inputPath>
+					<outputPath>${basedir}/target/generated-sources/sass</outputPath>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>com.github.warmuuh</groupId>
+				<artifactId>maven-css2bin-plugin</artifactId>
+				<version>1.0-SNAPSHOT</version>
+				<configuration>
+					<inputDirectory>${basedir}/target/generated-sources/sass</inputDirectory>
+					<outputDirectory>${basedir}/target/classes</outputDirectory>
+				</configuration>
+				<executions>
+					<execution>
+						<id>css2bin</id>
+						<goals><goal>generate</goal></goals>
+						<phase>process-resources</phase>
+					</execution>
+				</executions>
+			</plugin>
+<!--			<plugin>-->
+<!--				<groupId>org.codehaus.mojo</groupId>-->
+<!--				<artifactId>exec-maven-plugin</artifactId>-->
+<!--				<version>1.6.0</version>-->
+<!--				<executions>-->
+<!--					<execution>-->
+<!--						<id>gen-binary-themes</id>-->
+<!--						<phase>process-resources</phase>-->
+<!--						<goals>-->
+<!--							<goal>java</goal>-->
+<!--						</goals>-->
+<!--						<configuration>-->
+<!--							<arguments>-->
+<!--								<argument>${project.basedir}${file.separator}target${file.separator}generated-sources${file.separator}sass${file.separator}themes${file.separator}milkman.css</argument>-->
+<!--								<argument>${project.basedir}${file.separator}target${file.separator}classes${file.separator}themes${file.separator}milkman.bss</argument>-->
+<!--							</arguments>-->
+<!--						</configuration>-->
+<!--					</execution>-->
+
+<!--					<execution>-->
+<!--						<id>gen-binary-themes-dark</id>-->
+<!--						<phase>process-resources</phase>-->
+<!--						<goals>-->
+<!--							<goal>java</goal>-->
+<!--						</goals>-->
+<!--						<configuration>-->
+<!--							<arguments>-->
+<!--								<argument>${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}themes${file.separator}milkman-dark.css</argument>-->
+<!--								<argument>${project.basedir}${file.separator}target${file.separator}classes${file.separator}themes${file.separator}milkman-dark.bss</argument>-->
+<!--							</arguments>-->
+<!--						</configuration>-->
+<!--					</execution>-->
+
+<!--					<execution>-->
+<!--						<id>gen-binary-themes-syntax</id>-->
+<!--						<phase>process-resources</phase>-->
+<!--						<goals>-->
+<!--							<goal>java</goal>-->
+<!--						</goals>-->
+<!--						<configuration>-->
+<!--							<arguments>-->
+<!--								<argument>${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}themes${file.separator}syntax${file.separator}milkman-syntax.css</argument>-->
+<!--								<argument>${project.basedir}${file.separator}target${file.separator}classes${file.separator}themes${file.separator}syntax${file.separator}milkman-syntax.bss</argument>-->
+<!--							</arguments>-->
+<!--						</configuration>-->
+<!--					</execution>-->
+
+<!--					<execution>-->
+<!--						<id>gen-binary-themes-syntax-dark</id>-->
+<!--						<phase>process-resources</phase>-->
+<!--						<goals>-->
+<!--							<goal>java</goal>-->
+<!--						</goals>-->
+<!--						<configuration>-->
+<!--							<arguments>-->
+<!--								<argument>${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}themes${file.separator}syntax${file.separator}milkman-dark-syntax.css</argument>-->
+<!--								<argument>${project.basedir}${file.separator}target${file.separator}classes${file.separator}themes${file.separator}syntax${file.separator}milkman-dark-syntax.bss</argument>-->
+<!--							</arguments>-->
+<!--						</configuration>-->
+<!--					</execution>-->
+
+
+<!--				</executions>-->
+
+<!--				<configuration>-->
+<!--					<mainClass>com.sun.javafx.css.parser.Css2Bin</mainClass>-->
+<!--				</configuration>-->
+<!--			</plugin>-->
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -214,4 +244,13 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>github</id>
+			<url>https://maven.pkg.github.com/warmuuh/maven-css2bin-plugin</url>
+			<snapshots><enabled>true</enabled></snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
 </project>

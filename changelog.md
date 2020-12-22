@@ -12,6 +12,8 @@ version 5.1.0 -- upcoming
   * fixed bugs in test-plugin that lead to re-execution of tests
   * added support for line-breaks in `x-www-form-urlencoded` mimetype requests
   * improved dirty-indicator for request tabs
+  * added Grpc Tls support
+  * refactored theming (using scss now), added new `trump` theme
 
 version 5.0.0
   * included [cassandra plugin](/milkman-cassandra) and [Grpc plugin](/milkman-grpc) into macos app bundle

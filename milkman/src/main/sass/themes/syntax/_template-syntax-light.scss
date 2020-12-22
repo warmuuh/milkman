@@ -11,7 +11,7 @@
 
 
 .value {
-    -fx-fill: #2192F2 !important;
+    -fx-fill: $main-accent !important;
 }
 
 .array {
@@ -24,7 +24,7 @@
 }
 
 .number {
-    -fx-fill: #2192F2 !important;
+    -fx-fill: $main-accent !important;
     -fx-font-weight: bold;
 }
 
@@ -33,6 +33,6 @@
 }
 
 .keyword {
-    -fx-fill: #2C3964 !important;
+    -fx-fill: $secondary-accent !important;
     -fx-font-weight: bold;
 }
