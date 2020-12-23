@@ -36,6 +36,15 @@
 		}
 	}
 }
+
+#openRequestArea {
+    -fx-border-width: 0 0 2 0;
+    -fx-border-color: darken($background, 10%);
+    .icon {
+        -fx-fill: white;
+    }
+}
+
 .options-page {
 	-fx-padding: 20;
 	>.section-header {
@@ -67,9 +76,19 @@
 		}
 	}
 }
+.toggle-button {
+    -fx-text-fill: $foreground;
+}
+
 .jfx-toggle-button {
 	* {
 		-fx-padding: 0;
+	}
+	-jfx-toggle-color:  $main-accent;
+	-jfx-toggle-line-color: $secondary-accent;
+
+	.text {
+		-fx-text-fill: $foreground !important;
 	}
 }
 #exportArea {
@@ -111,21 +130,36 @@
 .mm-request-dirty {
 	-fx-fill: $main-accent;
 }
-.context-menu {
-	.menu-item {
-		.label {
-			-fx-font-weight: normal;
-			-fx-padding: 0 0 0 0;
-		}
-	}
+
+#request-collection, #working-area {
+    .context-menu {
+        -fx-background-color: $background;
+        .menu-item {
+            -fx-background-color: $background;
+
+            .label {
+                -fx-text-fill: $foreground;
+                -fx-font-weight: normal;
+                -fx-padding: 0 0 0 0;
+            }
+        }
+        .menu-item:focused {
+            -fx-background-color: lighten($background, 10%);
+
+            .label {
+                -fx-text-fill: $background;
+            }
+        }
+    }
 }
 #generalRequestEdit {
 	-fx-padding: 20;
 	-fx-background-color: $background;
-	.text-field {
+	.jfx-text-field, .text-field {
 		-fx-text-fill: $foreground;
 	}
-	.jfx-combo-box {
+
+	.jfx-check-box, .jfx-combo-box {
 		>* {
 			-fx-text-fill: $foreground;
 		}
@@ -179,8 +213,21 @@
 	}
 	.tab-content-area {
 		-fx-text-fill: white;
-		-fx-background-color: $secondary-accent;
-		-fx-padding: 10 5 0 0;
+		-fx-background-color: darken($background, 5%);
+		-fx-padding: 0 5 0 0;
+        .jfx-text-field, .text-field {
+            -fx-text-fill: $foreground;
+        }
+
+        .jfx-check-box, .jfx-combo-box {
+           -fx-text-fill: $foreground;
+        }
+
+		.text-area {
+		    .content {
+		        -fx-background-color: darken($background, 10%);
+		    }
+		}
 	}
 }
 #statusDisplay {
@@ -194,8 +241,7 @@
 	}
 }
 .responseArea {
-	-fx-border-color: $foreground;
-	-fx-border-width: 1 0 0 0;
+	-fx-border-width: 0 0 0 0;
 	-fx-background-color: $background;
 	.glyph-icon {
 		-fx-fill: $foreground;
@@ -219,8 +265,11 @@
 	}
 }
 .split-pane {
+    -fx-box-border: transparent;
+	-fx-padding: 0;
 	*.split-pane-divider {
 		-fx-padding: 0 1 0 1;
+		-fx-background-color: darken($background, 10%);
 	}
 }
 .request-type {
@@ -235,28 +284,42 @@
 .btn-starring {
 	-fx-translate-y: -3;
 }
-#collectionContainer {
-	-fx-background-color: $background;
+
+.jfx-tree-view {
 	.tree-cell {
 		-fx-background-color: $background;
 		&:selected {
-			.selection-bar {
-				-fx-background-color: $background;
-			}
-		}
-		.glyph-icon {
-			-fx-text-fill: $foreground;
-			-fx-fill: $foreground;
-		}
-		.label {
-			-fx-text-fill: $foreground;
-			-fx-fill: $foreground;
-		}
-		.arrow {
-			-fx-background-color: $foreground;
+			-fx-background-color: $secondary-accent;
+            .label {
+                -fx-text-fill: white;
+            }
 		}
 	}
+
+    .selection-bar {
+        -fx-background-color: $main-accent;
+    }
+    .jfx-rippler{
+        -jfx-rippler-fill: $main-accent;
+    }
+    .glyph-icon {
+        -fx-text-fill: $foreground;
+        -fx-fill: $foreground;
+    }
+    .label {
+        -fx-text-fill: $foreground;
+        -fx-fill: $foreground;
+    }
+    .arrow {
+        -fx-background-color: $foreground;
+    }
 }
+
+#collectionContainer {
+	-fx-background-color: $background;
+}
+
+
 .generic-content-pane {
 	-fx-background-color: $background;
 	-fx-padding: 20;
@@ -288,7 +351,7 @@
 	}
 }
 .jfx-tree-table-view {
-	-fx-background-color: $background;
+	-fx-background-color: darken($background, 10%);
 	.column-header {
 		.label {
 			-fx-text-fill: $foreground;
@@ -300,12 +363,18 @@
 		-fx-border-width: 0 0 0 0;
 		-fx-pref-height: 32px;
 		-fx-alignment: center-left;
+		.glyph-icon {
+		    -fx-fill: $foreground;
+		}
+		.jfx-text-field {
+		    -fx-text-fill: $foreground !important;
+		}
 	}
 	>.virtual-flow {
 		>.clipped-container {
 			>.sheet {
 				>.tree-table-row-cell {
-					-fx-background-color: $background;
+					-fx-background-color: darken($background, 10%);
 				}
 			}
 		}
@@ -317,9 +386,9 @@
 					>.tree-table-row-cell {
 						&:filled {
 							&:selected {
-								-fx-background-color: $foreground;
+								-fx-background-color: lighten($background, 10%);
 								-fx-table-cell-border-color: -fx-tree-table-color;
-								-fx-text-fill: black;
+								-fx-text-fill: white;
 							}
 						}
 					}
@@ -329,7 +398,7 @@
 		.tree-table-row-cell {
 			&:selected {
 				.tree-table-cell {
-					-fx-text-fill: black;
+					-fx-text-fill: white;
 				}
 			}
 		}
@@ -341,23 +410,24 @@
 	}
 }
 .contentEditor {
-	-fx-background-color: $background;
+	-fx-background-color: darken($background, 5%);
 	.disabled {
 		-fx-background-color: $foreground;
 	}
+
 	.label {
 		-fx-text-fill: $foreground;
-		-fx-background-color: $background;
+		-fx-background-color: darken($background, 5%);
 		-fx-translate-y: 4;
 		-fx-padding: 0 10;
 	}
 	.button {
 		-fx-text-fill: $foreground;
-		-fx-background-color: $background;
+		-fx-background-color: darken($background, 5%);
 	}
 	.code-area {
 		-fx-text-fill: $foreground;
-		-fx-background-color: $background;
+		-fx-background-color: darken($background, 10%);
 	}
 	.list-cell {
 		-fx-text-fill: $foreground;
@@ -365,6 +435,7 @@
 	}
 	.contentEditor-header {
 		-fx-padding: 10;
+		-fx-background-color: darken($background, 5%);
 	}
 }
 .styled-text-area {
@@ -382,6 +453,7 @@
 		-fx-text-fill: $foreground !important;
 	}
 }
+
 .jfx-dialog-layout {
 	-fx-background-color: $background;
 	.list-view {
@@ -402,14 +474,16 @@
 	.text-field {
 		-fx-text-fill: $foreground;
 	}
-	.toggle-button {
-		-fx-text-fill: $foreground;
-	}
+
+	.list-cell {
+        -fx-text-fill: white !important;
+    }
+
 	.jfx-combo-box {
-		>* {
-			-fx-text-fill: $foreground;
-		}
-	}
+        >* {
+            -fx-text-fill: $foreground;
+        }
+    }
 }
 .spinner {
 	-fx-background-color: $background;

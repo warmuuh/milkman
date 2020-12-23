@@ -272,6 +272,18 @@
     }
 }
 
+.jfx-toggle-button {
+	* {
+		-fx-padding: 0;
+	}
+	-jfx-toggle-color:  $main-accent;
+	-jfx-toggle-line-color: $secondary-accent;
+
+	.text {
+		-fx-text-fill: $foreground !important;
+	}
+}
+
 .contentEditor {
 	-fx-background-color: white;
 	.disabled {

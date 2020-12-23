@@ -414,6 +414,7 @@ public class RequestCollectionComponent {
 	public static class RequestCollectionComponentFxml extends VboxExt {
 		
 		public RequestCollectionComponentFxml(RequestCollectionComponent controller) {
+			this.setId("request-collection");
 			this.setMinWidth(200);
 			this.setMaxWidth(400);
 			

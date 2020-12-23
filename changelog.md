@@ -23,6 +23,7 @@ version 5.0.0
   * added `duplicate request` to tab context menu
   * added cache for cassandra-connections, so subsequent calls are faster
   * fixing multipart requests to use CRLF in body #76
+  * improved dark theme
   
 version 4.6.0
   * added option to disable ui animations

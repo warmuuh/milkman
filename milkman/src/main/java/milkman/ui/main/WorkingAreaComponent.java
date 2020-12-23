@@ -176,6 +176,7 @@ public class WorkingAreaComponent {
 	
 	public static class WorkingAreaComponentFxml extends VboxExt {
 		public WorkingAreaComponentFxml(WorkingAreaComponent controller) {
+			this.setId("working-area");
 			HboxExt reqArea = add(hbox("openRequestArea"));
 			
 			JFXTabPane pane = new JFXTabPane();
