@@ -26,6 +26,12 @@
 		}
 	}
 }
+
+#openRequestArea {
+	-fx-border-width: 0 0 2 0;
+	-fx-border-color: #f4f4f4;
+}
+
 .options-page {
 	-fx-padding: 20;
 	>.section-header {
@@ -197,6 +203,9 @@
 	}
 }
 .split-pane {
+	-fx-box-border: transparent;
+	-fx-padding: 0;
+
 	*.split-pane-divider {
 		-fx-padding: 0 1 0 1;
 	}
