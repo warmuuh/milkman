@@ -30,6 +30,7 @@ public class TestEnvironmentOverrideEditor implements RequestAspectEditor {
 		editor.addColumn("value", EnvironmentEntry::getValue, EnvironmentEntry::setValue);
 		editor.addDeleteColumn("delete");
 		editor.setItems(testAspect.getEnvironmentOverride(), Comparator.comparing(EnvironmentEntry::getName));
+		editor.setRowToStringConverter(e -> e.getName() + ": " + e.getValue());
 
 		return new Tab("Environment Override", editor);
 	}

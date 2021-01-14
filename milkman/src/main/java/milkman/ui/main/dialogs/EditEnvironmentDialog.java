@@ -27,7 +27,8 @@ public class EditEnvironmentDialog {
 		editor.addColumn("value", EnvironmentEntry::getValue, EnvironmentEntry::setValue);
 		editor.addDeleteColumn("delete");
 		editor.setItems(environment.getEntries(), (a,b) -> a.getName().compareTo(b.getName()));
-				
+		editor.setRowToStringConverter(e -> e.getName() + ": " + e.getValue());
+
 		dialog = FxmlUtil.createDialog(content);
 		dialog.showAndWait();
 	}

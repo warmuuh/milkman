@@ -28,6 +28,7 @@ public class TestResponseEnvironmentEditor implements ResponseAspectEditor {
                 editor.setItems(testAspect.getEnvironment().getEntries(), Comparator.comparing(EnvironmentEntry::getName));
         }));
 
+        editor.setRowToStringConverter(e -> e.getName() + ": " + e.getValue());
 
         return new Tab("Result Environment", editor);
     }
