@@ -2,6 +2,7 @@ package milkman.utils.fxml;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.JFXToggleNode;
 import com.jfoenix.validation.RequiredFieldValidator;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
@@ -12,6 +13,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+
+import java.util.function.Consumer;
 
 public class FxmlBuilder {
 
@@ -42,7 +45,15 @@ public class FxmlBuilder {
 		jfxButton.setOnAction(e -> onAction.run());
 		return jfxButton;
 	}
-	
+
+
+	public static JFXToggleNode toggle(Node graphic, Consumer<Boolean> onAction) {
+		JFXToggleNode jfxButton = new JFXToggleNode();
+		jfxButton.setGraphic(graphic);
+		jfxButton.setOnAction(e -> onAction.accept(jfxButton.isSelected()));
+		return jfxButton;
+	}
+
 	public static JFXButton button(String id, Node graphic, Runnable onAction) {
 		JFXButton button = button(graphic, onAction);
 		button.setId(id);
@@ -149,7 +160,6 @@ public class FxmlBuilder {
 	public static class HboxExt extends HBox {
 
 		public HboxExt() {
-			super();
 		}
 
 		public HboxExt(double spacing, Node... children) {
@@ -166,11 +176,11 @@ public class FxmlBuilder {
 		
 		
 		public <T extends Node> T add(T node) {
-			this.getChildren().add(node);
+			getChildren().add(node);
 			return node;
 		}
 		public <T extends Node> T add(T node, boolean grow) {
-			this.getChildren().add(node);
+			getChildren().add(node);
 			if (grow)
 				HBox.setHgrow(node, Priority.ALWAYS);
 			return node;
@@ -180,7 +190,6 @@ public class FxmlBuilder {
 	public static class VboxExt extends VBox {
 
 		public VboxExt() {
-			super();
 			// TODO Auto-generated constructor stub
 		}
 
@@ -199,11 +208,11 @@ public class FxmlBuilder {
 			// TODO Auto-generated constructor stub
 		}
 		public <T extends Node> T add(T node) {
-			this.getChildren().add(node);
+			getChildren().add(node);
 			return node;
 		}
 		public <T extends Node> T add(T node, boolean grow) {
-			this.getChildren().add(node);
+			getChildren().add(node);
 			if (grow)
 				VBox.setVgrow(node, Priority.ALWAYS);
 			return node;

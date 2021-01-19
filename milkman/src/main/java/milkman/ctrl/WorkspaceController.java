@@ -634,5 +634,8 @@ public class WorkspaceController {
 		workingAreaView.onCommand.add(this::handleCommand);
 		hotkeys.onCommand.add(this::handleCommand);
 	}
-	
+
+	public void toggleLayout(boolean horizontalLayout) {
+		workingAreaView.toggleLayout(horizontalLayout);
+	}
 }

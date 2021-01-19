@@ -19,6 +19,7 @@ import milkman.ui.commands.UiCommand.*;
 import milkman.ui.commands.UiCommand.CloseRequest.CloseType;
 import milkman.ui.main.RequestComponent.RequestComponentFxml;
 import milkman.ui.main.ResponseComponent.ResponseComponentFxml;
+import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.utils.AsyncResponseControl;
 import milkman.utils.Event;
 import milkman.utils.fxml.FxmlBuilder.*;
@@ -43,6 +44,9 @@ public class WorkingAreaComponent {
 	public final Event<UiCommand> onCommand = new Event<UiCommand>();
 	@Getter
 	private Parent requestArea;
+
+	private SplitPane splitPane;
+
 	JFXTabPane tabPane;
 	private ChangeListener<? super Tab> tabChangeListener;
 	
@@ -50,6 +54,11 @@ public class WorkingAreaComponent {
 		restRequestComponent.display(activeRequest);
 		setupTabs(activeRequest, openedRequests);
 		log.info("request area refreshed");
+	}
+
+	public void toggleLayout(boolean horizontalLayout) {
+		CoreApplicationOptionsProvider.options().setHorizontalLayout(horizontalLayout);
+		splitPane.setOrientation(horizontalLayout ? Orientation.HORIZONTAL : Orientation.VERTICAL);
 	}
 
 	private void setupTabs(RequestContainer activeRequest, List<RequestContainer> openedRequests) {
@@ -176,7 +185,7 @@ public class WorkingAreaComponent {
 	
 	public static class WorkingAreaComponentFxml extends VboxExt {
 		public WorkingAreaComponentFxml(WorkingAreaComponent controller) {
-			this.setId("working-area");
+			setId("working-area");
 			HboxExt reqArea = add(hbox("openRequestArea"));
 			
 			JFXTabPane pane = new JFXTabPane();
@@ -190,7 +199,11 @@ public class WorkingAreaComponent {
 			
 			
 			SplitPane splitPane = add(new SplitPane(), true);
-			splitPane.setOrientation(Orientation.VERTICAL);
+			controller.splitPane = splitPane;
+			var orientation = CoreApplicationOptionsProvider.options().isHorizontalLayout()
+					? Orientation.HORIZONTAL
+					: Orientation.VERTICAL;
+			splitPane.setOrientation(orientation);
 
 			controller.requestArea = new RequestComponentFxml(controller.restRequestComponent);
 			splitPane.getItems().add(controller.requestArea);

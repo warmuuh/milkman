@@ -13,8 +13,7 @@ import milkman.persistence.WorkbenchState;
 import milkman.templater.EnvironmentTemplater;
 import milkman.templater.PrefixedTemplaterResolver;
 import milkman.ui.commands.AppCommand;
-import milkman.ui.commands.AppCommand.RenameEnvironment;
-import milkman.ui.commands.AppCommand.RenameWorkspace;
+import milkman.ui.commands.AppCommand.*;
 import milkman.ui.main.HotkeyManager;
 import milkman.ui.main.Toaster;
 import milkman.ui.main.ToolbarComponent;
@@ -105,48 +104,54 @@ public class ApplicationController {
 	}
 	
 	public void handleCommand(AppCommand command) {
-		if (command instanceof AppCommand.PersistWorkspace) {
-			persistWorkspace(((AppCommand.PersistWorkspace) command).getWorkspace());
-		} else if (command instanceof AppCommand.LoadWorkspace) {
+		if (command instanceof PersistWorkspace) {
+			persistWorkspace(((PersistWorkspace) command).getWorkspace());
+		} else if (command instanceof LoadWorkspace) {
 			persistWorkspace(workspaceController.getActiveWorkspace());
-			loadWorkspace(((AppCommand.LoadWorkspace) command).getWorkspaceName());
-		} else if (command instanceof AppCommand.ManageWorkspaces) {
+			loadWorkspace(((LoadWorkspace) command).getWorkspaceName());
+		} else if (command instanceof ManageWorkspaces) {
 			openWorkspaceManagementDialog();
-		} else if (command instanceof AppCommand.CreateNewWorkspace) {
+		} else if (command instanceof CreateNewWorkspace) {
 			Workspace newWorkspace = createNewWorkspace();
 			if (newWorkspace != null)
-				((AppCommand.CreateNewWorkspace) command).getCallback().accept(newWorkspace);
-		} else if (command instanceof AppCommand.DeleteWorkspace) {
-			deleteWorkspace(((AppCommand.DeleteWorkspace) command).getWorkspaceName());
-		} else if (command instanceof AppCommand.RenameWorkspace) {
-			RenameWorkspace renameWorkspace = (AppCommand.RenameWorkspace) command;
+				((CreateNewWorkspace) command).getCallback().accept(newWorkspace);
+		} else if (command instanceof DeleteWorkspace) {
+			deleteWorkspace(((DeleteWorkspace) command).getWorkspaceName());
+		} else if (command instanceof RenameWorkspace) {
+			RenameWorkspace renameWorkspace = (RenameWorkspace) command;
 			renameWorkspace(renameWorkspace.getWorkspaceName(), renameWorkspace.getNewWorkspaceName());
-		} else if (command instanceof AppCommand.ManageEnvironments) {
+		} else if (command instanceof ManageEnvironments) {
 			openEnvironmentManagementDialog();
-		} else if (command instanceof AppCommand.EditCurrentEnvironment) {
+		} else if (command instanceof EditCurrentEnvironment) {
 			editCurrentEnvironment();
-		} else if (command instanceof AppCommand.CreateNewEnvironment) {
-			createNewEnvironment(((AppCommand.CreateNewEnvironment) command).getEnv());
-		} else if (command instanceof AppCommand.DeleteEnvironment) {
-			deleteEnvironment(((AppCommand.DeleteEnvironment) command).getEnv());
-		} else if (command instanceof AppCommand.RenameEnvironment) {
-			RenameEnvironment renameEnvironment = (AppCommand.RenameEnvironment) command;
+		} else if (command instanceof CreateNewEnvironment) {
+			createNewEnvironment(((CreateNewEnvironment) command).getEnv());
+		} else if (command instanceof DeleteEnvironment) {
+			deleteEnvironment(((DeleteEnvironment) command).getEnv());
+		} else if (command instanceof RenameEnvironment) {
+			RenameEnvironment renameEnvironment = (RenameEnvironment) command;
 			renameEnvironment(renameEnvironment.getEnv(), renameEnvironment.getNewName());
-		} else if (command instanceof AppCommand.ActivateEnvironment) {
-			activateEnvironment(((AppCommand.ActivateEnvironment) command).getEnv());
-		} else if (command instanceof AppCommand.RequestImport) {
+		} else if (command instanceof ActivateEnvironment) {
+			activateEnvironment(((ActivateEnvironment) command).getEnv());
+		} else if (command instanceof RequestImport) {
 			openImportDialog();
-		} else if (command instanceof AppCommand.ManageOptions) {
+		} else if (command instanceof ManageOptions) {
 			openOptionsDialog();
-		}  else if (command instanceof AppCommand.SyncWorkspace) {
-			syncWorkspace(((AppCommand.SyncWorkspace) command).getCallback());
-		} else if (command instanceof AppCommand.ExportWorkspace) {
-			exportWorkspace(((AppCommand.ExportWorkspace) command).getWorkspaceName());
-		} else if (command instanceof AppCommand.ShowAbout) {
+		}  else if (command instanceof SyncWorkspace) {
+			syncWorkspace(((SyncWorkspace) command).getCallback());
+		} else if (command instanceof ExportWorkspace) {
+			exportWorkspace(((ExportWorkspace) command).getWorkspaceName());
+		} else if (command instanceof ShowAbout) {
 			showAboutDialog();
+		} else if (command instanceof ToggleLayout) {
+			toggleLayout(((ToggleLayout) command).isHorizontalLayout());
 		} else {
 			throw new IllegalArgumentException("Unsupported command: " + command);
 		}
+	}
+
+	private void toggleLayout(boolean horizontalLayout) {
+		workspaceController.toggleLayout(horizontalLayout);
 	}
 
 	private void showAboutDialog() {

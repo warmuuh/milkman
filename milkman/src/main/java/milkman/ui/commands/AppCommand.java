@@ -11,85 +11,91 @@ public interface AppCommand {
 
 	
 	@Value
-	public static class PersistWorkspace implements AppCommand {
+	class PersistWorkspace implements AppCommand {
 		Workspace workspace;
 	}
 	
 	@Value
-	public static class ManageWorkspaces implements AppCommand {
+	class ManageWorkspaces implements AppCommand {
 		
 	}
 	@Value
-	public static class LoadWorkspace implements AppCommand {
+	class LoadWorkspace implements AppCommand {
 		String workspaceName;
 	}
 	
 	@Value
-	public static class CreateNewWorkspace implements AppCommand {
+	class CreateNewWorkspace implements AppCommand {
 		Consumer<Workspace> callback;
 	}
 	
 	@Value
-	public static class DeleteWorkspace implements AppCommand {
+	class DeleteWorkspace implements AppCommand {
 		String workspaceName;
 	}
 	
 	@Value
-	public static class RenameWorkspace implements AppCommand {
+	class RenameWorkspace implements AppCommand {
 		String workspaceName;
 		String newWorkspaceName;
 	}
 
 	@Value
-	public static class ExportWorkspace implements AppCommand {
+	class ExportWorkspace implements AppCommand {
 		String workspaceName;
 	}
 	
 	
 	
 	@Value
-	public static class ManageEnvironments implements AppCommand {
+	class ManageEnvironments implements AppCommand {
 		
 	}
 	@Value
-	public static class ActivateEnvironment implements AppCommand {
+	class ActivateEnvironment implements AppCommand {
 		Optional<Environment> env;
 	}
 	@Value
-	public static class RenameEnvironment implements AppCommand {
+	class RenameEnvironment implements AppCommand {
 		Environment env;
 		String newName;
 	}
 	
 	@Value
-	public static class DeleteEnvironment implements AppCommand {
+	class DeleteEnvironment implements AppCommand {
 		Environment env;
 	}
 
 	@Value
-	public static class EditCurrentEnvironment implements AppCommand {
+	class EditCurrentEnvironment implements AppCommand {
 	}
 	
 	@Value
-	public static class CreateNewEnvironment implements AppCommand {
+	class CreateNewEnvironment implements AppCommand {
 		Environment env;
 	}
 	
 	@Value
-	public static class RequestImport implements AppCommand {
+	class RequestImport implements AppCommand {
 	}
 	
 
 	@Value
-	public static class ManageOptions implements AppCommand {
+	class ManageOptions implements AppCommand {
 	}
 	
 	@Value
-	public static class SyncWorkspace implements AppCommand {
+	class SyncWorkspace implements AppCommand {
 		Runnable callback;
 	}
 
 	@Value
-	public static class ShowAbout implements AppCommand {
+	class ShowAbout implements AppCommand {
+	}
+
+
+	@Value
+	class ToggleLayout implements AppCommand {
+		boolean horizontalLayout;
 	}
 }

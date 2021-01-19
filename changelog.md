@@ -8,6 +8,7 @@
 # Changelog
 
 version 5.1.0 -- upcoming
+  * added horizontal layout switch
   * added result environment to test plugin
   * fixed bugs in test-plugin that lead to re-execution of tests
   * added support for line-breaks in `x-www-form-urlencoded` mimetype requests

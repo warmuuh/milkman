@@ -16,6 +16,7 @@ import milkman.domain.Environment;
 import milkman.domain.Workspace;
 import milkman.ui.commands.AppCommand;
 import milkman.ui.commands.AppCommand.*;
+import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.utils.Event;
 
 import javax.inject.Singleton;
@@ -146,6 +147,10 @@ public class ToolbarComponent {
 		onCommand.invoke(new ManageOptions());
 	}
 
+	public void onToggleLayout(boolean horizontalLayout) {
+		onCommand.invoke(new ToggleLayout(horizontalLayout));
+	}
+
 	public void onEditCurEnv() {
 		onCommand.invoke(new EditCurrentEnvironment());
 	}
@@ -189,6 +194,11 @@ public class ToolbarComponent {
 			HBox.setHgrow(spacer, Priority.ALWAYS);
 			getItems().add(spacer);
 
+			var layoutToggle = toggle(icon(FontAwesomeIcon.COLUMNS), controller::onToggleLayout);
+			if (CoreApplicationOptionsProvider.options().isHorizontalLayout()) {
+				layoutToggle.setSelected(true);
+			}
+			getItems().add(layoutToggle);
 			getItems().add( button(icon(FontAwesomeIcon.WRENCH), controller::onOptions));
 			getItems().add( button(icon(FontAwesomeIcon.QUESTION_CIRCLE), controller::onAbout));
 			

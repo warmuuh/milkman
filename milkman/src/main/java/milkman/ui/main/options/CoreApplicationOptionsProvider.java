@@ -2,17 +2,19 @@ package milkman.ui.main.options;
 
 import lombok.Data;
 import milkman.ui.main.ThemeSwitcher;
+import milkman.ui.main.options.CoreApplicationOptionsProvider.CoreApplicationOptions;
 import milkman.ui.plugin.OptionPageProvider;
 import milkman.ui.plugin.OptionsObject;
 
-public class CoreApplicationOptionsProvider implements OptionPageProvider<CoreApplicationOptionsProvider.CoreApplicationOptions>{
+public class CoreApplicationOptionsProvider implements OptionPageProvider<CoreApplicationOptions>{
 
 	@Data
 	public static class CoreApplicationOptions implements OptionsObject {
 		private boolean autoformatContent = true;
 		private boolean checkForUpdates = true;
 		private String theme = "Milkman";
-		private boolean disableAnimations = false;
+		private boolean disableAnimations;
+		private boolean horizontalLayout;
 	} 
 
 	private static CoreApplicationOptions currentOptions = new CoreApplicationOptions();
