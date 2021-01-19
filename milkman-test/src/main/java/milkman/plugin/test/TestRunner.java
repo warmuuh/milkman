@@ -109,8 +109,17 @@ public class TestRunner {
 				.then(Mono.just(true))
 				.onErrorResume(err -> {
 					var state = testDetails.isIgnore() ? IGNORED : FAILED;
-					replay.next(new TestResultEvent(request.getT1().toString(), request.getT3().getName(), state, Map.of("exception", err.toString())));
+					var message = getErrorMessage(err);
+					replay.next(new TestResultEvent(request.getT1().toString(), request.getT3().getName(), state, Map.of("exception", message)));
 					return Mono.just(testDetails.isIgnore()); //pretend success, if ignore is true
 				});
+	}
+
+	private String getErrorMessage(Throwable err) {
+		//checking for RetryExhaustedException
+		if (err instanceof IllegalStateException && err.getCause() != null) {
+			return err.getCause().toString();
+		}
+		return err.toString();
 	}
 }
