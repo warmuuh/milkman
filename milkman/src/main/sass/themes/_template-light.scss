@@ -259,8 +259,8 @@
 .jfx-tree-table-view {
 
     .tree-table-row-cell:selected {
-        -fx-background-color: $secondary-accent;
-        -fx-table-cell-border-color: $secondary-accent;
+        -fx-background-color: $main-accent;
+        -fx-table-cell-border-color: $main-accent;
     }
 
 	.tree-table-cell {
@@ -274,7 +274,11 @@
         -fx-background-color: $main-accent;
     }
     .tree-cell:selected {
+		-fx-text-fill: white;
         -fx-background-color: $secondary-accent;
+		.label {
+			-fx-text-fill: white;
+		}
     }
     .jfx-rippler{
         -jfx-rippler-fill: $main-accent;
