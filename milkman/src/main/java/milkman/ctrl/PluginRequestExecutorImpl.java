@@ -37,7 +37,6 @@ public class PluginRequestExecutorImpl implements PluginRequestExecutor {
 	@SneakyThrows
 	public ResponseContainer executeRequest(RequestContainer requestContainer, Optional<Environment> environmentOverride) {
 		RequestTypePlugin requestTypePlugin = requestTypeManager.getPluginFor(requestContainer);
-
 		RequestExecutionContext context = getExecutionCtx(environmentOverride);
 
 		plugins.loadRequestAspectPlugins().forEach(a -> a.beforeRequestExecution(requestContainer, context));

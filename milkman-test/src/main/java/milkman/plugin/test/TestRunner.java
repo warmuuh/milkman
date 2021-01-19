@@ -18,6 +18,7 @@ import reactor.core.publisher.ReplayProcessor;
 import reactor.core.scheduler.Schedulers;
 import reactor.util.function.Tuple3;
 import reactor.util.function.Tuples;
+import reactor.util.retry.Retry;
 
 import java.time.Duration;
 import java.util.Map;
@@ -57,7 +58,12 @@ public class TestRunner {
 					})
 					.doOnNext(tuple -> sink.next(new TestResultEvent(tuple.getT1().toString(), tuple.getT3().getName(), STARTED, Map.of())))
 					.flatMap(tuple -> execute(tuple, testEnvironment, sink))
-					.onErrorContinue(err -> !testAspect.isStopOnFirstFailure(), (err, obj) -> {/* silently skip errors, they where signaled already */})
+					.flatMap(testSuccess -> {
+						if (!testSuccess && testAspect.isStopOnFirstFailure()) {
+							return Mono.error(new RuntimeException("Test failed"));
+						}
+						return Mono.empty();
+					})
 //				.switchIfEmpty(Mono.defer(() -> {
 //					log.error("Request could not be found");
 //					return Mono.just(new TestResultEvent("", "", TestResultAspect.TestResultState.EXCEPTION));
@@ -91,20 +97,20 @@ public class TestRunner {
 		return environment;
 	}
 
-	private Mono<Void> execute(Tuple3<Long, TestDetails, RequestContainer> request, Environment overrideEnv, FluxSink<TestResultEvent> replay) {
+	private Mono<Boolean> execute(Tuple3<Long, TestDetails, RequestContainer> request, Environment overrideEnv, FluxSink<TestResultEvent> replay) {
 		var testDetails = request.getT2();
 		var retryDelay = Duration.ofMillis(testDetails.getWaitBetweenRetriesInMs());
 		return Mono.defer(() -> Mono.just(executor.executeRequest(request.getT3(), Optional.of(overrideEnv))))
-				.retryBackoff(testDetails.getRetries(), retryDelay, retryDelay, 0.0)
+				.retryWhen(Retry.fixedDelay(testDetails.getRetries(), retryDelay)
+//						.filter(t -> !testDetails.isIgnore()) // might be wanted behavior: retry on error but ignore result, so we dont use this filter here
+						.scheduler(Schedulers.elastic()))
 				.flatMap(res -> Mono.fromFuture(res.getStatusInformations()))
 				.doOnNext(si -> replay.next(new TestResultEvent(request.getT1().toString(), request.getT3().getName(), SUCCEEDED, si)))
-				.then()
-				.onErrorResume(err -> testDetails.isIgnore(), err -> {
-					replay.next(new TestResultEvent(request.getT1().toString(), request.getT3().getName(), IGNORED, Map.of("exception", err.toString())));
-					return Mono.empty();
-				})
-				.doOnError(t ->
-						replay.next(new TestResultEvent(request.getT1().toString(), request.getT3().getName(), FAILED, Map.of("exception", t.toString())))
-				);
+				.then(Mono.just(true))
+				.onErrorResume(err -> {
+					var state = testDetails.isIgnore() ? IGNORED : FAILED;
+					replay.next(new TestResultEvent(request.getT1().toString(), request.getT3().getName(), state, Map.of("exception", err.toString())));
+					return Mono.just(testDetails.isIgnore()); //pretend success, if ignore is true
+				});
 	}
 }
