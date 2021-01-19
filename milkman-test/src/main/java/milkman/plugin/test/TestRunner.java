@@ -45,7 +45,7 @@ public class TestRunner {
 
 		var replay = ReplayProcessor.<TestResultEvent>create();
 		Flux<TestResultEvent> resultFlux = Flux.<TestResultEvent>create(sink -> {
-			Flux.fromIterable(testAspect.getRequests())
+			var subscription = Flux.fromIterable(testAspect.getRequests())
 					.index()
 					.flatMap(tuple -> Mono.justOrEmpty(executor.getDetails(tuple.getT2().getId()).map(r -> Tuples.of(tuple.getT1(), tuple.getT2(), r))))
 					.filter(t -> {
@@ -68,6 +68,7 @@ public class TestRunner {
 					})
 					.subscribeOn(Schedulers.elastic())
 					.publish().connect();
+			asyncControl.onCancellationRequested.add(subscription::dispose);
 		}).doOnComplete(() -> {
 			if (testAspect.isPropagateResultEnvironment()){
 
@@ -102,6 +103,8 @@ public class TestRunner {
 					replay.next(new TestResultEvent(request.getT1().toString(), request.getT3().getName(), IGNORED, Map.of("exception", err.toString())));
 					return Mono.empty();
 				})
-				.doOnError(t -> replay.next(new TestResultEvent(request.getT1().toString(), request.getT3().getName(), FAILED, Map.of("exception", t.toString()))));
+				.doOnError(t ->
+						replay.next(new TestResultEvent(request.getT1().toString(), request.getT3().getName(), FAILED, Map.of("exception", t.toString())))
+				);
 	}
 }
