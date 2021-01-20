@@ -84,7 +84,7 @@ A testrunner plugin that allows to run multiple requests in sequence and verify 
 
 ![Milkman White](img/screenshot.png)
 
-![Milkman Dark](img/screenshot-sql-dark.png)
+![Milkman Dark](img/screenshot-dark.png)
 
 # Plugins
 
