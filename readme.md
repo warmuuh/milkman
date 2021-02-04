@@ -19,6 +19,7 @@ everything being a plugin, other things are possible, like database-requests or 
  * To install just Milkman run `Choco install milkman`
  * To install a plugin run `Choco install milkman-<plugin name>` ex. `Choco install milkman-explore`
  * Install Milkman and all plugins available run `Choco install milkman-plugins` 
+ * Milkman will be installed under C:\tools\milkman.
 
 # Install via Homebrew (MacOs)
  * To install, run `brew cask install milkman`. All plugins are included.
