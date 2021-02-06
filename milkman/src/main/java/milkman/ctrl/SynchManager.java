@@ -1,19 +1,17 @@
 package milkman.ctrl;
 
-import java.util.concurrent.CompletableFuture;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.Workspace;
-import milkman.ui.main.Toaster;
 import milkman.ui.plugin.UiPluginManager;
 import milkman.ui.plugin.WorkspaceSynchronizer;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.concurrent.CompletableFuture;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_={@Inject})
@@ -22,7 +20,7 @@ public class SynchManager {
 
 	private final UiPluginManager plugins;
 
-	public CompletableFuture<Void> syncWorkspace(Workspace workspace) {
+	public CompletableFuture<Void> syncWorkspace(Workspace workspace, boolean localSyncOnly) {
 		if (!workspace.getSyncDetails().isSyncActive()) {
 			CompletableFuture<Void> future = new CompletableFuture<Void>();
 			future.completeExceptionally(new RuntimeException("Sync not active"));
@@ -31,7 +29,7 @@ public class SynchManager {
 		
 		for (WorkspaceSynchronizer synchronizer : plugins.loadSyncPlugins()) {
 			if (synchronizer.supportSyncOf(workspace)) {
-				return triggerSynchronization(workspace, synchronizer);
+				return triggerSynchronization(workspace, synchronizer, localSyncOnly);
 			}
 		}
 		
@@ -40,11 +38,13 @@ public class SynchManager {
 		return future;
 	}
 
-	
-	private CompletableFuture<Void> triggerSynchronization(Workspace workspace, WorkspaceSynchronizer synchronizer) {
+
+	private CompletableFuture<Void> triggerSynchronization(Workspace workspace,
+														   WorkspaceSynchronizer synchronizer,
+														   boolean localSyncOnly) {
 		CompletableFuture<Void> future = new CompletableFuture<Void>();
-		SyncServiceTask task = new SyncServiceTask(workspace, synchronizer);
-		
+		SyncServiceTask task = new SyncServiceTask(workspace, synchronizer, localSyncOnly);
+
 		task.setOnSucceeded(e -> {
 			SyncResult result = task.getValue();
 			if (result.isSuccess()) {
@@ -53,13 +53,13 @@ public class SynchManager {
 				future.completeExceptionally(result.getT());
 			}
 		});
-		
+
 		task.setOnFailed(e -> {
 			future.completeExceptionally(new RuntimeException("Sync Failed"));
 		});
-		
+
 		task.start();
-		
+
 		return future;
 	}
 
@@ -76,6 +76,7 @@ public class SynchManager {
 
 		private final Workspace workspace;
 		private final WorkspaceSynchronizer synchronizer;
+		private final boolean localSyncOnly;
 		
 		@Override
 		protected Task<SyncResult> createTask() {
@@ -84,7 +85,7 @@ public class SynchManager {
 				@Override
 				protected SyncResult call() throws Exception {
 					try {
-						synchronizer.synchronize(workspace);
+						synchronizer.synchronize(workspace, localSyncOnly);
 						return new SyncResult(true, null);
 					} catch (Throwable t) {
 						log.warn("Failed to sync", t);

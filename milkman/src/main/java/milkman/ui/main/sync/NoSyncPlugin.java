@@ -14,7 +14,7 @@ public class NoSyncPlugin implements WorkspaceSynchronizer {
 	}
 
 	@Override
-	public void synchronize(Workspace workspace) {
+	public void synchronize(Workspace workspace, boolean localSyncOnly) {
 		
 	}
 

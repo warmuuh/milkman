@@ -1,12 +1,8 @@
 package milkman.ui.main;
 
-import com.jfoenix.controls.JFXButton;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.application.Platform;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
-import javafx.scene.control.ToolBar;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -33,7 +29,7 @@ public class ToolbarComponent {
 
 	 ChoiceBox<ChoiceboxEntry> environmentSelection;
 
-	 JFXButton syncBtn;
+	 SplitMenuButton syncBtn;
 
 	
 	
@@ -158,7 +154,16 @@ public class ToolbarComponent {
 	 public void onSync() {
 		syncBtn.setDisable(true);
 		syncBtn.setText("Syncing...");
-		onCommand.invoke(new SyncWorkspace(() -> {
+		onCommand.invoke(new SyncWorkspace(false, () -> {
+			syncBtn.setDisable(false);
+			syncBtn.setText("Sync");
+		}));
+	}
+
+	public void onSyncReadOnly() {
+		syncBtn.setDisable(true);
+		syncBtn.setText("Syncing...");
+		onCommand.invoke(new SyncWorkspace(true, () -> {
 			syncBtn.setDisable(false);
 			syncBtn.setText("Sync");
 		}));
@@ -177,8 +182,15 @@ public class ToolbarComponent {
 
 			controller.workspaceSelection = choiceBox("workspaceSelection");
 			getItems().add(controller.workspaceSelection);
-			
-			controller.syncBtn = button("syncButton", "Sync", controller::onSync);
+
+			controller.syncBtn = new SplitMenuButton();
+			var syncLocalOnly = new MenuItem("sync local only");
+			syncLocalOnly.setOnAction(e -> controller.onSyncReadOnly());
+			controller.syncBtn.getItems().add(syncLocalOnly);
+
+			controller.syncBtn.setId("syncButton");
+			controller.syncBtn.setText("Sync");
+			controller.syncBtn.setOnAction(e -> controller.onSync());
 			getItems().add(controller.syncBtn);
 
 			getItems().add( button("Import", controller::onImport));

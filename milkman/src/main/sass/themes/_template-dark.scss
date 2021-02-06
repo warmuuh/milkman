@@ -23,10 +23,38 @@
 	}
 	.choice-box {
 		-fx-background-color: $secondary-accent;
-		.context-menu {
-			-fx-background-color: $secondary-accent;
-		}
 	}
+
+    .context-menu {
+        -fx-background-color: $secondary-accent;
+        .menu-item {
+            -fx-background-color: $secondary-accent;
+
+            .label {
+                -fx-text-fill: $background;
+                -fx-font-weight: normal;
+                -fx-padding: 0 0 0 0;
+            }
+        }
+        .menu-item:focused {
+            -fx-background-color: darken($secondary-accent, 10%);
+
+            .label {
+                -fx-text-fill: $background;
+            }
+        }
+    }
+
+    #syncButton {
+        -fx-background-color: $secondary-accent;
+        -fx-text-fill: white;
+        -fx-text-fill: white;
+        -fx-translate-y: 1;
+        -fx-pref-height: 24px;
+        -fx-min-height: -fx-pref-height;
+        -fx-max-height: -fx-pref-height;
+    }
+
 	.jfx-button {
 		-fx-text-fill: white;
 		-fx-background-color: $secondary-accent;
@@ -147,11 +175,36 @@
             -fx-background-color: lighten($background, 10%);
 
             .label {
-                -fx-text-fill: $background;
+                -fx-text-fill: $foreground;
             }
         }
     }
 }
+
+.split-menu-button {
+    >.label {
+        -fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
+        -fx-background-radius: 3px 0px 0px 3px;
+        -fx-background-insets: 0px;
+        -fx-text-fill: white;
+    }
+    .arrow-button {
+        -fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
+        -fx-text-fill: white;
+        -fx-inner-border: TRANSPARENT;
+        -fx-background-radius: 0px 3px 3px 0px;
+        -fx-background-insets: 0px;
+    }
+}
+.empty-menu {
+    >.arrow-button {
+        -fx-padding: 0;
+        >.arrow {
+            -fx-padding: 0;
+        }
+    }
+}
+
 #generalRequestEdit {
 	-fx-padding: 20;
 	-fx-background-color: $background;
@@ -168,34 +221,23 @@
 		-fx-background-color: $main-accent;
 		-fx-text-fill: white;
 	}
-	.empty-menu {
-		>.arrow-button {
-			-fx-padding: 0;
-			>.arrow {
-				-fx-padding: 0;
-			}
-		}
-	}
+
 	#saveBtn {
 		-fx-background-color: $secondary-accent;
 		-fx-text-fill: white;
 	}
-	.split-menu-button {
-		>.label {
-			-fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
-			-fx-background-radius: 3px 0px 0px 3px;
-			-fx-background-insets: 0px;
-			-fx-text-fill: white;
-		}
-		.arrow-button {
-			-fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
-			-fx-text-fill: white;
-			-fx-inner-border: TRANSPARENT;
-			-fx-background-radius: 0px 3px 3px 0px;
-			-fx-background-insets: 0px;
-		}
-	}
+
 }
+
+.jfx-popup-container {
+    -fx-background-color: $background;
+    -fx-text-fill: $foreground;
+
+    .label{
+        -fx-text-fill: $foreground;
+    }
+}
+
 #requestComponent {
 	.variable-new {
 		-fx-fill: transparent;
@@ -319,11 +361,20 @@
 	-fx-background-color: $background;
 }
 
+.generic-content {
+	-fx-background-color: $background;
+
+    .glyph-icon {
+        -fx-fill: $foreground;
+    }
+}
 
 .generic-content-pane {
 	-fx-background-color: $background;
 	-fx-padding: 20;
 }
+
+
 .generic-section {
 	-fx-padding: 0 0 20 0;
 }
@@ -546,6 +597,8 @@
 }
 .jfx-snackbar-content {
 	-fx-background-color: $background;
+    -fx-border-width: 1;
+    -fx-border-color: $foreground;
 }
 .jfx-snackbar-toast {
 	-fx-text-fill: $foreground;

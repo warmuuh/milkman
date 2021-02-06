@@ -17,7 +17,7 @@ public interface WorkspaceSynchronizer extends Orderable {
     /**
     * triggers a synchronization, blocking, will be executed in a javafx-service
     */
-	void synchronize(Workspace workspace);
+	void synchronize(Workspace workspace, boolean syncLocalOnly);
 
 
     /**

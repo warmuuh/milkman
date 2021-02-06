@@ -90,7 +90,7 @@ public class ApplicationController {
 		
 		//initial pull of shared repo
 		if (syncDetails.isSyncActive()) {
-			syncWorkspace(() -> {}, workspace);
+			syncWorkspace(() -> {}, true, workspace);
 			
 		}
 		
@@ -138,7 +138,8 @@ public class ApplicationController {
 		} else if (command instanceof ManageOptions) {
 			openOptionsDialog();
 		}  else if (command instanceof SyncWorkspace) {
-			syncWorkspace(((SyncWorkspace) command).getCallback());
+			var syncCommand = (SyncWorkspace) command;
+			syncWorkspace(syncCommand.getCallback(), syncCommand.isSyncLocalOnly());
 		} else if (command instanceof ExportWorkspace) {
 			exportWorkspace(((ExportWorkspace) command).getWorkspaceName());
 		} else if (command instanceof ShowAbout) {
@@ -173,12 +174,12 @@ public class ApplicationController {
 
 	}
 
-	private void syncWorkspace(Runnable callback) {
-		syncWorkspace(callback, workspaceController.getActiveWorkspace());
+	private void syncWorkspace(Runnable callback, boolean localSyncOnly) {
+		syncWorkspace(callback, localSyncOnly, workspaceController.getActiveWorkspace());
 	}
 
-	private void syncWorkspace(Runnable callback, Workspace workspace) {
-		CompletableFuture<Void> future = syncManager.syncWorkspace(workspace);
+	private void syncWorkspace(Runnable callback, boolean localSyncOnly, Workspace workspace) {
+		CompletableFuture<Void> future = syncManager.syncWorkspace(workspace, localSyncOnly);
 		toaster.showToast("Sync started");
 		future.whenComplete((r, e) -> {
 			callback.run();

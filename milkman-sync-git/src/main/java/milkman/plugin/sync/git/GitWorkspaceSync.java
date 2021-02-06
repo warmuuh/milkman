@@ -1,27 +1,8 @@
 package milkman.plugin.sync.git;
 
-import static milkman.plugin.sync.git.JGitUtil.initWith;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.CanceledException;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.InvalidConfigurationException;
-import org.eclipse.jgit.api.errors.InvalidRemoteException;
-import org.eclipse.jgit.api.errors.NoHeadException;
-import org.eclipse.jgit.api.errors.RefNotAdvertisedException;
-import org.eclipse.jgit.api.errors.RefNotFoundException;
-import org.eclipse.jgit.api.errors.TransportException;
-import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-
 import de.danielbechler.diff.node.DiffNode;
 import lombok.SneakyThrows;
 import milkman.PlatformUtil;
@@ -30,6 +11,15 @@ import milkman.domain.Environment;
 import milkman.domain.Workspace;
 import milkman.persistence.UnknownPluginHandler;
 import milkman.ui.plugin.WorkspaceSynchronizer;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.*;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+
+import static milkman.plugin.sync.git.JGitUtil.initWith;
 /**
  * some simplistic diff-sync way of synchronizing workspace with remote
  * 
@@ -45,7 +35,7 @@ public class GitWorkspaceSync implements WorkspaceSynchronizer {
 
 	@Override
 	@SneakyThrows
-	public void synchronize(Workspace workspace) {
+	public void synchronize(Workspace workspace, boolean localSyncOnly) {
 		GitSyncDetails syncDetails = (GitSyncDetails) workspace.getSyncDetails();
 		ObjectMapper mapper = createMapper();
 		CollectionDiffer diffMerger = new CollectionDiffer();
@@ -80,8 +70,52 @@ public class GitWorkspaceSync implements WorkspaceSynchronizer {
 
 		List<Collection> collectionWorkingCopy = workspace.getCollections();
 		List<Environment> environmentWorkingCopy = workspace.getEnvironments();
-		
-		//step1: compute diff against common copy
+		if (localSyncOnly){
+			doReadOnlySync(workspace,
+					syncDetails,
+					mapper,
+					diffMerger,
+					collectionFile,
+					collectionCommonCopy,
+					environmentFile,
+					environmentCommonCopy,
+					repo,
+					collectionServerCopy,
+					environmentServerCopy,
+					collectionWorkingCopy,
+					environmentWorkingCopy);
+		} else {
+			doNormalDiffSync(workspace,
+					syncDetails,
+					mapper,
+					diffMerger,
+					collectionFile,
+					collectionCommonCopy,
+					environmentFile,
+					environmentCommonCopy,
+					repo,
+					collectionServerCopy,
+					environmentServerCopy,
+					collectionWorkingCopy,
+					environmentWorkingCopy);
+		}
+
+	}
+
+	private void doNormalDiffSync(Workspace workspace,
+								  GitSyncDetails syncDetails,
+								  ObjectMapper mapper,
+								  CollectionDiffer diffMerger,
+								  File collectionFile,
+								  List<Collection> collectionCommonCopy,
+								  File environmentFile,
+								  List<Environment> environmentCommonCopy,
+								  Git repo,
+								  List<Collection> collectionServerCopy,
+								  List<Environment> environmentServerCopy,
+								  List<Collection> collectionWorkingCopy,
+								  List<Environment> environmentWorkingCopy) throws IOException, GitAPIException {
+		//step1: compute working-diffs against common copy
 		DiffNode collectionWorkingCopyChanges = diffMerger.compare(collectionWorkingCopy, collectionCommonCopy);
 		DiffNode environmentWorkingCopyChanges = diffMerger.compareEnvs(environmentWorkingCopy, environmentCommonCopy);
 
@@ -92,19 +126,48 @@ public class GitWorkspaceSync implements WorkspaceSynchronizer {
 			mapper.writeValue(collectionFile, collectionServerCopy);
 			mapper.writeValue(environmentFile, environmentServerCopy);
 			repo.add()
-				.addFilepattern(".")
-				.call();
+					.addFilepattern(".")
+					.call();
 			repo.commit()
-				.setMessage("milkman sync")
-				.call();
+					.setMessage("milkman sync")
+					.call();
 			initWith(repo.push(), syncDetails)
-				.call();
+					.call();
 		}
-		
-		
+
+
 		//step3: merge server-diffs to working copy
 		workspace.setCollections(collectionServerCopy);
 		workspace.setEnvironments(environmentServerCopy);
+	}
+
+	private void doReadOnlySync(Workspace workspace,
+								  GitSyncDetails syncDetails,
+								  ObjectMapper mapper,
+								  CollectionDiffer diffMerger,
+								  File collectionFile,
+								  List<Collection> collectionCommonCopy,
+								  File environmentFile,
+								  List<Environment> environmentCommonCopy,
+								  Git repo,
+								  List<Collection> collectionServerCopy,
+								  List<Environment> environmentServerCopy,
+								  List<Collection> collectionWorkingCopy,
+								  List<Environment> environmentWorkingCopy) throws IOException, GitAPIException {
+		//step1: compute server-diffs against common copy
+		DiffNode collectionServerCopyChanges = diffMerger.compare(collectionServerCopy, collectionCommonCopy);
+		DiffNode environmentServerCopyChanges = diffMerger.compareEnvs(environmentServerCopy, environmentCommonCopy);
+
+		//step2: merge diffs to working copy
+		if (collectionServerCopyChanges.isChanged() || environmentServerCopyChanges.isChanged()) {
+			diffMerger.mergeDiffs(collectionServerCopy, collectionWorkingCopy, collectionServerCopyChanges);
+			diffMerger.mergeDiffsEnvs(environmentServerCopy, environmentWorkingCopy, environmentServerCopyChanges);
+		}
+
+
+		//step3: apply
+		workspace.setCollections(collectionWorkingCopy);
+		workspace.setEnvironments(environmentWorkingCopy);
 	}
 
 	private ObjectMapper createMapper() {
@@ -125,7 +188,7 @@ public class GitWorkspaceSync implements WorkspaceSynchronizer {
 				.setURI(syncDetails.getGitUrl())
 				.setDirectory(syncDir)
 				.setCloneAllBranches(true)
-				.setBranch("master")
+				.setBranch(syncDetails.getBranch())
 				.call();
 			
 			

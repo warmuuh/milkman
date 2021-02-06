@@ -20,6 +20,7 @@ public class GitSyncDetailFactory implements SynchronizationDetailFactory {
 
 	private JFXTextField gitUrl;
 	private JFXTextField username;
+	private JFXTextField branch;
 	private JFXPasswordField passwordOrToken;
 	private Label usernameLbl;
 	private Label passwordLbl;
@@ -33,6 +34,9 @@ public class GitSyncDetailFactory implements SynchronizationDetailFactory {
 	public Node getSyncDetailsControls() {
 		gitUrl = new JFXTextField();
 		gitUrl.getValidators().add(new RequiredFieldValidator());
+		branch = new JFXTextField();
+		branch.setText("master");
+		branch.getValidators().add(new RequiredFieldValidator());
 		username = new JFXTextField();
 		username.getValidators().add(new RequiredFieldValidator());
 		passwordOrToken = new JFXPasswordField();
@@ -43,11 +47,11 @@ public class GitSyncDetailFactory implements SynchronizationDetailFactory {
 
 		gitUrl.textProperty().addListener((obs, old, newValue) -> updateConnectionTypeLabels(newValue));
 
-		return new VBox(new Label("Git Url"), gitUrl, usernameLbl, username, passwordLbl, passwordOrToken);
+		return new VBox(new Label("Git Url"), gitUrl, new Label("Branch"), branch, usernameLbl, username, passwordLbl, passwordOrToken);
 	}
 
 	private void updateConnectionTypeLabels(String newValue) {
-		GitSyncDetails newDetails = new GitSyncDetails(newValue, "", "");
+		GitSyncDetails newDetails = new GitSyncDetails(newValue, "", "", "master");
 		if (newDetails.isSsh()) {
 			usernameLbl.setText("Ssh File");
 			username.setPromptText("insert id_rsa file here...");
@@ -70,10 +74,10 @@ public class GitSyncDetailFactory implements SynchronizationDetailFactory {
 	@Override
 	@SneakyThrows
 	public SyncDetails createSyncDetails() {
-		if (!gitUrl.validate() || !username.validate())
+		if (!gitUrl.validate() || !username.validate() || !branch.validate())
 			throw new IllegalArgumentException("Missing entries");
 
-		GitSyncDetails syncDetails = new GitSyncDetails(gitUrl.getText(), username.getText(), passwordOrToken.getText());
+		GitSyncDetails syncDetails = new GitSyncDetails(gitUrl.getText(), username.getText(), passwordOrToken.getText(), branch.getText());
 		if (syncDetails.isSsh()) {
 			if (!new File(syncDetails.getUsername()).exists()) {
 				throw new FileNotFoundException("Ssh file not found: " + syncDetails.getUsername());

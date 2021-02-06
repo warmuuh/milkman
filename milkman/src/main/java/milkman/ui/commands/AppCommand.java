@@ -86,6 +86,7 @@ public interface AppCommand {
 	
 	@Value
 	class SyncWorkspace implements AppCommand {
+		boolean syncLocalOnly;
 		Runnable callback;
 	}
 

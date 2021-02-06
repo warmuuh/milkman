@@ -15,6 +15,7 @@ version 5.1.0 -- upcoming
   * improved dirty-indicator for request tabs
   * added Grpc Tls support
   * refactored theming (using scss now), added new `trump` theme
+  * added read-only sync mode to only pull changes
 
 version 5.0.0
   * included [cassandra plugin](/milkman-cassandra) and [Grpc plugin](/milkman-grpc) into macos app bundle

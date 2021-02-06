@@ -230,6 +230,7 @@ public class VariableHighlighter {
         replTxt.setEditable(varData.isWriteable());
 
         popup = new JFXPopup(vBox);
+        popup.setId("variable-popup");
 
         if (varData.isWriteable()){
             String btnText = varData.isNewVariable() ? "Create Variable" : "Modify Variable";

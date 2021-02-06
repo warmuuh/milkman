@@ -217,6 +217,7 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 			splitPane.setDividerPositions(0.3);
 
 			var requestControls = vbox("testrequest-controls");
+			requestControls.getStyleClass().add("generic-content");
 
 			requestControls.add(button("testrequest-up", icon(FontAwesomeIcon.CHEVRON_UP), controller::moveUp));
 			requestControls.add(button("testrequest-down", icon(FontAwesomeIcon.CHEVRON_DOWN), controller::moveDown));

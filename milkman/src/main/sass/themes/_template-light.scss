@@ -17,6 +17,15 @@
 			-fx-background-color: $secondary-accent;
 		}
 	}
+    #syncButton {
+        -fx-background-color: $secondary-accent;
+        -fx-text-fill: white;
+		-fx-translate-y: 1;
+		-fx-pref-height: 24px;
+		-fx-min-height: -fx-pref-height;
+		-fx-max-height: -fx-pref-height;
+    }
+
 	.jfx-button {
 		-fx-text-fill: white;
 		-fx-background-color: $secondary-accent;
@@ -124,6 +133,31 @@
 		}
 	}
 }
+
+.split-menu-button {
+    >.label {
+        -fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
+        -fx-background-radius: 3px 0px 0px 3px;
+        -fx-background-insets: 0px;
+        -fx-text-fill: white;
+    }
+    .arrow-button {
+        -fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
+        -fx-text-fill: white;
+        -fx-inner-border: TRANSPARENT;
+        -fx-background-radius: 0px 3px 3px 0px;
+        -fx-background-insets: 0px;
+    }
+}
+.empty-menu {
+    >.arrow-button {
+        -fx-padding: 0;
+        >.arrow {
+            -fx-padding: 0;
+        }
+    }
+}
+
 #generalRequestEdit {
 	-fx-padding: 20;
 	-fx-background-color: white;
@@ -131,32 +165,10 @@
 		-fx-background-color: $main-accent;
 		-fx-text-fill: white;
 	}
-	.empty-menu {
-		>.arrow-button {
-			-fx-padding: 0;
-			>.arrow {
-				-fx-padding: 0;
-			}
-		}
-	}
+
 	#saveBtn {
 		-fx-background-color: $secondary-accent;
 		-fx-text-fill: white;
-	}
-	.split-menu-button {
-		>.label {
-			-fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
-			-fx-background-radius: 3px 0px 0px 3px;
-			-fx-background-insets: 0px;
-			-fx-text-fill: white;
-		}
-		.arrow-button {
-			-fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
-			-fx-text-fill: white;
-			-fx-inner-border: TRANSPARENT;
-			-fx-background-radius: 0px 3px 3px 0px;
-			-fx-background-insets: 0px;
-		}
 	}
 }
 #requestComponent {
