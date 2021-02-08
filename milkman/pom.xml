@@ -120,7 +120,7 @@
 			<plugin>
 				<groupId>com.github.warmuuh</groupId>
 				<artifactId>maven-css2bin-plugin</artifactId>
-				<version>1.0-SNAPSHOT</version>
+				<version>1.0.0</version>
 				<configuration>
 					<inputDirectory>${basedir}/target/generated-sources/sass</inputDirectory>
 					<outputDirectory>${basedir}/target/classes</outputDirectory>
@@ -247,9 +247,8 @@
 
 	<pluginRepositories>
 		<pluginRepository>
-			<id>github</id>
-			<url>https://maven.pkg.github.com/warmuuh/maven-css2bin-plugin</url>
-			<snapshots><enabled>true</enabled></snapshots>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
 		</pluginRepository>
 	</pluginRepositories>
 
