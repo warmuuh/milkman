@@ -22,8 +22,8 @@ everything being a plugin, other things are possible, like database-requests or 
  * Milkman will be installed under C:\tools\milkman.
 
 # Install via Homebrew (MacOs)
- * To install, run `brew cask install milkman`. All plugins are included.
- * To update, run `brew cask upgrade`
+ * To install, run `brew install --cask milkman`. All plugins are included.
+ * To update, run `brew upgrade --cask`
 
 # Changes
 
