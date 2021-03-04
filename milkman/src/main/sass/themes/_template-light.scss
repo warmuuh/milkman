@@ -291,6 +291,11 @@
 		.label {
 			-fx-text-fill: white;
 		}
+		.menu-item {
+			.label {
+				-fx-text-fill: black;
+			}
+		}
     }
     .jfx-rippler{
         -jfx-rippler-fill: $main-accent;
