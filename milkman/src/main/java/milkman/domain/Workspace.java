@@ -54,8 +54,10 @@ public class Workspace {
 		this.openRequests = openRequests;
 		this.activeRequest = activeRequest;
 	}
-	
-	
-	
+
+
+    public KeySet getActiveKeySet() {
+		return keySets.get(0);
+    }
 }
  

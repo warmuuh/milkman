@@ -165,7 +165,8 @@ public class ApplicationController {
 	private void showManageKeysDialog() {
 		var keysDialog = new ManageKeysDialog();
 		//there is only one keyset for now
-		keysDialog.showAndWait(workspaceController.getActiveWorkspace().getKeySets().get(0));
+		var defaultKeySet = workspaceController.getActiveWorkspace().getActiveKeySet();
+		keysDialog.showAndWait(defaultKeySet, plugins.loadKeyEditors());
 	}
 	private void exportWorkspace(String workspaceName) {
 		ExportDialog<Workspace> dialog = new ExportDialog<>();

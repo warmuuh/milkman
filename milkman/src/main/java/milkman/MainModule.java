@@ -29,7 +29,8 @@ public class MainModule extends MainModuleBase {
 	protected UiPluginManager createUiPluginManager() {
 		return new UiPluginManager(createAutoCompleter(), createActiveEnvironmentProvider(),
 				() -> getToaster(),
-				() -> getPluginRequestExecutorImpl());
+				() -> getPluginRequestExecutorImpl(),
+				() -> getWorkspaceController().getActiveWorkspace());
 	}
 
 	
