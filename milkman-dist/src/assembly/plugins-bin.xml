@@ -23,6 +23,7 @@
 				<include>com.github.warmuuh:milkman-grpc</include>
 				<include>com.github.warmuuh:milkman-cassandra</include>
 				<include>com.github.warmuuh:milkman-test</include>
+				<include>com.github.warmuuh:milkman-auth</include>
 			</includes>
 			<binaries>
 				<unpack>false</unpack>

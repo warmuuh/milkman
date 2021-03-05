@@ -63,7 +63,11 @@ public class ManageKeysDialog {
 			return keyEditors.stream()
 				.filter(ke -> ke.getName().equals(selectValueDialog.getInput()))
 				.findAny()
-				.map(KeyEditor::getNewKeyEntry)
+				.map(keyEditor -> {
+					var newEntry = keyEditor.getNewKeyEntry();
+					editKey(newEntry);
+					return newEntry;
+				})
 				.orElse(null);
 		}
 		return null;

@@ -73,6 +73,12 @@ public class FxmlBuilder {
 	public static JFXTextField text(String id, String prompt) {
 		return text(id, prompt, false);
 	}
+	
+	public static <O> Node formEntry(String name, GenericBinding<O, String> binding, O object){
+		var textField = text(name + "-input", "");
+		binding.bindTo(textField.textProperty(), object);
+		return new VboxExt(label(name), textField);
+	}
 
 	public static JFXTextField text(String id, String prompt, boolean lblFloat) {
 		JFXTextField txt = new JFXTextField();

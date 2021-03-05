@@ -23,6 +23,7 @@
 		<module>milkman-grpc</module>
 		<module>milkman-cli</module>
 		<module>milkman-test</module>
+		<module>milkman-auth</module>
 	</modules>
 
 	<properties>
