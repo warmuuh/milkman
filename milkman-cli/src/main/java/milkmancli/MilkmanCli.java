@@ -55,7 +55,11 @@ public class MilkmanCli extends MilkmanCliBase {
 
 	@Override
 	protected UiPluginManager createUiPluginManager() {
-		return new UiPluginManager(null, null, () -> new NoOpToaster(null), () -> new CliPluginRequestExecutorImpl());
+		return new UiPluginManager(null,
+				null,
+				() -> new NoOpToaster(null),
+				() -> new CliPluginRequestExecutorImpl(),
+				() -> getCliContext().getCurrentWorkspace());
 	}
 
 	@Override
@@ -65,7 +69,7 @@ public class MilkmanCli extends MilkmanCliBase {
 	
 	public void initOptions() {
 		List<OptionPageProvider> optionProviders = getUiPluginManager().loadOptionPages();
-		this.getPersistenceManager().loadOptions().forEach(e -> {
+		getPersistenceManager().loadOptions().forEach(e -> {
 			optionProviders.stream().filter(p -> p.getClass().getName().equals(e.getOptionProviderClass()))
 			.findAny().ifPresent(p -> {
 				((OptionPageProvider<OptionsObject>)p).setOptions(e.getOptionsObject());

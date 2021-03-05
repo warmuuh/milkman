@@ -1,6 +1,7 @@
 package milkman.ui.plugin;
 
 import lombok.RequiredArgsConstructor;
+import milkman.domain.Workspace;
 import milkman.ui.components.AutoCompleter;
 import milkman.ui.main.ActiveEnvironmentProvider;
 import milkman.ui.main.Toaster;
@@ -16,6 +17,7 @@ public class UiPluginManager {
 	private final ActiveEnvironmentProvider envProvider;
 	private final Supplier<Toaster> toaster;
 	private final Supplier<PluginRequestExecutor> pluginRequestExecutor;
+	private final Supplier<Workspace> activeWorkspace;
 	
 	Map<Class, List> cachedInstances = new HashMap<Class, List>();
 	
@@ -38,7 +40,10 @@ public class UiPluginManager {
 	public List<OptionPageProvider> loadOptionPages(){
 		return loadOrderedSpiInstances(OptionPageProvider.class);
 	}
-	
+
+	public List<KeyEditor> loadKeyEditors(){
+		return loadOrderedSpiInstances(KeyEditor.class);
+	}
 
 	public List<UiThemePlugin> loadThemePlugins(){
 		return loadSpiInstances(UiThemePlugin.class);
@@ -72,9 +77,13 @@ public class UiPluginManager {
 		if (o instanceof AutoCompletionAware) {
 			((AutoCompletionAware) o).setAutoCompleter(completer);
 		}
-		
+
 		if (o instanceof ActiveEnvironmentAware) {
 			((ActiveEnvironmentAware) o).setActiveEnvironment(envProvider.getActiveEnvironment());
+		}
+
+		if (o instanceof ActiveKeySetAware) {
+			((ActiveKeySetAware) o).setActiveKeySet(activeWorkspace.get().getActiveKeySet());
 		}
 		
 		if (o instanceof ToasterAware) {

@@ -3,9 +3,6 @@ package milkman.ui.main;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.application.Platform;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import lombok.Value;
 import lombok.val;
 import milkman.domain.Environment;
@@ -175,6 +172,12 @@ public class ToolbarComponent {
 		onCommand.invoke(new ShowAbout());
 	}
 
+
+	private void onEditKeys() {
+		onCommand.invoke(new ManageKeys());
+	}
+
+
 	public static class ToolbarComponentFxml extends ToolBar {
 		public ToolbarComponentFxml(ToolbarComponent controller) {
 			setId("toolbar");
@@ -201,10 +204,11 @@ public class ToolbarComponent {
 			controller.environmentSelection = choiceBox("environmentSelection");
 			getItems().add(controller.environmentSelection);
 			getItems().add( button(icon(FontAwesomeIcon.PENCIL), controller::onEditCurEnv));
-			
-			var spacer = new Region();
-			HBox.setHgrow(spacer, Priority.ALWAYS);
-			getItems().add(spacer);
+
+			getItems().add(space(20));
+			getItems().add( button(icon(FontAwesomeIcon.KEY), controller::onEditKeys));
+
+			getItems().add(space());
 
 			var layoutToggle = toggle(icon(FontAwesomeIcon.COLUMNS), controller::onToggleLayout);
 			if (CoreApplicationOptionsProvider.options().isHorizontalLayout()) {

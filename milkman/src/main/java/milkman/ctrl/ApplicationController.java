@@ -144,6 +144,8 @@ public class ApplicationController {
 			exportWorkspace(((ExportWorkspace) command).getWorkspaceName());
 		} else if (command instanceof ShowAbout) {
 			showAboutDialog();
+		} else if (command instanceof ManageKeys) {
+			showManageKeysDialog();
 		} else if (command instanceof ToggleLayout) {
 			toggleLayout(((ToggleLayout) command).isHorizontalLayout());
 		} else {
@@ -160,6 +162,12 @@ public class ApplicationController {
 		aboutDialog.showAndWait();
 	}
 
+	private void showManageKeysDialog() {
+		var keysDialog = new ManageKeysDialog();
+		//there is only one keyset for now
+		var defaultKeySet = workspaceController.getActiveWorkspace().getActiveKeySet();
+		keysDialog.showAndWait(defaultKeySet, plugins.loadKeyEditors());
+	}
 	private void exportWorkspace(String workspaceName) {
 		ExportDialog<Workspace> dialog = new ExportDialog<>();
 		List<Exporter<Workspace>> exportPlugins = plugins.loadWorkspaceExportPlugins().stream()

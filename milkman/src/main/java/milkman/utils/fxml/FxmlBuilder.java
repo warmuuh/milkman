@@ -9,10 +9,7 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.scene.Node;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 
 import java.util.function.Consumer;
 
@@ -117,7 +114,18 @@ public class FxmlBuilder {
 		view.setStyleClass("icon");
 		return view;
 	}
-	
+
+	public static Region space(double space) {
+		var spacer = new Region();
+		spacer.setMinWidth(space);
+		return spacer;
+	}
+
+	public static Region space() {
+		var spacer = new Region();
+		HBox.setHgrow(spacer, Priority.ALWAYS);
+		return spacer;
+	}
 	
 	public static ChoiceBox choiceBox(String id) {
 		ChoiceBox cb = new ChoiceBox();

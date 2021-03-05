@@ -30,6 +30,7 @@ import milkman.utils.javafx.JavaFxUtils;
 import milkman.utils.javafx.ResizableJfxTreeTableView;
 
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.*;
 import java.util.stream.Collectors;
@@ -44,18 +45,19 @@ class RecursiveWrapper<T> extends RecursiveTreeObject<RecursiveWrapper<T>>{
 public class JfxTableEditor<T> extends StackPane {
 	
 	
-	private ResizableJfxTreeTableView<RecursiveWrapper<T>> table = new ResizableJfxTreeTableView<RecursiveWrapper<T>>();
+	private final ResizableJfxTreeTableView<RecursiveWrapper<T>> table = new ResizableJfxTreeTableView<RecursiveWrapper<T>>();
 
 	private ObservableList<RecursiveWrapper<T>> obsWrappedItems;
 
-	private JFXButton addItemBtn;
+	private final JFXButton addItemBtn;
 
-	
-	private Function<T, String> rowToStringConverter = null;
+	private final List<CustomAction> customActions = new LinkedList<>();
+
+	private Function<T, String> rowToStringConverter;
 
 	private Function<String, T> stringToRowConverter;
 	
-	private Integer firstEditableColumn = null;
+	private Integer firstEditableColumn;
 
 	private Supplier<T> newItemCreator;
 
@@ -66,17 +68,17 @@ public class JfxTableEditor<T> extends StackPane {
 		table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 		JavaFxUtils.publishEscToParent(table);
-		this.getChildren().add(table);
+		getChildren().add(table);
 		addItemBtn = new JFXButton();
 		addItemBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 		addItemBtn.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PLUS, "1.5em"));
 		addItemBtn.getStyleClass().add("btn-add-entry");
 		StackPane.setAlignment(addItemBtn, Pos.BOTTOM_RIGHT);
 		StackPane.setMargin(addItemBtn, new Insets(0, 20, 20, 0));
-		this.getChildren().add(addItemBtn);
+		getChildren().add(addItemBtn);
 
-		final KeyCombination keyCodeCopy = PlatformUtil.getControlKeyCombination(KeyCode.C);
-		final KeyCombination keyCodePaste = PlatformUtil.getControlKeyCombination(KeyCode.V);
+		KeyCombination keyCodeCopy = PlatformUtil.getControlKeyCombination(KeyCode.C);
+		KeyCombination keyCodePaste = PlatformUtil.getControlKeyCombination(KeyCode.V);
 	    table.setOnKeyPressed(event -> {
 	        if (keyCodeCopy.match(event)) {
 	            copySelectionToClipboard();
@@ -100,7 +102,7 @@ public class JfxTableEditor<T> extends StackPane {
 			b.append(rowToStringConverter.apply(treeItm.getValue().getData()));	
 		}
 		
-		final ClipboardContent clipboardContent = new ClipboardContent();
+		ClipboardContent clipboardContent = new ClipboardContent();
 	    clipboardContent.putString(b.toString());
 	    Clipboard.getSystemClipboard().setContent(clipboardContent);
 	}
@@ -112,7 +114,7 @@ public class JfxTableEditor<T> extends StackPane {
 		
 	    String content = (String) Clipboard.getSystemClipboard().getContent(DataFormat.PLAIN_TEXT);
 		if (content != null) {
-			String lines[] = content.split("\\r?\\n");
+			String[] lines = content.split("\\r?\\n");
 			try {
 				for (String line : lines) {
 					T newEntry = stringToRowConverter.apply(line);
@@ -226,17 +228,27 @@ public class JfxTableEditor<T> extends StackPane {
 	
 	public void addDeleteColumn(String name, Consumer<T> listener) {
 		TreeTableColumn<RecursiveWrapper<T>, String> column = new TreeTableColumn<>(name);
-		column.setCellFactory(c -> new DeleteEntryCell(listener));
+		column.setCellFactory(c -> new CustomActionsCell());
 		column.setMinWidth(100);
 		column.setEditable(false);
 		table.getColumns().add(column);
 //		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
+
+
+		customActions.add(new CustomAction(FontAwesomeIcon.TIMES, (wrappedItem) -> {
+			Platform.runLater( () -> {
+				obsWrappedItems.remove(wrappedItem);
+				if (listener != null) {
+					listener.accept(wrappedItem.getData());
+				}
+			});
+		}));
 	}
 
 	public void enableAddition(Supplier<T> newItemCreator) {
 		this.newItemCreator = newItemCreator;
 		addItemBtn.setVisible(true);
-		this.addItemBtn.setOnAction(e -> { 
+		addItemBtn.setOnAction(e -> {
 			addNewItem();
 		});
 	}
@@ -244,15 +256,23 @@ public class JfxTableEditor<T> extends StackPane {
 
 	protected boolean addNewItem() {
 		if (newItemCreator != null) {
-			obsWrappedItems.add(new RecursiveWrapper<>(newItemCreator.get()));
-			return true;
+			var newItem = newItemCreator.get();
+			if (newItem != null) {
+				obsWrappedItems.add(new RecursiveWrapper<>(newItem));
+				return true;
+			}
 		}
 		return false;
 	}
+
 	public void disableAddition() {
 		addItemBtn.setVisible(false);
 	}
-	
+
+	public void addCustomAction(FontAwesomeIcon icon, Consumer<T> action){
+		customActions.add(new CustomAction(icon, wrappedItem -> action.accept(wrappedItem.getData())));
+	}
+
 	public void setItems(List<T> items) {
 		setItems(items, null);
 	}
@@ -285,7 +305,7 @@ public class JfxTableEditor<T> extends StackPane {
 			}
 		});
 		
-		final TreeItem<RecursiveWrapper<T>> root = new RecursiveTreeItem<>(obsWrappedItems, RecursiveTreeObject::getChildren); 
+		TreeItem<RecursiveWrapper<T>> root = new RecursiveTreeItem<>(obsWrappedItems, RecursiveTreeObject::getChildren);
 		table.setRoot(root);
 		
 		Platform.runLater(() -> {
@@ -321,15 +341,18 @@ public class JfxTableEditor<T> extends StackPane {
 
 
 
-	private final class DeleteEntryCell extends TreeTableCell<RecursiveWrapper<T>, String> {
-		final JFXButton btn;
-		private Consumer<T> listener;
-		
-		public DeleteEntryCell(Consumer<T> listener) {
-			this.listener = listener;
-			btn = new JFXButton();
+	private final class CustomActionsCell extends TreeTableCell<RecursiveWrapper<T>, String> {
+
+		private JFXButton createButton(CustomAction action) {
+			JFXButton btn = new JFXButton();
 			btn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-			btn.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.TIMES, "1.5em"));
+			btn.setGraphic(new FontAwesomeIconView(action.getIcon(), "1.5em"));
+			btn.setOnAction(event -> {
+				RecursiveWrapper<T> wrappedItem = getTreeTableRow().getItem();
+				action.getAction().accept(wrappedItem);
+				getTreeTableView().refresh();
+			});
+			return btn;
 		}
 		
 		@Override
@@ -339,26 +362,10 @@ public class JfxTableEditor<T> extends StackPane {
 		        setGraphic(null);
 		        setText(null);
 		    } else {
-		        btn.setOnAction(event -> {
-
-					Platform.runLater( () -> {
-					
-//						table.build().getChildren().remove(getTreeTableRow().getIndex());
-//						obsWrappedItems.remove(getTreeTableRow().getIndex());
-						RecursiveWrapper<T> removedItem = getTreeTableRow().getItem();
-						obsWrappedItems.remove(removedItem);
-//						table.build().getValue().setChildren(obsWrappedItems);
-//						table.setRoot(table.build());
-//						table.refresh();
-						if (listener != null) {
-							listener.accept(removedItem.getData());
-						}
-					});
-//                        T element = getTreeTableView().build().getChildren().get(getTreeTableRow().getIndex()).getValue();
-//                        getItems().remove(element);
-		        	
-		        });
-		        var hbox = new HBox(btn);
+		        var hbox = new HBox();
+		        customActions.stream()
+						.map(this::createButton)
+						.forEach(hbox.getChildren()::add);
 		        hbox.setAlignment(Pos.CENTER);
 				setGraphic(hbox);
 		        setText(null);
@@ -370,14 +377,14 @@ public class JfxTableEditor<T> extends StackPane {
 
 
 	public class BooleanCell<T2> extends JFXTreeTableCell<T2, Boolean> {
-        private CheckBox checkBox;
+        private final CheckBox checkBox;
         
         public BooleanCell(TreeTableColumn<RecursiveWrapper<T>, ?> column) {
             checkBox = new CheckBox();
             
 //            checkBox.setDisable(true);
             checkBox.setOnAction(e -> {
-        			var row = BooleanCell.this.getTreeTableRow().getIndex();
+        			var row = getTreeTableRow().getIndex();
 					table.edit(row, column);
 //        			itemProperty().setValue(newValue == null ? false : newValue);
 
@@ -388,21 +395,21 @@ public class JfxTableEditor<T> extends StackPane {
 					GenericBinding<T2, Boolean> binding = (GenericBinding<T2, Boolean>) column.getCellObservableValue(row);
 					binding.set(checkBox.isSelected());
             });
-            this.setGraphic(checkBox);
-            this.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-            this.setEditable(true);
+			setGraphic(checkBox);
+			setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+			setEditable(true);
         }
 
         @Override
         public void updateItem(Boolean item, boolean empty) {
             super.updateItem(item, empty);
             if (empty || item == null) {
-                this.setGraphic(null);
+				setGraphic(null);
             } else {
                 checkBox.setSelected(item);
             	var hbox = new HBox(checkBox);
             	hbox.setAlignment(Pos.CENTER);
-				this.setGraphic(hbox);
+				setGraphic(hbox);
             }
         }
     }
@@ -433,14 +440,14 @@ public class JfxTableEditor<T> extends StackPane {
 	    }
 	}
 	
-	public static class SelectableTextFieldBuilder extends JfxTableEditor.TextFieldEditorBuilderPatch {
+	public static class SelectableTextFieldBuilder extends TextFieldEditorBuilderPatch {
 
 		@Override
 		public Region createNode(String value, EventHandler<KeyEvent> keyEventsHandler,
 				ChangeListener<Boolean> focusChangeListener) {
 			Region node = super.createNode(value, keyEventsHandler, focusChangeListener);
-			
-			this.textField.setEditable(false);
+
+			textField.setEditable(false);
 			
 			return node;
 		}
@@ -452,6 +459,12 @@ public class JfxTableEditor<T> extends StackPane {
 		// TODO Auto-generated method stub
 		
 	}
-	
+
+
+	@Value
+	private class CustomAction {
+		FontAwesomeIcon icon;
+		Consumer<RecursiveWrapper<T>> action;
+	}
 	
 }

@@ -94,6 +94,9 @@ public interface AppCommand {
 	class ShowAbout implements AppCommand {
 	}
 
+	@Value
+	class ManageKeys implements AppCommand {
+	}
 
 	@Value
 	class ToggleLayout implements AppCommand {

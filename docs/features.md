@@ -38,3 +38,9 @@
 * <kbd>ESC</kbd> hides highlighting
 
 ![highlightvars-video](/img/gif/hightlight-vars.gif)
+
+## Keys
+
+* secret keys that should not be exported or synced can be setup using the key-symbol
+* currently, secret keys are only plain type keys, but will be e.g. oauth-keys etc
+* can be accessed using {{key:name-of-key}} variable

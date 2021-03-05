@@ -1,23 +1,21 @@
 package milkman.domain;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.dizitart.no2.IndexType;
-import org.dizitart.no2.objects.Id;
-import org.dizitart.no2.objects.Index;
-import org.dizitart.no2.objects.Indices;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import milkman.ctrl.RequestExecutor;
 import milkman.ui.main.sync.NoSyncDetails;
 import milkman.utils.AsyncResponseControl;
+import org.dizitart.no2.IndexType;
+import org.dizitart.no2.objects.Id;
+import org.dizitart.no2.objects.Index;
+import org.dizitart.no2.objects.Indices;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -37,6 +35,7 @@ public class Workspace {
 	private List<RequestContainer> openRequests;
 	private RequestContainer activeRequest;
 	private List<Environment> environments = new LinkedList<Environment>();
+	private List<KeySet> keySets = new LinkedList<>(List.of(new KeySet("default")));
 	
 	private SyncDetails syncDetails = new NoSyncDetails();
 	
@@ -48,7 +47,6 @@ public class Workspace {
 	
 	public Workspace(long id, String workspaceId, String name, List<Collection> collections,
 			List<RequestContainer> openRequests, RequestContainer activeRequest) {
-		super();
 		this.id = id;
 		this.workspaceId = workspaceId;
 		this.name = name;
@@ -56,8 +54,10 @@ public class Workspace {
 		this.openRequests = openRequests;
 		this.activeRequest = activeRequest;
 	}
-	
-	
-	
+
+
+    public KeySet getActiveKeySet() {
+		return keySets.get(0);
+    }
 }
  
