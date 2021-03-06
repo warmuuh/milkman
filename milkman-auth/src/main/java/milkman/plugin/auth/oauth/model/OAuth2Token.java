@@ -1,4 +1,4 @@
-package milkman.plugin.auth.oauth;
+package milkman.plugin.auth.oauth.model;
 
 import lombok.Value;
 
