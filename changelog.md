@@ -7,7 +7,11 @@
 
 # Changelog
 
-version 5.1.0 -- upcoming
+version 5.2.0 -- upcoming
+  * added key-store that is not synced
+  * added oauth2 support (client-credential, password grant)
+
+version 5.1.0
   * added horizontal layout switch
   * added result environment to test plugin
   * fixed bugs in test-plugin that lead to re-execution of tests
