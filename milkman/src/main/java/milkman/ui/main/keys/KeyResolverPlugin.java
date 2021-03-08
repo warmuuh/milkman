@@ -1,17 +1,28 @@
 package milkman.ui.main.keys;
 
+import lombok.Setter;
 import milkman.domain.KeySet;
+import milkman.ui.main.Toaster;
 import milkman.ui.plugin.ActiveKeySetAware;
 import milkman.ui.plugin.TemplateParameterResolverPlugin;
+import milkman.ui.plugin.ToasterAware;
 
-public class KeyResolverPlugin implements TemplateParameterResolverPlugin, ActiveKeySetAware {
+public class KeyResolverPlugin implements TemplateParameterResolverPlugin, ActiveKeySetAware, ToasterAware {
 
-    private KeySet keySet;
+    @Setter
+    private KeySet activeKeySet;
+    @Setter
+    private Toaster toaster;
 
     @Override
     public String lookupValue(String input) {
-        return keySet.getValueForKey(input)
-                .orElseThrow(() -> new RuntimeException("Failed to resolve key: " + input));
+        try {
+            return activeKeySet.getValueForKey(input)
+                    .orElse("{{key:" + input + "}}");
+        } catch (Exception e) {
+            toaster.showToast("Failed to resolve key:" + input + ": " + e.getMessage());
+            return "{{key:" + input + "}}";
+        }
     }
 
     @Override
@@ -19,8 +30,4 @@ public class KeyResolverPlugin implements TemplateParameterResolverPlugin, Activ
         return "key";
     }
 
-    @Override
-    public void setActiveKeySet(KeySet keySet) {
-        this.keySet = keySet;
-    }
 }

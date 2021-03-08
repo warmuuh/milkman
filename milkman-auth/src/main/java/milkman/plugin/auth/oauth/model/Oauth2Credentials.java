@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.KeySet.KeyEntry;
 import milkman.plugin.auth.oauth.DynamicOauth2Api;
-import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.Instant;
 import java.util.Date;
@@ -23,6 +23,7 @@ public class Oauth2Credentials extends KeyEntry {
     String clientSecret;
     String accessTokenEndpoint;
     String scopes;
+    boolean autoRefresh;
 
     Oauth2Grant grantType;
     OAuth2Token token;
@@ -39,20 +40,32 @@ public class Oauth2Credentials extends KeyEntry {
 
     @Override
     public String getValue() {
-        if (token == null && ObjectUtils.allNotNull(clientId, clientSecret, accessTokenEndpoint, scopes)){
-            try{
-                fetchNewToken();
-            } catch (RuntimeException e) {
-                return "<failed: "+e.getMessage()+">";
-            }
-        }
         if (token == null){
             return "<no token>";
         }
         return token.getAccessToken();
     }
 
-    private void fetchNewToken() {
+    public void refreshToken() {
+        if (!autoRefresh || StringUtils.isBlank(token.getRefreshToken())){
+            return;
+        }
+
+        OAuth20Service service = new ServiceBuilder(clientId)
+                .apiSecret(clientSecret)
+                .build(new DynamicOauth2Api(accessTokenEndpoint, ""));
+        try {
+            var scribeToken = service.refreshAccessToken(token.getRefreshToken());
+            token = new OAuth2Token(scribeToken.getAccessToken(), scribeToken.getRefreshToken(), new Date(Instant.now().plusSeconds(scribeToken.getExpiresIn()).toEpochMilli()));
+        } catch (OAuth2AccessTokenErrorResponse e){
+            throw new RuntimeException(e.getErrorDescription(), e);
+        } catch (Exception e) {
+            log.error("Failed to fetch token", e);
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    public void fetchNewToken() {
         OAuth20Service service = new ServiceBuilder(clientId)
                 .apiSecret(clientSecret)
                 .build(new DynamicOauth2Api(accessTokenEndpoint, ""));

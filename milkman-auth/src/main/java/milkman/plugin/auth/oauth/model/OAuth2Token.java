@@ -1,10 +1,14 @@
 package milkman.plugin.auth.oauth.model;
 
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
-@Value
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class OAuth2Token {
     String accessToken;
     String refreshToken;
