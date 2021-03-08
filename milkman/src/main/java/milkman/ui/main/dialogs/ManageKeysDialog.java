@@ -8,11 +8,13 @@ import milkman.domain.KeySet;
 import milkman.domain.KeySet.KeyEntry;
 import milkman.ui.components.JfxTableEditor;
 import milkman.ui.plugin.KeyEditor;
+import milkman.utils.ObjectUtils;
 import milkman.utils.fxml.FxmlUtil;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static milkman.utils.fxml.FxmlBuilder.cancel;
@@ -33,6 +35,7 @@ public class ManageKeysDialog {
 		editor.addReadOnlyColumn("Type", KeyEntry::getType);
 		editor.addReadOnlyColumn("Value", KeyEntry::getValue);
 		editor.addCustomAction(FontAwesomeIcon.PENCIL, this::editKey);
+		editor.addCustomAction(FontAwesomeIcon.CLONE, this::copyKey);
 		editor.addDeleteColumn("Delete");
 		editor.setItems(keySet.getEntries(), Comparator.comparing(KeyEntry::getName));
 		editor.setRowToStringConverter(e -> e.getName() + ": " + e.getValue());
@@ -41,6 +44,14 @@ public class ManageKeysDialog {
 
 		dialog = FxmlUtil.createDialog(content);
 		dialog.showAndWait();
+	}
+
+	private void copyKey(KeyEntry keyEntry) {
+		var copy = ObjectUtils.deepClone(keyEntry);
+		copy.setId(UUID.randomUUID().toString());
+		copy.setName(copy.getName() + " (copy)");
+		editor.addNewItemManually(copy);
+
 	}
 
 	private void editKey(KeyEntry keyEntry) {

@@ -234,14 +234,11 @@ public class JfxTableEditor<T> extends StackPane {
 		table.getColumns().add(column);
 //		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
 
-
 		customActions.add(new CustomAction(FontAwesomeIcon.TIMES, (wrappedItem) -> {
-			Platform.runLater( () -> {
-				obsWrappedItems.remove(wrappedItem);
-				if (listener != null) {
-					listener.accept(wrappedItem.getData());
-				}
-			});
+			obsWrappedItems.remove(wrappedItem);
+			if (listener != null) {
+				listener.accept(wrappedItem.getData());
+			}
 		}));
 	}
 
@@ -263,6 +260,13 @@ public class JfxTableEditor<T> extends StackPane {
 			}
 		}
 		return false;
+	}
+
+	public void addNewItemManually(T newItem){
+		obsWrappedItems.add(new RecursiveWrapper<>(newItem));
+		Platform.runLater(() -> {
+			table.refresh();
+		});
 	}
 
 	public void disableAddition() {
@@ -350,7 +354,8 @@ public class JfxTableEditor<T> extends StackPane {
 			btn.setOnAction(event -> {
 				RecursiveWrapper<T> wrappedItem = getTreeTableRow().getItem();
 				action.getAction().accept(wrappedItem);
-				getTreeTableView().refresh();
+				Platform.runLater(getTreeTableView()::refresh);
+
 			});
 			return btn;
 		}

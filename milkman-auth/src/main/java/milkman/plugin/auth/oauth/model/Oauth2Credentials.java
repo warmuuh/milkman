@@ -1,5 +1,6 @@
 package milkman.plugin.auth.oauth.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.OAuth2AccessTokenErrorResponse;
 import com.github.scribejava.core.oauth.OAuth20Service;
@@ -25,6 +26,9 @@ public class Oauth2Credentials extends KeyEntry {
     String scopes;
     boolean autoRefresh;
 
+    @JsonIgnore
+    boolean refreshFailed;
+
     Oauth2Grant grantType;
     OAuth2Token token;
 
@@ -35,6 +39,10 @@ public class Oauth2Credentials extends KeyEntry {
 
     @Override
     public String getType() {
+        if (isExpired()) {
+            return "Oauth2 (expired)";
+        }
+
         return "Oauth2";
     }
 
@@ -43,7 +51,20 @@ public class Oauth2Credentials extends KeyEntry {
         if (token == null){
             return "<no token>";
         }
+        if (isExpired() && isAutoRefresh() && token.getRefreshToken() != null && !refreshFailed){
+            try {
+                refreshToken();
+            } catch (Exception e) {
+                log.error("Failed to refresh token", e.getMessage());
+                refreshFailed = true;
+            }
+        }
         return token.getAccessToken();
+    }
+
+
+    private boolean isExpired() {
+        return token != null && token.getExpiresAt().before(new Date());
     }
 
     public void refreshToken() {
