@@ -87,11 +87,8 @@ public class Oauth2Credentials extends KeyEntry {
     }
 
     public void fetchNewToken() {
-        OAuth20Service service = new ServiceBuilder(clientId)
-                .apiSecret(clientSecret)
-                .build(new DynamicOauth2Api(accessTokenEndpoint, ""));
         try {
-            var scibeToken = grantType.getToken(service, scopes);
+            var scibeToken = grantType.getToken(clientId, clientSecret, accessTokenEndpoint, scopes);
             token = new OAuth2Token(scibeToken.getAccessToken(), scibeToken.getRefreshToken(), new Date(Instant.now().plusSeconds(scibeToken.getExpiresIn()).toEpochMilli()));
         } catch (OAuth2AccessTokenErrorResponse e){
             throw new RuntimeException(e.getErrorDescription(), e);

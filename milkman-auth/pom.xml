@@ -17,6 +17,16 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.microsoft.alm</groupId>
+			<artifactId>oauth2-useragent</artifactId>
+			<version>0.11.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-web</artifactId>
+			<version>${javafx.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>com.github.scribejava</groupId>
 			<artifactId>scribejava-core</artifactId>
 			<version>8.1.0</version>

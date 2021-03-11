@@ -16,7 +16,6 @@
 
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>
-		<javafx.version>13</javafx.version>
 	</properties>
 
 	<dependencies>

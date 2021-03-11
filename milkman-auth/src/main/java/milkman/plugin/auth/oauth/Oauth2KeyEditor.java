@@ -20,6 +20,8 @@ import milkman.utils.fxml.GenericBinding;
 
 import java.util.UUID;
 
+import static milkman.plugin.auth.oauth.Oauth2KeyEditor.GrantTypeBuilder.AuthorizationCodeBuilder;
+import static milkman.plugin.auth.oauth.model.Oauth2Grant.AuthorizationCodeGrant;
 import static milkman.utils.fxml.FxmlBuilder.*;
 
 public class Oauth2KeyEditor implements KeyEditor<Oauth2Credentials>, ToasterAware {
@@ -58,7 +60,8 @@ public class Oauth2KeyEditor implements KeyEditor<Oauth2Credentials>, ToasterAwa
         var combobox = root.add(new JFXComboBox<GrantTypeBuilder>());
         combobox.getItems().addAll(
                 new ClientCredentialBuilder(),
-                new PasswordBuilder());
+                new PasswordBuilder(),
+                new AuthorizationCodeBuilder());
 
         var grantArea = root.add(vbox());
 
@@ -75,6 +78,8 @@ public class Oauth2KeyEditor implements KeyEditor<Oauth2Credentials>, ToasterAwa
             combobox.setValue(combobox.getItems().get(0));
         } else if (keyEntry.getGrantType() instanceof PasswordGrant){
             combobox.setValue(combobox.getItems().get(1));
+        } else if (keyEntry.getGrantType() instanceof AuthorizationCodeGrant){
+            combobox.setValue(combobox.getItems().get(2));
         }
 
         var btnFetchToken = root.add(button("Fetch Token", () -> fetchToken(keyEntry)));
@@ -178,6 +183,28 @@ public class Oauth2KeyEditor implements KeyEditor<Oauth2Credentials>, ToasterAwa
             @Override
             String getName() {
                 return "Password Grant";
+            }
+        }
+
+        static class AuthorizationCodeBuilder extends GrantTypeBuilder{
+            private final GenericBinding<AuthorizationCodeGrant, String> authEndpointBinding = GenericBinding.of(AuthorizationCodeGrant::getAuthorizationEndpoint, AuthorizationCodeGrant::setAuthorizationEndpoint);
+            private final GenericBinding<AuthorizationCodeGrant, String> redirectUrlBinding = GenericBinding.of(AuthorizationCodeGrant::getRedirectUrl, AuthorizationCodeGrant::setRedirectUrl);
+
+            @Override
+            Node getEditor(Oauth2Credentials keyEntry) {
+                var grantType = keyEntry.getGrantType() instanceof AuthorizationCodeGrant ? (AuthorizationCodeGrant)keyEntry.getGrantType() : new AuthorizationCodeGrant();
+                keyEntry.setGrantType(grantType);
+                var root = vbox();
+                root.setSpacing(25);
+                root.add(vbox()); //small spacer to top
+                root.add(formEntry("Authorization Endpoint", authEndpointBinding, grantType));
+                root.add(formEntry("Redirect Url", redirectUrlBinding, grantType));
+                return root;
+            }
+
+            @Override
+            String getName() {
+                return "Authorization Code Grant";
             }
         }
 
