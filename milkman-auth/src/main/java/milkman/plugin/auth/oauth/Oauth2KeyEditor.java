@@ -188,7 +188,6 @@ public class Oauth2KeyEditor implements KeyEditor<Oauth2Credentials>, ToasterAwa
 
         static class AuthorizationCodeBuilder extends GrantTypeBuilder{
             private final GenericBinding<AuthorizationCodeGrant, String> authEndpointBinding = GenericBinding.of(AuthorizationCodeGrant::getAuthorizationEndpoint, AuthorizationCodeGrant::setAuthorizationEndpoint);
-            private final GenericBinding<AuthorizationCodeGrant, String> redirectUrlBinding = GenericBinding.of(AuthorizationCodeGrant::getRedirectUrl, AuthorizationCodeGrant::setRedirectUrl);
 
             @Override
             Node getEditor(Oauth2Credentials keyEntry) {
@@ -198,7 +197,6 @@ public class Oauth2KeyEditor implements KeyEditor<Oauth2Credentials>, ToasterAwa
                 root.setSpacing(25);
                 root.add(vbox()); //small spacer to top
                 root.add(formEntry("Authorization Endpoint", authEndpointBinding, grantType));
-                root.add(formEntry("Redirect Url", redirectUrlBinding, grantType));
                 return root;
             }
 

@@ -7,13 +7,14 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.oauth.OAuth20Service;
-import com.microsoft.alm.oauth2.useragent.JavaFx;
-import com.microsoft.alm.oauth2.useragent.UserAgent;
-import com.microsoft.alm.oauth2.useragent.UserAgentImpl;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import milkman.plugin.auth.oauth.DynamicOauth2Api;
+import milkman.plugin.auth.oauth.server.AuthorizationCodeCaptureServer;
+import milkman.ui.main.dialogs.WaitForMonoDialog;
 
+import java.awt.*;
 import java.net.URI;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -49,23 +50,32 @@ public interface Oauth2Grant {
 	}
 
 	@Data
+	@Slf4j
 	@NoArgsConstructor
 	class AuthorizationCodeGrant implements Oauth2Grant {
 		String authorizationEndpoint;
-		String redirectUrl;
+
 		@Override
 		public OAuth2AccessToken getToken(String clientId, String clientSecret, String accessTokenEndpoint, String scopes) throws Exception {
+			AuthorizationCodeCaptureServer server = new AuthorizationCodeCaptureServer();
+
 			OAuth20Service service = new ServiceBuilder(clientId)
 					.apiSecret(clientSecret)
+					.callback(server.getReturnUrl())
 					.build(new DynamicOauth2Api(accessTokenEndpoint, authorizationEndpoint));
 
-			var authorizationUrl = service.createAuthorizationUrlBuilder().scope(scopes).build();
+			var authorizationUrl = service.createAuthorizationUrlBuilder()
+					.scope(scopes)
+					.build();
 
-			UserAgent userAgent = new UserAgentImpl();
-			JavaFx.
-			AuthorizationResponse authorizationResponse = userAgent.requestAuthorizationCode(URI.create(authorizationUrl), URI.create(redirectUrl));
-			String code = authorizationResponse.getCode();
-
+			log.info("Redirecting to " + authorizationUrl);
+			Desktop.getDesktop().browse(new URI(authorizationUrl));
+			var dialog = new WaitForMonoDialog<String>();
+			dialog.showAndWait("Waiting for Authorization Code ...", server.listenForCode());
+			if (dialog.isCancelled()){
+				throw new IllegalStateException("Authorization Flow got cancelled");
+			}
+			var code = dialog.getValue();
 			return service.getAccessToken(code);
 		}
 	}
