@@ -6,12 +6,10 @@ import com.jfoenix.controls.JFXTextField;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import milkman.domain.KeySet.KeyEntry;
-import milkman.plugin.auth.oauth.Oauth2KeyEditor.GrantTypeBuilder.ClientCredentialBuilder;
-import milkman.plugin.auth.oauth.Oauth2KeyEditor.GrantTypeBuilder.PasswordBuilder;
+import milkman.plugin.auth.oauth.GrantTypeBuilder.ClientCredentialBuilder;
+import milkman.plugin.auth.oauth.GrantTypeBuilder.PasswordBuilder;
 import milkman.plugin.auth.oauth.model.OAuth2Token;
 import milkman.plugin.auth.oauth.model.Oauth2Credentials;
-import milkman.plugin.auth.oauth.model.Oauth2Grant.ClientCredentialGrant;
-import milkman.plugin.auth.oauth.model.Oauth2Grant.PasswordGrant;
 import milkman.ui.main.Toaster;
 import milkman.ui.plugin.KeyEditor;
 import milkman.ui.plugin.ToasterAware;
@@ -20,6 +18,7 @@ import milkman.utils.fxml.GenericBinding;
 
 import java.util.UUID;
 
+import static milkman.plugin.auth.oauth.GrantTypeBuilder.AuthorizationCodeBuilder;
 import static milkman.utils.fxml.FxmlBuilder.*;
 
 public class Oauth2KeyEditor implements KeyEditor<Oauth2Credentials>, ToasterAware {
@@ -58,7 +57,8 @@ public class Oauth2KeyEditor implements KeyEditor<Oauth2Credentials>, ToasterAwa
         var combobox = root.add(new JFXComboBox<GrantTypeBuilder>());
         combobox.getItems().addAll(
                 new ClientCredentialBuilder(),
-                new PasswordBuilder());
+                new PasswordBuilder(),
+                new AuthorizationCodeBuilder());
 
         var grantArea = root.add(vbox());
 
@@ -71,11 +71,11 @@ public class Oauth2KeyEditor implements KeyEditor<Oauth2Credentials>, ToasterAwa
             });
         }));
 
-        if (keyEntry.getGrantType() == null || keyEntry.getGrantType() instanceof ClientCredentialGrant) {
-            combobox.setValue(combobox.getItems().get(0));
-        } else if (keyEntry.getGrantType() instanceof PasswordGrant){
-            combobox.setValue(combobox.getItems().get(1));
-        }
+        var activeBuilder = combobox.getItems().stream()
+                .filter(b -> b.supportedGrantType().isInstance(keyEntry.getGrantType()))
+                .findAny()
+                .orElse(combobox.getItems().get(0));
+        combobox.setValue(activeBuilder);
 
         var btnFetchToken = root.add(button("Fetch Token", () -> fetchToken(keyEntry)));
         btnFetchToken.getStyleClass().add("primary-button");
@@ -95,7 +95,7 @@ public class Oauth2KeyEditor implements KeyEditor<Oauth2Credentials>, ToasterAwa
     }
 
     private void fetchToken(Oauth2Credentials keyEntry) {
-        if (keyEntry.getGrantType() == null){
+        if (keyEntry.getGrantType() == null) {
             toaster.showToast("No Granttype chosen");
             return;
         }
@@ -108,7 +108,7 @@ public class Oauth2KeyEditor implements KeyEditor<Oauth2Credentials>, ToasterAwa
     }
 
     private void showTokenDetails(OAuth2Token token) {
-        if (token != null){
+        if (token != null) {
             txtAccessToken.setText(token.getAccessToken());
             txtExpires.setText(token.getExpiresAt().toString());
             txtRefreshToken.setText(token.getRefreshToken());
@@ -132,55 +132,6 @@ public class Oauth2KeyEditor implements KeyEditor<Oauth2Credentials>, ToasterAwa
     @Override
     public void setToaster(Toaster toaster) {
         this.toaster = toaster;
-    }
-
-    abstract static class GrantTypeBuilder {
-        abstract Node getEditor(Oauth2Credentials keyEntry);
-        abstract String getName();
-        public String toString() {
-            return getName();
-        }
-
-
-        static class ClientCredentialBuilder extends GrantTypeBuilder{
-
-            @Override
-            Node getEditor(Oauth2Credentials keyEntry) {
-                var grantType = keyEntry.getGrantType() instanceof ClientCredentialGrant ? (ClientCredentialGrant)keyEntry.getGrantType() : new ClientCredentialGrant();
-                keyEntry.setGrantType(grantType);
-
-                return hbox();
-            }
-
-            @Override
-            String getName() {
-                return "Client Credentials Grant";
-            }
-        }
-
-
-        static class PasswordBuilder extends GrantTypeBuilder{
-            private final GenericBinding<PasswordGrant, String> usernameBinding = GenericBinding.of(PasswordGrant::getUsername, PasswordGrant::setUsername);
-            private final GenericBinding<PasswordGrant, String> passwordBinding = GenericBinding.of(PasswordGrant::getPassword, PasswordGrant::setPassword);
-
-            @Override
-            Node getEditor(Oauth2Credentials keyEntry) {
-                var grantType = keyEntry.getGrantType() instanceof PasswordGrant ? (PasswordGrant)keyEntry.getGrantType() : new PasswordGrant();
-                keyEntry.setGrantType(grantType);
-                var root = vbox();
-                root.setSpacing(25);
-                root.add(vbox()); //small spacer to top
-                root.add(formEntry("Username", usernameBinding, grantType));
-                root.add(formEntry("Password", passwordBinding, grantType));
-                return root;
-            }
-
-            @Override
-            String getName() {
-                return "Password Grant";
-            }
-        }
-
     }
 
 }
