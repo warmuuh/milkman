@@ -9,7 +9,7 @@
 
 version 5.2.0 -- upcoming
   * added key-store that is not synced
-  * added oauth2 support (client-credential, password grant)
+  * added oauth2 support (client-credential, password grant, authorization code (w/o fixed redirect-url))
 
 version 5.1.0
   * added horizontal layout switch
