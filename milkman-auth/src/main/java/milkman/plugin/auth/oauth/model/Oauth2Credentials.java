@@ -68,7 +68,7 @@ public class Oauth2Credentials extends KeyEntry {
     }
 
     public void refreshToken() {
-        if (!autoRefresh || StringUtils.isBlank(token.getRefreshToken())){
+        if (StringUtils.isBlank(token.getRefreshToken())){
             return;
         }
 

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import milkman.ui.plugin.Templater;
 import milkman.ui.plugin.TextExport;
+import milkman.ui.plugin.rest.RequestBodyPostProcessor;
 import milkman.ui.plugin.rest.domain.HeaderEntry;
 import milkman.ui.plugin.rest.domain.RestBodyAspect;
 import milkman.ui.plugin.rest.domain.RestHeaderAspect;
@@ -12,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -48,7 +50,10 @@ public class HttpTextExport implements TextExport<RestRequestContainer> {
             var bodyAspect = request.getAspect(RestBodyAspect.class).orElseThrow(() -> new IllegalArgumentException("missing aspect"));
             if (StringUtils.isNotBlank(bodyAspect.getBody())) {
                 b.append("\n");
-                b.append(bodyAspect.getBody());
+                var processedBodyContent = getContentType(request)
+                        .map(contentType -> RequestBodyPostProcessor.processBody(contentType, bodyAspect.getBody()))
+                        .orElse(bodyAspect.getBody());
+                b.append(processedBodyContent);
             }
 
             return templater.replaceTags(b.toString());
@@ -60,5 +65,13 @@ public class HttpTextExport implements TextExport<RestRequestContainer> {
 
     private void appendHeader(StringBuilder b,String name, String value) {
         b.append(name).append(": ").append(value).append("\n");
+    }
+
+    private Optional<String> getContentType(RestRequestContainer request) {
+        return request.getAspect(RestHeaderAspect.class)
+                .flatMap(h -> h.getEntries().stream()
+                        .filter(e -> e.getValue().equalsIgnoreCase("content-type"))
+                        .map(HeaderEntry::getValue)
+                        .findAny());
     }
 }

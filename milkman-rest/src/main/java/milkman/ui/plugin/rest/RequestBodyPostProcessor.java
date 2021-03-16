@@ -44,6 +44,15 @@ public interface RequestBodyPostProcessor {
     }
 
 
+    static String processBody(String contentType, String body) {
+        for (RequestBodyPostProcessor processor : processors()) {
+            if (processor.canProcess(contentType)) {
+                return processor.process(body);
+            }
+        }
+        return body;
+    }
+
     static List<RequestBodyPostProcessor> processors() {
         return ALL_PROCESSORS;
     }
