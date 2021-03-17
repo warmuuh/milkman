@@ -228,12 +228,10 @@ public class JavaRequestProcessor implements RequestProcessor {
 				builder.method(request.getHttpMethod(), BodyPublishers.noBody());
 			} else {
 				var bodyContent = templater.replaceTags(aspect.getBody());
-				for (RequestBodyPostProcessor processor : RequestBodyPostProcessor.processors()) {
-					if (builder.build().headers().firstValue(CONTENT_TYPE_HEADER).stream().anyMatch(processor::canProcess)) {
-						bodyContent = processor.process(bodyContent);
-					}
-				}
-				builder.method(request.getHttpMethod(), BodyPublishers.ofString(bodyContent));
+				var processedBodyContent = builder.build().headers().firstValue(CONTENT_TYPE_HEADER)
+						.map(contentType -> RequestBodyPostProcessor.processBody(contentType, bodyContent))
+						.orElse(bodyContent);
+				builder.method(request.getHttpMethod(), BodyPublishers.ofString(processedBodyContent));
 			}
 		});
 

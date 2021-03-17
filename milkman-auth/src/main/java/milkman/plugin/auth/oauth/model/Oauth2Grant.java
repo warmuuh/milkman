@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import milkman.plugin.auth.oauth.DynamicOauth2Api;
+import milkman.plugin.auth.oauth.scribe.JDKHttpClient;
 import milkman.plugin.auth.oauth.server.AuthorizationCodeCaptureServer;
 import milkman.ui.main.dialogs.WaitForMonoDialog;
 
@@ -29,6 +30,7 @@ public interface Oauth2Grant {
 		@Override
 		public OAuth2AccessToken getToken(String clientId, String clientSecret, String accessTokenEndpoint, String scopes) throws Exception {
 			OAuth20Service service = new ServiceBuilder(clientId)
+					.httpClient(new JDKHttpClient())
 					.apiSecret(clientSecret)
 					.build(new DynamicOauth2Api(accessTokenEndpoint, ""));
 			return service.getAccessTokenClientCredentialsGrant(scopes);
@@ -43,6 +45,7 @@ public interface Oauth2Grant {
 		@Override
 		public OAuth2AccessToken getToken(String clientId, String clientSecret, String accessTokenEndpoint, String scopes) throws Exception {
 			OAuth20Service service = new ServiceBuilder(clientId)
+					.httpClient(new JDKHttpClient())
 					.apiSecret(clientSecret)
 					.build(new DynamicOauth2Api(accessTokenEndpoint, ""));
 			return service.getAccessTokenPasswordGrant(username, password, scopes);
@@ -60,6 +63,7 @@ public interface Oauth2Grant {
 			AuthorizationCodeCaptureServer server = new AuthorizationCodeCaptureServer();
 
 			OAuth20Service service = new ServiceBuilder(clientId)
+					.httpClient(new JDKHttpClient())
 					.apiSecret(clientSecret)
 					.callback(server.getReturnUrl())
 					.build(new DynamicOauth2Api(accessTokenEndpoint, authorizationEndpoint));

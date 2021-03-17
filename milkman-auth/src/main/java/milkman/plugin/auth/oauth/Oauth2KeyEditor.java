@@ -77,8 +77,14 @@ public class Oauth2KeyEditor implements KeyEditor<Oauth2Credentials>, ToasterAwa
                 .orElse(combobox.getItems().get(0));
         combobox.setValue(activeBuilder);
 
-        var btnFetchToken = root.add(button("Fetch Token", () -> fetchToken(keyEntry)));
+        var btnFetchToken = button("Fetch Token", () -> fetchToken(keyEntry));
         btnFetchToken.getStyleClass().add("primary-button");
+
+        var btnRefreshToken = button("Refresh Token", () -> refreshToken(keyEntry));
+        btnRefreshToken.getStyleClass().add("primary-button");
+
+        var hbox = root.add(hbox(btnFetchToken, btnRefreshToken));
+        hbox.setSpacing(5);
 
         this.txtAccessToken = root.add(text("accessToken", "Access Token", true));
         txtAccessToken.setEditable(false);
@@ -101,6 +107,19 @@ public class Oauth2KeyEditor implements KeyEditor<Oauth2Credentials>, ToasterAwa
         }
         try {
             keyEntry.fetchNewToken();
+        } catch (Exception e) {
+            toaster.showToast(e.getMessage());
+        }
+        showTokenDetails(keyEntry.getToken());
+    }
+
+    private void refreshToken(Oauth2Credentials keyEntry) {
+        if (keyEntry.getGrantType() == null) {
+            toaster.showToast("No Granttype chosen");
+            return;
+        }
+        try {
+            keyEntry.refreshToken();
         } catch (Exception e) {
             toaster.showToast(e.getMessage());
         }

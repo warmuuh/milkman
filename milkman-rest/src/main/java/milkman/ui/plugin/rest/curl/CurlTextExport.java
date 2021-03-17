@@ -3,12 +3,14 @@ package milkman.ui.plugin.rest.curl;
 import lombok.RequiredArgsConstructor;
 import milkman.ui.plugin.Templater;
 import milkman.ui.plugin.TextExport;
+import milkman.ui.plugin.rest.RequestBodyPostProcessor;
 import milkman.ui.plugin.rest.domain.HeaderEntry;
 import milkman.ui.plugin.rest.domain.RestBodyAspect;
 import milkman.ui.plugin.rest.domain.RestHeaderAspect;
 import milkman.ui.plugin.rest.domain.RestRequestContainer;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -40,7 +42,10 @@ public class CurlTextExport implements TextExport<RestRequestContainer> {
         request.getAspect(RestBodyAspect.class).ifPresent(a -> {
             if (StringUtils.isNotBlank(a.getBody())) {
                 b.append(lineBreak);
-                String normalized = StringUtils.normalizeSpace(a.getBody());
+                var processedBodyContent = getContentType(request)
+                        .map(contentType -> RequestBodyPostProcessor.processBody(contentType, a.getBody()))
+                        .orElse(a.getBody());
+                String normalized = StringUtils.normalizeSpace(processedBodyContent);
                 if (isWindows){
                     normalized = normalized.replaceAll("\"", "\"\""); // replace all quotes with double quotes
                 }
@@ -51,5 +56,13 @@ public class CurlTextExport implements TextExport<RestRequestContainer> {
 
 
         return templater.replaceTags(b.toString());
+    }
+
+    private Optional<String> getContentType(RestRequestContainer request) {
+        return request.getAspect(RestHeaderAspect.class)
+                .flatMap(h -> h.getEntries().stream()
+                        .filter(e -> e.getValue().equalsIgnoreCase("content-type"))
+                        .map(HeaderEntry::getValue)
+                        .findAny());
     }
 }
