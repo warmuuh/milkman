@@ -39,6 +39,9 @@ public class Oauth2Credentials extends KeyEntry {
 
     @Override
     public String getType() {
+        // trigger auto-refresh
+        getValue();
+
         if (isExpired()) {
             return "Oauth2 (expired)";
         }
@@ -77,7 +80,12 @@ public class Oauth2Credentials extends KeyEntry {
                 .build(new DynamicOauth2Api(accessTokenEndpoint, ""));
         try {
             var scribeToken = service.refreshAccessToken(token.getRefreshToken());
-            token = new OAuth2Token(scribeToken.getAccessToken(), scribeToken.getRefreshToken(), new Date(Instant.now().plusSeconds(scribeToken.getExpiresIn()).toEpochMilli()));
+            var refreshedToken = new OAuth2Token(scribeToken.getAccessToken(), scribeToken.getRefreshToken(), new Date(Instant.now().plusSeconds(scribeToken.getExpiresIn()).toEpochMilli()));
+            token.setAccessToken(refreshedToken.getAccessToken());
+            token.setExpiresAt(refreshedToken.getExpiresAt());
+            if (token.getRefreshToken() != null) {
+                token.setRefreshToken(refreshedToken.getRefreshToken());
+            }
         } catch (OAuth2AccessTokenErrorResponse e){
             throw new RuntimeException(e.getErrorDescription(), e);
         } catch (Exception e) {
