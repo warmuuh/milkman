@@ -83,7 +83,7 @@ public class Oauth2Credentials extends KeyEntry {
             var refreshedToken = new OAuth2Token(scribeToken.getAccessToken(), scribeToken.getRefreshToken(), new Date(Instant.now().plusSeconds(scribeToken.getExpiresIn()).toEpochMilli()));
             token.setAccessToken(refreshedToken.getAccessToken());
             token.setExpiresAt(refreshedToken.getExpiresAt());
-            if (token.getRefreshToken() != null) {
+            if (StringUtils.isNotBlank(refreshedToken.getRefreshToken())) {
                 token.setRefreshToken(refreshedToken.getRefreshToken());
             }
         } catch (OAuth2AccessTokenErrorResponse e){
