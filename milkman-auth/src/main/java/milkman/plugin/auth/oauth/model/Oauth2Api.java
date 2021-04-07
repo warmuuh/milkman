@@ -1,0 +1,95 @@
+package milkman.plugin.auth.oauth.model;
+
+import com.github.scribejava.core.builder.ServiceBuilder;
+import com.github.scribejava.core.model.OAuth2AccessToken;
+import com.github.scribejava.core.model.OAuth2AccessTokenErrorResponse;
+import com.github.scribejava.core.oauth.OAuth20Service;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import milkman.plugin.auth.oauth.DynamicOauth2Api;
+import milkman.plugin.auth.oauth.scribe.JDKHttpClient;
+import milkman.plugin.auth.oauth.server.AuthorizationCodeCaptureServer;
+import milkman.ui.main.dialogs.WaitForMonoDialog;
+
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.time.Instant;
+import java.util.Date;
+import java.util.concurrent.ExecutionException;
+
+@Slf4j
+@RequiredArgsConstructor
+public class Oauth2Api {
+	private interface ScribeTokenSupplier {
+		OAuth2AccessToken get() throws IOException, InterruptedException, ExecutionException, URISyntaxException;
+	}
+
+	private final String clientId;
+	private final String clientSecret;
+	private final String accessTokenEndpoint;
+
+	public OAuth2Token refreshToken(OAuth2Token oldToken) {
+		OAuth20Service service = getOauthService();
+		return getToken(() -> service.refreshAccessToken(oldToken.getRefreshToken()));
+	}
+
+	public OAuth2Token clientCredentialGrant(String scopes) {
+		OAuth20Service service = getOauthService();
+		return getToken(() -> service.getAccessTokenClientCredentialsGrant(scopes));
+	}
+
+
+	public OAuth2Token passwordGrant(String username, String password, String scopes) {
+		OAuth20Service service = getOauthService();
+		return getToken(() -> service.getAccessTokenPasswordGrant(username, password, scopes));
+	}
+
+
+	public OAuth2Token authenticationCodeGrant(String authorizationEndpoint, String scopes) {
+			return getToken(() -> {
+				AuthorizationCodeCaptureServer server = new AuthorizationCodeCaptureServer();
+				OAuth20Service service = getOauthService(server.getReturnUrl());
+
+				var authorizationUrl = service.createAuthorizationUrlBuilder()
+						.scope(scopes)
+						.build();
+
+				log.info("Redirecting to " + authorizationUrl);
+				Desktop.getDesktop().browse(new URI(authorizationUrl));
+				var dialog = new WaitForMonoDialog<String>();
+				dialog.showAndWait("Waiting for Authorization Code ...", server.listenForCode());
+				if (dialog.isCancelled()){
+					throw new IllegalStateException("Authorization Flow got cancelled");
+				}
+				var code = dialog.getValue();
+				return service.getAccessToken(code);
+			});
+	}
+
+	private OAuth2Token getToken(ScribeTokenSupplier tokenSupplier) {
+		try {
+			var scribeToken = tokenSupplier.get();
+			return new OAuth2Token(scribeToken.getAccessToken(), scribeToken.getRefreshToken(), new Date(Instant.now().plusSeconds(scribeToken.getExpiresIn()).toEpochMilli()));
+		} catch (OAuth2AccessTokenErrorResponse e){
+			throw new RuntimeException(e.getErrorDescription(), e);
+		} catch (Exception e) {
+			log.error("Failed to fetch token", e);
+			throw new RuntimeException(e.getMessage(), e);
+		}
+	}
+
+	private OAuth20Service getOauthService() {
+		return getOauthService(null);
+	}
+
+	private OAuth20Service getOauthService(String callback) {
+		return new ServiceBuilder(clientId)
+				.apiSecret(clientSecret)
+				.callback(callback)
+				.httpClient(new JDKHttpClient())
+				.build(new DynamicOauth2Api(accessTokenEndpoint, ""));
+	}
+
+}
