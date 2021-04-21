@@ -73,7 +73,8 @@ public class Oauth2Api {
 			var scribeToken = tokenSupplier.get();
 			return new OAuth2Token(scribeToken.getAccessToken(), scribeToken.getRefreshToken(), new Date(Instant.now().plusSeconds(scribeToken.getExpiresIn()).toEpochMilli()));
 		} catch (OAuth2AccessTokenErrorResponse e){
-			throw new RuntimeException(e.getErrorDescription(), e);
+			String msg = e.getErrorDescription() != null ? e.getErrorDescription() : e.getMessage();
+			throw new RuntimeException(msg, e);
 		} catch (Exception e) {
 			log.error("Failed to fetch token", e);
 			throw new RuntimeException(e.getMessage(), e);
