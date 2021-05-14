@@ -7,6 +7,11 @@
 
 # Changelog
 
+version 5.3.0 -- upcoming
+  * mask plain-keys on overview
+  * timeouts for oauth
+  * auto-refreh for oauth only on usage
+
 version 5.2.0
   * added key-store that is not synced
   * added oauth2 support (client-credential, password grant, authorization code (w/o fixed redirect-url))

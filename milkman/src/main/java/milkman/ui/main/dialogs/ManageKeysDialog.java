@@ -33,7 +33,7 @@ public class ManageKeysDialog {
 		editor.enableAddition(this::addNewEntry);
 		editor.addColumn("Name", KeyEntry::getName, KeyEntry::setName);
 		editor.addReadOnlyColumn("Type", KeyEntry::getType);
-		editor.addReadOnlyColumn("Value", KeyEntry::getValue);
+		editor.addReadOnlyColumn("Value", KeyEntry::getPreview);
 		editor.addCustomAction(FontAwesomeIcon.PENCIL, this::editKey);
 		editor.addCustomAction(FontAwesomeIcon.CLONE, this::copyKey);
 		editor.addDeleteColumn("Delete");

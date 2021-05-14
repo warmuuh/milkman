@@ -32,9 +32,6 @@ public class Oauth2Credentials extends KeyEntry {
 
     @Override
     public String getType() {
-        // trigger auto-refresh
-        getValue();
-
         if (isExpired()) {
             return "Oauth2 (expired)";
         }
@@ -83,4 +80,12 @@ public class Oauth2Credentials extends KeyEntry {
         token = grantType.getToken(api, scopes);
     }
 
+    @Override
+    public String getPreview() {
+        if (token == null){
+            return "<no token>";
+        }
+
+        return token.getAccessToken();
+    }
 }

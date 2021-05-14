@@ -1,6 +1,7 @@
 package milkman.plugin.auth.oauth.model;
 
 import com.github.scribejava.core.builder.ServiceBuilder;
+import com.github.scribejava.core.httpclient.jdk.JDKHttpClientConfig;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuth2AccessTokenErrorResponse;
 import com.github.scribejava.core.oauth.OAuth20Service;
@@ -89,7 +90,7 @@ public class Oauth2Api {
 		return new ServiceBuilder(clientId)
 				.apiSecret(clientSecret)
 				.callback(callback)
-				.httpClient(new JDKHttpClient())
+				.httpClient(new JDKHttpClient(JDKHttpClientConfig.defaultConfig().withConnectTimeout(1000).withReadTimeout(2000)))
 				.build(new DynamicOauth2Api(accessTokenEndpoint, ""));
 	}
 

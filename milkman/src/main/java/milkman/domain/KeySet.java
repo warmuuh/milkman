@@ -29,6 +29,10 @@ public class KeySet {
 		String name;
 		public abstract String getType();
 		public abstract String getValue();
+
+		public String getPreview() {
+			return getValue();
+		}
 	}
 
 	String id;

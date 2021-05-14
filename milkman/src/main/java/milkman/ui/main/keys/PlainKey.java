@@ -18,4 +18,9 @@ public class PlainKey extends KeyEntry {
     public String getType() {
         return "Plain";
     }
+
+    @Override
+    public String getPreview() {
+        return "*".repeat(getValue().length());
+    }
 }
