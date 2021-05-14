@@ -17,7 +17,7 @@ public class MainModule extends MainModuleBase {
 					.filter(e -> e.isGlobal() || e.isActive())
 					.flatMap(e -> e.getEntries().stream())
 					.collect(Collectors.toList());
-		});
+		}, () -> getUiPluginManager().loadTemplaterPlugins());
 	}
 
 //	@Override

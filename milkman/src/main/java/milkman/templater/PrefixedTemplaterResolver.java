@@ -1,7 +1,6 @@
 package milkman.templater;
 
 import lombok.RequiredArgsConstructor;
-import milkman.ui.plugin.Templater;
 import milkman.ui.plugin.TemplateParameterResolverPlugin;
 
 import java.util.List;
@@ -26,4 +25,5 @@ public class PrefixedTemplaterResolver {
                 .map(t -> t.lookupValue(value))
                 .findAny();
     }
+
 }

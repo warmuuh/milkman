@@ -1,5 +1,12 @@
 package milkman.ui.plugin.rest;
 
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.TextInputControl;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+import milkman.ui.components.AutoCompleter;
+import milkman.ui.plugin.rest.domain.RestRequestContainer;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -7,20 +14,9 @@ import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.TextInputControl;
-import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
-import milkman.ui.components.AutoCompleter;
-import milkman.ui.plugin.rest.domain.RestRequestContainer;
-
-import static org.testfx.assertions.api.Assertions.*;
-
 import java.util.Collections;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.testfx.assertions.api.Assertions.assertThat;
 
 @Tag("ui")
 @ExtendWith(ApplicationExtension.class)
@@ -34,7 +30,7 @@ class RestRequestEditControllerTest {
 	public void setupStage(Stage stage) {
 		RestRequestEditController sut = new RestRequestEditController();
 		
-		sut.setAutoCompleter(new AutoCompleter(() -> Collections.emptyList()));
+		sut.setAutoCompleter(new AutoCompleter(() -> Collections.emptyList(), () -> Collections.emptyList()));
 		Node root = sut.getRoot();
 		stage.setScene(new Scene(new Pane(root)));
 
