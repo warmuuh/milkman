@@ -24,6 +24,7 @@
 		<module>milkman-cli</module>
 		<module>milkman-test</module>
 		<module>milkman-auth</module>
+		<module>milkman-ws</module>
 	</modules>
 
 	<properties>
