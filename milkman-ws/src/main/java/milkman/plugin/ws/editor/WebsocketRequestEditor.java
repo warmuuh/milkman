@@ -6,6 +6,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import lombok.SneakyThrows;
+import milkman.ctrl.ExecutionListenerManager;
 import milkman.domain.RequestContainer;
 import milkman.plugin.ws.domain.WebsocketRequestContainer;
 import milkman.ui.components.AutoCompleter;
@@ -20,8 +21,9 @@ public class WebsocketRequestEditor implements RequestTypeEditor, AutoCompletion
 	
 	private GenericBinding<WebsocketRequestContainer, String> urlBinding = GenericBinding.of(WebsocketRequestContainer::getUrl, WebsocketRequestContainer::setUrl);
 	private AutoCompleter completer;
-	
-	
+	private ExecutionListenerManager executionListenerManager;
+
+
 	@Override
 	@SneakyThrows
 	public Node getRoot() {
@@ -48,7 +50,6 @@ public class WebsocketRequestEditor implements RequestTypeEditor, AutoCompletion
 		
 	}
 
-	
 	public static class WebsocketRequestEditorFxml extends HboxExt {
 		private WebsocketRequestEditor controller; //avoid gc collection
 

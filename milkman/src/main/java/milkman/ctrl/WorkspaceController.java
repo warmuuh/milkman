@@ -21,6 +21,7 @@ import milkman.ui.main.dialogs.ExportDialog;
 import milkman.ui.main.dialogs.SaveRequestDialog;
 import milkman.ui.main.dialogs.StringInputDialog;
 import milkman.ui.plugin.*;
+import milkman.utils.AsyncResponseControl;
 import milkman.utils.Event;
 import milkman.utils.ObjectUtils;
 
@@ -41,12 +42,13 @@ public class WorkspaceController {
 	private final RequestTypeManager requestTypeManager;
 	private final HotkeyManager hotkeys;
 	private final Toaster toaster;
+	private final ExecutionListenerManager executionListenerManager;
 
 	private final UiPluginManager plugins;
 	@Getter private Workspace activeWorkspace;
 	public final Event<AppCommand> onCommand = new Event<AppCommand>();
 	private RequestExecutor executor;
-	
+
 	private final List<String> requestDisplayHistory = new LinkedList<>();
 	private VariableHighlighter highlighter;
 
@@ -116,6 +118,7 @@ public class WorkspaceController {
 	
 	public void displayRequest(RequestContainer request) {
 		log.info("Diplaying request: " + request);
+		executionListenerManager.clearListeners(activeWorkspace.getActiveRequest());
 		addToDisplayHistory(request);
 		if (!activeWorkspace.getOpenRequests().contains(request))
 			activeWorkspace.getOpenRequests().add(request);
@@ -166,7 +169,7 @@ public class WorkspaceController {
 
 	public void executeRequest(RequestContainer request, Optional<CustomCommand> command) {
 		workingAreaView.clearResponse();
-		activeWorkspace.getCachedResponses().remove(request.getId());
+		removeCachedResponseFor(request);
 		workingAreaView.showSpinner(() -> executor.cancel());
 
 		scheduleRequestExecution(request, command);
@@ -174,7 +177,7 @@ public class WorkspaceController {
 
 	public void scheduleRequestExecution(RequestContainer request, Optional<CustomCommand> command) {
 		RequestTypePlugin plugin = requestTypeManager.getPluginFor(request);
-		executor = new RequestExecutor(request, plugin, buildTemplater(), command);
+		executor = new RequestExecutor(request, plugin, buildTemplater(), command, executionListenerManager);
 
 		RequestExecutionContext context = getExecutionCtx();
 		try {
@@ -473,12 +476,12 @@ public class WorkspaceController {
 		switch (type) {
 		case CLOSE_ALL:
 			activeWorkspace.getOpenRequests().clear();
-			activeWorkspace.getCachedResponses().clear();
+			removeAllCachedResponses();
 			break;
 		case CLOSE_RIGHT:
 			while(activeWorkspace.getOpenRequests().size() > indexOf+1) {
 				RequestContainer removed = activeWorkspace.getOpenRequests().remove(activeWorkspace.getOpenRequests().size()-1);
-				activeWorkspace.getCachedResponses().remove(removed.getId());
+				removeCachedResponseFor(removed);
 			}
 			break;
 		case CLOSE_OTHERS:
@@ -487,12 +490,12 @@ public class WorkspaceController {
 								.map(RequestContainer::getId)
 								.collect(Collectors.toList());
 			
-			toRemove.forEach(activeWorkspace.getCachedResponses()::remove);
+			toRemove.forEach(this::removeCachedResponseFor);
 			activeWorkspace.getOpenRequests().removeIf(r -> toRemove.contains(r.getId()));
 			break;
 		case CLOSE_THIS:
 			RequestContainer removed = activeWorkspace.getOpenRequests().remove(indexOf);
-			activeWorkspace.getCachedResponses().remove(removed.getId());
+			removeCachedResponseFor(removed);
 			break;
 		default:
 			break;
@@ -638,4 +641,29 @@ public class WorkspaceController {
 	public void toggleLayout(boolean horizontalLayout) {
 		workingAreaView.toggleLayout(horizontalLayout);
 	}
+
+	public void tearDown() {
+		removeAllCachedResponses();
+	}
+
+
+	private void removeAllCachedResponses() {
+		activeWorkspace.getCachedResponses().values().forEach(AsyncResponseControl::cancleRequest);
+		activeWorkspace.getCachedResponses().clear();
+	}
+
+	private void removeCachedResponseFor(String requestId) {
+		var arc = activeWorkspace.getCachedResponses().remove(requestId);
+		if (arc != null) {
+			arc.cancleRequest();
+		}
+	}
+
+	private void removeCachedResponseFor(RequestContainer removed) {
+		var arc = activeWorkspace.getCachedResponses().remove(removed.getId());
+		if (arc != null) {
+			arc.cancleRequest();
+		}
+	}
+
 }

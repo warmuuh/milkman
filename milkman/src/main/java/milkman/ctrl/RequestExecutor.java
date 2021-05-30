@@ -1,19 +1,18 @@
 package milkman.ctrl;
 
-import java.util.Optional;
-
-import org.apache.commons.lang3.exception.ExceptionUtils;
-
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
-import milkman.domain.ResponseContainer;
 import milkman.ui.plugin.CustomCommand;
 import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.Templater;
 import milkman.utils.AsyncResponseControl;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -23,6 +22,7 @@ public class RequestExecutor extends Service<AsyncResponseControl> {
 	private final RequestTypePlugin plugin;
 	private final Templater templater;
 	private final Optional<CustomCommand> customCommand;
+	private final ExecutionListenerManager executionListenerManager;
 	
 	@Override
 	protected Task<AsyncResponseControl> createTask() {
@@ -37,10 +37,16 @@ public class RequestExecutor extends Service<AsyncResponseControl> {
 						log.info("Execute custom command: " + commandId);
 						var response =  plugin.executeCustomCommandAsync(commandId, request, templater, asyncCtrl.getCancellationControl());
 						asyncCtrl.setResponse(response);
+						executionListenerManager.onRequestStarted(request, response);
+						CompletableFuture.anyOf(asyncCtrl.onRequestFailed, asyncCtrl.onRequestSucceeded)
+								.thenRun(() -> executionListenerManager.onRequestFinished(request, response));
 						return asyncCtrl;
 					} else {
 						log.info("Execute request");
 						var response = plugin.executeRequestAsync(request, templater, asyncCtrl.getCancellationControl());
+						executionListenerManager.onRequestStarted(request, response);
+						CompletableFuture.anyOf(asyncCtrl.onRequestFailed, asyncCtrl.onRequestSucceeded)
+								.thenRun(() -> executionListenerManager.onRequestFinished(request, response));
 						asyncCtrl.setResponse(response);
 						return asyncCtrl;
 					}

@@ -366,4 +366,8 @@ public class ApplicationController {
 		return new EnvironmentTemplater(activeEnv, globalEnvs, new PrefixedTemplaterResolver(plugins.loadTemplaterPlugins()));
 	}
 
+	public void tearDown() {
+		persistState();
+		workspaceController.tearDown();
+	}
 }

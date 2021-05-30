@@ -1,5 +1,6 @@
 package milkmancli;
 
+import milkman.ctrl.ExecutionListenerManager;
 import milkman.ctrl.RequestTypeManager;
 import milkman.logback.LogbackConfiguration;
 import milkman.persistence.PersistenceManager;
@@ -59,7 +60,9 @@ public class MilkmanCli extends MilkmanCliBase {
 				null,
 				() -> new NoOpToaster(null),
 				() -> new CliPluginRequestExecutorImpl(),
-				() -> getCliContext().getCurrentWorkspace());
+				() -> getCliContext().getCurrentWorkspace(),
+				new ExecutionListenerManager()
+				);
 	}
 
 	@Override

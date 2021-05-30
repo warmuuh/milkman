@@ -1,6 +1,7 @@
 package milkman.ui.plugin;
 
 import lombok.RequiredArgsConstructor;
+import milkman.ctrl.ExecutionListenerManager;
 import milkman.domain.Workspace;
 import milkman.ui.components.AutoCompleter;
 import milkman.ui.main.ActiveEnvironmentProvider;
@@ -18,6 +19,7 @@ public class UiPluginManager {
 	private final Supplier<Toaster> toaster;
 	private final Supplier<PluginRequestExecutor> pluginRequestExecutor;
 	private final Supplier<Workspace> activeWorkspace;
+	private final ExecutionListenerManager executionListenerManager;
 	
 	Map<Class, List> cachedInstances = new HashMap<Class, List>();
 	
@@ -96,6 +98,10 @@ public class UiPluginManager {
 
 		if (o instanceof RequestExecutorAware) {
 			((RequestExecutorAware) o).setRequestExecutor(pluginRequestExecutor.get());
+		}
+
+		if (o instanceof ExecutionListenerAware) {
+			((ExecutionListenerAware) o).setExecutionListenerManager(executionListenerManager);
 		}
 	}
 	

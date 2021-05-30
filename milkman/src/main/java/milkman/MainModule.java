@@ -27,10 +27,13 @@ public class MainModule extends MainModuleBase {
 
 	@Override
 	protected UiPluginManager createUiPluginManager() {
-		return new UiPluginManager(createAutoCompleter(), createActiveEnvironmentProvider(),
+		return new UiPluginManager(createAutoCompleter(),
+				createActiveEnvironmentProvider(),
 				() -> getToaster(),
 				() -> getPluginRequestExecutorImpl(),
-				() -> getWorkspaceController().getActiveWorkspace());
+				() -> getWorkspaceController().getActiveWorkspace(),
+				getExecutionListenerManager()
+				);
 	}
 
 	

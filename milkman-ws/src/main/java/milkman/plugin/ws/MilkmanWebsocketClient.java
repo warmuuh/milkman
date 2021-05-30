@@ -9,17 +9,14 @@ import java.net.URI;
 
 public class MilkmanWebsocketClient extends WebSocketClient {
 
-	private final String message;
 	private final Subscriber<byte[]> responseSubscriber;
 	private final AsyncResponseControl.AsyncControl asyncControl;
 
 
 	public MilkmanWebsocketClient(URI serverUri,
-								  String message,
 								  Subscriber<byte[]> responseSubscriber,
 								  AsyncResponseControl.AsyncControl asyncControl) {
 		super(serverUri);
-		this.message = message;
 		this.responseSubscriber = responseSubscriber;
 		this.asyncControl = asyncControl;
 		asyncControl.onCancellationRequested.add(() -> close());
@@ -27,12 +24,19 @@ public class MilkmanWebsocketClient extends WebSocketClient {
 
 	@Override
 	public void onOpen(ServerHandshake handshakedata) {
-		send(message);
+	}
+
+	@Override
+	public void send(String message) {
+		String msg = "SENT: \n" + message + "\n\n";
+		responseSubscriber.onNext(msg.getBytes());
+		super.send(message);
 	}
 
 	@Override
 	public void onMessage(String message) {
-		responseSubscriber.onNext(message.getBytes());
+		String msg = "RECEIVED: \n" + message + "\n\n";
+		responseSubscriber.onNext(msg.getBytes());
 	}
 
 	@Override
