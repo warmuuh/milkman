@@ -129,7 +129,7 @@ public class Oauth2KeyEditor implements KeyEditor<Oauth2Credentials>, ToasterAwa
     private void showTokenDetails(OAuth2Token token) {
         if (token != null) {
             txtAccessToken.setText(token.getAccessToken());
-            txtExpires.setText(token.getExpiresAt().toString());
+            txtExpires.setText(token.getExpiresAt() != null ? token.getExpiresAt().toString() : "-");
             txtRefreshToken.setText(token.getRefreshToken() != null ? token.getRefreshToken() : "-");
         } else {
             txtAccessToken.setText("-");

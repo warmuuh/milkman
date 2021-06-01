@@ -16,7 +16,7 @@ import static milkman.utils.fxml.FxmlBuilder.*;
 public class WaitForMonoDialog<T> {
 
 	private Dialog dialog;
-	@Getter boolean cancelled = true;
+	@Getter boolean cancelled;
 
 	Label title;
 

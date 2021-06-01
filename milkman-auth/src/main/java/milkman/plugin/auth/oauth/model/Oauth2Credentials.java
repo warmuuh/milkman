@@ -57,7 +57,7 @@ public class Oauth2Credentials extends KeyEntry {
 
 
     private boolean isExpired() {
-        return token != null && token.getExpiresAt().before(new Date());
+        return token != null && token.getExpiresAt() != null && token.getExpiresAt().before(new Date());
     }
 
     public void refreshToken() {

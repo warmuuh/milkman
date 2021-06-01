@@ -5,13 +5,18 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.MonoSink;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.util.HashMap;
+import java.net.URI;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
@@ -43,7 +48,7 @@ public class AuthorizationCodeCaptureServer {
             ex.sendResponseHeaders(200, 0);
 
             if ("GET".equalsIgnoreCase(ex.getRequestMethod())){
-                var params = parseQueryParams(ex.getRequestURI().toString());
+                var params = splitQuery(ex.getRequestURI());
                 if (params.containsKey("code")){
                     String responseMessage = "Authorization grant recieved. you can close this window";
                     writeResponse(ex, responseMessage);
@@ -88,20 +93,19 @@ public class AuthorizationCodeCaptureServer {
 //        System.out.println("Received auth code:" + code.block());
 //    }
 
-    public Map<String, String> parseQueryParams(String url) {
-        Map<String, String> entries = new HashMap<>();
-        int indexOf = url.indexOf('?');
-        if (indexOf > 0) {
-            String paramString = url.substring(indexOf+1);
-            String[] paramPairs = paramString.split("&");
-            for(String pair : paramPairs) {
-                String[] splittedPair = pair.split("=");
-                String key = splittedPair.length > 0 ? splittedPair[0] : "";
-                String value = splittedPair.length > 1 ? splittedPair[1] : "";
-                entries.put(key, value);
-            }
+    @SneakyThrows
+    public static Map<String, String> splitQuery(URI url)  {
+        Map<String, String> query_pairs = new LinkedHashMap<String, String>();
+        String query = url.getQuery();
+        if (StringUtils.isBlank(query)){
+            return Collections.emptyMap();
         }
-        return entries;
+        String[] pairs = query.split("&");
+        for (String pair : pairs) {
+            int idx = pair.indexOf("=");
+            query_pairs.put(URLDecoder.decode(pair.substring(0, idx), StandardCharsets.UTF_8), URLDecoder.decode(pair.substring(idx + 1), StandardCharsets.UTF_8));
+        }
+        return query_pairs;
     }
 
 }

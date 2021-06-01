@@ -72,7 +72,11 @@ public class Oauth2Api {
 	private OAuth2Token getToken(ScribeTokenSupplier tokenSupplier) {
 		try {
 			var scribeToken = tokenSupplier.get();
-			return new OAuth2Token(scribeToken.getAccessToken(), scribeToken.getRefreshToken(), new Date(Instant.now().plusSeconds(scribeToken.getExpiresIn()).toEpochMilli()));
+			var expiryDate = (Date)null;
+			if (scribeToken.getExpiresIn() != null) {
+				expiryDate = new Date(Instant.now().plusSeconds(scribeToken.getExpiresIn()).toEpochMilli());
+			}
+			return new OAuth2Token(scribeToken.getAccessToken(), scribeToken.getRefreshToken(), expiryDate);
 		} catch (OAuth2AccessTokenErrorResponse e){
 			String msg = e.getErrorDescription() != null ? e.getErrorDescription() : e.getMessage();
 			throw new RuntimeException(msg, e);
