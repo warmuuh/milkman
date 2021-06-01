@@ -51,7 +51,7 @@ public class Oauth2Api {
 	public OAuth2Token authenticationCodeGrant(String authorizationEndpoint, String scopes) {
 			return getToken(() -> {
 				AuthorizationCodeCaptureServer server = new AuthorizationCodeCaptureServer();
-				OAuth20Service service = getOauthService(server.getReturnUrl());
+				OAuth20Service service = getOauthService(server.getReturnUrl(), authorizationEndpoint);
 
 				var authorizationUrl = service.createAuthorizationUrlBuilder()
 						.scope(scopes)
@@ -87,11 +87,15 @@ public class Oauth2Api {
 	}
 
 	private OAuth20Service getOauthService(String callback) {
+		return getOauthService(callback, "");
+	}
+
+	private OAuth20Service getOauthService(String callback, String authorizationBaseUrl) {
 		return new ServiceBuilder(clientId)
 				.apiSecret(clientSecret)
 				.callback(callback)
 				.httpClient(new JDKHttpClient(JDKHttpClientConfig.defaultConfig().withConnectTimeout(1000).withReadTimeout(2000)))
-				.build(new DynamicOauth2Api(accessTokenEndpoint, ""));
+				.build(new DynamicOauth2Api(accessTokenEndpoint, authorizationBaseUrl));
 	}
 
 }
