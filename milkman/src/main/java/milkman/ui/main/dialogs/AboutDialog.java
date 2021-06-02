@@ -6,13 +6,9 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import milkman.PlatformUtil;
 import milkman.utils.VersionLoader;
 import milkman.utils.fxml.FxmlUtil;
-
-import java.awt.*;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 import static milkman.utils.fxml.FxmlBuilder.*;
 
@@ -24,13 +20,7 @@ public class AboutDialog {
 
 	public void showAndWait() {
 		JFXDialogLayout content = new AboutDialogDialogFxml(this);
-		link.setOnMouseClicked(e -> {
-			try {
-				Desktop.getDesktop().browse(new URI("https://github.com/warmuuh/milkman"));
-			} catch (IOException | URISyntaxException e1) {
-				e1.printStackTrace();
-			}
-		});
+		link.setOnMouseClicked(e -> PlatformUtil.tryOpenBrowser("https://github.com/warmuuh/milkman"));
 
 		dialog = FxmlUtil.createDialog(content);
 		dialog.showAndWait();

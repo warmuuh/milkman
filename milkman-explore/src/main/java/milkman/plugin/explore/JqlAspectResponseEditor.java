@@ -23,6 +23,7 @@ import javafx.scene.layout.VBox;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import milkman.PlatformUtil;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 import milkman.ui.components.AutoCompleter;
@@ -33,10 +34,6 @@ import milkman.ui.plugin.rest.domain.RestResponseBodyAspect;
 import milkman.utils.fxml.GenericBinding;
 import org.apache.commons.lang3.StringUtils;
 
-import java.awt.*;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Collections;
@@ -109,14 +106,7 @@ public class JqlAspectResponseEditor implements ResponseAspectEditor {
 		}
 
 		JFXButton helpBtn = new JFXButton();
-		helpBtn.setOnAction(e -> {
-			try {
-				Desktop.getDesktop().browse(new URI("http://jmespath.org/"));
-			} catch (IOException | URISyntaxException e1) {
-				e1.printStackTrace();
-			}
-
-		});
+		helpBtn.setOnAction(e -> PlatformUtil.tryOpenBrowser("http://jmespath.org/"));
 		helpBtn.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.QUESTION_CIRCLE, "1.5em"));
 		tab.setContent(new VBox(new HBox(qryInput, compilationWarning, helpBtn), contentView));
 

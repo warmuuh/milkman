@@ -7,14 +7,13 @@ import com.github.scribejava.core.model.OAuth2AccessTokenErrorResponse;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import milkman.PlatformUtil;
 import milkman.plugin.auth.oauth.DynamicOauth2Api;
 import milkman.plugin.auth.oauth.scribe.JDKHttpClient;
 import milkman.plugin.auth.oauth.server.AuthorizationCodeCaptureServer;
 import milkman.ui.main.dialogs.WaitForMonoDialog;
 
-import java.awt.*;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
 import java.util.Date;
@@ -58,7 +57,9 @@ public class Oauth2Api {
 						.build();
 
 				log.info("Redirecting to " + authorizationUrl);
-				Desktop.getDesktop().browse(new URI(authorizationUrl));
+				if (!PlatformUtil.tryOpenBrowser(authorizationUrl)){
+					throw new RuntimeException("Failed to open browser");
+				}
 				var dialog = new WaitForMonoDialog<String>();
 				dialog.showAndWait("Waiting for Authorization Code ...", server.listenForCode());
 				if (dialog.isCancelled()){

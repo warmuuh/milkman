@@ -3,12 +3,19 @@ package milkman;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyCombination.Modifier;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SystemUtils;
 
+import java.awt.*;
+import java.awt.Desktop.Action;
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+@Slf4j
 public class PlatformUtil {
 
 	public static boolean isCurrentDirWritable() {
@@ -23,7 +30,7 @@ public class PlatformUtil {
 	}
 
 	public static KeyCombination getControlKeyCombination(KeyCode keyCode){
-		KeyCombination.Modifier controlKey = KeyCombination.CONTROL_DOWN;
+		Modifier controlKey = KeyCombination.CONTROL_DOWN;
 		if (SystemUtils.IS_OS_MAC){
 			controlKey = KeyCombination.META_DOWN;
 		}
@@ -40,7 +47,26 @@ public class PlatformUtil {
 		}
 		
 		return filename;
-		
 	}
-	
+
+	public static boolean tryOpenBrowser(String url) {
+		if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Action.BROWSE)) {
+			try {
+				Desktop.getDesktop().browse(URI.create(url));
+				return true;
+			} catch (IOException e) {
+				log.warn("Failed to open browser", e);
+			}
+		} else {
+			Runtime runtime = Runtime.getRuntime();
+			try {
+				runtime.exec("xdg-open " + url);
+				return true;
+			} catch (IOException e) {
+				log.warn("Failed to open browser via xdg-open", e);
+			}
+		}
+		return false;
+	}
+
 }
