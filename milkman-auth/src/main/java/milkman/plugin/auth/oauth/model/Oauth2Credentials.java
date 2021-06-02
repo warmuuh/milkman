@@ -18,6 +18,7 @@ public class Oauth2Credentials extends KeyEntry {
     String accessTokenEndpoint;
     String scopes;
     boolean autoRefresh;
+    boolean requestBodyAuthScheme;
 
     @JsonIgnore
     boolean refreshFailed;
@@ -67,7 +68,7 @@ public class Oauth2Credentials extends KeyEntry {
 
         Oauth2Api api = new Oauth2Api(clientId, clientSecret, accessTokenEndpoint);
 
-        var refreshedToken = api.refreshToken(token);
+        var refreshedToken = api.refreshToken(token, requestBodyAuthScheme);
         token.setAccessToken(refreshedToken.getAccessToken());
         token.setExpiresAt(refreshedToken.getExpiresAt());
         if (StringUtils.isNotBlank(refreshedToken.getRefreshToken())) {
@@ -77,7 +78,7 @@ public class Oauth2Credentials extends KeyEntry {
 
     public void fetchNewToken() {
         Oauth2Api api = new Oauth2Api(clientId, clientSecret, accessTokenEndpoint);
-        token = grantType.getToken(api, scopes);
+        token = grantType.getToken(api, scopes, requestBodyAuthScheme);
     }
 
     @Override

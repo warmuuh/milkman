@@ -12,14 +12,14 @@ import lombok.extern.slf4j.Slf4j;
 @JsonTypeInfo(include = As.PROPERTY, use = Id.CLASS, visible = true)
 public interface Oauth2Grant {
 
-	OAuth2Token getToken(Oauth2Api api, String scopes);
+	OAuth2Token getToken(Oauth2Api api, String scopes, boolean useReqBodyAuthScheme);
 
 	@Data
 	@NoArgsConstructor
 	class ClientCredentialGrant implements Oauth2Grant {
 		@Override
-		public OAuth2Token getToken(Oauth2Api api, String scopes){
-			return api.clientCredentialGrant(scopes);
+		public OAuth2Token getToken(Oauth2Api api, String scopes, boolean useReqBodyAuthScheme){
+			return api.clientCredentialGrant(scopes, useReqBodyAuthScheme);
 		}
 	}
 
@@ -29,8 +29,8 @@ public interface Oauth2Grant {
 		String username;
 		String password;
 		@Override
-		public OAuth2Token getToken(Oauth2Api api, String scopes){
-			return api.passwordGrant(username, password, scopes);
+		public OAuth2Token getToken(Oauth2Api api, String scopes, boolean useReqBodyAuthScheme){
+			return api.passwordGrant(username, password, scopes, useReqBodyAuthScheme);
 		}
 	}
 
@@ -41,8 +41,8 @@ public interface Oauth2Grant {
 		String authorizationEndpoint;
 
 		@Override
-		public OAuth2Token getToken(Oauth2Api api, String scopes){
-			return api.authenticationCodeGrant(authorizationEndpoint, scopes);
+		public OAuth2Token getToken(Oauth2Api api, String scopes, boolean useReqBodyAuthScheme){
+			return api.authenticationCodeGrant(authorizationEndpoint, scopes, useReqBodyAuthScheme);
 		}
 	}
 }

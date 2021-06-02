@@ -4,7 +4,9 @@ import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.layout.HBox;
 import milkman.domain.KeySet.KeyEntry;
 import milkman.plugin.auth.oauth.GrantTypeBuilder.ClientCredentialBuilder;
 import milkman.plugin.auth.oauth.GrantTypeBuilder.PasswordBuilder;
@@ -29,6 +31,7 @@ public class Oauth2KeyEditor implements KeyEditor<Oauth2Credentials>, ToasterAwa
     private final GenericBinding<Oauth2Credentials, String> clientSecretBinding = GenericBinding.of(Oauth2Credentials::getClientSecret, Oauth2Credentials::setClientSecret);
     private final GenericBinding<Oauth2Credentials, String> scopesBinding = GenericBinding.of(Oauth2Credentials::getScopes, Oauth2Credentials::setScopes);
     private final GenericBinding<Oauth2Credentials, Boolean> autoRefreshBinding = GenericBinding.of(Oauth2Credentials::isAutoRefresh, Oauth2Credentials::setAutoRefresh);
+    private final GenericBinding<Oauth2Credentials, Boolean> requestBodyAuthSchemeBinding = GenericBinding.of(Oauth2Credentials::isRequestBodyAuthScheme, Oauth2Credentials::setRequestBodyAuthScheme);
 
     private Toaster toaster;
     private JFXTextField txtRefreshToken;
@@ -51,8 +54,13 @@ public class Oauth2KeyEditor implements KeyEditor<Oauth2Credentials>, ToasterAwa
         root.add(formEntry("Client Id", clientIdBinding, keyEntry));
         root.add(formEntry("Client Secret", clientSecretBinding, keyEntry));
         root.add(formEntry("Scopes", scopesBinding, keyEntry));
-        var autoRefresh = root.add(new JFXCheckBox("Refresh Token on expiry"));
+        var autoRefresh = new JFXCheckBox("Refresh Token on expiry");
         autoRefreshBinding.bindTo(autoRefresh.selectedProperty(), keyEntry);
+        autoRefresh.setPadding(new Insets(0,25,0,0));
+        var requestBodyAuthScheme = new JFXCheckBox("Credentials in Body");
+        requestBodyAuthSchemeBinding.bindTo(requestBodyAuthScheme.selectedProperty(), keyEntry);
+
+        root.add(new HBox(autoRefresh, requestBodyAuthScheme));
 
         var combobox = root.add(new JFXComboBox<GrantTypeBuilder>());
         combobox.getItems().addAll(

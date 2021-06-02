@@ -10,7 +10,8 @@
 version 5.3.0 -- upcoming
   * mask plain-keys on overview
   * timeouts for oauth
-  * auto-refreh for oauth only on usage
+  * auto-refresh for oauth only on usage (not on preview)
+  * oauth client-credential transmission via header or form parameter now
   * auto-completion now includes prefixed resolvers (such as `key:`)
   * new [WebSocket plugin](/milkman-ws)
 

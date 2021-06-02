@@ -5,6 +5,9 @@ import com.github.scribejava.core.httpclient.jdk.JDKHttpClientConfig;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuth2AccessTokenErrorResponse;
 import com.github.scribejava.core.oauth.OAuth20Service;
+import com.github.scribejava.core.oauth2.clientauthentication.ClientAuthentication;
+import com.github.scribejava.core.oauth2.clientauthentication.HttpBasicAuthenticationScheme;
+import com.github.scribejava.core.oauth2.clientauthentication.RequestBodyAuthenticationScheme;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import milkman.PlatformUtil;
@@ -30,27 +33,27 @@ public class Oauth2Api {
 	private final String clientSecret;
 	private final String accessTokenEndpoint;
 
-	public OAuth2Token refreshToken(OAuth2Token oldToken) {
-		OAuth20Service service = getOauthService();
+	public OAuth2Token refreshToken(OAuth2Token oldToken, boolean useReqBodyAuthScheme) {
+		OAuth20Service service = getOauthService(useReqBodyAuthScheme);
 		return getToken(() -> service.refreshAccessToken(oldToken.getRefreshToken()));
 	}
 
-	public OAuth2Token clientCredentialGrant(String scopes) {
-		OAuth20Service service = getOauthService();
+	public OAuth2Token clientCredentialGrant(String scopes, boolean useReqBodyAuthScheme) {
+		OAuth20Service service = getOauthService(useReqBodyAuthScheme);
 		return getToken(() -> service.getAccessTokenClientCredentialsGrant(scopes));
 	}
 
 
-	public OAuth2Token passwordGrant(String username, String password, String scopes) {
-		OAuth20Service service = getOauthService();
+	public OAuth2Token passwordGrant(String username, String password, String scopes, boolean useReqBodyAuthScheme) {
+		OAuth20Service service = getOauthService(useReqBodyAuthScheme);
 		return getToken(() -> service.getAccessTokenPasswordGrant(username, password, scopes));
 	}
 
 
-	public OAuth2Token authenticationCodeGrant(String authorizationEndpoint, String scopes) {
+	public OAuth2Token authenticationCodeGrant(String authorizationEndpoint, String scopes, boolean useReqBodyAuthScheme) {
 			return getToken(() -> {
 				AuthorizationCodeCaptureServer server = new AuthorizationCodeCaptureServer();
-				OAuth20Service service = getOauthService(server.getReturnUrl(), authorizationEndpoint);
+				OAuth20Service service = getOauthService(server.getReturnUrl(), authorizationEndpoint, useReqBodyAuthScheme);
 
 				var authorizationUrl = service.createAuthorizationUrlBuilder()
 						.scope(scopes)
@@ -87,20 +90,24 @@ public class Oauth2Api {
 		}
 	}
 
-	private OAuth20Service getOauthService() {
-		return getOauthService(null);
+	private OAuth20Service getOauthService(boolean useReqBodyAuthScheme) {
+		return getOauthService(null, useReqBodyAuthScheme);
 	}
 
-	private OAuth20Service getOauthService(String callback) {
-		return getOauthService(callback, "");
+	private OAuth20Service getOauthService(String callback, boolean useReqBodyAuthScheme) {
+		return getOauthService(callback, "", useReqBodyAuthScheme);
 	}
 
-	private OAuth20Service getOauthService(String callback, String authorizationBaseUrl) {
+	private OAuth20Service getOauthService(String callback, String authorizationBaseUrl, boolean useReqBodyAuthScheme) {
+		ClientAuthentication clientAuthentication = useReqBodyAuthScheme
+				? RequestBodyAuthenticationScheme.instance()
+				: HttpBasicAuthenticationScheme.instance();
+
 		return new ServiceBuilder(clientId)
 				.apiSecret(clientSecret)
 				.callback(callback)
 				.httpClient(new JDKHttpClient(JDKHttpClientConfig.defaultConfig().withConnectTimeout(1000).withReadTimeout(2000)))
-				.build(new DynamicOauth2Api(accessTokenEndpoint, authorizationBaseUrl));
+				.build(new DynamicOauth2Api(accessTokenEndpoint, authorizationBaseUrl, clientAuthentication));
 	}
 
 }
