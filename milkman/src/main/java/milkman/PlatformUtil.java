@@ -50,14 +50,8 @@ public class PlatformUtil {
 	}
 
 	public static boolean tryOpenBrowser(String url) {
-		if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Action.BROWSE)) {
-			try {
-				Desktop.getDesktop().browse(URI.create(url));
-				return true;
-			} catch (IOException e) {
-				log.warn("Failed to open browser", e);
-			}
-		} else {
+		if (SystemUtils.IS_OS_LINUX) {
+			// Workaround for Linux because "Desktop.getDesktop().browse()" doesn't work on some Linux implementations
 			Runtime runtime = Runtime.getRuntime();
 			try {
 				runtime.exec("xdg-open " + url);
@@ -65,6 +59,15 @@ public class PlatformUtil {
 			} catch (IOException e) {
 				log.warn("Failed to open browser via xdg-open", e);
 			}
+		} else if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Action.BROWSE)) {
+			try {
+				Desktop.getDesktop().browse(URI.create(url));
+				return true;
+			} catch (IOException e) {
+				log.warn("Failed to open browser", e);
+			}
+		} else {
+			log.warn("Unsupported plateform, can't launch the browser");
 		}
 		return false;
 	}
