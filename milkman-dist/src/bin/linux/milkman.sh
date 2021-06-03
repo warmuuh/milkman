@@ -7,6 +7,7 @@ chmod +x "$BASE_DIR"/jre-linux64/bin/java
 "$BASE_DIR"/jre-linux64/bin/java -XX:SharedArchiveFile="$BASE_DIR"/app-cds.jsa \
 	-client \
 	-XX:+UseCompressedOops \
+  -Dprism.forceGPU=true \
 	-XX:+UseCompressedClassPointers \
 	--add-exports javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED \
 	--add-exports javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED \
