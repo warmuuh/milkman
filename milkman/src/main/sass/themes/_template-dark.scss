@@ -205,6 +205,12 @@
     }
 }
 
+.jfx-text-field,.jfx-combo-box {
+	-fx-prompt-text-fill: darken($foreground, 10%);
+	-jfx-focus-color: $main-accent;
+	-jfx-unfocus-color: darken($foreground, 10%);
+}
+
 #generalRequestEdit {
 	-fx-padding: 20;
 	-fx-background-color: $background;
@@ -299,6 +305,7 @@
 	-fx-background-radius: 40px;
 	.jfx-text-field {
 		-fx-padding: 4 10 4 10;
+		-fx-prompt-text-fill: $background;
 	}
 	.label {
 		.icon {

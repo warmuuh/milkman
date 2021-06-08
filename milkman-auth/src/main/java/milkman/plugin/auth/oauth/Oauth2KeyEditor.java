@@ -1,10 +1,9 @@
 package milkman.plugin.auth.oauth;
 
-import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.JFXToggleButton;
 import javafx.application.Platform;
-import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;
 import milkman.domain.KeySet.KeyEntry;
@@ -48,16 +47,18 @@ public class Oauth2KeyEditor implements KeyEditor<Oauth2Credentials>, ToasterAwa
     public Node getRoot(Oauth2Credentials keyEntry) {
         var root = new VboxExt();
         root.setSpacing(25);
+        root.setMinWidth(600);
 
         root.add(formEntry("Name", nameBinding, keyEntry));
         root.add(formEntry("Token Endpoint", endpointBinding, keyEntry));
         root.add(formEntry("Client Id", clientIdBinding, keyEntry));
         root.add(formEntry("Client Secret", clientSecretBinding, keyEntry));
         root.add(formEntry("Scopes", scopesBinding, keyEntry));
-        var autoRefresh = new JFXCheckBox("Refresh Token on expiry");
+        var autoRefresh = new JFXToggleButton();
+        autoRefresh.setText("Refresh Token on expiry");
         autoRefreshBinding.bindTo(autoRefresh.selectedProperty(), keyEntry);
-        autoRefresh.setPadding(new Insets(0,25,0,0));
-        var requestBodyAuthScheme = new JFXCheckBox("Credentials in Body");
+        var requestBodyAuthScheme = new JFXToggleButton();
+        requestBodyAuthScheme.setText("Credentials in Body");
         requestBodyAuthSchemeBinding.bindTo(requestBodyAuthScheme.selectedProperty(), keyEntry);
 
         root.add(new HBox(autoRefresh, requestBodyAuthScheme));
