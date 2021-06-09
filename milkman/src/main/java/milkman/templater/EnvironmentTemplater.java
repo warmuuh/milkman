@@ -14,27 +14,18 @@ import java.util.stream.Collectors;
 
 public class EnvironmentTemplater implements Templater{
 
-	Map<String, String> values;
-	
+
 //	private final Pattern tagPattern = Pattern.compile("(?<=[\\{]{2})([^}]+)(?=[\\}]{2})");
 	private final Pattern tagPattern = Pattern.compile("([\\{]{2}[^{]+?[\\}]{2})");
-	private final Map<String, String> entries;
+	private final Optional<Environment> activeEnvironment;
+	private final List<Environment> globalEnvironments;
 	private final PrefixedTemplaterResolver resolver;
 
 
 	public EnvironmentTemplater(Optional<Environment> activeEnvironment, List<Environment> globalEnvironments, PrefixedTemplaterResolver resolver) {
+		this.activeEnvironment = activeEnvironment;
+		this.globalEnvironments = globalEnvironments;
 		this.resolver = resolver;
-
-		List<EnvironmentEntry> envEntries = activeEnvironment.map(env -> new LinkedList<>(env.getEntries())).orElse(new LinkedList<>());
-		globalEnvironments.forEach(ge -> envEntries.addAll(ge.getEntries()));
-		
-		
-		entries = envEntries.stream()
-			.filter(e -> e.isEnabled())
-			.collect(Collectors.toMap(
-					(EnvironmentEntry e) -> e.getName(), 
-					(EnvironmentEntry e) -> e.getValue() == null ? "" : e.getValue(),
-					(String a, String b) -> a)); //in case several keys have the same name, use first one
 	}
 
 
@@ -71,7 +62,24 @@ public class EnvironmentTemplater implements Templater{
 	}
 
 
+	private Map<String, String> getMergedEnvironment(Optional<Environment> activeEnvironment, List<Environment> globalEnvironments) {
+		Map<String, String> entries;
+		List<EnvironmentEntry> envEntries = activeEnvironment.map(env -> new LinkedList<>(env.getEntries())).orElse(new LinkedList<>());
+		globalEnvironments.forEach(ge -> envEntries.addAll(ge.getEntries()));
+
+
+		entries = envEntries.stream()
+				.filter(e -> e.isEnabled())
+				.collect(Collectors.toMap(
+						(EnvironmentEntry e) -> e.getName(),
+						(EnvironmentEntry e) -> e.getValue() == null ? "" : e.getValue(),
+						(String a, String b) -> a)); //in case several keys have the same name, use first one
+		return entries;
+	}
+
+
 	private String getValueForTag(String tagName) {
+		Map<String, String> entries = getMergedEnvironment(activeEnvironment, globalEnvironments);
 		String trimmed = tagName.trim();
 		if (entries.containsKey(trimmed)){
 			return replaceTags(entries.get(trimmed));
