@@ -81,6 +81,13 @@ This is a sample plugin that allows to add arbitrary description to every reques
 ### [Test Plugin](/milkman-test)
 A testrunner plugin that allows to run multiple requests in sequence and verify the results
 
+### [Auth Plugin](/milkman-auth)
+An OAuth Plugin for managing oauth credentials and transparent refreshing of tokens
+
+### [Websocket Plugin](/milkman-ws)
+A websocket plugin for interacting with websocket endpoints
+
+
 # Showcase
 
 ![Milkman White](img/screenshot.png)

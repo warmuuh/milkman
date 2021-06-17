@@ -1,13 +1,9 @@
 package milkman.utils;
 
-import java.util.concurrent.CompletableFuture;
-
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import milkman.domain.ResponseContainer;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
  * for signaling of request state between main application and plugins.
@@ -21,6 +17,7 @@ public class AsyncResponseControl {
 	@Getter
 	private final AsyncControl cancellationControl = new AsyncControl();
 	public final Event0 onRequestStarted = new Event0();
+	public final Event0 onRequestReady = new Event0();
 	public final CompletableFuture<Void> onRequestSucceeded = new CompletableFuture<>();
 	public final CompletableFuture<Throwable> onRequestFailed = new CompletableFuture<>();
 	
@@ -42,10 +39,13 @@ public class AsyncResponseControl {
 			onRequestStarted.invoke();
 			onRequestStarted.clear();
 		}
+		public void triggerReqeuestReady() {
+			onRequestReady.invoke();
+			onRequestReady.clear();
+		}
 		public void triggerRequestSucceeded() {
 			onRequestSucceeded.complete(null);
 			onRequestFailed.cancel(true);
-			
 		}
 		public void triggerRequestFailed(Throwable exception) {
 			onRequestFailed.complete(exception);

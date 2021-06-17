@@ -10,6 +10,7 @@ public interface ExecutionListenerAware {
 
 	interface ExecutionListener {
 		void onRequestStarted(RequestContainer request, ResponseContainer response);
+		void onRequestReady(RequestContainer request, ResponseContainer response);
 		void onRequestFinished(RequestContainer request, ResponseContainer response);
 	}
 }

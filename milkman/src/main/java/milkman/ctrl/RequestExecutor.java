@@ -38,6 +38,7 @@ public class RequestExecutor extends Service<AsyncResponseControl> {
 						var response =  plugin.executeCustomCommandAsync(commandId, request, templater, asyncCtrl.getCancellationControl());
 						asyncCtrl.setResponse(response);
 						executionListenerManager.onRequestStarted(request, response);
+						asyncCtrl.onRequestReady.add(() -> executionListenerManager.onRequestReady(request, response));
 						CompletableFuture.anyOf(asyncCtrl.onRequestFailed, asyncCtrl.onRequestSucceeded)
 								.thenRun(() -> executionListenerManager.onRequestFinished(request, response));
 						return asyncCtrl;
@@ -45,6 +46,7 @@ public class RequestExecutor extends Service<AsyncResponseControl> {
 						log.info("Execute request");
 						var response = plugin.executeRequestAsync(request, templater, asyncCtrl.getCancellationControl());
 						executionListenerManager.onRequestStarted(request, response);
+						asyncCtrl.onRequestReady.add(() -> executionListenerManager.onRequestReady(request, response));
 						CompletableFuture.anyOf(asyncCtrl.onRequestFailed, asyncCtrl.onRequestSucceeded)
 								.thenRun(() -> executionListenerManager.onRequestFinished(request, response));
 						asyncCtrl.setResponse(response);

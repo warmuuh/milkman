@@ -7,7 +7,7 @@
 
 # Changelog
 
-version 5.3.0 -- upcoming
+version 5.3.0
   * mask plain-keys on overview
   * timeouts for oauth
   * auto-refresh for oauth only on usage (not on preview)
@@ -17,7 +17,7 @@ version 5.3.0 -- upcoming
 
 version 5.2.0
   * added key-store that is not synced
-  * added oauth2 support (client-credential, password grant, authorization code (w/o fixed redirect-url))
+  * added oauth2 support ([Auth Plugin](/milkman-auth)) (client-credential, password grant, authorization code (w/o fixed redirect-url))
 
 version 5.1.0
   * added horizontal layout switch

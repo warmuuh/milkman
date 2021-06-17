@@ -47,9 +47,13 @@ public class WebSocketAspectEditor implements RequestAspectEditor, ExecutionList
 		StackPane.setAlignment(addItemBtn, Pos.BOTTOM_RIGHT);
 		StackPane.setMargin(addItemBtn, new Insets(0, 20, 20, 0));
 
-		executionListenerManager.listenOnExecution(request, "ws-msg-sender-listener", new ExecutionListenerAware.ExecutionListener() {
+		executionListenerManager.listenOnExecution(request, "ws-msg-sender-listener", new ExecutionListener() {
 			@Override
 			public void onRequestStarted(RequestContainer request, ResponseContainer response) {
+			}
+
+			@Override
+			public void onRequestReady(RequestContainer request, ResponseContainer response) {
 				addItemBtn.setDisable(false);
 				addItemBtn.setOnAction(e -> response.getAspect(WebsocketResponseAspect.class).ifPresent(ws -> {
 					if (ws.getClient().isOpen()) {

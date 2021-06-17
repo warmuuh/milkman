@@ -1,6 +1,16 @@
 # Milkman Websockets Plugin
 
-tbd
+Support for websocket transport
+
+## Features
+
+  * supports ws and wss
+  * can interactively send messages
+  
+## Screenshot
+
+![Milkman Ws Streaming](/img/gif/milkman-ws-demo.gif)
+
 
 ## Note
 

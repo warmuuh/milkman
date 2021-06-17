@@ -1,6 +1,6 @@
 package milkman.plugin.ws;
 
-import milkman.utils.AsyncResponseControl;
+import milkman.utils.AsyncResponseControl.AsyncControl;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.reactivestreams.Subscriber;
@@ -10,12 +10,12 @@ import java.net.URI;
 public class MilkmanWebsocketClient extends WebSocketClient {
 
 	private final Subscriber<byte[]> responseSubscriber;
-	private final AsyncResponseControl.AsyncControl asyncControl;
+	private final AsyncControl asyncControl;
 
 
 	public MilkmanWebsocketClient(URI serverUri,
 								  Subscriber<byte[]> responseSubscriber,
-								  AsyncResponseControl.AsyncControl asyncControl) {
+								  AsyncControl asyncControl) {
 		super(serverUri);
 		this.responseSubscriber = responseSubscriber;
 		this.asyncControl = asyncControl;
@@ -24,6 +24,7 @@ public class MilkmanWebsocketClient extends WebSocketClient {
 
 	@Override
 	public void onOpen(ServerHandshake handshakedata) {
+		asyncControl.triggerReqeuestReady();
 	}
 
 	@Override
