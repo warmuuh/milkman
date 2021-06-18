@@ -61,6 +61,9 @@
 				<include>com.github.warmuuh:milkman-graphql</include>
 				<include>com.github.warmuuh:milkman-cassandra</include>
 				<include>com.github.warmuuh:milkman-grpc</include>
+				<include>com.github.warmuuh:milkman-test</include>
+				<include>com.github.warmuuh:milkman-auth</include>
+				<include>com.github.warmuuh:milkman-ws</include>
 			</includes>
 			<binaries>
 				<unpack>false</unpack>
