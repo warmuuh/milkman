@@ -124,18 +124,22 @@ public class WorkspaceController {
 			activeWorkspace.getOpenRequests().add(request);
 		activeWorkspace.setActiveRequest(request);
 
-		
+		var cachedResponse = Optional.ofNullable(activeWorkspace.getCachedResponses().get(request.getId()));
+
 		plugins.loadRequestAspectPlugins().forEach(p -> p.initializeRequestAspects(request));
-		workingAreaView.display(request, activeWorkspace.getOpenRequests());
+		workingAreaView.display(request,
+				activeWorkspace.getOpenRequests(),
+				cachedResponse.map(AsyncResponseControl::getResponse));
 		
-		if (activeWorkspace.getCachedResponses().containsKey(request.getId()))
-			workingAreaView.displayResponseFor(request, activeWorkspace.getCachedResponses().get(request.getId()));
-		else if (activeWorkspace.getEnqueuedRequestIds().containsKey(request.getId())) {
+		if (cachedResponse.isPresent()) {
+			workingAreaView.displayResponseFor(request, cachedResponse.get());
+		} else if (activeWorkspace.getEnqueuedRequestIds().containsKey(request.getId())) {
 			RequestExecutor executor = activeWorkspace.getEnqueuedRequestIds().get(request.getId());
 			workingAreaView.showSpinner(() -> executor.cancel());
 		}
-		else
+		else {
 			workingAreaView.clearResponse();
+		}
 	}
 
 	protected void addToDisplayHistory(RequestContainer request) {
@@ -457,7 +461,7 @@ public class WorkspaceController {
 			
 			loadCollections(activeWorkspace);
 			
-			workingAreaView.display(activeWorkspace.getActiveRequest(), activeWorkspace.getOpenRequests());
+			workingAreaView.display(activeWorkspace.getActiveRequest(), activeWorkspace.getOpenRequests(), Optional.empty());
 			
 		}
 		

@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
+import milkman.domain.ResponseContainer;
 import milkman.ui.commands.UiCommand;
 import milkman.ui.commands.UiCommand.*;
 import milkman.ui.commands.UiCommand.CloseRequest.CloseType;
@@ -27,6 +28,7 @@ import milkman.utils.fxml.FxmlBuilder.*;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.List;
+import java.util.Optional;
 
 import static milkman.utils.fxml.FxmlBuilder.*;
 
@@ -50,8 +52,8 @@ public class WorkingAreaComponent {
 	JFXTabPane tabPane;
 	private ChangeListener<? super Tab> tabChangeListener;
 	
-	public void display(RequestContainer activeRequest, List<RequestContainer> openedRequests) {
-		restRequestComponent.display(activeRequest);
+	public void display(RequestContainer activeRequest, List<RequestContainer> openedRequests, Optional<ResponseContainer> existingResponse) {
+		restRequestComponent.display(activeRequest, existingResponse);
 		setupTabs(activeRequest, openedRequests);
 		log.info("request area refreshed");
 	}

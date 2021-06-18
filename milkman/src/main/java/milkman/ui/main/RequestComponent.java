@@ -8,7 +8,9 @@ import javafx.scene.layout.HBox;
 import lombok.Getter;
 import milkman.ctrl.RequestTypeManager;
 import milkman.domain.RequestContainer;
+import milkman.domain.ResponseContainer;
 import milkman.ui.commands.UiCommand;
+import milkman.ui.commands.UiCommand.*;
 import milkman.ui.plugin.CustomCommand;
 import milkman.ui.plugin.RequestTypeEditor;
 import milkman.ui.plugin.UiPluginManager;
@@ -20,6 +22,7 @@ import milkman.utils.javafx.JavaFxUtils;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.List;
+import java.util.Optional;
 
 import static milkman.utils.fxml.FxmlBuilder.hbox;
 
@@ -34,8 +37,8 @@ public class RequestComponent {
 	public final Event<UiCommand> onCommand = new Event<>();
 	@Getter private RequestContainer currentRequest;
 	 SplitMenuButton submitBtn;
-	private RequestTypeManager reqTypeManager;
-	private UiPluginManager plugins; 
+	private final RequestTypeManager reqTypeManager;
+	private final UiPluginManager plugins;
 	
 	
 	@Inject
@@ -44,7 +47,7 @@ public class RequestComponent {
 		this.reqTypeManager = reqTypeManager;
 	}
 
-	public void display(RequestContainer request) {
+	public void display(RequestContainer request, Optional<ResponseContainer> existingResponse) {
 		this.currentRequest = request;
 		mainEditingArea.getChildren().clear();
 		RequestTypeEditor mainEditController = reqTypeManager.getRequestEditor(request);
@@ -59,7 +62,7 @@ public class RequestComponent {
 		List<CustomCommand> customCommands = reqTypeManager.getPluginFor(currentRequest).getCustomCommands();
 		customCommands.forEach(cc -> {
 			MenuItem itm = new MenuItem(cc.getCommandText());
-			itm.setOnAction(e -> onCommand.invoke(new UiCommand.SubmitCustomCommand(currentRequest, cc)));
+			itm.setOnAction(e -> onCommand.invoke(new SubmitCustomCommand(currentRequest, cc)));
 			submitBtn.getItems().add(itm);
 		});
 		if (customCommands.isEmpty()) {
@@ -74,7 +77,7 @@ public class RequestComponent {
 		.forEach(tabController -> {
 			plugins.wireUp(tabController);
 			if (tabController.canHandleAspect(request)) {
-				Tab aspectTab = tabController.getRoot(request);
+				Tab aspectTab = tabController.getRoot(request, existingResponse);
 				aspectTab.setClosable(false);
 				tabs.getTabs().add(aspectTab);
 			}
@@ -86,7 +89,7 @@ public class RequestComponent {
 
 	 public void onSubmit() {
 		try {
-			onCommand.invoke(new UiCommand.SubmitRequest(currentRequest));
+			onCommand.invoke(new SubmitRequest(currentRequest));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -94,17 +97,17 @@ public class RequestComponent {
 	
 
 	 public void onSave() {
-		onCommand.invoke(new UiCommand.SaveRequestCommand(currentRequest));
+		onCommand.invoke(new SaveRequestCommand(currentRequest));
 	}
 	
 
 	 public void onSaveAs() {
-		onCommand.invoke(new UiCommand.SaveRequestAsCommand(currentRequest));
+		onCommand.invoke(new SaveRequestAsCommand(currentRequest));
 	}
 
 
 	 public void onExport() {
-		onCommand.invoke(new UiCommand.ExportRequest(currentRequest));
+		onCommand.invoke(new ExportRequest(currentRequest));
 	}
 
 	
