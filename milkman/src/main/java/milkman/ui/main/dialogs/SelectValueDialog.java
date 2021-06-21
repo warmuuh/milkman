@@ -5,13 +5,13 @@ import com.jfoenix.controls.JFXDialogLayout;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import lombok.Getter;
-import milkman.utils.fxml.FxmlBuilder;
 import milkman.utils.fxml.FxmlUtil;
+import milkman.utils.fxml.facade.FxmlBuilder.*;
 
 import java.util.List;
 import java.util.Optional;
 
-import static milkman.utils.fxml.FxmlBuilder.*;
+import static milkman.utils.fxml.facade.FxmlBuilder.*;
 
 public class SelectValueDialog {
 	private Dialog dialog;
@@ -53,7 +53,7 @@ public class SelectValueDialog {
 		public SelectValueDialogFxml(SelectValueDialog controller){
 			setHeading(controller.title = label("Title"));
 
-			var vbox = new FxmlBuilder.VboxExt();
+			var vbox = new VboxExt();
 			controller.promptLabel = vbox.add(label(""));
 			controller.valueSelection = vbox.add(new JFXComboBox<>());
 			setBody(vbox);

@@ -12,8 +12,8 @@ import milkman.plugin.grpc.domain.GrpcRequestContainer;
 import milkman.ui.components.AutoCompleter;
 import milkman.ui.plugin.AutoCompletionAware;
 import milkman.ui.plugin.RequestTypeEditor;
-import milkman.utils.fxml.FxmlBuilder.HboxExt;
 import milkman.utils.fxml.GenericBinding;
+import milkman.utils.fxml.facade.FxmlBuilder.HboxExt;
 
 public class GrpcRequestEditor implements RequestTypeEditor, AutoCompletionAware {
 
@@ -21,8 +21,8 @@ public class GrpcRequestEditor implements RequestTypeEditor, AutoCompletionAware
 	TextField endpoint;
 	JFXToggleButton useTls;
 
-	private GenericBinding<GrpcRequestContainer, String> endpointBinding = GenericBinding.of(GrpcRequestContainer::getEndpoint, GrpcRequestContainer::setEndpoint);
-	private GenericBinding<GrpcRequestContainer, Boolean> tlsBinding = GenericBinding.of(GrpcRequestContainer::isUseTls, GrpcRequestContainer::setUseTls);
+	private final GenericBinding<GrpcRequestContainer, String> endpointBinding = GenericBinding.of(GrpcRequestContainer::getEndpoint, GrpcRequestContainer::setEndpoint);
+	private final GenericBinding<GrpcRequestContainer, Boolean> tlsBinding = GenericBinding.of(GrpcRequestContainer::isUseTls, GrpcRequestContainer::setUseTls);
 
 	private AutoCompleter completer;
 
@@ -61,7 +61,7 @@ public class GrpcRequestEditor implements RequestTypeEditor, AutoCompletionAware
 
 
 	public static class GrpcRequestEditControllerFxml extends HboxExt {
-		private GrpcRequestEditor controller; //avoid gc collection
+		private final GrpcRequestEditor controller; //avoid gc collection
 
 		public GrpcRequestEditControllerFxml(GrpcRequestEditor controller) {
 			this.controller = controller;

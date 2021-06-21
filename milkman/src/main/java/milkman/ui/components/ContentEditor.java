@@ -1,15 +1,16 @@
 package milkman.ui.components;
 
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXComboBox;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.IndexRange;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyCombination.Modifier;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -53,6 +54,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static javafx.scene.input.KeyCombination.SHIFT_DOWN;
+import static milkman.utils.fxml.facade.FxmlBuilder.button;
+import static milkman.utils.fxml.facade.FxmlBuilder.combobox;
 
 /**
  * @author peter
@@ -62,7 +65,8 @@ public class ContentEditor extends VBox {
 
 	private static final String DEFAULT_CONTENTTYPE = "text/plain";
 
-	private static ExecutorService executor = Executors.newCachedThreadPool(new ThreadFactory() {
+	private static final ExecutorService executor = Executors.newCachedThreadPool(new ThreadFactory() {
+		@Override
 		public Thread newThread(Runnable r) {
 			Thread t = Executors.defaultThreadFactory().newThread(r);
 			t.setDaemon(true);
@@ -75,9 +79,9 @@ public class ContentEditor extends VBox {
 
 	private GenericBinding<Object, String> contentBinding;
 
-	protected JFXComboBox<ContentTypePlugin> highlighters;
+	protected ComboBox<ContentTypePlugin> highlighters;
 
-	private JFXButton format;
+	private Button format;
 
 	protected HBox header;
 
@@ -158,7 +162,7 @@ public class ContentEditor extends VBox {
 					}
 				}).subscribe(this::applyHighlighting);
 
-		KeyCombination.Modifier controlKey = KeyCombination.CONTROL_DOWN;
+		Modifier controlKey = KeyCombination.CONTROL_DOWN;
 		if (SystemUtils.IS_OS_MAC){
 			controlKey = KeyCombination.META_DOWN;
 		}
@@ -198,7 +202,7 @@ public class ContentEditor extends VBox {
 	}
 
 	private void setupHeader() {
-		highlighters = new JFXComboBox<ContentTypePlugin>();
+		highlighters = combobox();
 		highlighters.setConverter(new StringConverter<ContentTypePlugin>() {
 			@Override
 			public String toString(ContentTypePlugin object) {
@@ -216,7 +220,7 @@ public class ContentEditor extends VBox {
 				format.setVisible(n.supportFormatting());
 		});
 
-		format = new JFXButton("Format");
+		format = button("Format");
 		format.setVisible(false);
 
 		format.setOnAction(e -> formatCurrentCode());

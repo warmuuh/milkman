@@ -8,8 +8,8 @@ import javafx.scene.layout.VBox;
 import lombok.Getter;
 import milkman.utils.fxml.FxmlUtil;
 
-import static milkman.utils.fxml.FxmlBuilder.cancel;
-import static milkman.utils.fxml.FxmlBuilder.submit;
+import static milkman.utils.fxml.facade.FxmlBuilder.cancel;
+import static milkman.utils.fxml.facade.FxmlBuilder.submit;
 
 public class ConfirmationInputDialog {
 

@@ -15,8 +15,8 @@ import milkman.ui.plugin.CustomCommand;
 import milkman.ui.plugin.RequestTypeEditor;
 import milkman.ui.plugin.UiPluginManager;
 import milkman.utils.Event;
-import milkman.utils.fxml.FxmlBuilder.HboxExt;
-import milkman.utils.fxml.FxmlBuilder.VboxExt;
+import milkman.utils.fxml.facade.FxmlBuilder.HboxExt;
+import milkman.utils.fxml.facade.FxmlBuilder.VboxExt;
 import milkman.utils.javafx.JavaFxUtils;
 
 import javax.inject.Inject;
@@ -24,7 +24,7 @@ import javax.inject.Singleton;
 import java.util.List;
 import java.util.Optional;
 
-import static milkman.utils.fxml.FxmlBuilder.hbox;
+import static milkman.utils.fxml.facade.FxmlBuilder.hbox;
 
 @Singleton
 public class RequestComponent {

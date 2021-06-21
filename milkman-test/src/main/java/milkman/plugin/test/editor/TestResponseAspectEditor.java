@@ -17,12 +17,12 @@ import milkman.domain.ResponseContainer;
 import milkman.plugin.test.domain.TestResultAspect;
 import milkman.plugin.test.domain.TestResultAspect.TestResultEvent;
 import milkman.ui.plugin.ResponseAspectEditor;
-import milkman.utils.fxml.FxmlBuilder.*;
+import milkman.utils.fxml.facade.FxmlBuilder.*;
 import milkman.utils.javafx.SettableTreeItem;
 
 import java.util.LinkedList;
 
-import static milkman.utils.fxml.FxmlBuilder.*;
+import static milkman.utils.fxml.facade.FxmlBuilder.*;
 
 public class TestResponseAspectEditor implements ResponseAspectEditor {
 

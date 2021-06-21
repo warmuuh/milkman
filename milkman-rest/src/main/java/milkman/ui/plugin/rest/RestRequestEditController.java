@@ -8,21 +8,21 @@ import javafx.scene.layout.Priority;
 import lombok.SneakyThrows;
 import milkman.domain.RequestContainer;
 import milkman.ui.components.AutoCompleter;
-import milkman.ui.components.LongTextField;
 import milkman.ui.plugin.AutoCompletionAware;
 import milkman.ui.plugin.RequestTypeEditor;
 import milkman.ui.plugin.rest.domain.RestQueryParamAspect;
 import milkman.ui.plugin.rest.domain.RestRequestContainer;
-import milkman.utils.fxml.FxmlBuilder.HboxExt;
 import milkman.utils.fxml.GenericBinding;
+import milkman.utils.fxml.facade.FxmlBuilder.HboxExt;
+import milkman.utils.fxml.facade.LongTextField;
 
 public class RestRequestEditController implements RequestTypeEditor, AutoCompletionAware {
 
 	 TextField requestUrl;
 	 JFXComboBox<String> httpMethod;
 	
-	private GenericBinding<RestRequestContainer, String> urlBinding = GenericBinding.of(RestRequestContainer::getUrl, RestRequestContainer::setUrl);
-	private GenericBinding<RestRequestContainer, String> httpMethodBinding = GenericBinding.of(RestRequestContainer::getHttpMethod, RestRequestContainer::setHttpMethod);
+	private final GenericBinding<RestRequestContainer, String> urlBinding = GenericBinding.of(RestRequestContainer::getUrl, RestRequestContainer::setUrl);
+	private final GenericBinding<RestRequestContainer, String> httpMethodBinding = GenericBinding.of(RestRequestContainer::getHttpMethod, RestRequestContainer::setHttpMethod);
 	private AutoCompleter completer;
 	
 	

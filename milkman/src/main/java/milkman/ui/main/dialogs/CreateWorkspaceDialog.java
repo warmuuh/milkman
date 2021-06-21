@@ -17,7 +17,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.util.List;
 
-import static milkman.utils.fxml.FxmlBuilder.*;
+import static milkman.utils.fxml.facade.FxmlBuilder.*;
 
 public class CreateWorkspaceDialog {
 	 VBox syncDetailsArea;
@@ -25,7 +25,7 @@ public class CreateWorkspaceDialog {
 	 JFXTextField workspaceNameInput;
 	private Dialog dialog;
 
-	SynchronizationDetailFactory selectedSynchronizer = null;
+	SynchronizationDetailFactory selectedSynchronizer;
 	
 	private Toaster toaster;
 	private Workspace workspace;

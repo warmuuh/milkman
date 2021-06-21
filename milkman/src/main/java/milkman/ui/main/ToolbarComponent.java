@@ -16,7 +16,7 @@ import javax.inject.Singleton;
 import java.util.List;
 import java.util.Optional;
 
-import static milkman.utils.fxml.FxmlBuilder.*;
+import static milkman.utils.fxml.facade.FxmlBuilder.*;
 @Singleton
 public class ToolbarComponent {
 

@@ -1,6 +1,5 @@
 package milkman.ui.components;
 
-import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.cells.editors.TextFieldEditorBuilder;
 import com.jfoenix.controls.cells.editors.base.GenericEditableTreeTableCell;
@@ -35,6 +34,8 @@ import java.util.List;
 import java.util.function.*;
 import java.util.stream.Collectors;
 
+import static milkman.utils.fxml.facade.FxmlBuilder.button;
+
 @Value
 @EqualsAndHashCode(callSuper = true)
 class RecursiveWrapper<T> extends RecursiveTreeObject<RecursiveWrapper<T>>{
@@ -49,7 +50,7 @@ public class JfxTableEditor<T> extends StackPane {
 
 	private ObservableList<RecursiveWrapper<T>> obsWrappedItems;
 
-	private final JFXButton addItemBtn;
+	private final Button addItemBtn;
 
 	private final List<CustomAction> customActions = new LinkedList<>();
 
@@ -69,7 +70,7 @@ public class JfxTableEditor<T> extends StackPane {
 
 		JavaFxUtils.publishEscToParent(table);
 		getChildren().add(table);
-		addItemBtn = new JFXButton();
+		addItemBtn = button();
 		addItemBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 		addItemBtn.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PLUS, "1.5em"));
 		addItemBtn.getStyleClass().add("btn-add-entry");
@@ -347,8 +348,8 @@ public class JfxTableEditor<T> extends StackPane {
 
 	private final class CustomActionsCell extends TreeTableCell<RecursiveWrapper<T>, String> {
 
-		private JFXButton createButton(CustomAction action) {
-			JFXButton btn = new JFXButton();
+		private Button createButton(CustomAction action) {
+			Button btn = button();
 			btn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 			btn.setGraphic(new FontAwesomeIconView(action.getIcon(), "1.5em"));
 			btn.setOnAction(event -> {

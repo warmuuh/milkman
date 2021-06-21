@@ -10,6 +10,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
@@ -17,6 +18,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import milkman.ui.commands.AppCommand;
+import milkman.ui.commands.AppCommand.CreateNewWorkspace;
+import milkman.ui.commands.AppCommand.DeleteWorkspace;
+import milkman.ui.commands.AppCommand.ExportWorkspace;
+import milkman.ui.commands.AppCommand.RenameWorkspace;
 import milkman.utils.Event;
 import milkman.utils.fxml.FxmlUtil;
 import milkman.utils.fxml.NoSelectionModel;
@@ -24,7 +29,7 @@ import milkman.utils.javafx.JavaFxUtils;
 
 import java.util.List;
 
-import static milkman.utils.fxml.FxmlBuilder.*;
+import static milkman.utils.fxml.facade.FxmlBuilder.*;
 
 public class ManageWorkspacesDialog {
 
@@ -60,7 +65,7 @@ public class ManageWorkspacesDialog {
 			deleteButton.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.TIMES, "1.5em"));
 			deleteButton.setTooltip(new Tooltip("Delete workspace"));
 			deleteButton.setOnAction(e -> {
-				onCommand.invoke(new AppCommand.DeleteWorkspace(workspaceName));
+				onCommand.invoke(new DeleteWorkspace(workspaceName));
 				Platform.runLater(() -> workspaces.remove(workspaceName));
 			});
 
@@ -77,7 +82,7 @@ public class ManageWorkspacesDialog {
 
 
 		private void triggerExportWorkspaceDialog(String workspaceName){
-			onCommand.invoke(new AppCommand.ExportWorkspace(workspaceName));
+			onCommand.invoke(new ExportWorkspace(workspaceName));
 		}
 
 		private void triggerRenameDialog(String workspaceName) {
@@ -85,7 +90,7 @@ public class ManageWorkspacesDialog {
 			inputDialog.showAndWait("Rename Workspace", "New Name", workspaceName);
 			if (!inputDialog.isCancelled() && inputDialog.wasChanged()) {
 				String newName = inputDialog.getInput();
-				onCommand.invoke(new AppCommand.RenameWorkspace(workspaceName, newName));
+				onCommand.invoke(new RenameWorkspace(workspaceName, newName));
 				Platform.runLater(() -> {
 					int oldIdx = workspaces.indexOf(workspaceName);
 					workspaces.set(oldIdx, newName);
@@ -114,7 +119,7 @@ public class ManageWorkspacesDialog {
 
 
 	 public void onCreateWorkspace() {
-		onCommand.invoke(new AppCommand.CreateNewWorkspace(ws -> Platform.runLater(() -> {
+		onCommand.invoke(new CreateNewWorkspace(ws -> Platform.runLater(() -> {
 			workspaces.add(ws.getName());
 		})));
 	}
@@ -137,7 +142,7 @@ public class ManageWorkspacesDialog {
 
 			setBody(stackPane);
 
-			JFXButton close = cancel(controller::onClose, "Close");
+			Button close = cancel(controller::onClose, "Close");
 			close.getStyleClass().add("dialog-accept");
 			setActions(close);
 

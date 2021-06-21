@@ -23,7 +23,7 @@ import milkman.ui.plugin.RequestExecutorAware;
 import milkman.utils.javafx.MappedList;
 import milkman.utils.javafx.SettableTreeItem;
 
-import static milkman.utils.fxml.FxmlBuilder.*;
+import static milkman.utils.fxml.facade.FxmlBuilder.*;
 import static milkman.utils.javafx.DndUtil.JAVA_FORMAT;
 import static milkman.utils.javafx.DndUtil.deserialize;
 

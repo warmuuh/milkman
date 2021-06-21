@@ -1,7 +1,7 @@
 package milkman.ui.main.dialogs;
 
-import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialogLayout;
+import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
 import milkman.domain.Environment;
 import milkman.domain.Environment.EnvironmentEntry;
@@ -10,17 +10,17 @@ import milkman.utils.fxml.FxmlUtil;
 
 import java.util.UUID;
 
-import static milkman.utils.fxml.FxmlBuilder.cancel;
-import static milkman.utils.fxml.FxmlBuilder.label;
+import static milkman.utils.fxml.facade.FxmlBuilder.cancel;
+import static milkman.utils.fxml.facade.FxmlBuilder.label;
 
 public class EditEnvironmentDialog {
 
-	 JfxTableEditor<EnvironmentEntry> editor;
+ 	JfxTableEditor<EnvironmentEntry> editor;
 	private Dialog dialog;
 
 	public void showAndWait(Environment environment) {
 		JFXDialogLayout content = new EditEnvironmentDialogFxml(this);
-		
+
 		editor.enableAddition(() -> new EnvironmentEntry(UUID.randomUUID().toString(), "", "", true));
 		editor.addCheckboxColumn("Enabled", EnvironmentEntry::isEnabled, EnvironmentEntry::setEnabled);
 		editor.addColumn("name", EnvironmentEntry::getName, EnvironmentEntry::setName);
@@ -33,8 +33,8 @@ public class EditEnvironmentDialog {
 		dialog.showAndWait();
 	}
 
-	
-	
+
+
 	 public void onClose() {
 		dialog.close();
 	}
@@ -50,13 +50,13 @@ public class EditEnvironmentDialog {
 			editor.setMinWidth(800);
 			setBody(editor);
 
-			JFXButton close = cancel(controller::onClose, "Close");
+			Button close = cancel(controller::onClose, "Close");
 			close.getStyleClass().add("dialog-accept");
 			setActions(close);
 		}
 
 	}
 
-	
-	
+
+
 }

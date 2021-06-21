@@ -5,12 +5,12 @@ import com.jfoenix.controls.JFXTextField;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import lombok.Getter;
-import milkman.utils.fxml.FxmlBuilder;
 import milkman.utils.fxml.FxmlUtil;
+import milkman.utils.fxml.facade.FxmlBuilder.*;
 
 import java.util.Objects;
 
-import static milkman.utils.fxml.FxmlBuilder.*;
+import static milkman.utils.fxml.facade.FxmlBuilder.*;
 
 public class StringInputDialog {
 
@@ -59,7 +59,7 @@ public class StringInputDialog {
 		public StringInputDialogFxml(StringInputDialog controller){
 			setHeading(controller.title = label("Title"));
 
-			var vbox = new FxmlBuilder.VboxExt();
+			var vbox = new VboxExt();
 			controller.promptLabel = vbox.add(label(""));
 			controller.input = vbox.add(new JFXTextField());
 			controller.input.setValidators(requiredValidator());

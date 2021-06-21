@@ -12,14 +12,14 @@ import milkman.plugin.ws.domain.WebsocketRequestContainer;
 import milkman.ui.components.AutoCompleter;
 import milkman.ui.plugin.AutoCompletionAware;
 import milkman.ui.plugin.RequestTypeEditor;
-import milkman.utils.fxml.FxmlBuilder.HboxExt;
 import milkman.utils.fxml.GenericBinding;
+import milkman.utils.fxml.facade.FxmlBuilder.HboxExt;
 
 public class WebsocketRequestEditor implements RequestTypeEditor, AutoCompletionAware {
 
 	 TextField requestUrl;
 	
-	private GenericBinding<WebsocketRequestContainer, String> urlBinding = GenericBinding.of(WebsocketRequestContainer::getUrl, WebsocketRequestContainer::setUrl);
+	private final GenericBinding<WebsocketRequestContainer, String> urlBinding = GenericBinding.of(WebsocketRequestContainer::getUrl, WebsocketRequestContainer::setUrl);
 	private AutoCompleter completer;
 	private ExecutionListenerManager executionListenerManager;
 
@@ -51,7 +51,7 @@ public class WebsocketRequestEditor implements RequestTypeEditor, AutoCompletion
 	}
 
 	public static class WebsocketRequestEditorFxml extends HboxExt {
-		private WebsocketRequestEditor controller; //avoid gc collection
+		private final WebsocketRequestEditor controller; //avoid gc collection
 
 		public WebsocketRequestEditorFxml(WebsocketRequestEditor controller) {
 			this.controller = controller;

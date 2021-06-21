@@ -23,14 +23,14 @@ import milkman.ui.main.ResponseComponent.ResponseComponentFxml;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.utils.AsyncResponseControl;
 import milkman.utils.Event;
-import milkman.utils.fxml.FxmlBuilder.*;
+import milkman.utils.fxml.facade.FxmlBuilder.*;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.List;
 import java.util.Optional;
 
-import static milkman.utils.fxml.FxmlBuilder.*;
+import static milkman.utils.fxml.facade.FxmlBuilder.*;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_={@Inject})

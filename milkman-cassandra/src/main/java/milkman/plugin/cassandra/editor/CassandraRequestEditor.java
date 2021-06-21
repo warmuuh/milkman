@@ -11,15 +11,15 @@ import milkman.plugin.cassandra.domain.CassandraRequestContainer;
 import milkman.ui.components.AutoCompleter;
 import milkman.ui.plugin.AutoCompletionAware;
 import milkman.ui.plugin.RequestTypeEditor;
-import milkman.utils.fxml.FxmlBuilder.HboxExt;
 import milkman.utils.fxml.GenericBinding;
+import milkman.utils.fxml.facade.FxmlBuilder.HboxExt;
 
 public class CassandraRequestEditor implements RequestTypeEditor, AutoCompletionAware {
 
 	
 	TextField cassandraUrl;
 	
-	private GenericBinding<CassandraRequestContainer, String> urlBinding = GenericBinding.of(CassandraRequestContainer::getCassandraUrl, CassandraRequestContainer::setCassandraUrl);
+	private final GenericBinding<CassandraRequestContainer, String> urlBinding = GenericBinding.of(CassandraRequestContainer::getCassandraUrl, CassandraRequestContainer::setCassandraUrl);
 
 	private AutoCompleter completer;
 
@@ -49,7 +49,7 @@ public class CassandraRequestEditor implements RequestTypeEditor, AutoCompletion
 	}
 
 	public static class CassandraRequestEditorFxml extends HboxExt {
-		private CassandraRequestEditor controller; //avoid gc collection
+		private final CassandraRequestEditor controller; //avoid gc collection
 
 		public CassandraRequestEditorFxml(CassandraRequestEditor controller) {
 			this.controller = controller;

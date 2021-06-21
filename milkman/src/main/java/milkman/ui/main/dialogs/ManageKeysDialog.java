@@ -1,8 +1,8 @@
 package milkman.ui.main.dialogs;
 
-import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialogLayout;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
 import milkman.domain.KeySet;
 import milkman.domain.KeySet.KeyEntry;
@@ -17,8 +17,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static milkman.utils.fxml.FxmlBuilder.cancel;
-import static milkman.utils.fxml.FxmlBuilder.label;
+import static milkman.utils.fxml.facade.FxmlBuilder.cancel;
+import static milkman.utils.fxml.facade.FxmlBuilder.label;
 
 public class ManageKeysDialog {
 
@@ -100,7 +100,7 @@ public class ManageKeysDialog {
 			editor.setMinWidth(800);
 			setBody(editor);
 
-			JFXButton close = cancel(controller::onClose, "Close");
+			Button close = cancel(controller::onClose, "Close");
 			close.getStyleClass().add("dialog-accept");
 			setActions(close);
 		}

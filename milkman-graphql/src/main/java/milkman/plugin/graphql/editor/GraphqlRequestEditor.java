@@ -11,14 +11,14 @@ import milkman.plugin.graphql.domain.GraphqlRequestContainer;
 import milkman.ui.components.AutoCompleter;
 import milkman.ui.plugin.AutoCompletionAware;
 import milkman.ui.plugin.RequestTypeEditor;
-import milkman.utils.fxml.FxmlBuilder.HboxExt;
 import milkman.utils.fxml.GenericBinding;
+import milkman.utils.fxml.facade.FxmlBuilder.HboxExt;
 
 public class GraphqlRequestEditor implements RequestTypeEditor, AutoCompletionAware {
 
 	 TextField requestUrl;
 	
-	private GenericBinding<GraphqlRequestContainer, String> urlBinding = GenericBinding.of(GraphqlRequestContainer::getUrl, GraphqlRequestContainer::setUrl);
+	private final GenericBinding<GraphqlRequestContainer, String> urlBinding = GenericBinding.of(GraphqlRequestContainer::getUrl, GraphqlRequestContainer::setUrl);
 	private AutoCompleter completer;
 	
 	
@@ -50,7 +50,7 @@ public class GraphqlRequestEditor implements RequestTypeEditor, AutoCompletionAw
 
 	
 	public static class GraphqlRequestEditorFxml extends HboxExt {
-		private GraphqlRequestEditor controller; //avoid gc collection
+		private final GraphqlRequestEditor controller; //avoid gc collection
 
 		public GraphqlRequestEditorFxml(GraphqlRequestEditor controller) {
 			this.controller = controller;

@@ -30,12 +30,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import static milkman.utils.fxml.FxmlBuilder.*;
+import static milkman.utils.fxml.facade.FxmlBuilder.*;
 
 @Slf4j
 public class BinaryResponseBodyTabController implements ResponseAspectEditor, ToasterAware {
 
-	private final static List<String> supportedContentTypes = List.of(
+	private static final List<String> supportedContentTypes = List.of(
 			"image/png",
 			"image/bmp",
 			"image/gif",
@@ -44,7 +44,7 @@ public class BinaryResponseBodyTabController implements ResponseAspectEditor, To
 
 	private Toaster toaster;
 
-	private byte[] fileContent = null;
+	private byte[] fileContent;
 
 	@Override
 	@SneakyThrows

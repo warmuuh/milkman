@@ -1,15 +1,13 @@
-package milkman.utils.fxml;
+package milkman.utils.fxml.facade;
 
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXTextField;
-import com.jfoenix.controls.JFXToggleNode;
+import com.jfoenix.controls.*;
 import com.jfoenix.validation.RequiredFieldValidator;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.scene.Node;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import milkman.utils.fxml.GenericBinding;
 
 import java.util.function.Consumer;
 
@@ -24,19 +22,26 @@ public class FxmlBuilder {
 		return new Label(text);
 	}
 
-	public static JFXButton button(String text, Runnable onAction) {
+	public static Button button() {
+		return new JFXButton();
+	}
+	public static Button button(String title) {
+		return new JFXButton(title);
+	}
+
+	public static Button button(String text, Runnable onAction) {
 		JFXButton jfxButton = new JFXButton(text);
 		jfxButton.setOnAction(e -> onAction.run());
 		return jfxButton;
 	}
 	
-	public static JFXButton button(String id, String text, Runnable onAction) {
-		JFXButton jfxButton = button(text, onAction);
+	public static Button button(String id, String text, Runnable onAction) {
+		Button jfxButton = button(text, onAction);
 		jfxButton.setId(id);
 		return jfxButton;
 	}
 	
-	public static JFXButton button(Node graphic, Runnable onAction) {
+	public static Button button(Node graphic, Runnable onAction) {
 		JFXButton jfxButton = new JFXButton();
 		jfxButton.setGraphic(graphic);
 		jfxButton.setOnAction(e -> onAction.run());
@@ -44,23 +49,28 @@ public class FxmlBuilder {
 	}
 
 
-	public static JFXToggleNode toggle(Node graphic, Consumer<Boolean> onAction) {
+	public static ToggleButton toggle(Node graphic, Consumer<Boolean> onAction) {
 		JFXToggleNode jfxButton = new JFXToggleNode();
 		jfxButton.setGraphic(graphic);
 		jfxButton.setOnAction(e -> onAction.accept(jfxButton.isSelected()));
 		return jfxButton;
 	}
 
-	public static JFXButton button(String id, Node graphic, Runnable onAction) {
-		JFXButton button = button(graphic, onAction);
+	public static Button button(String id, Node graphic, Runnable onAction) {
+		Button button = button(graphic, onAction);
 		button.setId(id);
 		return button;
 	}
-	public static JFXButton button(String id, Node graphic) {
+
+	public static Button button(String id, Node graphic) {
 		JFXButton jfxButton = new JFXButton();
 		jfxButton.setGraphic(graphic);
 		jfxButton.setId(id);
 		return jfxButton;
+	}
+
+	public static <T> ComboBox<T> combobox() {
+		return new JFXComboBox<T>();
 	}
 
 
@@ -70,7 +80,7 @@ public class FxmlBuilder {
 		validator.getIcon().setStyle("-fx-font-family: FontAwesome;");
 		return validator;
 	}
-	public static JFXTextField text(String id, String prompt) {
+	public static TextField text(String id, String prompt) {
 		return text(id, prompt, false);
 	}
 	
@@ -80,7 +90,19 @@ public class FxmlBuilder {
 		return textField;
 	}
 
-	public static JFXTextField text(String id, String prompt, boolean lblFloat) {
+	public static TextField text() {
+		return new JFXTextField();
+	}
+
+	public static ValidatableTextField vtext(String id, String prompt, boolean lblFloat) {
+		ValidatableTextField txt = new ValidatableTextField();
+		txt.setId(id);
+		txt.setPromptText(prompt);
+		txt.setLabelFloat(lblFloat);
+		return txt;
+	}
+
+	public static TextField text(String id, String prompt, boolean lblFloat) {
 		JFXTextField txt = new JFXTextField();
 		txt.setId(id);
 		txt.setPromptText(prompt);
@@ -88,22 +110,27 @@ public class FxmlBuilder {
 		return txt;
 	}
 
-	public static JFXButton submit(Runnable action) {
+	public static TextArea textArea() {
+		return  new JFXTextArea();
+	}
+
+
+	public static Button submit(Runnable action) {
 		return submit(action, "Apply");
 	}
 
-	public static JFXButton submit(Runnable action, String text){
+	public static Button submit(Runnable action, String text){
 		JFXButton apply = new JFXButton(text);
 		apply.setDefaultButton(true);
 		apply.setOnAction(e -> action.run());
 		return apply;
 	}
 
-	public static JFXButton cancel(Runnable action) {
+	public static Button cancel(Runnable action) {
 		return cancel(action, "Cancel");
 	}
 
-	public static JFXButton cancel(Runnable action, String text){
+	public static Button cancel(Runnable action, String text){
 		JFXButton cancel = new JFXButton(text);
 		cancel.setCancelButton(true);
 		cancel.setOnAction(e -> action.run());
@@ -137,6 +164,21 @@ public class FxmlBuilder {
 		ChoiceBox cb = new ChoiceBox();
 		cb.setId(id);
 		return cb;
+	}
+
+
+	public static ProgressIndicator spinner(String cssClass, int startAngle) {
+		JFXSpinner spinner = new JFXSpinner();
+		spinner.getStyleClass().add(cssClass);
+		spinner.setStartingAngle(startAngle);
+		return spinner;
+	}
+
+
+	public static ProgressIndicator staticSpinner(String cssClass) {
+		ProgressIndicator spinner = new ProgressIndicator();
+		spinner.getStyleClass().add(cssClass);
+		return spinner;
 	}
 
 	public static HboxExt hbox(Node... elements) {

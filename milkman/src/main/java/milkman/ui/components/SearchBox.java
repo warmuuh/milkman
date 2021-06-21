@@ -1,15 +1,15 @@
 package milkman.ui.components;
 
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXTextField;
-
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import milkman.utils.fxml.FxmlBuilder.HboxExt;
+import milkman.utils.fxml.facade.FxmlBuilder.HboxExt;
 import milkman.utils.javafx.JavaFxUtils;
+
+import static milkman.utils.fxml.facade.FxmlBuilder.button;
+import static milkman.utils.fxml.facade.FxmlBuilder.text;
 
 public class SearchBox extends HboxExt {
 
@@ -22,9 +22,9 @@ public class SearchBox extends HboxExt {
 	}
 
 	private void initLayout() {
-		this.getStyleClass().add("searchBox");
+		getStyleClass().add("searchBox");
 		
-		searchField = new JFXTextField();
+		searchField = text();
 
 		searchField.setOnKeyReleased(e -> {
 			if (e.getCode() == KeyCode.ESCAPE) {
@@ -40,23 +40,23 @@ public class SearchBox extends HboxExt {
 				triggerSearch(e.isShiftDown());
 			}
 		});
-		var searchUp = new JFXButton();
+		var searchUp = button();
 		searchUp.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.ANGLE_UP));
 		searchUp.setOnAction(e -> triggerSearch(true));
-		var searchDown = new JFXButton();
+		var searchDown = button();
 		searchDown.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.ANGLE_DOWN));
 		searchDown.setOnAction(e -> triggerSearch(false));
-		
-		this.add(searchField);
-		this.add(searchUp);
-		this.add(searchDown);
-		this.setMaxWidth(200);
-		this.setMaxHeight(40);
-		this.setVisible(false);
+
+		add(searchField);
+		add(searchUp);
+		add(searchDown);
+		setMaxWidth(200);
+		setMaxHeight(40);
+		setVisible(false);
 
 		ChangeListener<Boolean> focusListener = (obs, o, n) -> {
 			if (n != null && n == false) {
-				var focusedNode = this.getScene().getFocusOwner();
+				var focusedNode = getScene().getFocusOwner();
 				if (!JavaFxUtils.isParent(this, focusedNode)) {
 					if (closeHandler != null) {
 						closeHandler.run();

@@ -11,15 +11,15 @@ import milkman.plugin.jdbc.domain.JdbcRequestContainer;
 import milkman.ui.components.AutoCompleter;
 import milkman.ui.plugin.AutoCompletionAware;
 import milkman.ui.plugin.RequestTypeEditor;
-import milkman.utils.fxml.FxmlBuilder.HboxExt;
 import milkman.utils.fxml.GenericBinding;
+import milkman.utils.fxml.facade.FxmlBuilder.HboxExt;
 
 public class JdbcRequestEditor implements RequestTypeEditor, AutoCompletionAware {
 
 	
 	 TextField jdbcUrl;
 	
-	private GenericBinding<JdbcRequestContainer, String> urlBinding = GenericBinding.of(JdbcRequestContainer::getJdbcUrl, JdbcRequestContainer::setJdbcUrl);
+	private final GenericBinding<JdbcRequestContainer, String> urlBinding = GenericBinding.of(JdbcRequestContainer::getJdbcUrl, JdbcRequestContainer::setJdbcUrl);
 
 	private AutoCompleter completer;
 	
@@ -49,7 +49,7 @@ public class JdbcRequestEditor implements RequestTypeEditor, AutoCompletionAware
 	}
 
 	public static class JdbcRequestEditorFxml extends HboxExt {
-		private JdbcRequestEditor controller; //avoid gc collection
+		private final JdbcRequestEditor controller; //avoid gc collection
 
 		public JdbcRequestEditorFxml(JdbcRequestEditor controller) {
 			this.controller = controller;

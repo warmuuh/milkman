@@ -7,12 +7,16 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import milkman.domain.Environment;
 import milkman.ui.commands.AppCommand;
+import milkman.ui.commands.AppCommand.CreateNewEnvironment;
+import milkman.ui.commands.AppCommand.DeleteEnvironment;
+import milkman.ui.commands.AppCommand.RenameEnvironment;
 import milkman.utils.Event;
 import milkman.utils.fxml.FxmlUtil;
 import milkman.utils.fxml.NoSelectionModel;
@@ -20,11 +24,11 @@ import milkman.utils.javafx.JavaFxUtils;
 
 import java.util.List;
 
-import static milkman.utils.fxml.FxmlBuilder.*;
+import static milkman.utils.fxml.facade.FxmlBuilder.*;
 
 public class ManageEnvironmentsDialog {
 
-	 JFXListView<Environment> environmentList;
+	JFXListView<Environment> environmentList;
 	private JFXAlert dialog;
 	private ObservableList<Environment> environments;
 
@@ -47,11 +51,11 @@ public class ManageEnvironmentsDialog {
 
 
 		private HBox createEntry(Environment environment) {
-			JFXButton renameButton = new JFXButton();
+			Button renameButton = button();
 			renameButton.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PENCIL, "1.5em"));
 			renameButton.setOnAction(e -> triggerRenameDialog(environment));
 			
-			JFXButton editButton = new JFXButton();
+			Button editButton = button();
 			editButton.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.LIST, "1.5em"));
 			editButton.setOnAction(e -> triggerEditEnvDialog(environment));
 			
@@ -65,10 +69,10 @@ public class ManageEnvironmentsDialog {
 				}
 			});
 			
-			JFXButton deleteButton = new JFXButton();
+			Button deleteButton = button();
 			deleteButton.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.TIMES, "1.5em"));
 			deleteButton.setOnAction(e -> {
-				onCommand.invoke(new AppCommand.DeleteEnvironment(environment));
+				onCommand.invoke(new DeleteEnvironment(environment));
 				refresh();
 			});
 			
@@ -92,7 +96,7 @@ public class ManageEnvironmentsDialog {
 			inputDialog.showAndWait("Rename Environment", "New Name", environment.getName());
 			if (!inputDialog.isCancelled() && inputDialog.wasChanged()) {
 				String newName = inputDialog.getInput();
-				onCommand.invoke(new AppCommand.RenameEnvironment(environment, newName));
+				onCommand.invoke(new RenameEnvironment(environment, newName));
 				refresh();
 			}
 		}
@@ -129,7 +133,7 @@ public class ManageEnvironmentsDialog {
 		if (!inputDialog.isCancelled() && inputDialog.wasChanged()) {
 			String newEnvironmentName = inputDialog.getInput();
 			Environment newEnv = new Environment(newEnvironmentName);
-			onCommand.invoke(new AppCommand.CreateNewEnvironment(newEnv));
+			onCommand.invoke(new CreateNewEnvironment(newEnv));
 			//hack for first item, otherwise placeholder is not removed for some reason
 			environmentList.setItems(FXCollections.observableArrayList());
 			Platform.runLater(() -> environmentList.setItems(environments)); 
@@ -155,7 +159,7 @@ public class ManageEnvironmentsDialog {
 
 			setBody(stackPane);
 
-			JFXButton close = cancel(controller::onClose, "Close");
+			Button close = cancel(controller::onClose, "Close");
 			close.getStyleClass().add("dialog-accept");
 			setActions(close);
 

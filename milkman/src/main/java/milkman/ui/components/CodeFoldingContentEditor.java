@@ -1,17 +1,5 @@
 package milkman.ui.components;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Stack;
-import java.util.function.IntFunction;
-
-import org.apache.commons.lang3.StringUtils;
-import org.fxmisc.richtext.LineNumberFactory;
-
-import com.jfoenix.controls.JFXButton;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.geometry.Pos;
@@ -22,6 +10,13 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import lombok.Data;
 import milkman.utils.Stopwatch;
+import org.apache.commons.lang3.StringUtils;
+import org.fxmisc.richtext.LineNumberFactory;
+
+import java.util.*;
+import java.util.function.IntFunction;
+
+import static milkman.utils.fxml.facade.FxmlBuilder.button;
 
 /**
  * this editor supports code folding
@@ -32,16 +27,16 @@ import milkman.utils.Stopwatch;
 public class CodeFoldingContentEditor extends ContentEditor {
     private ContentRange rootRange;
 
-    private Button collapseAll;
-    private Button expandAll;
+    private final Button collapseAll;
+    private final Button expandAll;
 
-    private Button collapseOne;
-    private Button expandOne;
+    private final Button collapseOne;
+    private final Button expandOne;
 
     private int currentFoldingLevel;
     private int maxFoldingLevel;
 
-    private int minFoldingLevel = 0;
+    private final int minFoldingLevel;
 
     private String originalText = "";
     private FoldOperatorFactory foldOperatorFactory;
@@ -49,7 +44,7 @@ public class CodeFoldingContentEditor extends ContentEditor {
 
     public CodeFoldingContentEditor() {
 
-        collapseAll = new JFXButton();
+        collapseAll = button();
         collapseAll.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.COMPRESS));
         collapseAll.setOnAction(e -> {
             setCollapseRecursively(rootRange, minFoldingLevel, 0);
@@ -58,7 +53,7 @@ public class CodeFoldingContentEditor extends ContentEditor {
         });
 
 
-        expandAll = new JFXButton();
+        expandAll = button();
         expandAll.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.EXPAND));
         expandAll.setOnAction(e -> {
             setCollapseRecursively(rootRange, maxFoldingLevel, 0);
@@ -66,7 +61,7 @@ public class CodeFoldingContentEditor extends ContentEditor {
             redrawText();
         });
 
-        collapseOne = new JFXButton();
+        collapseOne = button();
         collapseOne.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PLUS));
         collapseOne.setOnAction(e -> {
             int nextLevel = Math.min(currentFoldingLevel + 1, maxFoldingLevel);
@@ -76,7 +71,7 @@ public class CodeFoldingContentEditor extends ContentEditor {
         });
 
 
-        expandOne = new JFXButton();
+        expandOne = button();
         expandOne.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.MINUS));
         expandOne.setOnAction(e -> {
             int nextLevel = Math.max(currentFoldingLevel - 1, minFoldingLevel);
@@ -141,6 +136,7 @@ public class CodeFoldingContentEditor extends ContentEditor {
     }
 
 
+    @Override
     protected void replaceText(String text) {
     	Stopwatch.start("folding");
         originalText = text;
@@ -199,6 +195,7 @@ public class CodeFoldingContentEditor extends ContentEditor {
     }
 
 
+    @Override
     public void formatCurrentCode() {
 //    	System.out.println("### Formatting");
         if (getCurrentContenttypePlugin() != null && getCurrentContenttypePlugin().supportFormatting()) {
@@ -211,7 +208,7 @@ public class CodeFoldingContentEditor extends ContentEditor {
     	originalText += additiveContent;
 //        System.out.println("Content length: " + originalText.length());
     	super.addContent(additiveContent);
-    };
+    }
 
     private class FoldOperatorFactory implements IntFunction<Node> {
 
@@ -291,6 +288,7 @@ public class CodeFoldingContentEditor extends ContentEditor {
             containedLines = StringUtils.countMatches(text, '\n');
         }
 
+        @Override
         public void appendToString(StringBuilder b) {
             b.append(text);
         }
@@ -326,6 +324,7 @@ public class CodeFoldingContentEditor extends ContentEditor {
             children.add(range);
         }
 
+        @Override
         public void appendToString(StringBuilder b) {
             if (collapsed) {
                 b.append(collapsedText);
@@ -336,6 +335,7 @@ public class CodeFoldingContentEditor extends ContentEditor {
             }
         }
 
+        @Override
         public int getContainedLines() {
             if (collapsed)
                 return collapsedLines;
@@ -355,7 +355,7 @@ public class CodeFoldingContentEditor extends ContentEditor {
     public static class CodeFoldingBuilder {
         private final String text;
         private final Stack<CollapsableRange> rangeStack;
-        private int curIdx = 0;
+        private int curIdx;
 
         public CodeFoldingBuilder(String text) {
             this.text = text;

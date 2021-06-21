@@ -9,7 +9,7 @@ import milkman.plugin.test.domain.TestAspect;
 import milkman.ui.plugin.RequestAspectEditor;
 import milkman.utils.fxml.GenericBinding;
 
-import static milkman.utils.fxml.FxmlBuilder.VboxExt;
+import static milkman.utils.fxml.facade.FxmlBuilder.VboxExt;
 
 @Slf4j
 public class TestAspectScenarioEditor implements RequestAspectEditor {

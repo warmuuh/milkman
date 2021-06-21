@@ -19,7 +19,6 @@
 
 package milkman.ui.components;
 
-import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.utils.JFXUtilities;
 import com.sun.javafx.geom.RectBounds;
 import com.sun.javafx.scene.NodeHelper;
@@ -45,6 +44,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import milkman.ctrl.VariableResolver;
 import milkman.ctrl.VariableResolver.VariableData;
+import milkman.utils.fxml.facade.SimplePopup;
+import milkman.utils.fxml.facade.SimplePopup.PopupHPosition;
+import milkman.utils.fxml.facade.SimplePopup.PopupVPosition;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.model.Paragraph;
 import org.reactfx.collection.LiveList;
@@ -55,7 +57,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import static milkman.utils.fxml.FxmlBuilder.*;
+import static milkman.utils.fxml.facade.FxmlBuilder.*;
 
 
 /**
@@ -73,11 +75,11 @@ public class VariableHighlighter {
     private final Pattern tagPattern = Pattern.compile("[\\{]{2}([^{]+?)[\\}]{2}");
 
     private Parent parent;
-    private HashMap<Node, List<Rectangle>> boxes = new HashMap<>();
+    private final HashMap<Node, List<Rectangle>> boxes = new HashMap<>();
 
     private Method textLayoutMethod;
     private Field parentChildrenField;
-    private JFXPopup popup;
+    private SimplePopup popup;
 
     {
         try {
@@ -95,7 +97,7 @@ public class VariableHighlighter {
      * @param pane node to search into its text
      */
     public synchronized void highlight(Parent pane) {
-        if (this.parent != null && !boxes.isEmpty()) {
+        if (parent != null && !boxes.isEmpty()) {
             clear();
         }
 
@@ -105,7 +107,7 @@ public class VariableHighlighter {
 
         allRectangles.addAll(processCodeAreas(parent));
 
-        JFXUtilities.runInFXAndWait(()-> getParentChildren(pane).addAll(allRectangles));
+        Platform.runLater(()-> getParentChildren(pane).addAll(allRectangles));
     }
 
     private List<Rectangle> processCodeAreas(Parent pane) {
@@ -199,7 +201,7 @@ public class VariableHighlighter {
 
             rect.setOnMouseClicked(e -> {
                 var popup = showVariablePopup(boundingBox, data);
-                popup.addEventHandler(WindowEvent.WINDOW_HIDDEN, evt -> Platform.runLater(VariableHighlighter.this::clear));
+                popup.addEventHandler(WindowEvent.WINDOW_HIDDEN, evt -> Platform.runLater(this::clear));
             });
 
             rectangles.add(rect);
@@ -207,7 +209,7 @@ public class VariableHighlighter {
         return rectangles;
     }
 
-    private JFXPopup showVariablePopup(TextBoundingBox boundingBox, VariableData varData) {
+    private SimplePopup showVariablePopup(TextBoundingBox boundingBox, VariableData varData) {
         var vBox = new VboxExt();
         vBox.setSpacing(10);
         vBox.setPadding(new Insets(10));
@@ -229,7 +231,7 @@ public class VariableHighlighter {
         replTxt.setMaxHeight(50);
         replTxt.setEditable(varData.isWriteable());
 
-        popup = new JFXPopup(vBox);
+        popup = new SimplePopup(vBox);
         popup.setId("variable-popup");
 
         if (varData.isWriteable()){
@@ -243,7 +245,7 @@ public class VariableHighlighter {
 
 
 
-        popup.show(this.parent, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT);
+        popup.show(parent, PopupVPosition.TOP, PopupHPosition.LEFT);
         return popup;
     }
 
@@ -275,7 +277,7 @@ public class VariableHighlighter {
         }
 
         private void clear(Node node) {
-            final List<Rectangle> rectangles = boxes.get(node);
+            List<Rectangle> rectangles = boxes.get(node);
             if(rectangles != null && !rectangles.isEmpty())
                 Platform.runLater(() -> getParentChildren(parent).removeAll(rectangles));
         }
@@ -355,7 +357,7 @@ public class VariableHighlighter {
      */
     public synchronized void clear() {
         List<Rectangle> flatBoxes = new ArrayList<>();
-        final Collection<List<Rectangle>> boxesCollection = boxes.values();
+        Collection<List<Rectangle>> boxesCollection = boxes.values();
         for (List<Rectangle> box : boxesCollection) {
             flatBoxes.addAll(box);
         }

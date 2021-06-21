@@ -10,7 +10,7 @@ import milkman.utils.fxml.GenericBinding;
 
 import java.lang.reflect.ParameterizedType;
 
-import static milkman.utils.fxml.FxmlBuilder.*;
+import static milkman.utils.fxml.facade.FxmlBuilder.*;
 
 abstract class GrantTypeBuilder<T extends Oauth2Grant> {
     Node getEditor(Oauth2Credentials keyEntry) {

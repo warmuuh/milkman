@@ -10,7 +10,7 @@ import milkman.PlatformUtil;
 import milkman.utils.VersionLoader;
 import milkman.utils.fxml.FxmlUtil;
 
-import static milkman.utils.fxml.FxmlBuilder.*;
+import static milkman.utils.fxml.facade.FxmlBuilder.*;
 
 public class AboutDialog {
 

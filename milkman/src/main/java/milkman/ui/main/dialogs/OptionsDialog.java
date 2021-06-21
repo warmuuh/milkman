@@ -6,6 +6,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TabPane.TabClosingPolicy;
 import milkman.ui.main.options.OptionDialogBuilder;
 import milkman.ui.main.options.OptionDialogPane;
 import milkman.ui.plugin.OptionPageProvider;
@@ -13,8 +14,8 @@ import milkman.utils.fxml.FxmlUtil;
 
 import java.util.List;
 
-import static milkman.utils.fxml.FxmlBuilder.cancel;
-import static milkman.utils.fxml.FxmlBuilder.label;
+import static milkman.utils.fxml.facade.FxmlBuilder.cancel;
+import static milkman.utils.fxml.facade.FxmlBuilder.label;
 
 public class OptionsDialog {
 	 TabPane tabs;
@@ -69,7 +70,7 @@ public class OptionsDialog {
 //			tabs.setTabMaxHeight(150);
 			tabs.tabMinHeightProperty().setValue(150);
 			tabs.tabMaxHeightProperty().setValue(150);
-			tabs.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+			tabs.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 			setBody(tabs);
 
 			setActions(cancel(controller::onClose, "Close"));

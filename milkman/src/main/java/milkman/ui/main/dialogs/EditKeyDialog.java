@@ -7,8 +7,8 @@ import milkman.domain.KeySet.KeyEntry;
 import milkman.ui.plugin.KeyEditor;
 import milkman.utils.fxml.FxmlUtil;
 
-import static milkman.utils.fxml.FxmlBuilder.label;
-import static milkman.utils.fxml.FxmlBuilder.submit;
+import static milkman.utils.fxml.facade.FxmlBuilder.label;
+import static milkman.utils.fxml.facade.FxmlBuilder.submit;
 
 public class EditKeyDialog {
 

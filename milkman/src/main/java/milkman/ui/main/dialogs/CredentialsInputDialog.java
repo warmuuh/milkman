@@ -6,10 +6,10 @@ import com.jfoenix.controls.JFXTextField;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import lombok.Getter;
-import milkman.utils.fxml.FxmlBuilder;
 import milkman.utils.fxml.FxmlUtil;
+import milkman.utils.fxml.facade.FxmlBuilder.*;
 
-import static milkman.utils.fxml.FxmlBuilder.*;
+import static milkman.utils.fxml.facade.FxmlBuilder.*;
 
 public class CredentialsInputDialog {
 
@@ -56,7 +56,7 @@ public class CredentialsInputDialog {
 			controller.title = new Label("Title");
 			setHeading(controller.title);
 
-			FxmlBuilder.VboxExt vbox = new FxmlBuilder.VboxExt();
+			VboxExt vbox = new VboxExt();
 			setBody(vbox);
 
 			vbox.add(label("Username"));

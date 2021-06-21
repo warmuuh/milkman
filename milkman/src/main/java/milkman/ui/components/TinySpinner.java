@@ -1,30 +1,27 @@
 package milkman.ui.components;
 
-import static milkman.utils.fxml.FxmlBuilder.button;
-import static milkman.utils.fxml.FxmlBuilder.icon;
-
-import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXSpinner;
-
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderStroke;
+import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
+
+import static milkman.utils.fxml.facade.FxmlBuilder.button;
+import static milkman.utils.fxml.facade.FxmlBuilder.icon;
 
 public class TinySpinner extends StackPane {
 
-	private JFXButton cancellation;
+	private final Button cancellation;
 
 	public TinySpinner() {
-		this.getStyleClass().add("spinner");
-		this.getChildren().add(spinner("tiny-spinner", -40));
+		getStyleClass().add("spinner");
+		getChildren().add(spinner("tiny-spinner", -40));
 		
 		cancellation = button("tiny-cancellation", icon(FontAwesomeIcon.TIMES, "1.5em"));
 		StackPane.setAlignment(cancellation, Pos.CENTER);
-		this.getChildren().add(cancellation);
+		getChildren().add(cancellation);
 	}
 
 	private JFXSpinner spinner(String cssClass, int startAngle) {

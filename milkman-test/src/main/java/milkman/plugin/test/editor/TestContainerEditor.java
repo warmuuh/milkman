@@ -4,7 +4,7 @@ import javafx.scene.Node;
 import milkman.domain.RequestContainer;
 import milkman.ui.plugin.RequestTypeEditor;
 
-import static milkman.utils.fxml.FxmlBuilder.vbox;
+import static milkman.utils.fxml.facade.FxmlBuilder.vbox;
 
 public class TestContainerEditor implements RequestTypeEditor {
 	@Override

@@ -1,10 +1,10 @@
 package milkman.plugin.auth.oauth;
 
 import com.jfoenix.controls.JFXComboBox;
-import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXToggleButton;
 import javafx.application.Platform;
 import javafx.scene.Node;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import milkman.domain.KeySet.KeyEntry;
 import milkman.plugin.auth.oauth.GrantTypeBuilder.ClientCredentialBuilder;
@@ -14,13 +14,13 @@ import milkman.plugin.auth.oauth.model.Oauth2Credentials;
 import milkman.ui.main.Toaster;
 import milkman.ui.plugin.KeyEditor;
 import milkman.ui.plugin.ToasterAware;
-import milkman.utils.fxml.FxmlBuilder.*;
 import milkman.utils.fxml.GenericBinding;
+import milkman.utils.fxml.facade.FxmlBuilder.*;
 
 import java.util.UUID;
 
 import static milkman.plugin.auth.oauth.GrantTypeBuilder.AuthorizationCodeBuilder;
-import static milkman.utils.fxml.FxmlBuilder.*;
+import static milkman.utils.fxml.facade.FxmlBuilder.*;
 
 public class Oauth2KeyEditor implements KeyEditor<Oauth2Credentials>, ToasterAware {
 
@@ -33,9 +33,9 @@ public class Oauth2KeyEditor implements KeyEditor<Oauth2Credentials>, ToasterAwa
     private final GenericBinding<Oauth2Credentials, Boolean> requestBodyAuthSchemeBinding = GenericBinding.of(Oauth2Credentials::isRequestBodyAuthScheme, Oauth2Credentials::setRequestBodyAuthScheme);
 
     private Toaster toaster;
-    private JFXTextField txtRefreshToken;
-    private JFXTextField txtExpires;
-    private JFXTextField txtAccessToken;
+    private TextField txtRefreshToken;
+    private TextField txtExpires;
+    private TextField txtAccessToken;
 
 
     @Override

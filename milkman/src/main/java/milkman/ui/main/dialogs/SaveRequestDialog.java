@@ -1,7 +1,6 @@
 package milkman.ui.main.dialogs;
 
 import com.jfoenix.controls.JFXDialogLayout;
-import com.jfoenix.controls.JFXTextField;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
@@ -13,8 +12,9 @@ import milkman.domain.Collection;
 import milkman.domain.Folder;
 import milkman.domain.RequestContainer;
 import milkman.utils.StringUtils;
-import milkman.utils.fxml.FxmlBuilder;
 import milkman.utils.fxml.FxmlUtil;
+import milkman.utils.fxml.facade.FxmlBuilder.*;
+import milkman.utils.fxml.facade.ValidatableTextField;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,18 +22,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static milkman.utils.fxml.FxmlBuilder.*;
+import static milkman.utils.fxml.facade.FxmlBuilder.*;
 
 public class SaveRequestDialog {
 
 	 ListView<String> collectionList;
-	 JFXTextField requestName;
-	 JFXTextField collectionName;
+	 ValidatableTextField requestName;
+	ValidatableTextField collectionName;
 	private Dialog dialog;
 
-	private RequestContainer request;
+	private final RequestContainer request;
 	@Getter boolean cancelled = true;
-	private List<Collection> collections;
+	private final List<Collection> collections;
 	
 	public SaveRequestDialog(RequestContainer request, List<Collection> collections) {
 		this.request = request;
@@ -118,15 +118,15 @@ public class SaveRequestDialog {
 		public SaveRequestDialogFxml(SaveRequestDialog controller){
 			setHeading(label("Save Request"));
 
-			var vbox = new FxmlBuilder.VboxExt();
+			var vbox = new VboxExt();
 			vbox.setSpacing(25);
-			controller.requestName = vbox.add(text("requestName", "Request Name", true));
+			controller.requestName = vbox.add(vtext("requestName", "Request Name", true));
 			controller.requestName.setValidators(requiredValidator());
 
-			controller.collectionName = vbox.add(text("collectionName", "Path (collection/folder)", true));
+			controller.collectionName = vbox.add(vtext("collectionName", "Path (collection/folder)", true));
 			controller.collectionName.setValidators(requiredValidator());
 
-			var collContainer = vbox.add(new FxmlBuilder.VboxExt());
+			var collContainer = vbox.add(new VboxExt());
 			collContainer.add(label("Existing Collections:"));
 			controller.collectionList = collContainer.add(new ListView<>());
 			setBody(vbox);

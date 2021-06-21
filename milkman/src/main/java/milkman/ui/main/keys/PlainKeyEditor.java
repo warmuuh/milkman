@@ -3,13 +3,13 @@ package milkman.ui.main.keys;
 import javafx.scene.Node;
 import milkman.domain.KeySet.KeyEntry;
 import milkman.ui.plugin.KeyEditor;
-import milkman.utils.fxml.FxmlBuilder.VboxExt;
 import milkman.utils.fxml.GenericBinding;
+import milkman.utils.fxml.facade.FxmlBuilder.VboxExt;
 
 import java.util.UUID;
 
-import static milkman.utils.fxml.FxmlBuilder.label;
-import static milkman.utils.fxml.FxmlBuilder.text;
+import static milkman.utils.fxml.facade.FxmlBuilder.label;
+import static milkman.utils.fxml.facade.FxmlBuilder.text;
 
 public class PlainKeyEditor implements KeyEditor<PlainKey> {
 

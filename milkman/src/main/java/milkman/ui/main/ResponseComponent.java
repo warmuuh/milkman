@@ -1,11 +1,11 @@
 package milkman.ui.main;
 
-import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTabPane;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.AnchorPane;
@@ -16,7 +16,7 @@ import milkman.ui.components.FancySpinner;
 import milkman.ui.components.TinySpinner;
 import milkman.ui.plugin.UiPluginManager;
 import milkman.utils.AsyncResponseControl;
-import milkman.utils.fxml.FxmlBuilder.*;
+import milkman.utils.fxml.facade.FxmlBuilder.*;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 
-import static milkman.utils.fxml.FxmlBuilder.*;
+import static milkman.utils.fxml.facade.FxmlBuilder.*;
 
 @Singleton
 public class ResponseComponent {
@@ -37,7 +37,7 @@ public class ResponseComponent {
 
 	 HBox statusDisplay;
 
-	 JFXButton cancellation;
+	 Button cancellation;
 	
 	 TinySpinner asyncControlSpinner;
 
