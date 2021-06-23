@@ -19,7 +19,6 @@
 
 package milkman.ui.components;
 
-import com.jfoenix.utils.JFXUtilities;
 import com.sun.javafx.geom.RectBounds;
 import com.sun.javafx.scene.NodeHelper;
 import com.sun.javafx.scene.text.TextLayout;
@@ -44,6 +43,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import milkman.ctrl.VariableResolver;
 import milkman.ctrl.VariableResolver.VariableData;
+import milkman.utils.fxml.FxmlUtil;
 import milkman.utils.fxml.facade.SimplePopup;
 import milkman.utils.fxml.facade.SimplePopup.PopupHPosition;
 import milkman.utils.fxml.facade.SimplePopup.PopupVPosition;
@@ -362,7 +362,7 @@ public class VariableHighlighter {
             flatBoxes.addAll(box);
         }
         boxes.clear();
-        if(parent!=null) JFXUtilities.runInFXAndWait(()-> getParentChildren(parent).removeAll(flatBoxes));
+        if(parent!=null) FxmlUtil.runInFXAndWait(()-> getParentChildren(parent).removeAll(flatBoxes));
     }
 
     public static class TextBoundingBox extends BoundingBox{

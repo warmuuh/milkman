@@ -1,76 +1,78 @@
 package milkman.ui.main.dialogs;
 
-import com.jfoenix.controls.JFXDialogLayout;
-import com.jfoenix.controls.JFXPasswordField;
-import com.jfoenix.controls.JFXTextField;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import lombok.Getter;
 import milkman.utils.fxml.FxmlUtil;
+import milkman.utils.fxml.facade.DialogLayoutBase;
 import milkman.utils.fxml.facade.FxmlBuilder.*;
+import milkman.utils.fxml.facade.ValidatablePaswordField;
+import milkman.utils.fxml.facade.ValidatableTextField;
 
 import static milkman.utils.fxml.facade.FxmlBuilder.*;
 
 public class CredentialsInputDialog {
 
-	private Dialog dialog;
-	@Getter boolean cancelled = true;
+  private Dialog dialog;
+  @Getter
+  boolean cancelled = true;
 
-	 JFXTextField username;
-	 JFXPasswordField password;
-	 Label title;
-	
-	public CredentialsInputDialog() {}
+  ValidatableTextField username;
+  ValidatablePaswordField password;
+  Label title;
 
-	public void showAndWait(String title) {
-		JFXDialogLayout content = new CredentialsInputDialogFxml(this);
-		this.title.setText(title);
-		
-		dialog = FxmlUtil.createDialog(content);
-		dialog.showAndWait();
-	}
+  public CredentialsInputDialog() {
+  }
 
-	public String getUsername() {
-		return username.getText();
-	}
-	public String getPassword() {
-		return password.getText();
-	}
-	
-	 private void onSave() {
-		if (username.validate() && password.validate()) {
-			cancelled = false;
-			dialog.close();	
-		}
-	}
+  public void showAndWait(String title) {
+    var content = new CredentialsInputDialogFxml(this);
+    this.title.setText(title);
 
-	 private void onCancel() {
-		cancelled = true;
-		dialog.close();
-	}
+    dialog = FxmlUtil.createDialog(content);
+    dialog.showAndWait();
+  }
 
+  public String getUsername() {
+    return username.getText();
+  }
 
-	public static class CredentialsInputDialogFxml extends JFXDialogLayout {
+  public String getPassword() {
+    return password.getText();
+  }
 
-		public CredentialsInputDialogFxml(CredentialsInputDialog controller){
-			controller.title = new Label("Title");
-			setHeading(controller.title);
+  private void onSave() {
+    if (username.validate() && password.validate()) {
+      cancelled = false;
+      dialog.close();
+    }
+  }
 
-			VboxExt vbox = new VboxExt();
-			setBody(vbox);
+  private void onCancel() {
+    cancelled = true;
+    dialog.close();
+  }
 
-			vbox.add(label("Username"));
-			controller.username = vbox.add(new JFXTextField());
-			controller.username.setValidators(requiredValidator());
+  public static class CredentialsInputDialogFxml extends DialogLayoutBase {
 
-			vbox.add(label("Password"));
-			controller.password = vbox.add(new JFXPasswordField());
-			controller.password.setValidators(requiredValidator());
+    public CredentialsInputDialogFxml(CredentialsInputDialog controller) {
+      controller.title = new Label("Title");
+      setHeading(controller.title);
 
-			setActions(submit(controller::onSave), cancel(controller::onCancel));
+      VboxExt vbox = new VboxExt();
+      setBody(vbox);
 
-		}
+      vbox.add(label("Username"));
+      controller.username = vbox.add(vtext());
+      controller.username.setValidators(requiredValidator());
 
-	}
+      vbox.add(label("Password"));
+      controller.password = vbox.add(vpassword());
+      controller.password.setValidators(requiredValidator());
+
+      setActions(submit(controller::onSave), cancel(controller::onCancel));
+
+    }
+
+  }
 
 }

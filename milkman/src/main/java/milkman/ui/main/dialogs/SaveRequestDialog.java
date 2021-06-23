@@ -1,6 +1,5 @@
 package milkman.ui.main.dialogs;
 
-import com.jfoenix.controls.JFXDialogLayout;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
@@ -13,6 +12,7 @@ import milkman.domain.Folder;
 import milkman.domain.RequestContainer;
 import milkman.utils.StringUtils;
 import milkman.utils.fxml.FxmlUtil;
+import milkman.utils.fxml.facade.DialogLayoutBase;
 import milkman.utils.fxml.facade.FxmlBuilder.*;
 import milkman.utils.fxml.facade.ValidatableTextField;
 
@@ -34,14 +34,14 @@ public class SaveRequestDialog {
 	private final RequestContainer request;
 	@Getter boolean cancelled = true;
 	private final List<Collection> collections;
-	
+
 	public SaveRequestDialog(RequestContainer request, List<Collection> collections) {
 		this.request = request;
 		this.collections = collections;
 	}
 
 	public void showAndWait() {
-		JFXDialogLayout content = new SaveRequestDialogFxml(this);
+		var content = new SaveRequestDialogFxml(this);
 		dialog = FxmlUtil.createDialog(content);
 		dialog.showAndWait();
 	}
@@ -51,7 +51,7 @@ public class SaveRequestDialog {
 		List<String> collectionNames = getCollectionStrings();
 		FilteredList<String> filteredList = new FilteredList<String>(FXCollections.observableList(collectionNames));
 		collectionName.textProperty().addListener(obs-> {
-	        String filter = collectionName.getText(); 
+	        String filter = collectionName.getText();
 	        if(filter == null || filter.length() == 0) {
 	        	Platform.runLater(() -> filteredList.setPredicate(s -> true));
 	        }
@@ -60,10 +60,10 @@ public class SaveRequestDialog {
 	        }
 		});
 		collectionList.setItems(filteredList);
-		
-		
+
+
 		collectionList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		collectionList.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> { 
+		collectionList.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
 			if (n != null && n.length() > 0)
 				collectionName.setText(n);
 		});
@@ -100,7 +100,7 @@ public class SaveRequestDialog {
         folders.remove(0);
 	    return folders;
     }
-	
+
 	 private void onSave() {
 		if (requestName.validate() && collectionName.validate()) {
 			cancelled = false;
@@ -114,7 +114,7 @@ public class SaveRequestDialog {
 	}
 
 
-	public static class SaveRequestDialogFxml extends JFXDialogLayout {
+	public static class SaveRequestDialogFxml extends DialogLayoutBase {
 		public SaveRequestDialogFxml(SaveRequestDialog controller){
 			setHeading(label("Save Request"));
 

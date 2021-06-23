@@ -1,6 +1,5 @@
 package milkman.ui.main.dialogs;
 
-import com.jfoenix.controls.JFXDialogLayout;
 import javafx.geometry.Pos;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Hyperlink;
@@ -9,8 +8,11 @@ import javafx.scene.image.ImageView;
 import milkman.PlatformUtil;
 import milkman.utils.VersionLoader;
 import milkman.utils.fxml.FxmlUtil;
+import milkman.utils.fxml.facade.DialogLayoutBase;
+import milkman.utils.fxml.facade.FxmlBuilder.VboxExt;
 
-import static milkman.utils.fxml.facade.FxmlBuilder.*;
+import static milkman.utils.fxml.facade.FxmlBuilder.cancel;
+import static milkman.utils.fxml.facade.FxmlBuilder.label;
 
 public class AboutDialog {
 
@@ -19,7 +21,7 @@ public class AboutDialog {
 	private Hyperlink link;
 
 	public void showAndWait() {
-		JFXDialogLayout content = new AboutDialogDialogFxml(this);
+		DialogLayoutBase content = new AboutDialogDialogFxml(this);
 		link.setOnMouseClicked(e -> PlatformUtil.tryOpenBrowser("https://github.com/warmuuh/milkman"));
 
 		dialog = FxmlUtil.createDialog(content);
@@ -30,7 +32,7 @@ public class AboutDialog {
 		dialog.close();
 	}
 
-	public static class AboutDialogDialogFxml extends JFXDialogLayout {
+	public static class AboutDialogDialogFxml extends DialogLayoutBase {
 		public AboutDialogDialogFxml(AboutDialog controller){
 			setHeading(label("About Milkman"));
 

@@ -1,12 +1,12 @@
 package milkman.ui.main.dialogs;
 
-import com.jfoenix.controls.JFXDialogLayout;
 import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
 import milkman.domain.Environment;
 import milkman.domain.Environment.EnvironmentEntry;
 import milkman.ui.components.JfxTableEditor;
 import milkman.utils.fxml.FxmlUtil;
+import milkman.utils.fxml.facade.DialogLayoutBase;
 
 import java.util.UUID;
 
@@ -19,7 +19,7 @@ public class EditEnvironmentDialog {
 	private Dialog dialog;
 
 	public void showAndWait(Environment environment) {
-		JFXDialogLayout content = new EditEnvironmentDialogFxml(this);
+		var content = new EditEnvironmentDialogFxml(this);
 
 		editor.enableAddition(() -> new EnvironmentEntry(UUID.randomUUID().toString(), "", "", true));
 		editor.addCheckboxColumn("Enabled", EnvironmentEntry::isEnabled, EnvironmentEntry::setEnabled);
@@ -40,7 +40,7 @@ public class EditEnvironmentDialog {
 	}
 
 
-	public static class EditEnvironmentDialogFxml extends JFXDialogLayout {
+	public static class EditEnvironmentDialogFxml extends DialogLayoutBase {
 
 		public EditEnvironmentDialogFxml(EditEnvironmentDialog controller){
 			setHeading(label("Edit Environment"));

@@ -1,12 +1,12 @@
 package milkman.ui.main.dialogs;
 
-import com.jfoenix.controls.JFXDialogLayout;
-import com.jfoenix.controls.JFXTextField;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import lombok.Getter;
 import milkman.utils.fxml.FxmlUtil;
+import milkman.utils.fxml.facade.DialogLayoutBase;
 import milkman.utils.fxml.facade.FxmlBuilder.*;
+import milkman.utils.fxml.facade.ValidatableTextField;
 
 import java.util.Objects;
 
@@ -17,7 +17,7 @@ public class StringInputDialog {
 	private Dialog dialog;
 	@Getter boolean cancelled = true;
 
-	 JFXTextField input;
+	ValidatableTextField input;
 	 Label promptLabel;
 	private String prefilledValue;
 	 Label title;
@@ -26,7 +26,7 @@ public class StringInputDialog {
 
 	public void showAndWait(String title, String prompt, String prefilledValue) {
 		this.prefilledValue = prefilledValue;
-		JFXDialogLayout content = new StringInputDialogFxml(this);
+		var content = new StringInputDialogFxml(this);
 		this.title.setText(title);
 		promptLabel.setText(prompt);
 		input.setText(prefilledValue);
@@ -55,13 +55,13 @@ public class StringInputDialog {
 		dialog.close();
 	}
 
-	public static class StringInputDialogFxml extends JFXDialogLayout {
+	public static class StringInputDialogFxml extends DialogLayoutBase {
 		public StringInputDialogFxml(StringInputDialog controller){
 			setHeading(controller.title = label("Title"));
 
 			var vbox = new VboxExt();
 			controller.promptLabel = vbox.add(label(""));
-			controller.input = vbox.add(new JFXTextField());
+			controller.input = vbox.add(vtext());
 			controller.input.setValidators(requiredValidator());
 			setBody(vbox);
 

@@ -1,14 +1,12 @@
 package milkman.ui.main.dialogs;
 
-import com.jfoenix.controls.*;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
@@ -20,6 +18,7 @@ import milkman.ui.commands.AppCommand.RenameEnvironment;
 import milkman.utils.Event;
 import milkman.utils.fxml.FxmlUtil;
 import milkman.utils.fxml.NoSelectionModel;
+import milkman.utils.fxml.facade.DialogLayoutBase;
 import milkman.utils.javafx.JavaFxUtils;
 
 import java.util.List;
@@ -28,88 +27,22 @@ import static milkman.utils.fxml.facade.FxmlBuilder.*;
 
 public class ManageEnvironmentsDialog {
 
-	JFXListView<Environment> environmentList;
-	private JFXAlert dialog;
+	ListView<Environment> environmentList;
+	private Dialog dialog;
 	private ObservableList<Environment> environments;
 
 	public Event<AppCommand> onCommand = new Event<AppCommand>();
 	private List<Environment> originalList;
 
 	
-	public class EnvironmentCell extends JFXListCell<Environment> {
-		@Override
-		protected void updateItem(Environment environment, boolean empty) {
-			super.updateItem(environment, empty);
-			if (empty || environment == null) {
-				setText(null);
-				setGraphic(null);
-			} else {
-				setText(null);
-	            setGraphic(createEntry(environment));
-			}
-		}
 
-
-		private HBox createEntry(Environment environment) {
-			Button renameButton = button();
-			renameButton.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PENCIL, "1.5em"));
-			renameButton.setOnAction(e -> triggerRenameDialog(environment));
-			
-			Button editButton = button();
-			editButton.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.LIST, "1.5em"));
-			editButton.setOnAction(e -> triggerEditEnvDialog(environment));
-			
-			JFXToggleNode global = new JFXToggleNode(new FontAwesomeIconView(FontAwesomeIcon.GLOBE, "1.5em"));
-			global.setSelected(environment.isGlobal());
-			global.selectedProperty().addListener((obs, o, n) -> {
-				if (n != null) {
-					environment.setGlobal(n);
-					if (n)
-						environment.setActive(false);
-				}
-			});
-			
-			Button deleteButton = button();
-			deleteButton.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.TIMES, "1.5em"));
-			deleteButton.setOnAction(e -> {
-				onCommand.invoke(new DeleteEnvironment(environment));
-				refresh();
-			});
-			
-			
-			
-			
-			Label envName = new Label(environment.getName());
-			HBox.setHgrow(envName, Priority.ALWAYS);
-			return new HBox(envName, renameButton, editButton, global, deleteButton);
-		}
-
-
-		private void triggerEditEnvDialog(Environment environment) {
-			EditEnvironmentDialog envDialog = new EditEnvironmentDialog();
-			envDialog.showAndWait(environment);
-		}
-
-
-		private void triggerRenameDialog(Environment environment) {
-			StringInputDialog inputDialog = new StringInputDialog();
-			inputDialog.showAndWait("Rename Environment", "New Name", environment.getName());
-			if (!inputDialog.isCancelled() && inputDialog.wasChanged()) {
-				String newName = inputDialog.getInput();
-				onCommand.invoke(new RenameEnvironment(environment, newName));
-				refresh();
-			}
-		}
-	}
-	
 	public void showAndWait(List<Environment> envs) {
 		this.originalList = envs;
-		JFXDialogLayout content = new ManageEnvironmentsDialogFxml(this);
+		var content = new ManageEnvironmentsDialogFxml(this);
 		JavaFxUtils.publishEscToParent(environmentList);
 
 		environments = FXCollections.observableList(envs);
 		environmentList.setItems(environments);
-		environmentList.setCellFactory(l -> new EnvironmentCell());
 		environmentList.setSelectionModel(new NoSelectionModel<Environment>());
 		environmentList.setPlaceholder(new Label("No Environments created..."));
 		dialog = FxmlUtil.createDialog(content);
@@ -141,14 +74,66 @@ public class ManageEnvironmentsDialog {
 		
 	}
 
-	public static class ManageEnvironmentsDialogFxml extends JFXDialogLayout {
+
+	private HBox createListActions(Environment environment) {
+		Button renameButton = button();
+		renameButton.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PENCIL, "1.5em"));
+		renameButton.setOnAction(e -> triggerRenameDialog(environment));
+
+		Button editButton = button();
+		editButton.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.LIST, "1.5em"));
+		editButton.setOnAction(e -> triggerEditEnvDialog(environment));
+
+		ToggleButton global = toggle(new FontAwesomeIconView(FontAwesomeIcon.GLOBE, "1.5em"));
+		global.setSelected(environment.isGlobal());
+		global.selectedProperty().addListener((obs, o, n) -> {
+			if (n != null) {
+				environment.setGlobal(n);
+				if (n)
+					environment.setActive(false);
+			}
+		});
+
+		Button deleteButton = button();
+		deleteButton.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.TIMES, "1.5em"));
+		deleteButton.setOnAction(e -> {
+			onCommand.invoke(new DeleteEnvironment(environment));
+			refresh();
+		});
+
+
+
+
+		Label envName = new Label(environment.getName());
+		HBox.setHgrow(envName, Priority.ALWAYS);
+		return new HBox(envName, renameButton, editButton, global, deleteButton);
+	}
+
+
+	private void triggerEditEnvDialog(Environment environment) {
+		EditEnvironmentDialog envDialog = new EditEnvironmentDialog();
+		envDialog.showAndWait(environment);
+	}
+
+
+	private void triggerRenameDialog(Environment environment) {
+		StringInputDialog inputDialog = new StringInputDialog();
+		inputDialog.showAndWait("Rename Environment", "New Name", environment.getName());
+		if (!inputDialog.isCancelled() && inputDialog.wasChanged()) {
+			String newName = inputDialog.getInput();
+			onCommand.invoke(new RenameEnvironment(environment, newName));
+			refresh();
+		}
+	}
+
+
+	public static class ManageEnvironmentsDialogFxml extends DialogLayoutBase {
 		public ManageEnvironmentsDialogFxml(ManageEnvironmentsDialog controller){
 
 			setHeading(label("Manage Environments"));
 
 			StackPane stackPane = new StackPane();
-			var list = controller.environmentList = new JFXListView<>();
-			list.setVerticalGap(10.0);
+			var list = controller.environmentList = list(10.0, controller::createListActions);
 			list.setMinHeight(400);
 			stackPane.getChildren().add(list);
 

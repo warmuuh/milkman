@@ -1,6 +1,5 @@
 package milkman.ui.main;
 
-import com.jfoenix.controls.JFXTabPane;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
@@ -8,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -31,7 +31,7 @@ public class ResponseComponent {
 
 	private final UiPluginManager plugins;
 
-	 JFXTabPane tabs;
+	 TabPane tabs;
 
 	 Node spinner;
 
@@ -136,8 +136,7 @@ public class ResponseComponent {
 			AnchorPane anchorPane = new AnchorPane();
 			stackPane.getChildren().add(anchorPane);
 			
-			JFXTabPane tabPane = anchorNode(new JFXTabPane(), 1.0, 1.0, 1.0, 1.0);
-			tabPane.setDisableAnimation(true);
+			TabPane tabPane = anchorNode(tabPane(), 1.0, 1.0, 1.0, 1.0);
 			controller.tabs = tabPane;
 			tabPane.setId("tabs");
 			anchorPane.getChildren().add(tabPane);

@@ -1,24 +1,8 @@
 package milkman.ctrl;
 
-import java.awt.MouseInfo;
-import java.awt.Point;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXPopup;
-
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.layout.VBox;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import milkman.domain.RequestContainer;
@@ -26,7 +10,15 @@ import milkman.ui.main.dialogs.SelectValueDialog;
 import milkman.ui.plugin.RequestTypeEditor;
 import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.UiPluginManager;
-import milkman.utils.fxml.FxmlUtil;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.awt.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_={@Inject})

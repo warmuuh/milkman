@@ -1,6 +1,5 @@
 package milkman.ui.main.dialogs;
 
-import com.jfoenix.controls.JFXDialogLayout;
 import javafx.geometry.Side;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
@@ -11,6 +10,7 @@ import milkman.ui.main.options.OptionDialogBuilder;
 import milkman.ui.main.options.OptionDialogPane;
 import milkman.ui.plugin.OptionPageProvider;
 import milkman.utils.fxml.FxmlUtil;
+import milkman.utils.fxml.facade.DialogLayoutBase;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ public class OptionsDialog {
 
 	
 	public void showAndWait(List<OptionPageProvider> optionPageProviders) {
-		JFXDialogLayout content = new OptionsDialogFxml(this);
+		var content = new OptionsDialogFxml(this);
 		content.setPrefWidth(600);
 		for(OptionPageProvider<?> p : optionPageProviders) {
 			OptionDialogPane pane = p.getOptionsDialog(new OptionDialogBuilder());
@@ -50,7 +50,7 @@ public class OptionsDialog {
 	}
 
 
-	public class OptionsDialogFxml extends JFXDialogLayout {
+	public class OptionsDialogFxml extends DialogLayoutBase {
 		public OptionsDialogFxml(OptionsDialog controller){
 			setHeading(label("Options"));
 

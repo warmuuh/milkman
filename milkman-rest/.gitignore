@@ -1,2 +1,4 @@
 /.apt_generated/
 /.apt_generated_tests/
+/target\generated-sources\annotations/
+/target\generated-test-sources\test-annotations/

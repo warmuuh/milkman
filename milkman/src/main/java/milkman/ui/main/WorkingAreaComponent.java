@@ -1,6 +1,5 @@
 package milkman.ui.main;
 
-import com.jfoenix.controls.JFXTabPane;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -49,7 +48,7 @@ public class WorkingAreaComponent {
 
 	private SplitPane splitPane;
 
-	JFXTabPane tabPane;
+	TabPane tabPane;
 	private ChangeListener<? super Tab> tabChangeListener;
 	
 	public void display(RequestContainer activeRequest, List<RequestContainer> openedRequests, Optional<ResponseContainer> existingResponse) {
@@ -180,9 +179,9 @@ public class WorkingAreaComponent {
 			}
 		};
 		tabPane.getSelectionModel().selectedItemProperty().addListener(tabChangeListener);
-		//Bug in jfoenix: when not disabling this, the GUI does not refresh except if i hover over it with mouse
-		//might be because we dont really use the content of the tabs
-		tabPane.setDisableAnimation(true);
+//		//Bug in jfoenix: when not disabling this, the GUI does not refresh except if i hover over it with mouse
+//		//might be because we dont really use the content of the tabs
+//		tabPane.setDisableAnimation(true);
 	}
 	
 	public static class WorkingAreaComponentFxml extends VboxExt {
@@ -190,7 +189,7 @@ public class WorkingAreaComponent {
 			setId("working-area");
 			HboxExt reqArea = add(hbox("openRequestArea"));
 			
-			JFXTabPane pane = new JFXTabPane();
+			TabPane pane = tabPane();
 			pane.setId("tabPane");
 			controller.tabPane = reqArea.add(pane, true);
 			

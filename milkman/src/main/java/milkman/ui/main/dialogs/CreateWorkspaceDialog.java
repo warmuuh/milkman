@@ -1,8 +1,6 @@
 package milkman.ui.main.dialogs;
 
-import com.jfoenix.controls.JFXComboBox;
-import com.jfoenix.controls.JFXDialogLayout;
-import com.jfoenix.controls.JFXTextField;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -13,6 +11,8 @@ import milkman.ui.main.Toaster;
 import milkman.ui.plugin.WorkspaceSynchronizer;
 import milkman.ui.plugin.WorkspaceSynchronizer.SynchronizationDetailFactory;
 import milkman.utils.fxml.FxmlUtil;
+import milkman.utils.fxml.facade.DialogLayoutBase;
+import milkman.utils.fxml.facade.ValidatableTextField;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.util.List;
@@ -21,8 +21,8 @@ import static milkman.utils.fxml.facade.FxmlBuilder.*;
 
 public class CreateWorkspaceDialog {
 	 VBox syncDetailsArea;
-	 JFXComboBox<SynchronizationDetailFactory> syncSelector;
-	 JFXTextField workspaceNameInput;
+	 ComboBox<SynchronizationDetailFactory> syncSelector;
+	 ValidatableTextField workspaceNameInput;
 	private Dialog dialog;
 
 	SynchronizationDetailFactory selectedSynchronizer;
@@ -33,7 +33,7 @@ public class CreateWorkspaceDialog {
 	
 	public void showAndWait(List<WorkspaceSynchronizer> synchronizers, Toaster toaster) {
 		this.toaster = toaster;
-		JFXDialogLayout content = new CreateWorkspaceDialogFxml(this);
+		var content = new CreateWorkspaceDialogFxml(this);
 		synchronizers.forEach(i -> syncSelector.getItems().add(i.getDetailFactory()));
 		
 		//default to first item
@@ -99,7 +99,7 @@ public class CreateWorkspaceDialog {
 
 
 
-	public static class CreateWorkspaceDialogFxml extends JFXDialogLayout {
+	public static class CreateWorkspaceDialogFxml extends DialogLayoutBase {
 
 		public CreateWorkspaceDialogFxml(CreateWorkspaceDialog controller){
 			setHeading(new Label("Create Workspace"));
@@ -108,11 +108,11 @@ public class CreateWorkspaceDialog {
 
 			vbox.add(new Label("Workspace Name"));
 
-			controller.workspaceNameInput = vbox.add(new JFXTextField());
+			controller.workspaceNameInput = vbox.add(vtext());
 			controller.workspaceNameInput.setValidators(requiredValidator());
 
 			vbox.add(new Label("Synchronization"));
-			controller.syncSelector = vbox.add(new JFXComboBox<>());
+			controller.syncSelector = vbox.add(combobox());
 			controller.syncDetailsArea = vbox.add(new VBox());
 
 			setBody(vbox);

@@ -1,11 +1,11 @@
 package milkman.ui.main.dialogs;
 
-import com.jfoenix.controls.JFXComboBox;
-import com.jfoenix.controls.JFXDialogLayout;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import lombok.Getter;
 import milkman.utils.fxml.FxmlUtil;
+import milkman.utils.fxml.facade.DialogLayoutBase;
 import milkman.utils.fxml.facade.FxmlBuilder.*;
 
 import java.util.List;
@@ -17,7 +17,7 @@ public class SelectValueDialog {
 	private Dialog dialog;
 	@Getter boolean cancelled = true;
 
-	 JFXComboBox<String> valueSelection;
+	 ComboBox<String> valueSelection;
 	 Label promptLabel;
 	 Label title;
 	
@@ -25,7 +25,7 @@ public class SelectValueDialog {
 
 	public void showAndWait(String title, String prompt, Optional<String> prefilledValue, List<String> values) {
 		
-		JFXDialogLayout content = new SelectValueDialogFxml(this);
+		var content = new SelectValueDialogFxml(this);
 		this.title.setText(title);
 		promptLabel.setText(prompt);
 		valueSelection.getItems().addAll(values);
@@ -49,13 +49,13 @@ public class SelectValueDialog {
 		dialog.close();
 	}
 
-	public static class SelectValueDialogFxml extends JFXDialogLayout {
+	public static class SelectValueDialogFxml extends DialogLayoutBase {
 		public SelectValueDialogFxml(SelectValueDialog controller){
 			setHeading(controller.title = label("Title"));
 
 			var vbox = new VboxExt();
 			controller.promptLabel = vbox.add(label(""));
-			controller.valueSelection = vbox.add(new JFXComboBox<>());
+			controller.valueSelection = vbox.add(combobox());
 			setBody(vbox);
 
 			setActions(submit(controller::onSave), cancel(controller::onCancel));

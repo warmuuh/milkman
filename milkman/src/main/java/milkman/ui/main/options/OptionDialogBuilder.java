@@ -1,15 +1,17 @@
 package milkman.ui.main.options;
 
-import com.jfoenix.controls.*;
-import com.jfoenix.validation.IntegerValidator;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import lombok.RequiredArgsConstructor;
 import milkman.ui.components.JfxTableEditor;
 import milkman.utils.fxml.GenericBinding;
+import milkman.utils.fxml.facade.FxmlBuilder;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -38,8 +40,8 @@ public class OptionDialogBuilder  {
 		
 		private final String name;
 		private final T optionsObject;
-		private List<Node> nodes = new LinkedList<Node>();
-		private List<GenericBinding<?, ?>> bindings = new LinkedList<>();
+		private final List<Node> nodes = new LinkedList<Node>();
+		private final List<GenericBinding<?, ?>> bindings = new LinkedList<>();
 		
 		@Override
 		public OptionPaneBuilder<T> section(String name) {
@@ -52,8 +54,7 @@ public class OptionDialogBuilder  {
 		@Override
 		public OptionPaneBuilder<T> toggle(String name, Function<T, Boolean> getter, BiConsumer<T, Boolean> setter) {
 
-			JFXToggleButton button = new JFXToggleButton();
-			button.setText(name);
+			ToggleButton button = FxmlBuilder.toggle(name);
 			GenericBinding<T,Boolean> binding = GenericBinding.of(getter, setter, optionsObject);
 			bindings.add(binding);
 			button.selectedProperty().bindBidirectional(binding);
@@ -67,7 +68,7 @@ public class OptionDialogBuilder  {
 		public OptionPaneBuilder<T> textInput(String name, Function<T, String> getter, BiConsumer<T, String> setter) {
 
 			Label lbl = new Label(name);
-			JFXTextField text = new JFXTextField();
+			TextField text = FxmlBuilder.text();
 			GenericBinding<T,String> binding = GenericBinding.of(getter, setter, optionsObject);
 			bindings.add(binding);
 			text.textProperty().bindBidirectional(binding);
@@ -82,7 +83,7 @@ public class OptionDialogBuilder  {
 		public OptionPaneBuilder<T> passwordInput(String name, Function<T, String> getter, BiConsumer<T, String> setter) {
 
 			Label lbl = new Label(name);
-			JFXPasswordField text = new JFXPasswordField();
+			TextField text = FxmlBuilder.password();
 			GenericBinding<T,String> binding = GenericBinding.of(getter, setter, optionsObject);
 			bindings.add(binding);
 			text.textProperty().bindBidirectional(binding);
@@ -96,8 +97,8 @@ public class OptionDialogBuilder  {
 		public OptionPaneBuilder<T> numberInput(String name, Function<T, Integer> getter, BiConsumer<T, Integer> setter) {
 
 			Label lbl = new Label(name);
-			JFXTextField text = new JFXTextField();
-			text.setValidators(new IntegerValidator("Not an integer"));
+			var text = FxmlBuilder.vtext();
+			text.setValidators(FxmlBuilder.integerValidator("Not an integer"));
 			
 			BiConsumer<T, String> setFn = (obj, val) -> {
 				if (text.validate())
@@ -134,7 +135,7 @@ public class OptionDialogBuilder  {
 				List<String> possibleValues) {
 			
 			Label lbl = new Label(name);
-			JFXComboBox<String> text = new JFXComboBox();
+			ComboBox<String> text = FxmlBuilder.combobox();
 			GenericBinding<T,String> binding = GenericBinding.of(getter, setter, optionsObject);
 			bindings.add(binding);
 			text.valueProperty().bindBidirectional(binding);
@@ -147,7 +148,7 @@ public class OptionDialogBuilder  {
 
 		@Override
 		public OptionPaneBuilder<T> button(String name, Runnable runnable) {
-			JFXButton btn = new JFXButton(name);
+			Button btn = FxmlBuilder.button(name);
 			btn.setOnAction(e -> runnable.run());
 			btn.getStyleClass().add("secondary-button");
 			HBox hbox = new HBox(btn);
@@ -159,12 +160,12 @@ public class OptionDialogBuilder  {
 		@Override
 		public OptionPaneBuilder<T> list(Function<T, List<String>> itemProvider) {
 			List<String> items = itemProvider.apply(optionsObject);
-			List<Map.Entry<Integer, String>> zipWithIndex = new LinkedList<>();
+			List<Entry<Integer, String>> zipWithIndex = new LinkedList<>();
 			for (int i = 0; i < items.size(); i++) {
 				zipWithIndex.add(new HashMap.SimpleEntry<>(i, items.get(i)));
 			}
-			JfxTableEditor<Map.Entry<Integer, String>> table = new JfxTableEditor<>();
-			table.addColumn("Script Url", Map.Entry::getValue, (e, v) -> {
+			JfxTableEditor<Entry<Integer, String>> table = new JfxTableEditor<>();
+			table.addColumn("Script Url", Entry::getValue, (e, v) -> {
 				e.setValue(v);
 				items.set(e.getKey(), v);
 			});

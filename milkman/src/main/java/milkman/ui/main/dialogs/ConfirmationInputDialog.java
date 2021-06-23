@@ -1,15 +1,14 @@
 package milkman.ui.main.dialogs;
 
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXDialogLayout;
+import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
 import milkman.utils.fxml.FxmlUtil;
+import milkman.utils.fxml.facade.DialogLayoutBase;
 
-import static milkman.utils.fxml.facade.FxmlBuilder.cancel;
-import static milkman.utils.fxml.facade.FxmlBuilder.submit;
+import static milkman.utils.fxml.facade.FxmlBuilder.*;
 
 public class ConfirmationInputDialog {
 
@@ -24,7 +23,7 @@ public class ConfirmationInputDialog {
 
 	public void showAndWait(String title, String prompt) {
 
-		JFXDialogLayout content = new ConfirmationInputDialogFxml(this);
+		DialogLayoutBase content = new ConfirmationInputDialogFxml(this);
 		this.title.setText(title);
 		promptLabel.setText(prompt);
 
@@ -44,7 +43,7 @@ public class ConfirmationInputDialog {
 	}
 
 
-	public static class ConfirmationInputDialogFxml extends JFXDialogLayout {
+	public static class ConfirmationInputDialogFxml extends DialogLayoutBase {
 
 		public ConfirmationInputDialogFxml(ConfirmationInputDialog controller){
 			controller.title = new Label("title");
@@ -53,11 +52,11 @@ public class ConfirmationInputDialog {
 			controller.promptLabel = new Label();
 			setBody(new VBox(controller.promptLabel));
 
-			JFXButton apply = new JFXButton("Apply");
+			Button apply = button("Apply");
 			apply.setDefaultButton(true);
 			apply.setOnAction(e -> controller.onSave());
 
-			JFXButton cancel = new JFXButton("Cancel");
+			Button cancel = button("Cancel");
 			cancel.setCancelButton(true);
 			cancel.setOnAction(e -> controller.onCancel());
 

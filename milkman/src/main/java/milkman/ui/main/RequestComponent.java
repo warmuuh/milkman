@@ -1,9 +1,9 @@
 package milkman.ui.main;
 
-import com.jfoenix.controls.JFXTabPane;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.HBox;
 import lombok.Getter;
 import milkman.ctrl.RequestTypeManager;
@@ -25,11 +25,12 @@ import java.util.List;
 import java.util.Optional;
 
 import static milkman.utils.fxml.facade.FxmlBuilder.hbox;
+import static milkman.utils.fxml.facade.FxmlBuilder.tabPane;
 
 @Singleton
 public class RequestComponent {
 
-	 JFXTabPane tabs;
+	 TabPane tabs;
 	 HBox mainEditingArea;
 	 SplitMenuButton saveBtn;
 
@@ -140,9 +141,8 @@ public class RequestComponent {
 			export.setOnAction(e -> controller.onExport());
 			controller.saveBtn.getItems().add(export);
 			
-			JFXTabPane tabPane = add(new JFXTabPane(), true);
+			TabPane tabPane = add(tabPane(), true);
 			tabPane.setId("tabs");
-			tabPane.setDisableAnimation(true);
 			controller.tabs = tabPane;
 			tabPane.setPrefHeight(300);
 			

@@ -36,7 +36,7 @@ public class CodeFoldingContentEditor extends ContentEditor {
     private int currentFoldingLevel;
     private int maxFoldingLevel;
 
-    private final int minFoldingLevel;
+    private final int minFoldingLevel = 0;
 
     private String originalText = "";
     private FoldOperatorFactory foldOperatorFactory;

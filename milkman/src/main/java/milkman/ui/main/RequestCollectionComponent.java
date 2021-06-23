@@ -1,7 +1,5 @@
 package milkman.ui.main;
 
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXTreeView;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.application.Platform;
@@ -50,7 +48,7 @@ public class RequestCollectionComponent {
 	public final Event<UiCommand> onCommand = new Event<UiCommand>();
 
 
-	JFXTreeView<Node> collectionContainer;
+	TreeView<Node> collectionContainer;
 	
 
 	TextField searchField;
@@ -181,7 +179,7 @@ public class RequestCollectionComponent {
 		
 		
 		
-		JFXButton starringBtn = new JFXButton();
+		var starringBtn = button();
 		starringBtn.getStyleClass().add("btn-starring");
 		starringBtn.setGraphic(collection.isStarred() ? new FontAwesomeIconView(FontAwesomeIcon.STAR, "1em") : new FontAwesomeIconView(FontAwesomeIcon.STAR_ALT, "1em"));
 		starringBtn.setOnAction( e -> {
@@ -429,7 +427,7 @@ public class RequestCollectionComponent {
 			
 			searchAreaField.add(button(icon(FontAwesomeIcon.TIMES_CIRCLE_ALT), controller::clearSearch));
 			
-			controller.collectionContainer = new JFXTreeView<Node>();
+			controller.collectionContainer = treeView();
 			controller.collectionContainer.setId("collectionContainer");
 			add(controller.collectionContainer, true);
 			
