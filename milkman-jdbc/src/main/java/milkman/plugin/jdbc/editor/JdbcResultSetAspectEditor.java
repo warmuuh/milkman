@@ -1,6 +1,6 @@
 package milkman.plugin.jdbc.editor;
 
-import com.jfoenix.controls.JFXButton;
+import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
@@ -12,6 +12,7 @@ import milkman.domain.ResponseContainer;
 import milkman.plugin.jdbc.domain.RowSetResponseAspect;
 import milkman.ui.components.JfxTableEditor;
 import milkman.ui.plugin.ResponseAspectEditor;
+import milkman.utils.fxml.facade.FxmlBuilder;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -21,7 +22,7 @@ public class JdbcResultSetAspectEditor implements ResponseAspectEditor {
 
 	private JfxTableEditor<List<String>> editor;
 
-	private boolean contentIsTransposed = false;
+	private boolean contentIsTransposed;
 
 	private RowSetResponseAspect transposedContent;
 
@@ -51,11 +52,11 @@ public class JdbcResultSetAspectEditor implements ResponseAspectEditor {
 
 
 	private HBox setupToolbar(RowSetResponseAspect rowSetAspect) {
-		JFXButton copyResultBtn = new JFXButton("Copy to Clipboard");
-		copyResultBtn.setOnAction(e -> this.copyResultToClipboard(rowSetAspect));
-		
-		JFXButton transposeBtn = new JFXButton("Transpose");
-		transposeBtn.setOnAction(e -> this.transpose(rowSetAspect));
+		Button copyResultBtn = FxmlBuilder.button("Copy to Clipboard");
+		copyResultBtn.setOnAction(e -> copyResultToClipboard(rowSetAspect));
+
+		Button transposeBtn = FxmlBuilder.button("Transpose");
+		transposeBtn.setOnAction(e -> transpose(rowSetAspect));
 		
 		
 		HBox tableToolbar = new HBox(copyResultBtn, transposeBtn);
@@ -111,7 +112,7 @@ public class JdbcResultSetAspectEditor implements ResponseAspectEditor {
 			b.append(System.lineSeparator());
 			b.append(rowToString(row));
 		}
-		final ClipboardContent clipboardContent = new ClipboardContent();
+		ClipboardContent clipboardContent = new ClipboardContent();
 	    clipboardContent.putString(b.toString());
 	    Clipboard.getSystemClipboard().setContent(clipboardContent);
 	}

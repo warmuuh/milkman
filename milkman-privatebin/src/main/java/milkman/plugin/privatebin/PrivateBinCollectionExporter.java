@@ -1,10 +1,9 @@
 package milkman.plugin.privatebin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jfoenix.controls.JFXCheckBox;
-import com.jfoenix.controls.JFXTextField;
-
 import javafx.scene.Node;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.Collection;
@@ -12,13 +11,14 @@ import milkman.persistence.UnknownPluginHandler;
 import milkman.ui.main.Toaster;
 import milkman.ui.plugin.CollectionExporterPlugin;
 import milkman.ui.plugin.Templater;
+import milkman.utils.fxml.facade.FxmlBuilder;
 
 @Slf4j
 public class PrivateBinCollectionExporter implements CollectionExporterPlugin {
 
-	private JFXTextField textField;
-	private PrivateBinApi api = new PrivateBinApi(PrivateBinOptionsPluginProvider.options().getPrivateBinUrl());
-	private JFXCheckBox burnCheckbox;
+	private TextField textField;
+	private final PrivateBinApi api = new PrivateBinApi(PrivateBinOptionsPluginProvider.options().getPrivateBinUrl());
+	private CheckBox burnCheckbox;
 	
 	@Override
 	public String getName() {
@@ -28,9 +28,9 @@ public class PrivateBinCollectionExporter implements CollectionExporterPlugin {
 
 	@Override
 	public Node getRoot(Collection collection, Templater templater) {
-		textField = new JFXTextField();
+		textField = FxmlBuilder.text();
 		textField.setEditable(false);
-		burnCheckbox = new JFXCheckBox("Burn after reading");
+		burnCheckbox = FxmlBuilder.checkbox("Burn after reading");
 		VBox vBox = new VBox(burnCheckbox, textField);
 		return vBox;
 	}

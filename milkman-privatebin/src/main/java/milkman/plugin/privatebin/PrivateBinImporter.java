@@ -1,8 +1,8 @@
 package milkman.plugin.privatebin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jfoenix.controls.JFXTextField;
 import javafx.scene.Node;
+import javafx.scene.control.TextField;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.Collection;
 import milkman.domain.RequestContainer;
@@ -11,12 +11,13 @@ import milkman.persistence.UnknownPluginHandler;
 import milkman.ui.main.Toaster;
 import milkman.ui.main.dialogs.ConfirmationInputDialog;
 import milkman.ui.plugin.ImporterPlugin;
+import milkman.utils.fxml.facade.FxmlBuilder;
 
 @Slf4j
 public class PrivateBinImporter implements ImporterPlugin {
 
-	private JFXTextField urlTxt;
-	private PrivateBinApi api = new PrivateBinApi(PrivateBinOptionsPluginProvider.options().getPrivateBinUrl());
+	private TextField urlTxt;
+	private final PrivateBinApi api = new PrivateBinApi(PrivateBinOptionsPluginProvider.options().getPrivateBinUrl());
 
 	@Override
 	public String getName() {
@@ -25,7 +26,7 @@ public class PrivateBinImporter implements ImporterPlugin {
 
 	@Override
 	public Node getImportControls() {
-		urlTxt = new JFXTextField();
+		urlTxt = FxmlBuilder.text();
 		urlTxt.setPromptText("Paste your PrivateBin Url here");
 		return urlTxt;
 	}

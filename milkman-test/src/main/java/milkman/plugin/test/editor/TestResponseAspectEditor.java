@@ -1,15 +1,11 @@
 package milkman.plugin.test.editor;
 
-import com.jfoenix.controls.JFXTreeView;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TreeItem;
+import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import milkman.domain.RequestContainer;
@@ -26,7 +22,7 @@ import static milkman.utils.fxml.facade.FxmlBuilder.*;
 
 public class TestResponseAspectEditor implements ResponseAspectEditor {
 
-	JFXTreeView<Node> resultView;
+	TreeView<Node> resultView;
 	private SettableTreeItem<Node> root;
 	private ObservableList<TreeItem<Node>> resultList;
 	private VboxExt resultDetails;
@@ -141,7 +137,7 @@ public class TestResponseAspectEditor implements ResponseAspectEditor {
 		public TestResponseAspectEditorFxml(TestResponseAspectEditor controller) {
 			super("Results");
 			this.controller = controller;
-			controller.resultView = new JFXTreeView<>();
+			controller.resultView = treeView();
 			controller.resultView.setShowRoot(false);
 			controller.resultView.setRoot(controller.root);
 

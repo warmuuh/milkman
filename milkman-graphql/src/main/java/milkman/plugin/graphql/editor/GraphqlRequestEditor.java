@@ -1,6 +1,5 @@
 package milkman.plugin.graphql.editor;
 
-import com.jfoenix.controls.JFXTextField;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -12,6 +11,7 @@ import milkman.ui.components.AutoCompleter;
 import milkman.ui.plugin.AutoCompletionAware;
 import milkman.ui.plugin.RequestTypeEditor;
 import milkman.utils.fxml.GenericBinding;
+import milkman.utils.fxml.facade.FxmlBuilder;
 import milkman.utils.fxml.facade.FxmlBuilder.HboxExt;
 
 public class GraphqlRequestEditor implements RequestTypeEditor, AutoCompletionAware {
@@ -55,7 +55,7 @@ public class GraphqlRequestEditor implements RequestTypeEditor, AutoCompletionAw
 		public GraphqlRequestEditorFxml(GraphqlRequestEditor controller) {
 			this.controller = controller;
 			HBox.setHgrow(this, Priority.ALWAYS);
-			controller.requestUrl = add(new JFXTextField(), true);
+			controller.requestUrl = add(FxmlBuilder.text(), true);
 			controller.requestUrl.setId("requestUrl");
 		}
 	}

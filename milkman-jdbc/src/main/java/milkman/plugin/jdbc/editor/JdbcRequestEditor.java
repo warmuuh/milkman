@@ -1,6 +1,5 @@
 package milkman.plugin.jdbc.editor;
 
-import com.jfoenix.controls.JFXTextField;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -12,6 +11,7 @@ import milkman.ui.components.AutoCompleter;
 import milkman.ui.plugin.AutoCompletionAware;
 import milkman.ui.plugin.RequestTypeEditor;
 import milkman.utils.fxml.GenericBinding;
+import milkman.utils.fxml.facade.FxmlBuilder;
 import milkman.utils.fxml.facade.FxmlBuilder.HboxExt;
 
 public class JdbcRequestEditor implements RequestTypeEditor, AutoCompletionAware {
@@ -54,7 +54,7 @@ public class JdbcRequestEditor implements RequestTypeEditor, AutoCompletionAware
 		public JdbcRequestEditorFxml(JdbcRequestEditor controller) {
 			this.controller = controller;
 			HBox.setHgrow(this, Priority.ALWAYS);
-			controller.jdbcUrl = add(new JFXTextField(), true);
+			controller.jdbcUrl = add(FxmlBuilder.text(), true);
 			controller.jdbcUrl.setId("jdbcUrl");
 			controller.jdbcUrl.setPromptText("jdbc:type://host[:port][/database][?parameters]");
 		}

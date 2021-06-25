@@ -3,9 +3,6 @@ package milkman.plugin.explore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXTextField;
-import com.jfoenix.controls.JFXTooltip;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import io.burt.jmespath.Expression;
@@ -13,10 +10,7 @@ import io.burt.jmespath.JmesPath;
 import io.burt.jmespath.jackson.JacksonRuntime;
 import io.burt.jmespath.parser.ParseException;
 import javafx.application.Platform;
-import javafx.geometry.Pos;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -32,6 +26,7 @@ import milkman.ui.plugin.ResponseAspectEditor;
 import milkman.ui.plugin.rest.contenttype.JsonContentType;
 import milkman.ui.plugin.rest.domain.RestResponseBodyAspect;
 import milkman.utils.fxml.GenericBinding;
+import milkman.utils.fxml.facade.FxmlBuilder;
 import org.apache.commons.lang3.StringUtils;
 
 import java.nio.charset.StandardCharsets;
@@ -48,7 +43,7 @@ public class JqlAspectResponseEditor implements ResponseAspectEditor {
 	private final AutoCompleter completer;
 
 	private Label compilationWarning;
-	private JFXTooltip compilationTooltip;
+	private Tooltip compilationTooltip;
 	private TextField qryInput;
 
 	@Override
@@ -68,7 +63,7 @@ public class JqlAspectResponseEditor implements ResponseAspectEditor {
 		GenericBinding<JqlQueryAspect, String> binding = GenericBinding.of(JqlQueryAspect::getQuery,
 				JqlQueryAspect::setQuery, qryAspect);
 
-		qryInput = new JFXTextField();
+		qryInput = FxmlBuilder.text();
 		completer.attachDynamicCompletionTo(qryInput, input -> {
 			return qryAspect.getQueryHistory().stream()
 					.filter(qry -> input.isBlank() || StringUtils.containsIgnoreCase(qry, input))
@@ -100,12 +95,10 @@ public class JqlAspectResponseEditor implements ResponseAspectEditor {
 			compilationWarning = new Label();
 			compilationWarning.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.EXCLAMATION_TRIANGLE, "1em"));
 			compilationWarning.setVisible(false);
-			compilationTooltip = new JFXTooltip();
-			JFXTooltip.setVisibleDuration(javafx.util.Duration.millis(10000));
-			JFXTooltip.install(compilationWarning, compilationTooltip, Pos.BOTTOM_CENTER);
+			compilationTooltip = FxmlBuilder.installTooltipAt(compilationWarning);
 		}
 
-		JFXButton helpBtn = new JFXButton();
+		Button helpBtn = FxmlBuilder.button();
 		helpBtn.setOnAction(e -> PlatformUtil.tryOpenBrowser("http://jmespath.org/"));
 		helpBtn.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.QUESTION_CIRCLE, "1.5em"));
 		tab.setContent(new VBox(new HBox(qryInput, compilationWarning, helpBtn), contentView));

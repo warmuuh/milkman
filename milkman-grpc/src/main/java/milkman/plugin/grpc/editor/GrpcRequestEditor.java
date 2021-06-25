@@ -1,9 +1,8 @@
 package milkman.plugin.grpc.editor;
 
-import com.jfoenix.controls.JFXTextField;
-import com.jfoenix.controls.JFXToggleButton;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import lombok.SneakyThrows;
@@ -13,13 +12,14 @@ import milkman.ui.components.AutoCompleter;
 import milkman.ui.plugin.AutoCompletionAware;
 import milkman.ui.plugin.RequestTypeEditor;
 import milkman.utils.fxml.GenericBinding;
+import milkman.utils.fxml.facade.FxmlBuilder;
 import milkman.utils.fxml.facade.FxmlBuilder.HboxExt;
 
 public class GrpcRequestEditor implements RequestTypeEditor, AutoCompletionAware {
 
 
 	TextField endpoint;
-	JFXToggleButton useTls;
+	ToggleButton useTls;
 
 	private final GenericBinding<GrpcRequestContainer, String> endpointBinding = GenericBinding.of(GrpcRequestContainer::getEndpoint, GrpcRequestContainer::setEndpoint);
 	private final GenericBinding<GrpcRequestContainer, Boolean> tlsBinding = GenericBinding.of(GrpcRequestContainer::isUseTls, GrpcRequestContainer::setUseTls);
@@ -68,10 +68,9 @@ public class GrpcRequestEditor implements RequestTypeEditor, AutoCompletionAware
 			HBox.setHgrow(this, Priority.ALWAYS);
 
 
-			controller.useTls = add(new JFXToggleButton());
-			controller.useTls.setText("TLS");
+			controller.useTls = add(FxmlBuilder.toggle("TLS"));
 
-			controller.endpoint = add(new JFXTextField(), true);
+			controller.endpoint = add(FxmlBuilder.text(), true);
 			controller.endpoint.setPromptText("host:port");
 			controller.endpoint.setId("endpoint");
 		}

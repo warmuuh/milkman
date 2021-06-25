@@ -1,10 +1,10 @@
 package milkman.plugin.ws.editor;
 
-import com.jfoenix.controls.JFXButton;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.StackPane;
@@ -18,6 +18,7 @@ import milkman.ui.contenttype.PlainContentTypePlugin;
 import milkman.ui.plugin.ExecutionListenerAware;
 import milkman.ui.plugin.RequestAspectEditor;
 import milkman.ui.plugin.rest.contenttype.JsonContentType;
+import milkman.utils.fxml.facade.FxmlBuilder;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -46,7 +47,7 @@ public class WebSocketAspectEditor implements RequestAspectEditor, ExecutionList
         editor.setContentType("text/plain");
         editor.setContent(wsAspect::getMessage, run(wsAspect::setMessage).andThen(() -> wsAspect.setDirty(true)));
 
-        var addItemBtn = new JFXButton();
+        var addItemBtn = FxmlBuilder.button();
         addItemBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         addItemBtn.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PAPER_PLANE, "1.5em"));
         addItemBtn.getStyleClass().add("btn-add-entry");
@@ -85,7 +86,7 @@ public class WebSocketAspectEditor implements RequestAspectEditor, ExecutionList
         return tab;
     }
 
-    private void activateIfActive(WebsocketAspect wsAspect, JFXButton addItemBtn, Optional<ResponseContainer> existingResponse) {
+    private void activateIfActive(WebsocketAspect wsAspect, Button addItemBtn, Optional<ResponseContainer> existingResponse) {
         existingResponse.ifPresent(response -> response.getAspect(WebsocketResponseAspect.class)
                 .filter(ws -> ws.getClient().isOpen())
                 .ifPresent(ws -> {

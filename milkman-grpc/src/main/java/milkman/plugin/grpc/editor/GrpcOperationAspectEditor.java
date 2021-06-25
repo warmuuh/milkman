@@ -1,12 +1,5 @@
 package milkman.plugin.grpc.editor;
 
-import static milkman.utils.FunctionalUtils.run;
-
-import java.util.Collections;
-
-import com.jfoenix.controls.JFXCheckBox;
-import com.jfoenix.controls.JFXTextField;
-
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
@@ -23,6 +16,11 @@ import milkman.ui.components.ContentEditor;
 import milkman.ui.plugin.AutoCompletionAware;
 import milkman.ui.plugin.RequestAspectEditor;
 import milkman.utils.fxml.GenericBinding;
+import milkman.utils.fxml.facade.FxmlBuilder;
+
+import java.util.Collections;
+
+import static milkman.utils.FunctionalUtils.run;
 
 
 public class GrpcOperationAspectEditor implements RequestAspectEditor, AutoCompletionAware {
@@ -41,7 +39,7 @@ public class GrpcOperationAspectEditor implements RequestAspectEditor, AutoCompl
 	public Tab getRoot(RequestContainer request) {
 		GrpcOperationAspect aspect = request.getAspect(GrpcOperationAspect.class).get();
 		
-		TextField textField = new JFXTextField();
+		TextField textField = FxmlBuilder.text();
 		GenericBinding<GrpcOperationAspect, String> binding = GenericBinding.of(
 				GrpcOperationAspect::getOperation, 
 				run(GrpcOperationAspect::setOperation)
@@ -64,7 +62,7 @@ public class GrpcOperationAspectEditor implements RequestAspectEditor, AutoCompl
 		VBox.setVgrow(contentView, Priority.ALWAYS);
 
 
-		CheckBox useReflection = new JFXCheckBox("Use Reflection");
+		CheckBox useReflection = FxmlBuilder.checkbox("Use Reflection");
 		GenericBinding<GrpcOperationAspect, Boolean> reflBinding = GenericBinding.of(
 				GrpcOperationAspect::isUseReflection, 
 				run(GrpcOperationAspect::setUseReflection)

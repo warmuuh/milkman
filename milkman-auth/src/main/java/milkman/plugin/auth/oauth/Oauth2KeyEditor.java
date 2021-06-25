@@ -1,7 +1,5 @@
 package milkman.plugin.auth.oauth;
 
-import com.jfoenix.controls.JFXComboBox;
-import com.jfoenix.controls.JFXToggleButton;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
@@ -15,6 +13,7 @@ import milkman.ui.main.Toaster;
 import milkman.ui.plugin.KeyEditor;
 import milkman.ui.plugin.ToasterAware;
 import milkman.utils.fxml.GenericBinding;
+import milkman.utils.fxml.facade.FxmlBuilder;
 import milkman.utils.fxml.facade.FxmlBuilder.*;
 
 import java.util.UUID;
@@ -54,16 +53,14 @@ public class Oauth2KeyEditor implements KeyEditor<Oauth2Credentials>, ToasterAwa
         root.add(formEntry("Client Id", clientIdBinding, keyEntry));
         root.add(formEntry("Client Secret", clientSecretBinding, keyEntry));
         root.add(formEntry("Scopes", scopesBinding, keyEntry));
-        var autoRefresh = new JFXToggleButton();
-        autoRefresh.setText("Refresh Token on expiry");
+        var autoRefresh = toggle("Refresh Token on expiry");
         autoRefreshBinding.bindTo(autoRefresh.selectedProperty(), keyEntry);
-        var requestBodyAuthScheme = new JFXToggleButton();
-        requestBodyAuthScheme.setText("Credentials in Body");
+        var requestBodyAuthScheme = toggle("Credentials in Body");
         requestBodyAuthSchemeBinding.bindTo(requestBodyAuthScheme.selectedProperty(), keyEntry);
 
         root.add(new HBox(autoRefresh, requestBodyAuthScheme));
 
-        var combobox = root.add(new JFXComboBox<GrantTypeBuilder>());
+        var combobox = root.add(FxmlBuilder.<GrantTypeBuilder>combobox());
         combobox.getItems().addAll(
                 new ClientCredentialBuilder(),
                 new PasswordBuilder(),

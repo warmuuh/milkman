@@ -1,14 +1,14 @@
 package milkman.plugin.sync.git;
 
-import com.jfoenix.controls.JFXPasswordField;
-import com.jfoenix.controls.JFXTextField;
-import com.jfoenix.validation.RequiredFieldValidator;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import lombok.SneakyThrows;
 import milkman.domain.SyncDetails;
 import milkman.ui.plugin.WorkspaceSynchronizer.SynchronizationDetailFactory;
+import milkman.utils.fxml.facade.FxmlBuilder;
+import milkman.utils.fxml.facade.ValidatablePaswordField;
+import milkman.utils.fxml.facade.ValidatableTextField;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.api.Git;
 
@@ -18,10 +18,10 @@ import java.nio.file.Paths;
 
 public class GitSyncDetailFactory implements SynchronizationDetailFactory {
 
-	private JFXTextField gitUrl;
-	private JFXTextField username;
-	private JFXTextField branch;
-	private JFXPasswordField passwordOrToken;
+	private ValidatableTextField gitUrl;
+	private ValidatableTextField username;
+	private ValidatableTextField branch;
+	private ValidatablePaswordField passwordOrToken;
 	private Label usernameLbl;
 	private Label passwordLbl;
 
@@ -32,15 +32,15 @@ public class GitSyncDetailFactory implements SynchronizationDetailFactory {
 
 	@Override
 	public Node getSyncDetailsControls() {
-		gitUrl = new JFXTextField();
-		gitUrl.getValidators().add(new RequiredFieldValidator());
-		branch = new JFXTextField();
+		gitUrl = FxmlBuilder.vtext();
+		gitUrl.getValidators().add(FxmlBuilder.requiredValidator());
+		branch = FxmlBuilder.vtext();
 		branch.setText("master");
-		branch.getValidators().add(new RequiredFieldValidator());
-		username = new JFXTextField();
-		username.getValidators().add(new RequiredFieldValidator());
-		passwordOrToken = new JFXPasswordField();
-		passwordOrToken.getValidators().add(new RequiredFieldValidator());
+		branch.getValidators().add(FxmlBuilder.requiredValidator());
+		username = FxmlBuilder.vtext();
+		username.getValidators().add(FxmlBuilder.requiredValidator());
+		passwordOrToken = FxmlBuilder.vpassword();
+		passwordOrToken.getValidators().add(FxmlBuilder.requiredValidator());
 
 		usernameLbl = new Label("Username");
 		passwordLbl = new Label("Password/Token");

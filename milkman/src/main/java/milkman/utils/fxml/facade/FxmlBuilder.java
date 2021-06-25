@@ -5,9 +5,11 @@ import com.jfoenix.validation.IntegerValidator;
 import com.jfoenix.validation.RequiredFieldValidator;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.util.Duration;
 import milkman.utils.fxml.GenericBinding;
 
 import java.util.function.Consumer;
@@ -50,6 +52,10 @@ public class FxmlBuilder {
         jfxButton.setGraphic(graphic);
         jfxButton.setOnAction(e -> onAction.run());
         return jfxButton;
+    }
+
+    public static CheckBox checkbox(String text) {
+        return new JFXCheckBox(text);
     }
 
     public static ToggleButton toggle(String text) {
@@ -102,6 +108,10 @@ public class FxmlBuilder {
         return validator;
     }
 
+    public static IntegerValidator integerValidator() {
+        return new IntegerValidator();
+    }
+
 	public static IntegerValidator integerValidator(String errorMessage) {
 		return new IntegerValidator("Not an integer");
 	}
@@ -114,6 +124,10 @@ public class FxmlBuilder {
         var textField = text(name + "-input", name, true);
         binding.bindTo(textField.textProperty(), object);
         return textField;
+    }
+
+    public static TextField text(String text) {
+        return new JFXTextField(text);
     }
 
     public static TextField text() {
@@ -265,6 +279,17 @@ public class FxmlBuilder {
         jfxTabPane.setDisableAnimation(true);
         return jfxTabPane;
     }
+
+
+    public static Tooltip installTooltipAt(Node node) {
+        var tt = new JFXTooltip();
+        JFXTooltip.setVisibleDuration(Duration.millis(10000));
+        JFXTooltip.install(node, tt, Pos.BOTTOM_CENTER);
+
+        return tt;
+    }
+
+
 
     public static class HboxExt extends HBox {
 

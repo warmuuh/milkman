@@ -1,17 +1,10 @@
 package milkman.plugin.test.editor;
 
-import com.jfoenix.controls.JFXTextField;
-import com.jfoenix.controls.JFXToggleButton;
-import com.jfoenix.controls.JFXTreeView;
-import com.jfoenix.validation.IntegerValidator;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TreeItem;
+import javafx.scene.control.*;
 import javafx.scene.input.TransferMode;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
@@ -30,7 +23,7 @@ import static milkman.utils.javafx.DndUtil.deserialize;
 @Slf4j
 public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAware {
 
-	JFXTreeView<Node> requestSequence;
+	TreeView<Node> requestSequence;
 	private SettableTreeItem<Node> root;
 	private ObservableList<TestDetails> requests;
 	private ObservableList<TreeItem<Node>> mappedRequests;
@@ -79,7 +72,7 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 	}
 
 
-	private void setupDnD(JFXTreeView<Node> target, TestAspect testAspect) {
+	private void setupDnD(TreeView<Node> target, TestAspect testAspect) {
 		target.setOnDragOver( e -> {
 			if (e.getGestureSource() != target
 			&& e.getDragboard().hasContent(JAVA_FORMAT)) {
@@ -129,8 +122,7 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 		requestDetails.getChildren().clear();
 		requestDetails.add(new Label("Test Options"));
 
-		var cbSkip = new JFXToggleButton();
-		cbSkip.setText("skip test");
+		var cbSkip = toggle("skip test");
 		cbSkip.setSelected(details.isSkip());
 		cbSkip.selectedProperty().addListener((obs, o, n) -> {
 			if (n != null) {
@@ -140,8 +132,7 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 		});
 		requestDetails.add(cbSkip);
 
-		var cbIgnore = new JFXToggleButton();
-		cbIgnore.setText("ignore results");
+		var cbIgnore = toggle("ignore results");
 		cbIgnore.setSelected(details.isIgnore());
 		cbIgnore.selectedProperty().addListener((obs, o, n) -> {
 			if (n != null) {
@@ -153,9 +144,9 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 
 		var retries = new HboxExt();
 		retries.add(new Label("Retries"));
-		var retriesTxt = retries.add(new JFXTextField());
+		var retriesTxt = retries.add(vtext());
 		retriesTxt.setText(""+details.getRetries());
-		retriesTxt.setValidators(new IntegerValidator());
+		retriesTxt.setValidators(integerValidator());
 		retriesTxt.textProperty().addListener((obs, o, n) -> {
 			if (n != null) {
 				details.setRetries(Integer.parseInt(n));
@@ -166,9 +157,9 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 
 		var delayInMs = new HboxExt();
 		delayInMs.add(new Label("Delay between retries in ms"));
-		var delayInMsTxt = delayInMs.add(new JFXTextField());
+		var delayInMsTxt = delayInMs.add(vtext());
 		delayInMsTxt.setText(""+details.getWaitBetweenRetriesInMs());
-		delayInMsTxt.setValidators(new IntegerValidator());
+		delayInMsTxt.setValidators(integerValidator());
 		delayInMsTxt.textProperty().addListener((obs, o, n) -> {
 			if (n != null) {
 				details.setWaitBetweenRetriesInMs(Integer.parseInt(n));
@@ -208,7 +199,7 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 		public TestAspectEditorFxml(TestAspectEditor controller) {
 			super("Tests");
 			this.controller = controller;
-			controller.requestSequence = new JFXTreeView<>();
+			controller.requestSequence = treeView();
 			controller.requestSequence.setShowRoot(false);
 //			controller.requestSequence.setCellFactory(new DnDCellFactory());
 			controller.requestSequence.setRoot(controller.root);

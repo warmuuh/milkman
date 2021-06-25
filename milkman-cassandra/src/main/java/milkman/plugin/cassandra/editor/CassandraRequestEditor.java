@@ -1,6 +1,5 @@
 package milkman.plugin.cassandra.editor;
 
-import com.jfoenix.controls.JFXTextField;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -12,6 +11,7 @@ import milkman.ui.components.AutoCompleter;
 import milkman.ui.plugin.AutoCompletionAware;
 import milkman.ui.plugin.RequestTypeEditor;
 import milkman.utils.fxml.GenericBinding;
+import milkman.utils.fxml.facade.FxmlBuilder;
 import milkman.utils.fxml.facade.FxmlBuilder.HboxExt;
 
 public class CassandraRequestEditor implements RequestTypeEditor, AutoCompletionAware {
@@ -54,7 +54,7 @@ public class CassandraRequestEditor implements RequestTypeEditor, AutoCompletion
 		public CassandraRequestEditorFxml(CassandraRequestEditor controller) {
 			this.controller = controller;
 			HBox.setHgrow(this, Priority.ALWAYS);
-			controller.cassandraUrl = add(new JFXTextField(), true);
+			controller.cassandraUrl = add(FxmlBuilder.text(), true);
 			controller.cassandraUrl.setId("cassandraUrl");
 			controller.cassandraUrl.setPromptText("cql://host[:port][/keyspace]?dc=datacenter[&username=user&password=pass]");
 		}

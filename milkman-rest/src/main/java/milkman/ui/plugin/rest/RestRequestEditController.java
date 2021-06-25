@@ -1,7 +1,7 @@
 package milkman.ui.plugin.rest;
 
-import com.jfoenix.controls.JFXComboBox;
 import javafx.scene.Node;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -13,13 +13,14 @@ import milkman.ui.plugin.RequestTypeEditor;
 import milkman.ui.plugin.rest.domain.RestQueryParamAspect;
 import milkman.ui.plugin.rest.domain.RestRequestContainer;
 import milkman.utils.fxml.GenericBinding;
+import milkman.utils.fxml.facade.FxmlBuilder;
 import milkman.utils.fxml.facade.FxmlBuilder.HboxExt;
 import milkman.utils.fxml.facade.LongTextField;
 
 public class RestRequestEditController implements RequestTypeEditor, AutoCompletionAware {
 
 	 TextField requestUrl;
-	 JFXComboBox<String> httpMethod;
+	 ComboBox<String> httpMethod;
 	
 	private final GenericBinding<RestRequestContainer, String> urlBinding = GenericBinding.of(RestRequestContainer::getUrl, RestRequestContainer::setUrl);
 	private final GenericBinding<RestRequestContainer, String> httpMethodBinding = GenericBinding.of(RestRequestContainer::getHttpMethod, RestRequestContainer::setHttpMethod);
@@ -68,7 +69,7 @@ public class RestRequestEditController implements RequestTypeEditor, AutoComplet
 	public static class RestRequestEditControllerFxml extends HboxExt {
 		public RestRequestEditControllerFxml(RestRequestEditController controller) {
 			HBox.setHgrow(this, Priority.ALWAYS);
-			var methods = new JFXComboBox<String>();
+			var methods = FxmlBuilder.<String>combobox();
 			add(methods);
 			methods.setId("httpMethods");
 			controller.httpMethod = methods;
