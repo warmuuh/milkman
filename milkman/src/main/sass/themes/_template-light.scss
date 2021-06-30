@@ -1,3 +1,5 @@
+@import 'mfx-setup';
+
 .root {
 	-fx-focus-color: transparent;
 	-fx-faint-focus-color: transparent;
@@ -26,7 +28,7 @@
 		-fx-max-height: -fx-pref-height;
     }
 
-	.jfx-button {
+	.mm-button {
 		-fx-text-fill: white;
 		-fx-background-color: $secondary-accent;
 		-fx-translate-y: 1;
@@ -91,7 +93,7 @@
 }
 #openRequestArea {
 	-fx-background-color: white;
-	.jfx-button {
+	.mm-button {
 		-fx-padding: 7;
 	}
 }
@@ -265,7 +267,7 @@
 	-fx-max-width: -fx-pref-width;
 	-fx-min-height: -fx-pref-height;
 	-fx-max-height: -fx-pref-height;
-	-jfx-button-type: RAISED;
+	-mm-button-type: RAISED;
 	-fx-border-width: 0 50 50 0;
 }
 .jfx-tree-table-view {

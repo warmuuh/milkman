@@ -66,6 +66,11 @@
 			<version>3.2.0</version>
 		</dependency>
 		<dependency>
+			<groupId>io.github.palexdev</groupId>
+			<artifactId>materialfx</artifactId>
+			<version>11.11.1</version>
+		</dependency>
+		<dependency>
 			<groupId>com.jfoenix</groupId>
 			<artifactId>jfoenix</artifactId>
 			<version>9.0.10</version>

@@ -197,7 +197,12 @@ public class ToolbarComponent {
 			controller.syncBtn.setOnAction(e -> controller.onSync());
 			getItems().add(controller.syncBtn);
 
-			getItems().add( button("Import", controller::onImport));
+			Button importBtn = button("Import", controller::onImport);
+			importBtn.textFillProperty().addListener((obj, o, n) -> {
+				System.out.println("### " + o + " ## " + n);
+			});
+//			importBtn.setTextFill(Paint.valueOf("white"));
+			getItems().add(importBtn);
 
 
 			getItems().add(new Label("Environment:"));

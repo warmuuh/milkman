@@ -5,6 +5,7 @@ import com.jfoenix.validation.IntegerValidator;
 import com.jfoenix.validation.RequiredFieldValidator;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import io.github.palexdev.materialfx.controls.MFXButton;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -28,30 +29,32 @@ public class FxmlBuilder {
     }
 
     public static Button button() {
-        return new JFXButton();
+        return button("");
     }
 
     public static Button button(String title) {
-        return new JFXButton(title);
+        var button = new MFXButton(title);
+        button.getStyleClass().add("mm-button");
+        return button;
     }
 
     public static Button button(String text, Runnable onAction) {
-        JFXButton jfxButton = new JFXButton(text);
-        jfxButton.setOnAction(e -> onAction.run());
-        return jfxButton;
+        var b = button(text);
+        b.setOnAction(e -> onAction.run());
+        return b;
     }
 
     public static Button button(String id, String text, Runnable onAction) {
-        Button jfxButton = button(text, onAction);
-        jfxButton.setId(id);
-        return jfxButton;
+        Button button = button(text, onAction);
+        button.setId(id);
+        return button;
     }
 
     public static Button button(Node graphic, Runnable onAction) {
-        JFXButton jfxButton = new JFXButton();
-        jfxButton.setGraphic(graphic);
-        jfxButton.setOnAction(e -> onAction.run());
-        return jfxButton;
+        Button button = button();
+        button.setGraphic(graphic);
+        button.setOnAction(e -> onAction.run());
+        return button;
     }
 
     public static CheckBox checkbox(String text) {
