@@ -39,7 +39,7 @@ public interface RequestBodyPostProcessor {
 
         @Override
         public String process(String body) {
-            return body.replace("\n", "");
+            return body.replace("\r", "").replace("\n", "");
         }
     }
 

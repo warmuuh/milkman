@@ -59,8 +59,9 @@ public class HttpTextExport implements TextExport<RestRequestContainer> {
             return templater.replaceTags(b.toString());
         } catch (MalformedURLException e) {
             log.warn("failed to export http", e);
+            return "export failed: " + e.getMessage();
         }
-        return "export failed";
+
     }
 
     private void appendHeader(StringBuilder b,String name, String value) {

@@ -61,7 +61,7 @@ public class CurlTextExport implements TextExport<RestRequestContainer> {
     private Optional<String> getContentType(RestRequestContainer request) {
         return request.getAspect(RestHeaderAspect.class)
                 .flatMap(h -> h.getEntries().stream()
-                        .filter(e -> e.getValue().equalsIgnoreCase("content-type"))
+                        .filter(e -> e.getName().equalsIgnoreCase("content-type"))
                         .map(HeaderEntry::getValue)
                         .findAny());
     }
