@@ -6,9 +6,13 @@ import lombok.SneakyThrows;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
 import milkman.ui.main.dialogs.CredentialsInputDialog;
+import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.ui.plugin.Templater;
 import milkman.ui.plugin.rest.domain.*;
 import milkman.utils.AsyncResponseControl.AsyncControl;
+import milkman.utils.json.BlockingFluxByteToStringConverter;
+import org.apache.commons.lang3.StringUtils;
+import reactor.adapter.JdkFlowAdapter;
 import reactor.core.publisher.Flux;
 
 import javax.net.ssl.SSLContext;
@@ -27,6 +31,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.ResponseInfo;
+import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.*;
@@ -195,7 +200,7 @@ public class JavaRequestProcessor implements RequestProcessor {
 			return null;
 		});
 
-		return toResponseContainer(httpRequest.uri().toString(),
+		return toResponseContainer(httpRequest,
 																chReq.getEmitterProcessor(),
 																chReq.getResponseInfo(),
 																startTime);
@@ -250,10 +255,13 @@ public class JavaRequestProcessor implements RequestProcessor {
 	
 
 	@SneakyThrows
-	private RestResponseContainer toResponseContainer(String url, Flux<byte[]> bodyPublisher, CompletableFuture<ResponseInfo> httpResponse, AtomicLong startTime) {
-		RestResponseContainer response = new RestResponseContainer(url);
+	private RestResponseContainer toResponseContainer(HttpRequest request, Flux<byte[]> bodyPublisher, CompletableFuture<ResponseInfo> httpResponse, AtomicLong startTime) {
+		RestResponseContainer response = new RestResponseContainer(request.uri().toString());
 		response.getAspects().add(new RestResponseBodyAspect(bodyPublisher));
-		
+
+		addDebugOutput(request, response);
+
+
 		var entries = httpResponse.thenApply(res -> {
 			List<HeaderEntry> result = new LinkedList<>();
 			for (Entry<String, List<String>> h : res.headers().map().entrySet()) {
@@ -273,6 +281,25 @@ public class JavaRequestProcessor implements RequestProcessor {
 		});
 		
 		return response;
+	}
+
+	private void addDebugOutput(HttpRequest request, RestResponseContainer response) {
+		if (CoreApplicationOptionsProvider.options().isDebug()) {
+			var dheaders = new DebugRequestHeaderAspect();
+			request.headers().map().forEach((k, vs) -> {
+				vs.forEach(v -> {
+					dheaders.getEntries().add(new HeaderEntry(UUID.randomUUID().toString(), k, v, true));
+				});
+			});
+			response.getAspects().add(dheaders);
+
+			request.bodyPublisher()
+					.map(JdkFlowAdapter::flowPublisherToFlux)
+					.map(flux -> flux.map(ByteBuffer::array))
+					.map(flux -> new BlockingFluxByteToStringConverter().convert(flux))
+					.filter(StringUtils::isNotBlank)
+					.ifPresent(body -> response.getAspects().add(new DebugRequestBodyAspect(body)));
+		}
 	}
 
 	private void buildStatusView(ResponseInfo httpResponse, RestResponseContainer response, long responseTimeInMs) {

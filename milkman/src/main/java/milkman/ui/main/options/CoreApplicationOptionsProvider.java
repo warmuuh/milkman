@@ -15,6 +15,7 @@ public class CoreApplicationOptionsProvider implements OptionPageProvider<CoreAp
 		private String theme = "Milkman";
 		private boolean disableAnimations;
 		private boolean horizontalLayout;
+		private boolean debug;
 	} 
 
 	private static CoreApplicationOptions currentOptions = new CoreApplicationOptions();
@@ -45,7 +46,8 @@ public class CoreApplicationOptionsProvider implements OptionPageProvider<CoreAp
 				.section("General")
 					.toggle("Check for Updates", CoreApplicationOptions::isCheckForUpdates, CoreApplicationOptions::setCheckForUpdates)
 					.selection("Theme", CoreApplicationOptions::getTheme, this::setTheme, themeSwitcher.getThemes())
-					.toggle("Disable Animations", CoreApplicationOptions::isDisableAnimations, CoreApplicationOptions::setDisableAnimations)
+				.toggle("Disable Animations", CoreApplicationOptions::isDisableAnimations, CoreApplicationOptions::setDisableAnimations)
+				.toggle("Enable Debug Output", CoreApplicationOptions::isDebug, CoreApplicationOptions::setDebug)
 				.endSection()
 				.section("Code Editor/Viewer")
 					.toggle("Autoformat Content", CoreApplicationOptions::isAutoformatContent, this::toggleAnimations)

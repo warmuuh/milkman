@@ -24,7 +24,11 @@ public class RestPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 
 	@Override
 	public List<ResponseAspectEditor> getResponseTabs() {
-		return Arrays.asList( new ResponseBodyTabController(), new BinaryResponseBodyTabController(), new ResponseHeaderTabController());
+		return Arrays.asList( new ResponseBodyTabController(),
+				new BinaryResponseBodyTabController(),
+				new ResponseHeaderTabController(),
+				new DebugRequestHeaderTabController(),
+				new DebugRequestBodyTabController());
 	}
 
 	@Override
