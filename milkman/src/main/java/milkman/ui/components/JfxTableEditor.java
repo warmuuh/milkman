@@ -154,7 +154,7 @@ public class JfxTableEditor<T> extends StackPane {
 		});
 		column.setCellValueFactory(param -> GenericBinding.of(getter, (e, o) -> {}, param.getValue().getValue().getData()));
 		
-		column.setMaxWidth(400);
+		column.setMaxWidth(1000);
 		column.setMinWidth(100);
 //		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
 		table.getColumns().add(column);
@@ -168,7 +168,7 @@ public class JfxTableEditor<T> extends StackPane {
 			return cell;
 		});
 		column.setCellValueFactory(param -> GenericBinding.of(getter, setter, param.getValue().getValue().getData()));
-		column.setMaxWidth(400);
+		column.setMaxWidth(1000);
 		column.setMinWidth(100);
 		table.getColumns().add(column);
 //		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
@@ -202,7 +202,7 @@ public class JfxTableEditor<T> extends StackPane {
 			return cell;
 		});
 		column.setCellValueFactory(param -> GenericBinding.of(getter, setter, param.getValue().getValue().getData()));
-		column.setMaxWidth(400);
+		column.setMaxWidth(1000);
 		column.setMinWidth(100);
 		table.getColumns().add(column);
 //		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
