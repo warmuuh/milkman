@@ -1,12 +1,15 @@
 package mfx;
 
-import com.jfoenix.controls.JFXButton;
-import io.github.palexdev.materialfx.controls.MFXButton;
+import com.jfoenix.controls.JFXToggleNode;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import io.github.palexdev.materialfx.controls.MFXRectangleToggleNode;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
+import javafx.scene.control.ToggleButton;
 import javafx.stage.Stage;
 import milkman.utils.fxml.facade.FxmlBuilder;
+
+import static milkman.utils.fxml.facade.FxmlBuilder.icon;
 
 public class Test extends Application {
 
@@ -23,9 +26,18 @@ public class Test extends Application {
         mainScene.getStylesheets().clear();
         mainScene.getStylesheets().add("/mfx/light.css");
 
-        root.add(new MFXButton("mfxButton"));
-        root.add(new JFXButton("jfxButton"));
-        root.add(new Button("plainButton"));
+        var mfx = new MFXRectangleToggleNode();
+        mfx.setGraphic(icon(FontAwesomeIcon.GLOBE));
+        root.add(mfx);
+
+        JFXToggleNode node = new JFXToggleNode();
+        node.setGraphic(icon(FontAwesomeIcon.GLOBE));
+        root.add(node);
+
+
+        ToggleButton javafx = new ToggleButton();
+        javafx.setGraphic(icon(FontAwesomeIcon.GLOBE));
+        root.add(javafx);
 
         primaryStage.setScene(mainScene);
         primaryStage.show();

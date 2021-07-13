@@ -7,6 +7,7 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXCheckbox;
+import io.github.palexdev.materialfx.controls.MFXRectangleToggleNode;
 import io.github.palexdev.materialfx.controls.MFXToggleButton;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -84,9 +85,11 @@ public class FxmlBuilder {
     }
 
     public static ToggleButton toggle(Node graphic) {
-        JFXToggleNode jfxButton = new JFXToggleNode();
-        jfxButton.setGraphic(graphic);
-        return jfxButton;
+        MFXRectangleToggleNode toggleNode = new MFXRectangleToggleNode();
+        toggleNode.setPrefHeight(30);
+        toggleNode.setPrefWidth(40);
+        toggleNode.setGraphic(graphic);
+        return toggleNode;
     }
 
     public static ToggleButton toggle(Node graphic, Consumer<Boolean> onAction) {

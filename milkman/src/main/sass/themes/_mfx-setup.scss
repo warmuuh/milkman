@@ -6,5 +6,10 @@
   -fx-padding: 0 10px 0 0;
   -mfx-toggle-color: $main-accent;
   -mfx-toggle-line-color: $secondary-accent;
+}
 
+.mfx-toggle-node {
+  -fx-padding: 0 8px 0 8px;
+  -mfx-selected-color: #d4d4d4;
+  -fx-border-width: 0 0 0 0;
 }
