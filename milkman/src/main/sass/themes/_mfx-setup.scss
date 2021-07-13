@@ -1,3 +1,10 @@
 .mfx-button {
   -fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
 }
+
+.mfx-toggle-button {
+  -fx-padding: 0 10px 0 0;
+  -mfx-toggle-color: $main-accent;
+  -mfx-toggle-line-color: $secondary-accent;
+
+}

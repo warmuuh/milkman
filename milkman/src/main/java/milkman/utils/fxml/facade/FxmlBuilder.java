@@ -6,6 +6,8 @@ import com.jfoenix.validation.RequiredFieldValidator;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import io.github.palexdev.materialfx.controls.MFXButton;
+import io.github.palexdev.materialfx.controls.MFXCheckbox;
+import io.github.palexdev.materialfx.controls.MFXToggleButton;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -57,14 +59,28 @@ public class FxmlBuilder {
         return button;
     }
 
+    public static Button button(String id, Node graphic, Runnable onAction) {
+        Button button = button(graphic, onAction);
+        button.setId(id);
+        return button;
+    }
+
+    public static Button button(String id, Node graphic) {
+        MFXButton b = new MFXButton();
+        b.setGraphic(graphic);
+        b.setId(id);
+        return b;
+    }
+
     public static CheckBox checkbox(String text) {
-        return new JFXCheckBox(text);
+        return new MFXCheckbox(text);
     }
 
     public static ToggleButton toggle(String text) {
-        JFXToggleButton jfxButton = new JFXToggleButton();
-        jfxButton.setText(text);
-        return jfxButton;
+        MFXToggleButton toggleButton = new MFXToggleButton();
+        toggleButton.setPrefHeight(30);
+        toggleButton.setText(text);
+        return toggleButton;
     }
 
     public static ToggleButton toggle(Node graphic) {
@@ -77,19 +93,6 @@ public class FxmlBuilder {
         JFXToggleNode jfxButton = new JFXToggleNode();
         jfxButton.setGraphic(graphic);
         jfxButton.setOnAction(e -> onAction.accept(jfxButton.isSelected()));
-        return jfxButton;
-    }
-
-    public static Button button(String id, Node graphic, Runnable onAction) {
-        Button button = button(graphic, onAction);
-        button.setId(id);
-        return button;
-    }
-
-    public static Button button(String id, Node graphic) {
-        JFXButton jfxButton = new JFXButton();
-        jfxButton.setGraphic(graphic);
-        jfxButton.setId(id);
         return jfxButton;
     }
 
