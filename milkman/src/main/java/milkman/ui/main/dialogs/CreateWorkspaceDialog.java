@@ -1,6 +1,5 @@
 package milkman.ui.main.dialogs;
 
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -11,6 +10,7 @@ import milkman.ui.main.Toaster;
 import milkman.ui.plugin.WorkspaceSynchronizer;
 import milkman.ui.plugin.WorkspaceSynchronizer.SynchronizationDetailFactory;
 import milkman.utils.fxml.FxmlUtil;
+import milkman.utils.fxml.facade.BindableComboBox;
 import milkman.utils.fxml.facade.DialogLayoutBase;
 import milkman.utils.fxml.facade.ValidatableTextField;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -21,7 +21,7 @@ import static milkman.utils.fxml.facade.FxmlBuilder.*;
 
 public class CreateWorkspaceDialog {
 	 VBox syncDetailsArea;
-	 ComboBox<SynchronizationDetailFactory> syncSelector;
+	 BindableComboBox<SynchronizationDetailFactory> syncSelector;
 	 ValidatableTextField workspaceNameInput;
 	private Dialog dialog;
 

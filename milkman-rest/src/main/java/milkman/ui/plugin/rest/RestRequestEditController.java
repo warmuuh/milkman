@@ -1,7 +1,6 @@
 package milkman.ui.plugin.rest;
 
 import javafx.scene.Node;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -13,6 +12,7 @@ import milkman.ui.plugin.RequestTypeEditor;
 import milkman.ui.plugin.rest.domain.RestQueryParamAspect;
 import milkman.ui.plugin.rest.domain.RestRequestContainer;
 import milkman.utils.fxml.GenericBinding;
+import milkman.utils.fxml.facade.BindableComboBox;
 import milkman.utils.fxml.facade.FxmlBuilder;
 import milkman.utils.fxml.facade.FxmlBuilder.HboxExt;
 import milkman.utils.fxml.facade.LongTextField;
@@ -20,7 +20,7 @@ import milkman.utils.fxml.facade.LongTextField;
 public class RestRequestEditController implements RequestTypeEditor, AutoCompletionAware {
 
 	 TextField requestUrl;
-	 ComboBox<String> httpMethod;
+	 BindableComboBox<String> httpMethod;
 	
 	private final GenericBinding<RestRequestContainer, String> urlBinding = GenericBinding.of(RestRequestContainer::getUrl, RestRequestContainer::setUrl);
 	private final GenericBinding<RestRequestContainer, String> httpMethodBinding = GenericBinding.of(RestRequestContainer::getHttpMethod, RestRequestContainer::setHttpMethod);
@@ -42,8 +42,8 @@ public class RestRequestEditController implements RequestTypeEditor, AutoComplet
 		RestRequestContainer restRequest = (RestRequestContainer)request;
 
 		urlBinding.bindTo(requestUrl.textProperty(), restRequest);
-		httpMethodBinding.bindTo(httpMethod.valueProperty(), restRequest);
-		
+		httpMethod.bindTo(httpMethodBinding, restRequest);
+
 		urlBinding.addListener(s -> request.setDirty(true));
 		httpMethodBinding.addListener(s -> request.setDirty(true));
 		

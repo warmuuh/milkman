@@ -9,7 +9,22 @@
 }
 
 .mfx-toggle-node {
+  -mfx-unselected-color: TRANSPARENT;
   -fx-padding: 0 8px 0 8px;
-  -mfx-selected-color: #d4d4d4;
+  -mfx-selected-color: rgba(0, 0, 0, 0.3);
   -fx-border-width: 0 0 0 0;
 }
+
+.mfx-combo-box {
+  -mfx-line-stroke-width: 1px;
+
+  .mfx-list-cell:selected {
+    -fx-background-color: $main-accent;
+  }
+}
+
+.mfx-legacy-list-view {
+  //disable drop shadow
+  -fx-effect: null;
+}
+

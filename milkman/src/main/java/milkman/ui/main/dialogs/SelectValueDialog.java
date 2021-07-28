@@ -1,10 +1,10 @@
 package milkman.ui.main.dialogs;
 
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import lombok.Getter;
 import milkman.utils.fxml.FxmlUtil;
+import milkman.utils.fxml.facade.BindableComboBox;
 import milkman.utils.fxml.facade.DialogLayoutBase;
 import milkman.utils.fxml.facade.FxmlBuilder.*;
 
@@ -17,7 +17,7 @@ public class SelectValueDialog {
 	private Dialog dialog;
 	@Getter boolean cancelled = true;
 
-	 ComboBox<String> valueSelection;
+	 BindableComboBox<String> valueSelection;
 	 Label promptLabel;
 	 Label title;
 	

@@ -1,7 +1,6 @@
 package milkman.ui.main.dialogs;
 
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
@@ -9,6 +8,7 @@ import milkman.ui.main.Toaster;
 import milkman.ui.plugin.Exporter;
 import milkman.ui.plugin.Templater;
 import milkman.utils.fxml.FxmlUtil;
+import milkman.utils.fxml.facade.BindableComboBox;
 import milkman.utils.fxml.facade.DialogLayoutBase;
 import milkman.utils.fxml.facade.FxmlBuilder.*;
 
@@ -18,7 +18,7 @@ import static milkman.utils.fxml.facade.FxmlBuilder.*;
 
 public class ExportDialog<T> {
     VBox exportArea;
-    ComboBox<Exporter<T>> exportSelector;
+    BindableComboBox<Exporter<T>> exportSelector;
     Button exportBtn;
 
 

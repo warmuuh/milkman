@@ -1,6 +1,5 @@
 package milkman.ui.main.dialogs;
 
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
@@ -8,6 +7,7 @@ import milkman.domain.Workspace;
 import milkman.ui.main.Toaster;
 import milkman.ui.plugin.ImporterPlugin;
 import milkman.utils.fxml.FxmlUtil;
+import milkman.utils.fxml.facade.BindableComboBox;
 import milkman.utils.fxml.facade.DialogLayoutBase;
 import milkman.utils.fxml.facade.FxmlBuilder.*;
 
@@ -17,7 +17,7 @@ import static milkman.utils.fxml.facade.FxmlBuilder.*;
 
 public class ImportDialog {
   VBox importerArea;
-  ComboBox<ImporterPlugin> importerSelector;
+  BindableComboBox<ImporterPlugin> importerSelector;
   private Dialog dialog;
 
   private ImporterPlugin selectedImporter;
@@ -29,7 +29,6 @@ public class ImportDialog {
     this.workspace = workspace;
     var content = new ImportDialogFxml(this);
     importerSelector.setPromptText("Select Importer");
-    importers.forEach(i -> importerSelector.getItems().add(i));
     importerSelector.setConverter(new StringConverter<ImporterPlugin>() {
 
       @Override
@@ -42,6 +41,7 @@ public class ImportDialog {
         return null;
       }
     });
+    importers.forEach(i -> importerSelector.getItems().add(i));
     importerSelector.getSelectionModel().selectedItemProperty().addListener((obs, o, v) -> {
       if (o != v && v != null) {
         selectedImporter = v;

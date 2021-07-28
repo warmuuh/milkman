@@ -5,10 +5,7 @@ import com.jfoenix.validation.IntegerValidator;
 import com.jfoenix.validation.RequiredFieldValidator;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import io.github.palexdev.materialfx.controls.MFXButton;
-import io.github.palexdev.materialfx.controls.MFXCheckbox;
-import io.github.palexdev.materialfx.controls.MFXRectangleToggleNode;
-import io.github.palexdev.materialfx.controls.MFXToggleButton;
+import io.github.palexdev.materialfx.controls.*;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -93,20 +90,19 @@ public class FxmlBuilder {
     }
 
     public static ToggleButton toggle(Node graphic, Consumer<Boolean> onAction) {
-        JFXToggleNode jfxButton = new JFXToggleNode();
-        jfxButton.setGraphic(graphic);
-        jfxButton.setOnAction(e -> onAction.accept(jfxButton.isSelected()));
-        return jfxButton;
+        var toggle = toggle(graphic);
+        toggle.selectedProperty().addListener((obs, o, n) -> onAction.accept(n));
+        return toggle;
     }
 
-    public static <T> ComboBox<T> combobox() {
-        return new JFXComboBox<T>();
+    public static <T> BindableComboBox<T> combobox() {
+        return new BindableComboBox<>();
     }
 
     public static <T> ListView<T> list(double verticalGap, Function<T, Node> cellGraphicFactory) {
-        var listView = new JFXListView<T>();
+        var listView = new MFXListView<T>();
         listView.setCellFactory(l -> new ListViewNullSafeCell<>(cellGraphicFactory));
-        listView.setVerticalGap(verticalGap);
+//        listView.setVerticalGap(verticalGap);
         return listView;
     }
 

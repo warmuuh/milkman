@@ -107,6 +107,7 @@ public class ManageWorkspacesDialog {
 
 			StackPane stackPane = new StackPane();
 			var list = controller.workspaceList = list(10.0, controller::createListActions);
+			list.setPrefWidth(400);
 			list.setMinHeight(400);
 			stackPane.getChildren().add(list);
 

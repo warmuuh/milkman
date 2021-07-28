@@ -198,10 +198,6 @@ public class ToolbarComponent {
 			getItems().add(controller.syncBtn);
 
 			Button importBtn = button("Import", controller::onImport);
-			importBtn.textFillProperty().addListener((obj, o, n) -> {
-				System.out.println("### " + o + " ## " + n);
-			});
-//			importBtn.setTextFill(Paint.valueOf("white"));
 			getItems().add(importBtn);
 
 

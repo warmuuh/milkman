@@ -1,4 +1,9 @@
-.button {
-    -fx-text-fill: red;
-    -fx-background-color: yellow;
+.list-cell:selected {
+    -fx-background-color:red;
+}
+
+.mfx-list-view .mfx-list-cell:selected {
+    -fx-background-color: red;
+    -fx-border-color: green;
+
 }

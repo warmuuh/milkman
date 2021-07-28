@@ -1,11 +1,15 @@
 package milkman.ui.main.options;
 
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import lombok.RequiredArgsConstructor;
 import milkman.ui.components.JfxTableEditor;
 import milkman.utils.fxml.GenericBinding;
+import milkman.utils.fxml.facade.BindableComboBox;
 import milkman.utils.fxml.facade.FxmlBuilder;
 
 import java.util.HashMap;
@@ -135,10 +139,10 @@ public class OptionDialogBuilder  {
 				List<String> possibleValues) {
 			
 			Label lbl = new Label(name);
-			ComboBox<String> text = FxmlBuilder.combobox();
-			GenericBinding<T,String> binding = GenericBinding.of(getter, setter, optionsObject);
+			BindableComboBox<String> text = FxmlBuilder.combobox();
+			GenericBinding<T,String> binding = GenericBinding.of(getter, setter);
 			bindings.add(binding);
-			text.valueProperty().bindBidirectional(binding);
+			text.bindTo(binding, optionsObject);
 			text.getItems().addAll(possibleValues);
 			HBox hbox = new HBox(lbl, text);
 			hbox.getStyleClass().add("options-entry");

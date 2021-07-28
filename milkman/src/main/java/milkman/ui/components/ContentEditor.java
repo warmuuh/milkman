@@ -4,7 +4,6 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.IndexRange;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
@@ -26,6 +25,7 @@ import milkman.ui.plugin.ContentTypePlugin;
 import milkman.utils.Stopwatch;
 import milkman.utils.StringUtils;
 import milkman.utils.fxml.GenericBinding;
+import milkman.utils.fxml.facade.BindableComboBox;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.fxmisc.flowless.VirtualizedScrollPane;
@@ -79,7 +79,7 @@ public class ContentEditor extends VBox {
 
 	private GenericBinding<Object, String> contentBinding;
 
-	protected ComboBox<ContentTypePlugin> highlighters;
+	protected BindableComboBox<ContentTypePlugin> highlighters;
 
 	private Button format;
 
