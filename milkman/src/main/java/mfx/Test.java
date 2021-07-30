@@ -1,17 +1,19 @@
 package mfx;
 
-import com.jfoenix.controls.JFXComboBox;
-import io.github.palexdev.materialfx.controls.MFXComboBox;
-import io.github.palexdev.materialfx.controls.legacy.MFXLegacyComboBox;
+import io.github.palexdev.materialfx.controls.MFXTableView;
+import io.github.palexdev.materialfx.controls.cell.MFXTableColumn;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Scene;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import milkman.utils.fxml.GenericBinding;
 import milkman.utils.fxml.facade.FxmlBuilder;
+
+import java.util.Comparator;
+import java.util.List;
 
 public class Test extends Application {
 
@@ -24,6 +26,7 @@ public class Test extends Application {
     @AllArgsConstructor
     public class TestContainer {
         private String testValue = "b";
+        private String testValue2 = "c";
 
         public void setTestValue(String testValue) {
             System.out.println("Setting value: " + testValue);
@@ -43,41 +46,31 @@ public class Test extends Application {
         mainScene.getStylesheets().clear();
         mainScene.getStylesheets().add("/mfx/light.css");
 
-        root.add(new Label("MFXComboBox"));
-        var nmfx = new MFXComboBox<String>();
-        nmfx.getItems().add("a");
-        nmfx.getItems().add("b");
-        nmfx.getItems().add("c");
-        root.add(nmfx);
 
-        nmfx.getSelectionModel().selectItem("b");
-        valueBinding.bindToUni(nmfx.getSelectionModel().selectedItemProperty(), new TestContainer("b"));
+        MFXTableView<TestContainer> tableView = new MFXTableView<>();
+        ObservableList<TestContainer> people = FXCollections.observableArrayList(List.of(
+                new TestContainer("a", "1"),
+                new TestContainer("b", "2")
+                ));
 
+        MFXTableColumn<TestContainer> column1 = new MFXTableColumn<>("TV1", Comparator.comparing(TestContainer::getTestValue));
+        column1.setRowCellFunction(data -> {
+            GenericBinding<TestContainer, String> binding = GenericBinding.of(TestContainer::getTestValue, TestContainer::setTestValue, data);
+            MFXTableRowEditableCell cell = new MFXTableRowEditableCell(binding);
+            return cell;
+        });
 
-        root.add(new Label("MFXLegacyComboBox"));
-        var mfx = new MFXLegacyComboBox<>();
-        mfx.getItems().add("a");
-        mfx.getItems().add("b");
-        mfx.getItems().add("c");
-        mfx.setValue("b");
-        root.add(mfx);
+        MFXTableColumn<TestContainer> column2 = new MFXTableColumn<>("TV2", Comparator.comparing(TestContainer::getTestValue));
+        column2.setRowCellFunction(data -> {
+            GenericBinding<TestContainer, String> binding = GenericBinding.of(TestContainer::getTestValue2, TestContainer::setTestValue2, data);
+            MFXTableRowEditableCell cell = new MFXTableRowEditableCell(binding);
+            return cell;
+        });
 
-        root.add(new Label("JFXComboBox"));
-        var node = new JFXComboBox<>();
-        node.getItems().add("a");
-        node.getItems().add("b");
-        node.getItems().add("c");
-        node.setValue("b");
-        root.add(node);
+        tableView.setItems(people);
+        tableView.getTableColumns().addAll(column1, column2);
+        root.add(tableView);
 
-
-        root.add(new Label("ComboBox"));
-        var javafx = new ComboBox<>();
-        javafx.getItems().add("a");
-        javafx.getItems().add("b");
-        javafx.getItems().add("c");
-        javafx.setValue("b");
-        root.add(javafx);
 
         primaryStage.setScene(mainScene);
         primaryStage.show();

@@ -1,16 +1,17 @@
 package milkman.ui.components;
 
-import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.cells.editors.TextFieldEditorBuilder;
 import com.jfoenix.controls.cells.editors.base.GenericEditableTreeTableCell;
 import com.jfoenix.controls.cells.editors.base.JFXTreeTableCell;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import io.github.palexdev.materialfx.controls.MFXTableView;
+import io.github.palexdev.materialfx.controls.cell.MFXTableColumn;
+import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
 import javafx.application.Platform;
+import javafx.beans.binding.StringBinding;
 import javafx.beans.value.ChangeListener;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -26,7 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 import milkman.PlatformUtil;
 import milkman.utils.fxml.GenericBinding;
 import milkman.utils.javafx.JavaFxUtils;
-import milkman.utils.javafx.ResizableJfxTreeTableView;
 
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -46,9 +46,9 @@ class RecursiveWrapper<T> extends RecursiveTreeObject<RecursiveWrapper<T>>{
 public class JfxTableEditor<T> extends StackPane {
 	
 	
-	private final ResizableJfxTreeTableView<RecursiveWrapper<T>> table = new ResizableJfxTreeTableView<RecursiveWrapper<T>>();
+	private final MFXTableView<T> table = new MFXTableView<T>();
 
-	private ObservableList<RecursiveWrapper<T>> obsWrappedItems;
+	private ObservableList<T> obsWrappedItems;
 
 	private final Button addItemBtn;
 
@@ -64,9 +64,9 @@ public class JfxTableEditor<T> extends StackPane {
 
 
 	public JfxTableEditor() {
-		table.setShowRoot(false);
-		table.setEditable(true);
-		table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+//		table.setShowRoot(false);
+//		table.setEditable(true);
+		table.getSelectionModel().allowsMultipleSelection();
 
 		JavaFxUtils.publishEscToParent(table);
 		getChildren().add(table);
@@ -96,11 +96,11 @@ public class JfxTableEditor<T> extends StackPane {
 			return;
 		StringBuilder b = new StringBuilder();
 		boolean first = true;
-		for (TreeItem<RecursiveWrapper<T>> treeItm : table.getSelectionModel().getSelectedItems()) {
+		for (T treeItm : table.getSelectionModel().getSelectedItems()) {
 			if (!first)
 				b.append(System.lineSeparator());
 			first = false;
-			b.append(rowToStringConverter.apply(treeItm.getValue().getData()));	
+			b.append(rowToStringConverter.apply(treeItm));
 		}
 		
 		ClipboardContent clipboardContent = new ClipboardContent();
@@ -120,7 +120,7 @@ public class JfxTableEditor<T> extends StackPane {
 				for (String line : lines) {
 					T newEntry = stringToRowConverter.apply(line);
 					if (newEntry != null) {
-						obsWrappedItems.add(new RecursiveWrapper<>(newEntry));
+						obsWrappedItems.add(newEntry);
 					}
 				}
 			} catch (Throwable t) {
@@ -149,32 +149,30 @@ public class JfxTableEditor<T> extends StackPane {
 	
 
 	public void addReadOnlyColumn(String name, Function<T, String> getter) {
-		TreeTableColumn<RecursiveWrapper<T>, String> column = new TreeTableColumn<>(name);
-		column.setCellFactory((TreeTableColumn<RecursiveWrapper<T>, String> param) -> {
-			return new GenericEditableTreeTableCell<RecursiveWrapper<T>, String>(new SelectableTextFieldBuilder());
+		MFXTableColumn<T> column = new MFXTableColumn<>(name);
+		column.setRowCellFunction(item -> {
+			return new MFXTableRowCell(getter.apply(item));
 		});
-		column.setCellValueFactory(param -> GenericBinding.of(getter, (e, o) -> {}, param.getValue().getValue().getData()));
-		
+
 		column.setMaxWidth(400);
 		column.setMinWidth(100);
 //		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
-		table.getColumns().add(column);
+		table.getTableColumns().add(column);
 	}
 	
 	public void addColumn(String name, Function<T, String> getter, BiConsumer<T, String> setter) {
-		TreeTableColumn<RecursiveWrapper<T>, String> column = new TreeTableColumn<>(name);
-		column.setCellFactory((TreeTableColumn<RecursiveWrapper<T>, String> param) -> {
-			var cell = new GenericEditableTreeTableCell<RecursiveWrapper<T>, String>(new TextFieldEditorBuilderPatch());
-			cell.setStepFunction(getStepFunction());
-			return cell;
+		MFXTableColumn<T> column = new MFXTableColumn<>(name);
+		column.setRowCellFunction(item -> {
+			GenericBinding<T, String> binding = GenericBinding.of(getter, setter, item);
+			return new MFXTableRowCell(StringBinding.stringExpression(binding));
 		});
-		column.setCellValueFactory(param -> GenericBinding.of(getter, setter, param.getValue().getValue().getData()));
 		column.setMaxWidth(400);
 		column.setMinWidth(100);
-		table.getColumns().add(column);
+		table.getTableColumns().add(column);
 //		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
-		if (firstEditableColumn == null)
-			firstEditableColumn = table.getColumns().size() -1; 
+		if (firstEditableColumn == null) {
+			firstEditableColumn = table.getTableColumns().size() -1;
+		}
 	}
 
 
@@ -185,8 +183,8 @@ public class JfxTableEditor<T> extends StackPane {
 				var newItemAdded = addNewItem();
 				if (newItemAdded) {
 					Platform.runLater(() -> {
-						if (firstEditableColumn != null)
-							table.edit(index+direction, table.getColumns().get(firstEditableColumn));
+//						if (firstEditableColumn != null)
+//							table.edit(index+direction, table.getColumns().get(firstEditableColumn));
 					});
 				}
 				return newItemAdded ? direction : 0;
@@ -205,10 +203,10 @@ public class JfxTableEditor<T> extends StackPane {
 		column.setCellValueFactory(param -> GenericBinding.of(getter, setter, param.getValue().getValue().getData()));
 		column.setMaxWidth(400);
 		column.setMinWidth(100);
-		table.getColumns().add(column);
+//		table.getColumns().add(column);
 //		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
-		if (firstEditableColumn == null)
-			firstEditableColumn = table.getColumns().size() -1;
+//		if (firstEditableColumn == null)
+//			firstEditableColumn = table.getColumns().size() -1;
 	}
 
 	public void addCheckboxColumn(String name, Function<T, Boolean> getter, BiConsumer<T, Boolean> setter) {
@@ -219,7 +217,7 @@ public class JfxTableEditor<T> extends StackPane {
 		column.setCellFactory(param -> new BooleanCell<>(column));
 		column.setMinWidth(100);
 		column.setEditable(false);
-		table.getColumns().add(column);
+//		table.getColumns().add(column);
 //		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
 	}
 
@@ -232,7 +230,7 @@ public class JfxTableEditor<T> extends StackPane {
 		column.setCellFactory(c -> new CustomActionsCell());
 		column.setMinWidth(100);
 		column.setEditable(false);
-		table.getColumns().add(column);
+//		table.getColumns().add(column);
 //		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
 
 		customActions.add(new CustomAction(FontAwesomeIcon.TIMES, (wrappedItem) -> {
@@ -256,7 +254,7 @@ public class JfxTableEditor<T> extends StackPane {
 		if (newItemCreator != null) {
 			var newItem = newItemCreator.get();
 			if (newItem != null) {
-				obsWrappedItems.add(new RecursiveWrapper<>(newItem));
+				obsWrappedItems.add(newItem);
 				return true;
 			}
 		}
@@ -264,9 +262,9 @@ public class JfxTableEditor<T> extends StackPane {
 	}
 
 	public void addNewItemManually(T newItem){
-		obsWrappedItems.add(new RecursiveWrapper<>(newItem));
+		obsWrappedItems.add(newItem);
 		Platform.runLater(() -> {
-			table.refresh();
+//			table.refresh();
 		});
 	}
 
@@ -283,38 +281,38 @@ public class JfxTableEditor<T> extends StackPane {
 	}
 	public void setItems(List<T> items, Comparator<T> comparator) {
 		List<RecursiveWrapper<T>> wrappedItems = items.stream().map(i -> new RecursiveWrapper<>(i)).collect(Collectors.toList());
-		obsWrappedItems = FXCollections.observableList(wrappedItems);
-		if (comparator != null) {
-			FXCollections.sort(obsWrappedItems, (ra, rb) -> comparator.compare(ra.getData(), rb.getData()));
-		}
+//		obsWrappedItems = FXCollections.observableList(wrappedItems);
+//		if (comparator != null) {
+//			FXCollections.sort(obsWrappedItems, (ra, rb) -> comparator.compare(ra.getData(), rb.getData()));
+//		}
 		
 		
-		obsWrappedItems.addListener(new ListChangeListener<RecursiveWrapper<T>>() {
-
-			@Override
-			public void onChanged(Change<? extends RecursiveWrapper<T>> c) {
-				//forward removals:
-				if (!c.next())
-					return;
-				
-				if (c.wasRemoved()) {
-					for(var ri : c.getRemoved()) {
-						items.remove(ri.getData());
-					}
-				}
-				
-				if (c.wasAdded()) {
-					RecursiveWrapper<T> newEntry = c.getAddedSubList().get(0);
-					items.add(newEntry.getData());
-				}
-			}
-		});
+//		obsWrappedItems.addListener(new ListChangeListener<RecursiveWrapper<T>>() {
+//
+//			@Override
+//			public void onChanged(Change<? extends RecursiveWrapper<T>> c) {
+//				//forward removals:
+//				if (!c.next())
+//					return;
+//
+//				if (c.wasRemoved()) {
+//					for(var ri : c.getRemoved()) {
+//						items.remove(ri.getData());
+//					}
+//				}
+//
+//				if (c.wasAdded()) {
+//					RecursiveWrapper<T> newEntry = c.getAddedSubList().get(0);
+//					items.add(newEntry.getData());
+//				}
+//			}
+//		});
 		
-		TreeItem<RecursiveWrapper<T>> root = new RecursiveTreeItem<>(obsWrappedItems, RecursiveTreeObject::getChildren);
-		table.setRoot(root);
+//		TreeItem<RecursiveWrapper<T>> root = new RecursiveTreeItem<>(obsWrappedItems, RecursiveTreeObject::getChildren);
+//		table.setRoot(root);
 		
 		Platform.runLater(() -> {
-			table.resizeColumns();
+//			table.resizeColumns();
 		});
 		
 		//register double-click listener for empty rows, to add a new instance
@@ -341,7 +339,7 @@ public class JfxTableEditor<T> extends StackPane {
 	}
 	
 	public void clearContent() {
-		table.getColumns().clear();
+//		table.getColumns().clear();
 	}
 
 
@@ -391,7 +389,7 @@ public class JfxTableEditor<T> extends StackPane {
 //            checkBox.setDisable(true);
             checkBox.setOnAction(e -> {
         			var row = getTreeTableRow().getIndex();
-					table.edit(row, column);
+//					table.edit(row, column);
 //        			itemProperty().setValue(newValue == null ? false : newValue);
 
 					//we cannot use commitEdit because we would need to set column editable
