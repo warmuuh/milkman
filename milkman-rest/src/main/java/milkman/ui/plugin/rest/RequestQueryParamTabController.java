@@ -1,9 +1,5 @@
 package milkman.ui.plugin.rest;
 
-import static milkman.utils.FunctionalUtils.run;
-
-import java.util.UUID;
-
 import javafx.scene.control.Tab;
 import lombok.SneakyThrows;
 import milkman.domain.RequestContainer;
@@ -12,7 +8,10 @@ import milkman.ui.plugin.RequestAspectEditor;
 import milkman.ui.plugin.rest.domain.QueryParamEntry;
 import milkman.ui.plugin.rest.domain.RestQueryParamAspect;
 import milkman.ui.plugin.rest.domain.RestRequestContainer;
-import milkman.utils.fxml.FxmlUtil;
+
+import java.util.UUID;
+
+import static milkman.utils.FunctionalUtils.run;
 
 public class RequestQueryParamTabController implements RequestAspectEditor {
 
@@ -21,7 +20,7 @@ public class RequestQueryParamTabController implements RequestAspectEditor {
 	@SneakyThrows
 	public Tab getRoot(RequestContainer request) {
 		RestQueryParamAspect qryParams = request.getAspect(RestQueryParamAspect.class).get();
-		JfxTableEditor<QueryParamEntry> editor = new JfxTableEditor<QueryParamEntry>();
+		JfxTableEditor<QueryParamEntry> editor = new JfxTableEditor<QueryParamEntry>("rest.params.list");
 		editor.enableAddition(() -> {
 			updateDirtyState(qryParams, request);
 			return new QueryParamEntry(UUID.randomUUID().toString(), "", "");

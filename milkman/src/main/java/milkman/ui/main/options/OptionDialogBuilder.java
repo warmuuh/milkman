@@ -9,7 +9,10 @@ import lombok.RequiredArgsConstructor;
 import milkman.ui.components.JfxTableEditor;
 import milkman.utils.fxml.GenericBinding;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -38,8 +41,8 @@ public class OptionDialogBuilder  {
 		
 		private final String name;
 		private final T optionsObject;
-		private List<Node> nodes = new LinkedList<Node>();
-		private List<GenericBinding<?, ?>> bindings = new LinkedList<>();
+		private final List<Node> nodes = new LinkedList<Node>();
+		private final List<GenericBinding<?, ?>> bindings = new LinkedList<>();
 		
 		@Override
 		public OptionPaneBuilder<T> section(String name) {
@@ -159,12 +162,12 @@ public class OptionDialogBuilder  {
 		@Override
 		public OptionPaneBuilder<T> list(Function<T, List<String>> itemProvider) {
 			List<String> items = itemProvider.apply(optionsObject);
-			List<Map.Entry<Integer, String>> zipWithIndex = new LinkedList<>();
+			List<Entry<Integer, String>> zipWithIndex = new LinkedList<>();
 			for (int i = 0; i < items.size(); i++) {
 				zipWithIndex.add(new HashMap.SimpleEntry<>(i, items.get(i)));
 			}
-			JfxTableEditor<Map.Entry<Integer, String>> table = new JfxTableEditor<>();
-			table.addColumn("Script Url", Map.Entry::getValue, (e, v) -> {
+			JfxTableEditor<Entry<Integer, String>> table = new JfxTableEditor<>("options.list");
+			table.addColumn("Script Url", Entry::getValue, (e, v) -> {
 				e.setValue(v);
 				items.set(e.getKey(), v);
 			});

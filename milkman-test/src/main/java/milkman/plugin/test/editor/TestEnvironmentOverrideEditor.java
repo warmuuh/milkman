@@ -20,7 +20,7 @@ public class TestEnvironmentOverrideEditor implements RequestAspectEditor {
 	@SneakyThrows
 	public Tab getRoot(RequestContainer request) {
 		TestAspect testAspect = request.getAspect(TestAspect.class).get();
-		JfxTableEditor<EnvironmentEntry> editor = new JfxTableEditor<>();
+		JfxTableEditor<EnvironmentEntry> editor = new JfxTableEditor<>("tests.env.list");
 		editor.enableAddition(() -> {
 			Platform.runLater( () -> testAspect.setDirty(true));
 			return new EnvironmentEntry(UUID.randomUUID().toString(), "", "", true);

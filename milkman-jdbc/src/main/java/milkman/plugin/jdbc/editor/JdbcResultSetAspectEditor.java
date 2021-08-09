@@ -21,13 +21,13 @@ public class JdbcResultSetAspectEditor implements ResponseAspectEditor {
 
 	private JfxTableEditor<List<String>> editor;
 
-	private boolean contentIsTransposed = false;
+	private boolean contentIsTransposed;
 
 	private RowSetResponseAspect transposedContent;
 
 	@Override
 	public Tab getRoot(RequestContainer request, ResponseContainer response) {
-		editor = new JfxTableEditor<>();
+		editor = new JfxTableEditor<>("jdbc.result.list");
 		editor.disableAddition();
 		editor.setRowToStringConverter(this::rowToString);
 		VBox.setVgrow(editor, Priority.ALWAYS);
@@ -52,10 +52,10 @@ public class JdbcResultSetAspectEditor implements ResponseAspectEditor {
 
 	private HBox setupToolbar(RowSetResponseAspect rowSetAspect) {
 		JFXButton copyResultBtn = new JFXButton("Copy to Clipboard");
-		copyResultBtn.setOnAction(e -> this.copyResultToClipboard(rowSetAspect));
+		copyResultBtn.setOnAction(e -> copyResultToClipboard(rowSetAspect));
 		
 		JFXButton transposeBtn = new JFXButton("Transpose");
-		transposeBtn.setOnAction(e -> this.transpose(rowSetAspect));
+		transposeBtn.setOnAction(e -> transpose(rowSetAspect));
 		
 		
 		HBox tableToolbar = new HBox(copyResultBtn, transposeBtn);
@@ -111,7 +111,7 @@ public class JdbcResultSetAspectEditor implements ResponseAspectEditor {
 			b.append(System.lineSeparator());
 			b.append(rowToString(row));
 		}
-		final ClipboardContent clipboardContent = new ClipboardContent();
+		ClipboardContent clipboardContent = new ClipboardContent();
 	    clipboardContent.putString(b.toString());
 	    Clipboard.getSystemClipboard().setContent(clipboardContent);
 	}

@@ -19,7 +19,7 @@ public class TestResponseEnvironmentEditor implements ResponseAspectEditor {
     @Override
     public Tab getRoot(RequestContainer request, ResponseContainer response) {
         TestResultEnvAspect testAspect = response.getAspect(TestResultEnvAspect.class).get();
-        JfxTableEditor<EnvironmentEntry> editor = new JfxTableEditor<>();
+        JfxTableEditor<EnvironmentEntry> editor = new JfxTableEditor<>("tests.list");
         editor.addReadOnlyColumn("name", EnvironmentEntry::getName);
         editor.addReadOnlyColumn("value", EnvironmentEntry::getValue);
 

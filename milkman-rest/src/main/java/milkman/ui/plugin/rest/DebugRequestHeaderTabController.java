@@ -18,7 +18,7 @@ public class DebugRequestHeaderTabController implements ResponseAspectEditor {
 	@SneakyThrows
 	public Tab getRoot(RequestContainer request, ResponseContainer response) {
 		DebugRequestHeaderAspect headers = response.getAspect(DebugRequestHeaderAspect.class).get();
-		JfxTableEditor<HeaderEntry> editor = new JfxTableEditor<HeaderEntry>();
+		JfxTableEditor<HeaderEntry> editor = new JfxTableEditor<HeaderEntry>("rest.debug.headers.list");
 		editor.disableAddition();
 		editor.addReadOnlyColumn("Name", HeaderEntry::getName);
 		editor.addReadOnlyColumn("Value", HeaderEntry::getValue);

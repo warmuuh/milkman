@@ -1,16 +1,5 @@
 package milkman.ui.plugin.rest;
 
-import static milkman.utils.FunctionalUtils.run;
-
-import java.io.InputStream;
-import java.util.List;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.ClassPathUtils;
-
 import javafx.application.Platform;
 import javafx.scene.control.Tab;
 import lombok.SneakyThrows;
@@ -21,20 +10,28 @@ import milkman.ui.plugin.AutoCompletionAware;
 import milkman.ui.plugin.RequestAspectEditor;
 import milkman.ui.plugin.rest.domain.HeaderEntry;
 import milkman.ui.plugin.rest.domain.RestHeaderAspect;
-import milkman.utils.fxml.FxmlUtil;
+import org.apache.commons.io.IOUtils;
+
+import java.io.InputStream;
+import java.util.List;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static milkman.utils.FunctionalUtils.run;
 
 public class RequestHeaderTabController implements RequestAspectEditor, AutoCompletionAware {
 
 
 	private AutoCompleter completer;
-	private static Pattern headerPattern = Pattern.compile("(?://)?(\\S+):(.*)");
+	private static final Pattern headerPattern = Pattern.compile("(?://)?(\\S+):(.*)");
 	private static List<String> headers;
 	
 	@Override
 	@SneakyThrows
 	public Tab getRoot(RequestContainer request) {
 		RestHeaderAspect headers = request.getAspect(RestHeaderAspect.class).get();
-		JfxTableEditor<HeaderEntry> editor = new JfxTableEditor<HeaderEntry>();
+		JfxTableEditor<HeaderEntry> editor = new JfxTableEditor<HeaderEntry>("rest.headers.list");
 		editor.enableAddition(() -> {
 			Platform.runLater( () -> headers.setDirty(true));
 			return new HeaderEntry(UUID.randomUUID().toString(), "", "", true);

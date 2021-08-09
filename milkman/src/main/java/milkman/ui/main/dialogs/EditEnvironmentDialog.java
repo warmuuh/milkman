@@ -45,7 +45,7 @@ public class EditEnvironmentDialog {
 		public EditEnvironmentDialogFxml(EditEnvironmentDialog controller){
 			setHeading(label("Edit Environment"));
 
-			var editor = controller.editor = new JfxTableEditor<>();
+			var editor = controller.editor = new JfxTableEditor<>("env.list");
 			editor.setMinHeight(500);
 			editor.setMinWidth(800);
 			setBody(editor);

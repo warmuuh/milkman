@@ -6,6 +6,10 @@ import milkman.ui.main.options.CoreApplicationOptionsProvider.CoreApplicationOpt
 import milkman.ui.plugin.OptionPageProvider;
 import milkman.ui.plugin.OptionsObject;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
 public class CoreApplicationOptionsProvider implements OptionPageProvider<CoreApplicationOptions>{
 
 	@Data
@@ -16,6 +20,22 @@ public class CoreApplicationOptionsProvider implements OptionPageProvider<CoreAp
 		private boolean disableAnimations;
 		private boolean horizontalLayout;
 		private boolean debug;
+		private UiPrefs uiPrefs = new UiPrefs();
+
+		@Data
+		public static class UiPrefs {
+			private Map<String, Integer> tableColumnsWidth = new HashMap<>();
+
+			public void setWidthForColumn(String tableId, int columnIdx, int width){
+				var columnId = tableId + "-" + columnIdx;
+				tableColumnsWidth.put(columnId, width);
+			}
+
+			public Optional<Integer> getPrefWidth(String tableId, int columnIdx){
+				var columnId = tableId + "-" + columnIdx;
+				return Optional.ofNullable(tableColumnsWidth.get(columnId));
+			}
+		}
 	} 
 
 	private static CoreApplicationOptions currentOptions = new CoreApplicationOptions();

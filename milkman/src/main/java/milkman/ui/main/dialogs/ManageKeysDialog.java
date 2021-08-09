@@ -95,7 +95,7 @@ public class ManageKeysDialog {
 		public ManageKeysDialogFxml(ManageKeysDialog controller){
 			setHeading(label("Edit Key-Set"));
 
-			var editor = controller.editor = new JfxTableEditor<>();
+			var editor = controller.editor = new JfxTableEditor<>("keys.list");
 			editor.setMinHeight(500);
 			editor.setMinWidth(800);
 			setBody(editor);

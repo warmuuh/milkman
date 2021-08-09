@@ -25,6 +25,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import milkman.PlatformUtil;
+import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.utils.fxml.GenericBinding;
 import milkman.utils.javafx.JavaFxUtils;
 import milkman.utils.javafx.ResizableJfxTreeTableView;
@@ -45,6 +46,7 @@ class RecursiveWrapper<T> extends RecursiveTreeObject<RecursiveWrapper<T>>{
 public class JfxTableEditor<T> extends StackPane {
 	
 	
+	private final String tableId;
 	private final ResizableJfxTreeTableView<RecursiveWrapper<T>> table = new ResizableJfxTreeTableView<RecursiveWrapper<T>>();
 
 	private ObservableList<RecursiveWrapper<T>> obsWrappedItems;
@@ -62,7 +64,8 @@ public class JfxTableEditor<T> extends StackPane {
 	private Supplier<T> newItemCreator;
 
 
-	public JfxTableEditor() {
+	public JfxTableEditor(String tableId) {
+		this.tableId = tableId;
 		table.setShowRoot(false);
 		table.setEditable(true);
 		table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -149,33 +152,92 @@ public class JfxTableEditor<T> extends StackPane {
 
 	public void addReadOnlyColumn(String name, Function<T, String> getter) {
 		TreeTableColumn<RecursiveWrapper<T>, String> column = new TreeTableColumn<>(name);
+		var columnIdx = table.getColumns().size();
+		loadPrefWidthOfColumn(column, columnIdx);
 		column.setCellFactory((TreeTableColumn<RecursiveWrapper<T>, String> param) -> {
 			return new GenericEditableTreeTableCell<RecursiveWrapper<T>, String>(new SelectableTextFieldBuilder());
 		});
 		column.setCellValueFactory(param -> GenericBinding.of(getter, (e, o) -> {}, param.getValue().getValue().getData()));
-		
-		column.setMaxWidth(1000);
-		column.setMinWidth(100);
-//		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
 		table.getColumns().add(column);
 	}
-	
+
 	public void addColumn(String name, Function<T, String> getter, BiConsumer<T, String> setter) {
 		TreeTableColumn<RecursiveWrapper<T>, String> column = new TreeTableColumn<>(name);
+		var columnIdx = table.getColumns().size();
+		loadPrefWidthOfColumn(column, columnIdx);
 		column.setCellFactory((TreeTableColumn<RecursiveWrapper<T>, String> param) -> {
 			var cell = new GenericEditableTreeTableCell<RecursiveWrapper<T>, String>(new TextFieldEditorBuilderPatch());
 			cell.setStepFunction(getStepFunction());
 			return cell;
 		});
 		column.setCellValueFactory(param -> GenericBinding.of(getter, setter, param.getValue().getValue().getData()));
-		column.setMaxWidth(1000);
-		column.setMinWidth(100);
 		table.getColumns().add(column);
 //		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
 		if (firstEditableColumn == null)
 			firstEditableColumn = table.getColumns().size() -1; 
 	}
 
+
+	public void addColumn(String name, Function<T, String> getter, BiConsumer<T, String> setter, Consumer<TextField> textFieldInitializer) {
+		TreeTableColumn<RecursiveWrapper<T>, String> column = new TreeTableColumn<>(name);
+		var columnIdx = table.getColumns().size();
+		loadPrefWidthOfColumn(column, columnIdx);
+		column.setCellFactory((TreeTableColumn<RecursiveWrapper<T>, String> param) -> {
+			var cell = new GenericEditableTreeTableCell<RecursiveWrapper<T>, String>(new InitializingCellBuilder(textFieldInitializer));
+			cell.setStepFunction(getStepFunction());
+			return cell;
+		});
+		column.setCellValueFactory(param -> GenericBinding.of(getter, setter, param.getValue().getValue().getData()));
+		table.getColumns().add(column);
+//		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
+		if (firstEditableColumn == null)
+			firstEditableColumn = table.getColumns().size() -1;
+	}
+
+
+	public void addCheckboxColumn(String name, Function<T, Boolean> getter, BiConsumer<T, Boolean> setter) {
+		TreeTableColumn<RecursiveWrapper<T>, Boolean> column = new TreeTableColumn<>(name);
+		var columnIdx = table.getColumns().size();
+		loadPrefWidthOfColumn(column, columnIdx);
+		column.setCellValueFactory(param -> {
+			return GenericBinding.of(getter, setter, param.getValue().getValue().getData());
+		});
+		column.setCellFactory(param -> new BooleanCell<>(column));
+		column.setEditable(false);
+		table.getColumns().add(column);
+//		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
+	}
+
+	public void addDeleteColumn(String name) {
+		addDeleteColumn(name, null);
+	}
+
+	public void addDeleteColumn(String name, Consumer<T> listener) {
+		TreeTableColumn<RecursiveWrapper<T>, String> column = new TreeTableColumn<>(name);
+		var columnIdx = table.getColumns().size();
+		loadPrefWidthOfColumn(column, columnIdx);
+		column.setCellFactory(c -> new CustomActionsCell());
+		column.setEditable(false);
+		table.getColumns().add(column);
+//		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
+
+		customActions.add(new CustomAction(FontAwesomeIcon.TIMES, (wrappedItem) -> {
+			obsWrappedItems.remove(wrappedItem);
+			if (listener != null) {
+				listener.accept(wrappedItem.getData());
+			}
+		}));
+	}
+
+
+	private <O>  void loadPrefWidthOfColumn(TreeTableColumn<RecursiveWrapper<T>, O> column, int columnIdx) {
+		CoreApplicationOptionsProvider.options().getUiPrefs()
+				.getPrefWidth(tableId, columnIdx)
+				.ifPresent(column::setPrefWidth);
+		column.widthProperty().addListener((obs, o, n) -> {
+			CoreApplicationOptionsProvider.options().getUiPrefs().setWidthForColumn(tableId, columnIdx, n.intValue());
+		});
+	}
 
 	//returns the number of rows to advance.
 	protected BiFunction<Integer, Integer, Integer> getStepFunction() {
@@ -193,54 +255,8 @@ public class JfxTableEditor<T> extends StackPane {
 			return direction;
 		};
 	}
-	
-	public void addColumn(String name, Function<T, String> getter, BiConsumer<T, String> setter, Consumer<TextField> textFieldInitializer) {
-		TreeTableColumn<RecursiveWrapper<T>, String> column = new TreeTableColumn<>(name);
-		column.setCellFactory((TreeTableColumn<RecursiveWrapper<T>, String> param) -> {
-			var cell = new GenericEditableTreeTableCell<RecursiveWrapper<T>, String>(new InitializingCellBuilder(textFieldInitializer));
-			cell.setStepFunction(getStepFunction());
-			return cell;
-		});
-		column.setCellValueFactory(param -> GenericBinding.of(getter, setter, param.getValue().getValue().getData()));
-		column.setMaxWidth(1000);
-		column.setMinWidth(100);
-		table.getColumns().add(column);
-//		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
-		if (firstEditableColumn == null)
-			firstEditableColumn = table.getColumns().size() -1;
-	}
 
-	public void addCheckboxColumn(String name, Function<T, Boolean> getter, BiConsumer<T, Boolean> setter) {
-		TreeTableColumn<RecursiveWrapper<T>, Boolean> column = new TreeTableColumn<>(name);
-		column.setCellValueFactory(param -> {
-			return GenericBinding.of(getter, setter, param.getValue().getValue().getData());
-		});
-		column.setCellFactory(param -> new BooleanCell<>(column));
-		column.setMinWidth(100);
-		column.setEditable(false);
-		table.getColumns().add(column);
-//		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
-	}
 
-	public void addDeleteColumn(String name) {
-		addDeleteColumn(name, null);
-	}
-	
-	public void addDeleteColumn(String name, Consumer<T> listener) {
-		TreeTableColumn<RecursiveWrapper<T>, String> column = new TreeTableColumn<>(name);
-		column.setCellFactory(c -> new CustomActionsCell());
-		column.setMinWidth(100);
-		column.setEditable(false);
-		table.getColumns().add(column);
-//		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
-
-		customActions.add(new CustomAction(FontAwesomeIcon.TIMES, (wrappedItem) -> {
-			obsWrappedItems.remove(wrappedItem);
-			if (listener != null) {
-				listener.accept(wrappedItem.getData());
-			}
-		}));
-	}
 
 	public void enableAddition(Supplier<T> newItemCreator) {
 		this.newItemCreator = newItemCreator;
@@ -312,9 +328,9 @@ public class JfxTableEditor<T> extends StackPane {
 		TreeItem<RecursiveWrapper<T>> root = new RecursiveTreeItem<>(obsWrappedItems, RecursiveTreeObject::getChildren);
 		table.setRoot(root);
 		
-		Platform.runLater(() -> {
-			table.resizeColumns();
-		});
+//		Platform.runLater(() -> {
+//			table.resizeColumns();
+//		});
 		
 		//register double-click listener for empty rows, to add a new instance
 //		this.setRowFactory(view -> {

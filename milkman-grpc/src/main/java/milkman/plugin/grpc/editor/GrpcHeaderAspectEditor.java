@@ -1,12 +1,5 @@
 package milkman.plugin.grpc.editor;
 
-import static milkman.utils.FunctionalUtils.run;
-
-import java.util.List;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import javafx.application.Platform;
 import javafx.scene.control.Tab;
 import lombok.SneakyThrows;
@@ -18,17 +11,23 @@ import milkman.ui.components.JfxTableEditor;
 import milkman.ui.plugin.AutoCompletionAware;
 import milkman.ui.plugin.RequestAspectEditor;
 
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static milkman.utils.FunctionalUtils.run;
+
 public class GrpcHeaderAspectEditor implements RequestAspectEditor, AutoCompletionAware {
 
 
-	private static Pattern headerPattern = Pattern.compile("(?://)?(\\S+):(.*)");
+	private static final Pattern headerPattern = Pattern.compile("(?://)?(\\S+):(.*)");
 	private AutoCompleter completer;
 	
 	@Override
 	@SneakyThrows
 	public Tab getRoot(RequestContainer request) {
 		GrpcHeaderAspect headers = request.getAspect(GrpcHeaderAspect.class).get();
-		JfxTableEditor<HeaderEntry> editor = new JfxTableEditor<HeaderEntry>();
+		JfxTableEditor<HeaderEntry> editor = new JfxTableEditor<HeaderEntry>("grpc.headers.list");
 		editor.enableAddition(() -> {
 			Platform.runLater( () -> headers.setDirty(true));
 			return new HeaderEntry(UUID.randomUUID().toString(), "", "", true);
