@@ -5,6 +5,7 @@ import javafx.geometry.Side;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TabPane.TabClosingPolicy;
 import lombok.SneakyThrows;
 import lombok.val;
 import milkman.domain.RequestContainer;
@@ -16,6 +17,8 @@ import java.util.Collections;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import static milkman.utils.FunctionalUtils.run;
+
 public class ScriptingAspectEditor implements RequestAspectEditor {
 
 	@Override
@@ -23,8 +26,12 @@ public class ScriptingAspectEditor implements RequestAspectEditor {
 	public Tab getRoot(RequestContainer request) {
 		val script = request.getAspect(ScriptingAspect.class).get();
 
-		Tab preTab = getTab(script::getPreRequestScript, script::setPreRequestScript, "Before Request");
-		Tab postTab = getTab(script::getPostRequestScript, script::setPostRequestScript, "After Request");
+		Tab preTab = getTab(script::getPreRequestScript,
+				run(script::setPreRequestScript).andThen(() -> script.setDirty(true)),
+				"Before Request");
+		Tab postTab = getTab(script::getPostRequestScript,
+				run(script::setPostRequestScript).andThen(() -> script.setDirty(true)),
+				"After Request");
 		TabPane tabs = new TabPane(preTab, postTab);
 		tabs.getSelectionModel().select(1); //default to show after request script
 
@@ -34,7 +41,7 @@ public class ScriptingAspectEditor implements RequestAspectEditor {
 		tabs.tabMaxWidthProperty().setValue(20);
 		tabs.tabMinHeightProperty().setValue(150);
 		tabs.tabMaxHeightProperty().setValue(150);
-		tabs.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+		tabs.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 
 
 		return new Tab("Scripting", tabs);
