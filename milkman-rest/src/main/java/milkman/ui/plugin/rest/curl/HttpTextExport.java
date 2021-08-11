@@ -44,7 +44,9 @@ public class HttpTextExport implements TextExport<RestRequestContainer> {
             var headerAspect = request.getAspect(RestHeaderAspect.class).orElseThrow(() -> new IllegalArgumentException("missing aspect"));
 
             for (HeaderEntry entry : headerAspect.getEntries()) {
-                appendHeader(b, entry.getName(), entry.getValue());
+                if (entry.isEnabled()) {
+                    appendHeader(b, entry.getName(), entry.getValue());
+                }
             }
 
             var bodyAspect = request.getAspect(RestBodyAspect.class).orElseThrow(() -> new IllegalArgumentException("missing aspect"));
