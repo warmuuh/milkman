@@ -2,10 +2,12 @@ package mfx;
 
 import io.github.palexdev.materialfx.controls.MFXTableView;
 import io.github.palexdev.materialfx.controls.cell.MFXTableColumn;
+import io.github.palexdev.materialfx.skins.MFXTableViewSkin;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -48,10 +50,22 @@ public class Test extends Application {
 
 
         MFXTableView<TestContainer> tableView = new MFXTableView<>();
+        tableView.setSkin(new MFXTableViewSkin<>(tableView) {
+            @Override
+            protected HBox buildPaginationControls() {
+                super.buildPaginationControls();
+                return new HBox();
+            }
+
+            @Override
+            protected void reset(boolean fullReset) {
+                super.reset(false);
+            }
+        });
         ObservableList<TestContainer> people = FXCollections.observableArrayList(List.of(
                 new TestContainer("a", "1"),
                 new TestContainer("b", "2")
-                ));
+        ));
 
         MFXTableColumn<TestContainer> column1 = new MFXTableColumn<>("TV1", Comparator.comparing(TestContainer::getTestValue));
         column1.setRowCellFunction(data -> {
