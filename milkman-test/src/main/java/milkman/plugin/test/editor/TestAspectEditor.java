@@ -93,7 +93,7 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 					&& e.getDragboard().hasContent(JAVA_FORMAT)) {
 				try {
 					var content = deserialize((String) e.getDragboard().getContent(JAVA_FORMAT), RequestContainer.class);
-					requests.add(new TestDetails(content.getId(), false, false, 0, 0));
+					requests.add(new TestDetails(content.getId(), false, false, 0, 0, 0));
 					testAspect.setDirty(true);
 					e.setDropCompleted(true);
 				} catch (Exception ex) {
@@ -176,6 +176,20 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 			}
 		});
 		requestDetails.add(delayInMs);
+
+		var repeat = new HboxExt();
+		repeat.add(new Label("Repeated Runs"));
+		var repeatTxt = repeat.add(new JFXTextField());
+		repeatTxt.setText(""+details.getRepeat());
+		repeatTxt.setValidators(new IntegerValidator());
+		repeatTxt.textProperty().addListener((obs, o, n) -> {
+			if (n != null) {
+				details.setRepeat(Integer.parseInt(n));
+				markDirtyRunnable.run();
+			}
+		});
+		requestDetails.add(repeat);
+
 	}
 
 	private void moveUp() {

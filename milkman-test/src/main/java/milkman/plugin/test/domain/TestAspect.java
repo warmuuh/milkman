@@ -30,5 +30,6 @@ public class TestAspect extends RequestAspect {
 		private boolean ignore;
 		private int retries;
 		private int waitBetweenRetriesInMs;
+		private int repeat;
 	}
 }

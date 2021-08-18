@@ -16,6 +16,7 @@ import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 import milkman.plugin.test.domain.TestResultAspect;
 import milkman.plugin.test.domain.TestResultAspect.TestResultEvent;
+import milkman.plugin.test.domain.TestResultAspect.TestResultState;
 import milkman.ui.plugin.ResponseAspectEditor;
 import milkman.utils.fxml.FxmlBuilder.*;
 import milkman.utils.javafx.SettableTreeItem;
@@ -91,7 +92,9 @@ public class TestResponseAspectEditor implements ResponseAspectEditor {
 		boolean updated = false;
 		for (TreeItem<Node> item : resultList) {
 			TestResultEvent oldEvent = (TestResultEvent) item.getValue().getUserData();
-			if (oldEvent.getRequestId().equals(evt.getRequestId())) {
+			//if already succeeded, this is a repeated run and we report it separately
+			boolean succeededAlready = oldEvent.getResultState() == TestResultState.SUCCEEDED;
+			if (!succeededAlready && oldEvent.getRequestId().equals(evt.getRequestId())) {
 				item.setValue(treeItem);
 				updated = true;
 				break;

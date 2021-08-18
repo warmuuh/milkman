@@ -48,15 +48,28 @@ public class TestRunner {
 		Flux<TestResultEvent> resultFlux = Flux.<TestResultEvent>create(sink -> {
 			var subscription = Flux.fromIterable(testAspect.getRequests())
 					.index()
-					.flatMap(tuple -> Mono.justOrEmpty(executor.getDetails(tuple.getT2().getId()).map(r -> Tuples.of(tuple.getT1(), tuple.getT2(), r))))
-					.filter(t -> {
-						var skip = t.getT2().isSkip();
-						if (skip){
-							sink.next(new TestResultEvent(t.getT1().toString(), t.getT3().getName(), SKIPPED, Map.of()));
-						}
-						return !skip;
+					.flatMap(tuple -> {
+						var requestId = tuple.getT1();
+						var testDetails = tuple.getT2();
+						return Mono.defer(() ->
+								Mono.justOrEmpty(executor.getDetails(testDetails.getId())
+										.map(r -> Tuples.of(requestId, testDetails, r))))
+								.repeat(testDetails.getRepeat());
 					})
-					.doOnNext(tuple -> sink.next(new TestResultEvent(tuple.getT1().toString(), tuple.getT3().getName(), STARTED, Map.of())))
+					.filter(t -> {
+						var requestId = t.getT1();
+						var testDetails = t.getT2();
+						var requestContainer = t.getT3();
+						if (testDetails.isSkip()){
+							sink.next(new TestResultEvent(requestId.toString(), requestContainer.getName(), SKIPPED, Map.of()));
+						}
+						return !testDetails.isSkip();
+					})
+					.doOnNext(tuple -> {
+						var requestId = tuple.getT1();
+						var requestContainer = tuple.getT3();
+						sink.next(new TestResultEvent(requestId.toString(), requestContainer.getName(), STARTED, Map.of()));
+					})
 					.flatMap(tuple -> execute(tuple, testEnvironment, sink))
 					.flatMap(testSuccess -> {
 						if (!testSuccess && testAspect.isStopOnFirstFailure()) {
