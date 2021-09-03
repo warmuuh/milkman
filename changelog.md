@@ -9,6 +9,10 @@
 
 version 5.4.0 - upcoming
   * added debug output to see what got send (http only for now)
+  * store customized table-column widths
+  * added option to not export keys on workspace export
+  * added option to repeat a test n times
+  * fix: ignore disabled headers in http exporter
 
 version 5.3.0
   * mask plain-keys on overview
