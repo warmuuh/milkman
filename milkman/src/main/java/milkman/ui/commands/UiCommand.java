@@ -74,6 +74,11 @@ public interface UiCommand {
 	}
 
 	@Value
+	class SelectRequest implements UiCommand {
+		RequestContainer request;
+	}
+
+	@Value
 	class CloseActiveRequest implements UiCommand {
 	}
 	

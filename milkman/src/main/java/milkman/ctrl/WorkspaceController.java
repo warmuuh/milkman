@@ -1,5 +1,6 @@
 package milkman.ctrl;
 
+import javafx.application.Platform;
 import javafx.scene.Node;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -142,6 +143,10 @@ public class WorkspaceController {
 		}
 	}
 
+	public void selectRequestInCollections(RequestContainer request) {
+		collectionView.selectRequest(request);
+	}
+
 	protected void addToDisplayHistory(RequestContainer request) {
 		requestDisplayHistory.remove(request.getId());
 		requestDisplayHistory.add(request.getId());
@@ -269,6 +274,8 @@ public class WorkspaceController {
 			saveRequest(saveCmd.getRequest());
 		} else if (command instanceof SaveActiveRequest) {
 			saveRequest(activeWorkspace.getActiveRequest());
+		} else if (command instanceof SelectRequest) {
+			selectRequestInCollections(((SelectRequest) command).getRequest());
 		} else if (command instanceof CloseActiveRequest) {
 			closeRequest(activeWorkspace.getActiveRequest(), CloseType.CLOSE_THIS);
 		} else if (command instanceof DuplicateRequest) {
@@ -573,6 +580,7 @@ public class WorkspaceController {
 
 		loadCollections(activeWorkspace);
 		displayRequest(request);
+		Platform.runLater(() -> selectRequestInCollections(request));
 	}
 
 	private void duplicateRequest(RequestContainer request) {

@@ -24,6 +24,7 @@ import milkman.domain.Folder;
 import milkman.domain.RequestContainer;
 import milkman.domain.Searchable;
 import milkman.ui.commands.UiCommand;
+import milkman.ui.commands.UiCommand.*;
 import milkman.utils.Event;
 import milkman.utils.PropertyChangeEvent;
 import milkman.utils.javafx.DnDCellFactory;
@@ -34,10 +35,7 @@ import org.reactfx.EventStreams;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static milkman.utils.fxml.FxmlBuilder.*;
@@ -278,7 +276,7 @@ public class RequestCollectionComponent {
 //				onCommand.invoke(new UiCommand.LoadRequest(request.getId()));
 //			else
 			if (e.getButton() == MouseButton.PRIMARY) {
-				onCommand.invoke(new UiCommand.LoadRequest(request.getId()));
+				onCommand.invoke(new LoadRequest(request.getId()));
 				e.consume();
 			}
 			if (e.getButton() == MouseButton.SECONDARY) {
@@ -309,14 +307,35 @@ public class RequestCollectionComponent {
 		});
 		return hBox;
 	}
-	
-	
-	 public void clearSearch() {
+
+
+	public void clearSearch() {
 		searchField.clear();
 	}
-	
-	
-	
+
+	public void selectRequest(RequestContainer request) {
+		findTreeItemOfRequest(request, root)
+				.ifPresent(n -> collectionContainer.getSelectionModel().select(n));
+	}
+
+	private Optional<TreeItem<Node>> findTreeItemOfRequest(RequestContainer curRequest, TreeItem<Node> curNode) {
+		if (curNode.getValue() != null && curNode.getValue().getUserData() != null){
+			var userData = curNode.getValue().getUserData();
+			if (userData instanceof RequestContainer && ((RequestContainer) userData).getId().equals(curRequest.getId())) {
+				return Optional.of(curNode);
+			}
+		}
+
+		for (TreeItem<Node> child : curNode.getChildren()) {
+			var childResult = findTreeItemOfRequest(curRequest, child);
+			if (childResult.isPresent()) {
+				return childResult;
+			}
+		}
+
+		return Optional.empty();
+	}
+
 	/**
 	 * we create single instances for ctx menu to be reused for all requests/collections/folders, bc creation of context menu is expensive
 	 * @author peter
@@ -327,21 +346,21 @@ public class RequestCollectionComponent {
 		Collection collection;
 		public CollectionContextMenu() {
 			MenuItem addFolderEntry = new MenuItem("Add Folder...");
-			addFolderEntry.setOnAction(e -> onCommand.invoke(new UiCommand.AddFolder(collection)));
-			this.getItems().add(addFolderEntry);
+			addFolderEntry.setOnAction(e -> onCommand.invoke(new AddFolder(collection)));
+			getItems().add(addFolderEntry);
 
 			MenuItem renameEntry = new MenuItem("Rename");
-			renameEntry.setOnAction(e -> onCommand.invoke(new UiCommand.RenameCollection(collection)));
-			this.getItems().add(renameEntry);
+			renameEntry.setOnAction(e -> onCommand.invoke(new RenameCollection(collection)));
+			getItems().add(renameEntry);
 
 			
 			MenuItem exportEntry = new MenuItem("Export");
-			exportEntry.setOnAction(e -> onCommand.invoke(new UiCommand.ExportCollection(collection)));
-			this.getItems().add(exportEntry);
+			exportEntry.setOnAction(e -> onCommand.invoke(new ExportCollection(collection)));
+			getItems().add(exportEntry);
 
 			MenuItem deleteEntry = new MenuItem("Delete");
-			deleteEntry.setOnAction(e -> onCommand.invoke(new UiCommand.DeleteCollection(collection)));
-			this.getItems().add(deleteEntry);
+			deleteEntry.setOnAction(e -> onCommand.invoke(new DeleteCollection(collection)));
+			getItems().add(deleteEntry);
 
 			
 		}
@@ -351,7 +370,7 @@ public class RequestCollectionComponent {
 			super.show(anchor, screenX, screenY);
 		}
 	}
-	private CollectionContextMenu collectionCtxMenu = new CollectionContextMenu();
+	private final CollectionContextMenu collectionCtxMenu = new CollectionContextMenu();
 
 	/**
 	 * we create two single instances for ctx menu to be reused for all requests/collections, bc creation of context menu is expensive
@@ -364,16 +383,16 @@ public class RequestCollectionComponent {
 		Collection collection;
 		public RequestContextMenu() {
 			MenuItem renameEntry = new MenuItem("Rename");
-			renameEntry.setOnAction(e -> onCommand.invoke(new UiCommand.RenameRequest(request)));
-			this.getItems().add(renameEntry);
+			renameEntry.setOnAction(e -> onCommand.invoke(new RenameRequest(request)));
+			getItems().add(renameEntry);
 			
 			MenuItem exportEntry = new MenuItem("Export");
-			exportEntry.setOnAction(e -> onCommand.invoke(new UiCommand.ExportRequest(request)));
-			this.getItems().add(exportEntry);
+			exportEntry.setOnAction(e -> onCommand.invoke(new ExportRequest(request)));
+			getItems().add(exportEntry);
 			
 			MenuItem deleteEntry = new MenuItem("Delete");
-			deleteEntry.setOnAction(e -> onCommand.invoke(new UiCommand.DeleteRequest(request, collection)));
-			this.getItems().add(deleteEntry);
+			deleteEntry.setOnAction(e -> onCommand.invoke(new DeleteRequest(request, collection)));
+			getItems().add(deleteEntry);
 		}
 		
 		public void show(RequestContainer request, Collection collection, Node anchor, double screenX, double screenY) {
@@ -382,7 +401,7 @@ public class RequestCollectionComponent {
 			super.show(anchor, screenX, screenY);
 		}
 	}
-	private RequestContextMenu reqCtxMenu = new RequestContextMenu();
+	private final RequestContextMenu reqCtxMenu = new RequestContextMenu();
 	
 	
 	
@@ -393,12 +412,12 @@ public class RequestCollectionComponent {
 		public FolderContextMenu() {
 
 			MenuItem addFolderEntry = new MenuItem("Add Folder");
-			addFolderEntry.setOnAction(e -> onCommand.invoke(new UiCommand.AddFolder(folder)));
-			this.getItems().add(addFolderEntry);
+			addFolderEntry.setOnAction(e -> onCommand.invoke(new AddFolder(folder)));
+			getItems().add(addFolderEntry);
 			
 			MenuItem deleteEntry = new MenuItem("Delete");
-			deleteEntry.setOnAction(e -> onCommand.invoke(new UiCommand.DeleteFolder(collection, folder)));
-			this.getItems().add(deleteEntry);
+			deleteEntry.setOnAction(e -> onCommand.invoke(new DeleteFolder(collection, folder)));
+			getItems().add(deleteEntry);
 		}
 		
 		public void show(Folder folder, Collection collection, Node anchor, double screenX, double screenY) {
@@ -407,16 +426,16 @@ public class RequestCollectionComponent {
 			super.show(anchor, screenX, screenY);
 		}
 	}
-	private FolderContextMenu folderCtxMenu = new FolderContextMenu();
+	private final FolderContextMenu folderCtxMenu = new FolderContextMenu();
 
 	
 	
 	public static class RequestCollectionComponentFxml extends VboxExt {
 		
 		public RequestCollectionComponentFxml(RequestCollectionComponent controller) {
-			this.setId("request-collection");
-			this.setMinWidth(200);
-			this.setMaxWidth(400);
+			setId("request-collection");
+			setMinWidth(200);
+			setMaxWidth(400);
 			
 			var searchArea = add(hbox("searchArea"));
 			

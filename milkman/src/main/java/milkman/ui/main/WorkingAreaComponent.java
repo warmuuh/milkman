@@ -121,8 +121,22 @@ public class WorkingAreaComponent {
 		duplicateEntry.setOnAction(a -> {
 			onCommand.invoke(new DuplicateRequest(r));
 		});
+		var contextMenu = new ContextMenu(closeEntry,
+				closeRightEntry,
+				closeAllEntry,
+				closeOtherEntry,
+				renameEntry,
+				duplicateEntry);
 
-		tab.setContextMenu(new ContextMenu(closeEntry, closeRightEntry,closeAllEntry, closeOtherEntry, renameEntry, duplicateEntry));
+		if (r.isInStorage()){
+			MenuItem selectEntry = new MenuItem("Select in Collections");
+			selectEntry.setOnAction(a -> {
+				onCommand.invoke(new SelectRequest(r));
+			});
+			contextMenu.getItems().add(selectEntry);
+		}
+
+		tab.setContextMenu(contextMenu);
 		tab.setUserData(r);
 
 		tab.getGraphic().setOnMouseClicked(e -> {
