@@ -16,7 +16,7 @@ import milkman.ui.plugin.ImporterPlugin;
 public class PrivateBinImporter implements ImporterPlugin {
 
 	private JFXTextField urlTxt;
-	private PrivateBinApi api = new PrivateBinApi(PrivateBinOptionsPluginProvider.options().getPrivateBinUrl());
+	private final PrivateBinApi api = new PrivateBinApi(PrivateBinOptionsPluginProvider.options().getPrivateBinUrl());
 
 	@Override
 	public String getName() {
@@ -65,9 +65,8 @@ public class PrivateBinImporter implements ImporterPlugin {
 		if (!dialog.isCancelled()){
 			activeWorkspace.getCollections().addAll(newWorkspace.getCollections());
 			activeWorkspace.getEnvironments().addAll(newWorkspace.getEnvironments());
+			toast.showToast("Workspace imported: " + newWorkspace.getName());
 		}
-
-		toast.showToast("Workspace imported: " + newWorkspace.getName());
 	}
 
 	private void handleImportedRequest(Workspace workspace, RequestContainer request, Toaster toast) {

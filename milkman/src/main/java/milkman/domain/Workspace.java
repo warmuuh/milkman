@@ -55,7 +55,7 @@ public class Workspace {
 		this.activeRequest = activeRequest;
 	}
 
-
+	@JsonIgnore
     public KeySet getActiveKeySet() {
 		return keySets.get(0);
     }
