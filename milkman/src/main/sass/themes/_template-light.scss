@@ -270,20 +270,20 @@
 	-mm-button-type: RAISED;
 	-fx-border-width: 0 50 50 0;
 }
-.jfx-tree-table-view {
+.table-view {
 
-    .tree-table-row-cell:selected {
+    .table-row-cell:selected {
         -fx-background-color: $main-accent;
         -fx-table-cell-border-color: $main-accent;
     }
 
-	.tree-table-cell {
+	.table-cell {
 		-fx-border-width: 0 0 0 0;
 		-fx-pref-height: 32px;
 		-fx-alignment: center-left;
 	}
 }
-.jfx-tree-view {
+.tree-view {
     .selection-bar {
         -fx-background-color: $main-accent;
     }

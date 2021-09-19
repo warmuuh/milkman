@@ -410,7 +410,7 @@
 		-fx-fill: $foreground;
 	}
 }
-.jfx-tree-table-view {
+.table-view {
 	-fx-background-color: darken($background, 10%);
 	.column-header {
 		.label {
@@ -419,21 +419,21 @@
 		-fx-border-width: 0 1 0 1;
 		-fx-border-color: $foreground;
 	}
-	.tree-table-cell {
+	.table-cell {
 		-fx-border-width: 0 0 0 0;
 		-fx-pref-height: 32px;
 		-fx-alignment: center-left;
 		.glyph-icon {
 		    -fx-fill: $foreground;
 		}
-		.jfx-text-field {
+		.text-field {
 		    -fx-text-fill: $foreground !important;
 		}
 	}
 	>.virtual-flow {
 		>.clipped-container {
 			>.sheet {
-				>.tree-table-row-cell {
+				>.table-row-cell {
 					-fx-background-color: darken($background, 10%);
 				}
 			}
@@ -443,7 +443,7 @@
 		>.virtual-flow {
 			>.clipped-container {
 				>.sheet {
-					>.tree-table-row-cell {
+					>.table-row-cell {
 						&:filled {
 							&:selected {
 								-fx-background-color: lighten($background, 10%);
@@ -455,16 +455,16 @@
 				}
 			}
 		}
-		.tree-table-row-cell {
+		.table-row-cell {
 			&:selected {
-				.tree-table-cell {
+				.table-cell {
 					-fx-text-fill: white;
 				}
 			}
 		}
 	}
-	.tree-table-row-cell {
-		.tree-table-cell {
+	.table-row-cell {
+		.table-cell {
 			-fx-text-fill: $foreground;
 		}
 	}
