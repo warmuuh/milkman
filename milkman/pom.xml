@@ -54,11 +54,11 @@
 			<version>9.1.2</version>
 		</dependency>
 
-		<dependency>
-			<groupId>fr.brouillard.oss</groupId>
-			<artifactId>cssfx</artifactId>
-			<version>11.4.0</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>fr.brouillard.oss</groupId>-->
+<!--			<artifactId>cssfx</artifactId>-->
+<!--			<version>11.4.0</version>-->
+<!--		</dependency>-->
 
 		<dependency>
 			<groupId>org.dizitart</groupId>

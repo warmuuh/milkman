@@ -1,7 +1,6 @@
 package milkman;
 
 
-import fr.brouillard.oss.cssfx.CSSFX;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -44,7 +43,7 @@ public class MilkmanApplication extends Application {
 				module.getAppCdsGenerator().initializeCds(false);
 				log.info("App Initialization time: {} ms", System.currentTimeMillis() - startInitializationTime);
 
-				CSSFX.start();
+//				CSSFX.start();
 				primaryStage.setOnCloseRequest(e -> {
 					module.getApplicationController().tearDown();
 				});
