@@ -1,10 +1,3 @@
- # Planned
- 
-  * Export of environment (privatebin)
-  * jdbc -> explorer functionality (what tables are there? what columns does a table have?). partially implemetned already
-  * jdbc -> lazy list loading
-  * Authorization support
-
 # Changelog
 
 version 5.4.0 - upcoming
