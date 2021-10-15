@@ -107,6 +107,5 @@ More details about developing plugins can be found in the [plugin development gu
 # Roadmap
 This is only the beginning. Following features are already planned:
 
- * different request types (e.g. GraphQl Client, Grpc, protobuf etc)
 
 latest changes can be seen in the (Changelog)[changelog.md]
