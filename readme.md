@@ -104,8 +104,6 @@ More details about developing plugins can be found in the [plugin development gu
 
 *Installation:* all plugins are to be copied to the `/plugins` folder
 
-# Roadmap
-This is only the beginning. Following features are already planned:
-
+# Changes
 
 latest changes can be seen in the (Changelog)[changelog.md]
