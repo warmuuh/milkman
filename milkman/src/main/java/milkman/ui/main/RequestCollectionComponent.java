@@ -27,7 +27,7 @@ import milkman.ui.commands.UiCommand;
 import milkman.ui.commands.UiCommand.*;
 import milkman.utils.Event;
 import milkman.utils.PropertyChangeEvent;
-import milkman.utils.javafx.DnDCellFactory;
+import milkman.utils.javafx.dnd.DnDCellFactory;
 import milkman.utils.javafx.SettableTreeItem;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.reactfx.EventStreams;
