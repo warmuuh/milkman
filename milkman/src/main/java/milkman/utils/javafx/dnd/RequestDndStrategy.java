@@ -18,6 +18,12 @@ public class RequestDndStrategy implements DndStrategy<RequestContainer> {
         moveRequestToNewParent(treeView, newParent, draggedItem, droppedObject);
     }
 
+    @Override
+    public boolean isValidDropTarget(Object userData) {
+        //can drop on Collection, Folder and Request
+        return true;
+    }
+
     private void moveRequestToNewParent(TreeView<Node> treeView,
                                         TreeItem<Node> newParent,
                                         TreeItem<Node> draggedItem,

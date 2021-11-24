@@ -20,8 +20,8 @@ public class DnDCellFactory implements Callback<TreeView<Node>, TreeCell<Node>> 
     private TreeCell<Node> dropZone;
     private TreeItem<Node> draggedItem;
 
-    private DndStrategy<RequestContainer> requestContainerDndStrategy = new RequestDndStrategy();
-    private DndStrategy<Folder> folderDndStrategyDndStrategy = new FolderDndStrategy();
+    private final DndStrategy<RequestContainer> requestContainerDndStrategy = new RequestDndStrategy();
+    private final DndStrategy<Folder> folderDndStrategyDndStrategy = new FolderDndStrategy();
 
     @Override
     public TreeCell<Node> call(TreeView<Node> treeView) {
@@ -63,9 +63,11 @@ public class DnDCellFactory implements Callback<TreeView<Node>, TreeCell<Node>> 
         // root can't be dragged
         if (draggedItem.getParent() == null) return;
 
-        //only Requests can be dragged for now:
-        if (!(draggedItem.getValue().getUserData() instanceof RequestContainer))
+        //only Requests and Folders can be dragged for now:
+        if (!(draggedItem.getValue().getUserData() instanceof RequestContainer
+                || draggedItem.getValue().getUserData() instanceof Folder)) {
             return;
+        }
 
         Dragboard db = treeCell.startDragAndDrop(TransferMode.MOVE);
 
@@ -80,20 +82,37 @@ public class DnDCellFactory implements Callback<TreeView<Node>, TreeCell<Node>> 
         if (!event.getDragboard().hasContent(JAVA_FORMAT)) return;
         TreeItem<Node> thisItem = treeCell.getTreeItem();
 
-        // can't drop on itself
-        if (draggedItem == null || thisItem == null || thisItem == draggedItem) return;
+        boolean validDropTarget = draggedItem != null && thisItem != null
+                && thisItem != draggedItem // can't drop on itself
+                && draggedItem.getParent() != null;
+
         // ignore if this is the root
-        if (draggedItem.getParent() == null) {
-            clearDropLocation();
-            return;
+
+        if (validDropTarget){
+            if (draggedItem.getValue().getUserData() instanceof RequestContainer) {
+                if (!requestContainerDndStrategy.isValidDropTarget(thisItem.getValue().getUserData())) {
+                    validDropTarget = false;
+                }
+            }
+            if (draggedItem.getValue().getUserData() instanceof Folder) {
+                if (!folderDndStrategyDndStrategy.isValidDropTarget(thisItem.getValue().getUserData())) {
+                    validDropTarget = false;
+                }
+            }
         }
 
-        event.acceptTransferModes(TransferMode.MOVE);
-        if (!Objects.equals(dropZone, treeCell)) {
+        if (validDropTarget) {
+            event.acceptTransferModes(TransferMode.MOVE);
+            if (!Objects.equals(dropZone, treeCell)) {
+                clearDropLocation();
+                this.dropZone = treeCell;
+                dropZone.setStyle(DROP_HINT_STYLE);
+            }
+        } else {
             clearDropLocation();
-            this.dropZone = treeCell;
-            dropZone.setStyle(DROP_HINT_STYLE);
+            this.dropZone = null;
         }
+
     }
 
     private void drop(DragEvent event, TreeCell<Node> treeCell, TreeView<Node> treeView) {

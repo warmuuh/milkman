@@ -15,7 +15,12 @@ import java.util.stream.Collectors;
 public class FolderDndStrategy implements DndStrategy<Folder> {
     @Override
     public void drop(TreeView<Node> treeView, TreeItem<Node> newParent, TreeItem<Node> draggedItem, Folder droppedObject) {
+        moveFolderToNewParent(treeView, newParent, draggedItem, droppedObject);
+    }
 
+    @Override
+    public boolean isValidDropTarget(Object dropTarget) {
+        return dropTarget instanceof Collection;
     }
 
     private void moveFolderToNewParent(TreeView<Node> treeView, TreeItem<Node> newParent, TreeItem<Node> draggedItem, Folder draggedFolder) {
@@ -33,6 +38,9 @@ public class FolderDndStrategy implements DndStrategy<Folder> {
         if (droppedItemParent.getValue().getUserData() instanceof Folder) {
             Folder f = (Folder) droppedItemParent.getValue().getUserData();
             f.getFolders().remove(draggedFolder);
+        } else if (droppedItemParent.getValue().getUserData() instanceof Collection) {
+            Collection c = (Collection) droppedItemParent.getValue().getUserData();
+            c.getFolders().remove(draggedFolder);
         }
 
         //remove from view
@@ -56,14 +64,16 @@ public class FolderDndStrategy implements DndStrategy<Folder> {
                                   Folder draggedFolder,
                                   TreeItem<Node> draggedItem,
                                   List<RequestContainer> requestsInFolder) {
-//        // dropping on collection makes it the first children
-//        if (dropTarget.getValue().getUserData() instanceof Collection) {
-//            Collection targetCollection = (Collection) dropTarget.getValue().getUserData();
-//            var folderOffset = targetCollection.getFolders().size();
-//            targetCollection.getRequests().add(folderOffset, draggedRequest);
-//            getRootList(dropTarget.getChildren()).add(folderOffset, draggedItem);
-//            treeView.getSelectionModel().select(draggedItem);
-//        } else if (dropTarget.getValue().getUserData() instanceof Folder) {
+        // dropping on collection makes it the first children
+        if (dropTarget.getValue().getUserData() instanceof Collection) {
+            Collection targetCollection = (Collection) dropTarget.getValue().getUserData();
+            var folderOffset = targetCollection.getFolders().size();
+            targetCollection.getFolders().add(draggedFolder);
+            targetCollection.getRequests().addAll(folderOffset, requestsInFolder);
+            getRootList(dropTarget.getChildren()).add(folderOffset, draggedItem);
+            treeView.getSelectionModel().select(draggedItem);
+        }
+//        else if (dropTarget.getValue().getUserData() instanceof Folder) {
 //            //dropping it onto folder makes it first request in folder
 //            Folder f = (Folder) dropTarget.getValue().getUserData();
 //            Collection collection = findCollectionInParents(dropTarget);
@@ -95,7 +105,7 @@ public class FolderDndStrategy implements DndStrategy<Folder> {
 
     private Collection findCollectionInParents(TreeItem<Node> node) {
         Collection collection = null;
-        while(collection == null || node == null) {
+        while (collection == null || node == null) {
             if (node.getValue().getUserData() instanceof Collection) {
                 collection = (Collection) node.getValue().getUserData();
             }

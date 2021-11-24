@@ -10,4 +10,5 @@ public interface DndStrategy<T> {
               TreeItem<Node> draggedItem,
               T droppedObject);
 
+    boolean isValidDropTarget(Object userData);
 }
