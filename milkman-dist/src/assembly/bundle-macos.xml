@@ -19,7 +19,6 @@
 		</fileSet>
 		<fileSet>
 			<directory>src/bin/macos-bundle</directory>
-			<filtered>true</filtered>
 			<outputDirectory>/</outputDirectory>
 			<lineEnding>unix</lineEnding>
 			<fileMode>744</fileMode>
