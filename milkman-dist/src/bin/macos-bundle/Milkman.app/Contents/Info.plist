@@ -13,7 +13,7 @@
   <key>CFBundleIconFile</key>
   <string>Milkman</string>
   <key>CFBundleShortVersionString</key>
-  <string>1.0</string>
+  <string>${project.version}</string>
   <key>CFBundleInfoDictionaryVersion</key>
   <string>6.0</string>
   <key>CFBundlePackageType</key>
