@@ -80,22 +80,22 @@ public class DnDCellFactory implements Callback<TreeView<Node>, TreeCell<Node>> 
 
     private void dragOver(DragEvent event, TreeCell<Node> treeCell, TreeView<Node> treeView) {
         if (!event.getDragboard().hasContent(JAVA_FORMAT)) return;
-        TreeItem<Node> thisItem = treeCell.getTreeItem();
+        TreeItem<Node> dropTarget = treeCell.getTreeItem();
 
-        boolean validDropTarget = draggedItem != null && thisItem != null
-                && thisItem != draggedItem // can't drop on itself
+        boolean validDropTarget = draggedItem != null && dropTarget != null
+                && !isSelfOrChildren(dropTarget, draggedItem) // can't drop on itself or any children
                 && draggedItem.getParent() != null;
 
         // ignore if this is the root
 
         if (validDropTarget){
             if (draggedItem.getValue().getUserData() instanceof RequestContainer) {
-                if (!requestContainerDndStrategy.isValidDropTarget(thisItem.getValue().getUserData())) {
+                if (!requestContainerDndStrategy.isValidDropTarget(dropTarget.getValue().getUserData())) {
                     validDropTarget = false;
                 }
             }
             if (draggedItem.getValue().getUserData() instanceof Folder) {
-                if (!folderDndStrategyDndStrategy.isValidDropTarget(thisItem.getValue().getUserData())) {
+                if (!folderDndStrategyDndStrategy.isValidDropTarget(dropTarget.getValue().getUserData())) {
                     validDropTarget = false;
                 }
             }
@@ -113,6 +113,17 @@ public class DnDCellFactory implements Callback<TreeView<Node>, TreeCell<Node>> 
             this.dropZone = null;
         }
 
+    }
+
+
+    private boolean isSelfOrChildren(TreeItem<Node> dropTarget, TreeItem<Node> draggedItem) {
+        if (dropTarget == draggedItem) {
+            return true;
+        }
+
+        //is any of the children the droptarget?
+        return draggedItem.getChildren().stream()
+                .anyMatch(child -> isSelfOrChildren(dropTarget, child));
     }
 
     private void drop(DragEvent event, TreeCell<Node> treeCell, TreeView<Node> treeView) {

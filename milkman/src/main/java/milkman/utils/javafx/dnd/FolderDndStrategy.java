@@ -20,7 +20,8 @@ public class FolderDndStrategy implements DndStrategy<Folder> {
 
     @Override
     public boolean isValidDropTarget(Object dropTarget) {
-        return dropTarget instanceof Collection;
+        return dropTarget instanceof Collection
+                || dropTarget instanceof Folder;
     }
 
     private void moveFolderToNewParent(TreeView<Node> treeView, TreeItem<Node> newParent, TreeItem<Node> draggedItem, Folder draggedFolder) {
@@ -73,16 +74,16 @@ public class FolderDndStrategy implements DndStrategy<Folder> {
             getRootList(dropTarget.getChildren()).add(folderOffset, draggedItem);
             treeView.getSelectionModel().select(draggedItem);
         }
-//        else if (dropTarget.getValue().getUserData() instanceof Folder) {
-//            //dropping it onto folder makes it first request in folder
-//            Folder f = (Folder) dropTarget.getValue().getUserData();
-//            Collection collection = findCollectionInParents(dropTarget);
-//            collection.getRequests().add(draggedRequest);
-//            var folderOffset = f.getFolders().size();
-//            f.getRequests().add(0, draggedRequest.getId());
-//            getRootList(dropTarget.getChildren()).add(folderOffset, draggedItem);
-//            treeView.getSelectionModel().select(draggedItem);
-//        }
+        else if (dropTarget.getValue().getUserData() instanceof Folder) {
+            //dropping it onto folder makes it first request in folder
+            Folder targetFolder = (Folder) dropTarget.getValue().getUserData();
+            Collection targetCollection = findCollectionInParents(dropTarget);
+            targetCollection.getRequests().addAll(requestsInFolder);
+            var folderOffset = targetFolder.getFolders().size();
+            targetFolder.getFolders().add(0, draggedFolder);
+            getRootList(dropTarget.getChildren()).add(folderOffset, draggedItem);
+            treeView.getSelectionModel().select(draggedItem);
+        }
 //        else {
 //            // add to new location
 //            int indexInParent = getRootList(dropTarget.getParent().getChildren()).indexOf(dropTarget);
