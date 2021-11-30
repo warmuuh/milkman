@@ -1,15 +1,10 @@
 package milkman.ui.plugin.rest.domain;
 
-import java.util.UUID;
-
+import lombok.*;
+import milkman.domain.RequestContainer;
 import org.apache.commons.lang3.StringUtils;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import milkman.domain.RequestContainer;
+import java.util.Locale;
 
 @Getter @Setter
 @AllArgsConstructor
@@ -38,7 +33,27 @@ public class RestRequestContainer extends RequestContainer {
 
 	@Override
 	public String getType() {
-		return this.httpMethod;
+		return httpMethod;
 	}
 
+	@Override
+	public RequestTypeDescriptor getTypeDescriptor() {
+		return new RequestTypeDescriptor(httpMethod, styleFor(httpMethod));
+	}
+
+	private String styleFor(String httpMethod) {
+		String style = "-fx-background-color: ";
+		switch (httpMethod.toUpperCase(Locale.ROOT)) {
+			case "POST":
+				return style + "#eb7a34";
+			case "GET":
+				return style + "#34abeb";
+			case "PUT":
+				return style + "#257a35";
+			case "DELETE":
+				return style + "#eb3434";
+			default:
+				return null;
+		}
+	}
 }

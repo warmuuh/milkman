@@ -12,12 +12,15 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import milkman.domain.Collection;
 import milkman.domain.Folder;
@@ -25,15 +28,18 @@ import milkman.domain.RequestContainer;
 import milkman.domain.Searchable;
 import milkman.ui.commands.UiCommand;
 import milkman.ui.commands.UiCommand.*;
+import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.utils.Event;
 import milkman.utils.PropertyChangeEvent;
-import milkman.utils.javafx.dnd.DnDCellFactory;
 import milkman.utils.javafx.SettableTreeItem;
+import milkman.utils.javafx.dnd.DnDCellFactory;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.reactfx.EventStreams;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -41,6 +47,7 @@ import java.util.stream.Collectors;
 import static milkman.utils.fxml.FxmlBuilder.*;
 
 @Singleton
+@Slf4j
 @RequiredArgsConstructor(onConstructor_ = { @Inject })
 public class RequestCollectionComponent {
 
@@ -265,8 +272,9 @@ public class RequestCollectionComponent {
 
 
 	private Node createRequestEntry(Collection collection, RequestContainer request) {
-		Label requestType = new Label(request.getType());
-		requestType.getStyleClass().add("request-type");
+
+
+		Node requestType = getRequestDescriptor(request, CoreApplicationOptionsProvider.options().isDisableColorfulUi());
 		Label button = new Label(request.getName());
 
 		VBox vBox = new VBox(new HBox(requestType,button));
@@ -288,7 +296,30 @@ public class RequestCollectionComponent {
 		return vBox;
 	}
 
-	
+	private Node getRequestDescriptor(RequestContainer request, boolean disableColorfulUi) {
+		var reqTypeDesc = request.getTypeDescriptor();
+
+		if (disableColorfulUi) {
+			Label requestType = new Label(reqTypeDesc.getName());
+			requestType.getStyleClass().add("request-type");
+			return requestType;
+		}
+
+		if (reqTypeDesc.getIconFile().isPresent()) {
+			var url = reqTypeDesc.getIconFile().get();
+			try(InputStream is = url.openStream()){
+				return new ImageView(new Image(is, 50, 20, true, true));
+			} catch (IOException e) {
+				log.error("Failed to load image {}", url);
+			}
+		}
+
+		Label requestType = new Label(reqTypeDesc.getName());
+		requestType.getStyleClass().add("request-type");
+		reqTypeDesc.getFxStyle().ifPresent(requestType::setStyle);
+		return requestType;
+	}
+
 	private Node createFolderEntry(Folder folder, Collection collection, TreeItem<Node> item) {
 		Label folderName = new Label(folder.getName());
 		HBox.setHgrow(folderName, Priority.ALWAYS);

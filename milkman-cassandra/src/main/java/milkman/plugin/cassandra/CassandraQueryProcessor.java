@@ -11,6 +11,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
+import milkman.domain.ResponseContainer.StyledText;
 import milkman.plugin.cassandra.domain.CassandraRequestContainer;
 import milkman.plugin.jdbc.domain.JdbcSqlAspect;
 import milkman.plugin.jdbc.domain.RowSetResponseAspect;
@@ -95,8 +96,8 @@ public class CassandraQueryProcessor {
 
 		response.getAspects().add(rowSetAspect);
 		response.getStatusInformations().complete(Map.of(
-				"Rows", ""+ rowSetAspect.getRows().size(),
-				"Time", requestTimeInMs + "ms"));
+				"Rows", new StyledText(""+ rowSetAspect.getRows().size()),
+				"Time", new StyledText(requestTimeInMs + "ms")));
 
 
 		return response;

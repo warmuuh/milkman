@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import lombok.SneakyThrows;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
+import milkman.domain.ResponseContainer.StyledText;
 import milkman.plugin.jdbc.domain.JdbcRequestContainer;
 import milkman.plugin.jdbc.domain.RowSetResponseAspect;
 import milkman.plugin.jdbc.domain.TableResponseContainer;
@@ -35,7 +36,7 @@ public class JdbcMetaProcessor extends AbstractJdbcProcessor {
 		RowSetResponseAspect rowSetAspect = new RowSetResponseAspect();
 		extractRows(rs, rowSetAspect);
 		response.getAspects().add(rowSetAspect);
-		response.getStatusInformations().complete(Map.of("Selected Rows", ""+ rowSetAspect.getRows().size()));
+		response.getStatusInformations().complete(Map.of("Selected Rows", new StyledText(""+ rowSetAspect.getRows().size())));
 
 		
 		return response;
@@ -60,7 +61,7 @@ public class JdbcMetaProcessor extends AbstractJdbcProcessor {
 		RowSetResponseAspect rowSetAspect = new RowSetResponseAspect();
 		extractRows(rs, rowSetAspect);
 		response.getAspects().add(rowSetAspect);
-		response.getStatusInformations().complete(Map.of("Selected Rows", ""+ rowSetAspect.getRows().size()));
+		response.getStatusInformations().complete(Map.of("Selected Rows", new StyledText(""+ rowSetAspect.getRows().size())));
 
 		
 		return response;

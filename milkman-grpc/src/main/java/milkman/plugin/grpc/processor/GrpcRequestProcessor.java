@@ -13,6 +13,7 @@ import lombok.Value;
 import me.dinowernli.grpc.polyglot.grpc.DynamicGrpcClient;
 import me.dinowernli.grpc.polyglot.protobuf.ProtoMethodName;
 import me.dinowernli.grpc.polyglot.protobuf.ProtocInvoker;
+import milkman.domain.ResponseContainer.StyledText;
 import milkman.plugin.grpc.domain.*;
 import milkman.ui.plugin.Templater;
 import milkman.utils.AsyncResponseControl.AsyncControl;
@@ -48,10 +49,7 @@ public class GrpcRequestProcessor extends BaseGrpcProcessor {
 		var responseHeaderAspect = new GrpcResponseHeaderAspect(responseData.getHeaderFuture().thenApply(this::convertToEntries));
 		response.getAspects().add(responseHeaderAspect);
 
-		responseData.getRequestTime().thenAccept(t -> response.getStatusInformations().complete(Map.of("Time", t + "ms")));
-		
-		
-		
+		responseData.getRequestTime().thenAccept(t -> response.getStatusInformations().complete(Map.of("Time", new StyledText(t + "ms"))));
 		return response;
 	}
 

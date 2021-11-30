@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
+import milkman.domain.ResponseContainer.StyledText;
 import milkman.plugin.jdbc.domain.JdbcRequestContainer;
 import milkman.plugin.jdbc.domain.JdbcSqlAspect;
 import milkman.plugin.jdbc.domain.RowSetResponseAspect;
@@ -46,11 +47,11 @@ public class JdbcQueryProcessor extends AbstractJdbcProcessor {
 		
 		if (isResultSet) {
 			extractRows(statement.getResultSet(), rowSetAspect);
-			response.getStatusInformations().complete(Map.of("Selected Rows", ""+ rowSetAspect.getRows().size()));
+			response.getStatusInformations().complete(Map.of("Selected Rows", new StyledText(""+ rowSetAspect.getRows().size())));
 		} else {
-			response.getStatusInformations().complete(Map.of("Affected Rows", ""+ statement.getUpdateCount()));
+			response.getStatusInformations().complete(Map.of("Affected Rows", new StyledText(""+ statement.getUpdateCount())));
 		}
-		response.getStatusInformations().complete(Map.of("Time", requestTimeInMs + "ms"));
+		response.getStatusInformations().complete(Map.of("Time", new StyledText(requestTimeInMs + "ms")));
 
 		response.getAspects().add(rowSetAspect);
 		

@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
+import milkman.domain.ResponseContainer.StyledText;
 import milkman.ui.main.dialogs.CredentialsInputDialog;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.ui.plugin.Templater;
@@ -309,12 +310,27 @@ public class JavaRequestProcessor implements RequestProcessor {
 		} else if (httpResponse.version() == Version.HTTP_2) {
 			versionStr = "2.0";
 		}
-		LinkedHashMap<String, String> statusKeys = new LinkedHashMap<>();
-		statusKeys.put("Status", ""+httpResponse.statusCode());
-		statusKeys.put("Time", responseTimeInMs + "ms");
-		statusKeys.put("Http", versionStr);
+		LinkedHashMap<String, StyledText> statusKeys = new LinkedHashMap<>();
+		statusKeys.put("Status", new StyledText(""+httpResponse.statusCode(), getStyle(httpResponse.statusCode())));
+		statusKeys.put("Time", new StyledText(responseTimeInMs + "ms"));
+		statusKeys.put("Http", new StyledText(versionStr));
 		
 		response.getStatusInformations().complete(statusKeys);
+	}
+
+	private String getStyle(int statusCode) {
+		String style = "-fx-text-fill: ";
+		if (statusCode < 300) {
+			return style + "#257a35";
+		}
+		if (statusCode < 400) {
+			return style + "#edc600";
+		}
+		if (statusCode < 500) {
+			return style + "#fab237";
+		}
+
+		return style + "#fc3b14";
 	}
 
 	@RequiredArgsConstructor

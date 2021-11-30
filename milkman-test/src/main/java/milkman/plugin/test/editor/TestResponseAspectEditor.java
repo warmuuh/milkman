@@ -17,8 +17,8 @@ import milkman.domain.ResponseContainer;
 import milkman.plugin.test.domain.TestResultAspect;
 import milkman.plugin.test.domain.TestResultAspect.TestResultEvent;
 import milkman.plugin.test.domain.TestResultAspect.TestResultState;
+import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.ui.plugin.ResponseAspectEditor;
-import milkman.utils.fxml.FxmlBuilder.*;
 import milkman.utils.javafx.SettableTreeItem;
 
 import java.util.LinkedList;
@@ -124,7 +124,10 @@ public class TestResponseAspectEditor implements ResponseAspectEditor {
 		int curRow = 2;
 		for (var entry : resultEvent.getDetails().entrySet()) {
 			grid.add(new Label(entry.getKey()), 0, curRow);
-			var valueLabel = new Label(entry.getValue());
+			var valueLabel = new Label(entry.getValue().getText());
+			if (!CoreApplicationOptionsProvider.options().isDisableColorfulUi()) {
+				entry.getValue().getStyle().ifPresent(valueLabel::setStyle);
+			}
 			valueLabel.setWrapText(true);
 			grid.add(valueLabel, 1, curRow);
 			curRow += 1;

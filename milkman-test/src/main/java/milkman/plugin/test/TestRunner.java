@@ -24,6 +24,7 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
 
+import static milkman.domain.ResponseContainer.StyledText;
 import static milkman.plugin.test.domain.TestResultAspect.TestResultState.*;
 
 @Slf4j
@@ -123,7 +124,7 @@ public class TestRunner {
 				.onErrorResume(err -> {
 					var state = testDetails.isIgnore() ? IGNORED : FAILED;
 					var message = getErrorMessage(err);
-					replay.next(new TestResultEvent(request.getT1().toString(), request.getT3().getName(), state, Map.of("exception", message)));
+					replay.next(new TestResultEvent(request.getT1().toString(), request.getT3().getName(), state, Map.of("exception", new StyledText(message))));
 					return Mono.just(testDetails.isIgnore()); //pretend success, if ignore is true
 				});
 	}

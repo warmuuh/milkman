@@ -18,7 +18,10 @@ public class CassandraRequestContainer extends RequestContainer {
 		return "CQL";
 	}
 
-
+	@Override
+	public RequestTypeDescriptor getTypeDescriptor() {
+		return new RequestTypeDescriptor("CQL", getClass().getResource("/icons/cassandra.png"));
+	}
 
 	public CassandraRequestContainer(String name, String cassandraUrl) {
 		super(name);

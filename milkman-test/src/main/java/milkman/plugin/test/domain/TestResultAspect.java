@@ -9,6 +9,8 @@ import reactor.core.publisher.Flux;
 
 import java.util.Map;
 
+import static milkman.domain.ResponseContainer.StyledText;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,7 +34,7 @@ public class TestResultAspect implements ResponseAspect {
 		String requestId;
 		String requestName;
 		TestResultState resultState;
-		Map<String, String> details;
+		Map<String, StyledText> details;
 	}
 
 

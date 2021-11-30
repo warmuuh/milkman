@@ -21,6 +21,7 @@ public class CoreApplicationOptionsProvider implements OptionPageProvider<CoreAp
 		private boolean horizontalLayout;
 		private boolean debug;
 		private UiPrefs uiPrefs = new UiPrefs();
+		private boolean disableColorfulUi;
 
 		@Data
 		public static class UiPrefs {
@@ -67,6 +68,7 @@ public class CoreApplicationOptionsProvider implements OptionPageProvider<CoreAp
 					.toggle("Check for Updates", CoreApplicationOptions::isCheckForUpdates, CoreApplicationOptions::setCheckForUpdates)
 					.selection("Theme", CoreApplicationOptions::getTheme, this::setTheme, themeSwitcher.getThemes())
 				.toggle("Disable Animations", CoreApplicationOptions::isDisableAnimations, CoreApplicationOptions::setDisableAnimations)
+				.toggle("Disable Colorful Ui", CoreApplicationOptions::isDisableColorfulUi, CoreApplicationOptions::setDisableColorfulUi)
 				.toggle("Enable Debug Output", CoreApplicationOptions::isDebug, CoreApplicationOptions::setDebug)
 				.endSection()
 				.section("Code Editor/Viewer")
