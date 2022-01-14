@@ -8,6 +8,7 @@ version 5.4.0 - upcoming
   * fix: ignore disabled headers in http exporter
   * added Drag&Drop for folders
   * added colors/icons to request types and status information (can be disabled in options)
+  * disabled javafx off-color subpixel antialiasing for font (macOs)
 
 version 5.3.0
   * mask plain-keys on overview

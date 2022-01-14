@@ -18,4 +18,4 @@ chmod +x jre-macos64/lib/jspawnhelper
 	--add-opens javafx.graphics/javafx.scene=ALL-UNNAMED \
 	--add-opens javafx.graphics/javafx.scene.text=ALL-UNNAMED \
 	--add-opens javafx.graphics/com.sun.javafx.text=ALL-UNNAMED \
-	-Dprism.dirtyopts=false -cp plugins/*:milkman.jar milkman.MilkmanApplication
+	-Dprism.dirtyopts=false -Dprism.lcdtext=false -cp plugins/*:milkman.jar milkman.MilkmanApplication
