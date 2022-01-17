@@ -4,6 +4,8 @@ info:
   version: 2.0.0
 servers:
   - url: http://petstore.swagger.io/api
+  - url: http://petstore2.swagger.io/api
+    description: test server!**
 paths:
   /:
     get:
