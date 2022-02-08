@@ -22,6 +22,7 @@ import lombok.val;
 import milkman.PlatformUtil;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.ui.plugin.ContentTypePlugin;
+import milkman.utils.ContentTypeMatcher;
 import milkman.utils.Stopwatch;
 import milkman.utils.StringUtils;
 import milkman.utils.fxml.GenericBinding;
@@ -303,7 +304,7 @@ public class ContentEditor extends VBox {
 	/**
 	 * Because Flowless cannot handle syntax highlighting of very long lines that well,
 	 * we just disable highlighting, if text contains very long lines
-	 * 
+	 *
 	 * @param text
 	 * @return
 	 */
@@ -312,7 +313,7 @@ public class ContentEditor extends VBox {
 		 * iterates over the string, counting the chars until next \n thereby.
 		 * If line is above max, it returns true
 		 */
-		
+
 		StringCharacterIterator iterator = new StringCharacterIterator(text);
 		long curLineLength = 0;
 		while(true) {
@@ -327,7 +328,7 @@ public class ContentEditor extends VBox {
 				}
 				curLineLength = 0;
 			}
-				
+
 		}
 		return curLineLength > 1_000;
 	}
@@ -364,12 +365,14 @@ public class ContentEditor extends VBox {
 	}
 
 	private void setActiveContentType(List<ContentTypePlugin> plugins, String contentType) {
-		plugins.stream().filter(p -> contentType.contains(p.getContentType())).findAny().ifPresent(t -> {
-			format.setVisible(t.supportFormatting());
-//			System.out.println("Setting active highlighter: " + t);
-			highlighters.setValue(t);
-//			System.out.println("End Setting active highlighter");
-		});
+		plugins.stream()
+			.filter(p -> ContentTypeMatcher.matches(p.getContentType(), contentType))
+			.findAny().ifPresent(t -> {
+				format.setVisible(t.supportFormatting());
+				//System.out.println("Setting active highlighter: " + t);
+				highlighters.setValue(t);
+				//System.out.println("End Setting active highlighter");
+			});
 	}
 
 	public void setContentType(String contentType) {
@@ -401,7 +404,7 @@ public class ContentEditor extends VBox {
 			}
 		});
 	}
-	
+
 	public void addContent(String additiveContent) {
 //		if (contentBinding != null) {
 //			Bindings.unbindBidirectional(codeAreaTextBinding, contentBinding);
@@ -411,7 +414,7 @@ public class ContentEditor extends VBox {
 
 		codeArea.appendText(additiveContent);
 	}
-	
+
 	protected void replaceText(String newText) {
 		codeArea.replaceText(newText != null ? newText : "");
 	}
@@ -419,7 +422,7 @@ public class ContentEditor extends VBox {
 	public void setDisableContent(Boolean disable) {
 		if (disable)
 			codeArea.getStyleClass().add("disabled");
-		else 
+		else
 			codeArea.getStyleClass().remove("disabled");
 		codeArea.setDisable(disable);
 	}
