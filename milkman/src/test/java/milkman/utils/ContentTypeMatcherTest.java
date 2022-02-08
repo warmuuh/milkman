@@ -12,6 +12,7 @@ class ContentTypeMatcherTest {
             "application/json, application/json, true",
             "application/json, application/json; param=123, true",
             "application/json, application/blubber+json, true",
+            "*/json, application/json, true",
             "application/json+blubber, application/json, false",
             "application/json, application/html, false"
     })
