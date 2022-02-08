@@ -9,6 +9,7 @@ version 5.4.0 - upcoming
   * added Drag&Drop for folders
   * added colors/icons to request types and status information (can be disabled in options)
   * disabled javafx off-color subpixel antialiasing for font (macOs)
+  * openapi import: importing server-urls as environment variables
 
 version 5.3.0
   * mask plain-keys on overview
