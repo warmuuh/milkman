@@ -3,13 +3,14 @@ package milkman.ui.main;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.application.Platform;
 import javafx.scene.control.*;
-import lombok.Value;
+import javafx.scene.paint.Color;
 import lombok.val;
 import milkman.domain.Environment;
 import milkman.domain.Workspace;
 import milkman.ui.commands.AppCommand;
 import milkman.ui.commands.AppCommand.*;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
+import milkman.utils.ColorUtil;
 import milkman.utils.Event;
 
 import javax.inject.Singleton;
@@ -33,16 +34,31 @@ public class ToolbarComponent {
 	public interface ChoiceboxEntry {
 		void invoke();
 		boolean isSelectable();
+		Optional<Color> getColor();
 	}
+
 	public static class ChoiceBoxSeparator extends Separator implements ChoiceboxEntry {
 		@Override public void invoke() {}
 		@Override public boolean isSelectable() {return false;}
-	} 
-	@Value
+		@Override public Optional<Color> getColor() { return Optional.empty(); }
+	}
+
 	public static class ChoiceboxEntryImpl implements ChoiceboxEntry{
-		String name;
-		Boolean selectable;
-		Runnable action;
+		private final String name;
+		private final Boolean selectable;
+		private final Runnable action;
+		private final Color color;
+
+		public ChoiceboxEntryImpl(String name, Boolean selectable, Runnable action) {
+			this(name, selectable, action, null);
+		}
+		public ChoiceboxEntryImpl(String name, Boolean selectable, Runnable action, Color color) {
+			this.name = name;
+			this.selectable = selectable;
+			this.action = action;
+			this.color = color;
+		}
+
 		public String toString() {
 			return name;
 		}
@@ -53,6 +69,11 @@ public class ToolbarComponent {
 		@Override
 		public boolean isSelectable() {
 			return selectable;
+		}
+
+		@Override
+		public Optional<Color> getColor() {
+			return Optional.ofNullable(color);
 		}
 	}
 	
@@ -82,7 +103,7 @@ public class ToolbarComponent {
 			
 			ChoiceboxEntryImpl newEntry;
 			if (env.isActive()) {
-				activeEntry = newEntry = new ChoiceboxEntryImpl(env.getName(), true, () -> {});
+				activeEntry = newEntry = new ChoiceboxEntryImpl(env.getName(), true, () -> {}, env.getColor() != null ? Color.web(env.getColor()) : null);
 			} else {
 				newEntry = new ChoiceboxEntryImpl(env.getName(), true, () -> onCommand.invoke(new ActivateEnvironment(Optional.of(env))));
 			}
@@ -90,7 +111,9 @@ public class ToolbarComponent {
 		}
 		environmentSelection.getItems().add(new ChoiceBoxSeparator());
 		environmentSelection.getItems().add(new ChoiceboxEntryImpl("Manage Environments...", false, () ->  onCommand.invoke(new ManageEnvironments())));
-		environmentSelection.setValue(activeEntry != null ? activeEntry : noEnvEntry);
+		ChoiceboxEntryImpl finalActiveEntry = activeEntry;
+		Platform.runLater(() -> environmentSelection.setValue(finalActiveEntry != null ? finalActiveEntry : noEnvEntry));
+
 	}
 
 	private void initWorkspaceDropdown(Workspace activeWs, List<String> workspaceNames) {
@@ -119,8 +142,21 @@ public class ToolbarComponent {
 	}
 
 	public void changed(ChoiceboxEntry o, ChoiceboxEntry n, ChoiceBox<ChoiceboxEntry> choiceBox) {
-		if (n != null) 
+		if (n != null){
+			//HACK: set color only, if the entry is part of the items in the choice box.
+			//this is because when selecting an unselectable, the old value will be set afterwards
+			//which contains the old color but the choiceBox was rebuilt with new entries already
+			if (choiceBox.getItems().contains(n)) {
+				if (n.getColor().isPresent()) {
+					choiceBox.setStyle("-fx-background-color: " + ColorUtil.toWeb(n.getColor().get()));
+				} else {
+					choiceBox.setStyle("");
+				}
+			}
+
+
 			n.invoke();
+		}
 		
 		if (o != null && n != null && !n.isSelectable()) {
 			//select old value, if this one is unselectable

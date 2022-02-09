@@ -1,14 +1,14 @@
 package milkman.domain;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @NoArgsConstructor
 @Data
@@ -29,10 +29,10 @@ public class Environment {
 	String name;
 	boolean active;
 	boolean global;
-	List<EnvironmentEntry> entries = new LinkedList<Environment.EnvironmentEntry>();
+	String color;
+	List<EnvironmentEntry> entries = new LinkedList<EnvironmentEntry>();
 	
 	public Environment(String name) {
-		super();
 		this.id  = UUID.randomUUID().toString();
 		this.name = name;
 	}

@@ -11,8 +11,13 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import milkman.domain.Environment;
 import milkman.ui.commands.AppCommand;
+import milkman.ui.commands.AppCommand.CreateNewEnvironment;
+import milkman.ui.commands.AppCommand.DeleteEnvironment;
+import milkman.ui.commands.AppCommand.RenameEnvironment;
 import milkman.utils.Event;
 import milkman.utils.fxml.FxmlUtil;
 import milkman.utils.fxml.NoSelectionModel;
@@ -24,9 +29,11 @@ import static milkman.utils.fxml.FxmlBuilder.*;
 
 public class ManageEnvironmentsDialog {
 
-	 JFXListView<Environment> environmentList;
+	JFXListView<Environment> environmentList;
 	private JFXAlert dialog;
 	private ObservableList<Environment> environments;
+
+	private Paint primaryIconFill;
 
 	public Event<AppCommand> onCommand = new Event<AppCommand>();
 	private List<Environment> originalList;
@@ -64,20 +71,26 @@ public class ManageEnvironmentsDialog {
 						environment.setActive(false);
 				}
 			});
-			
+
+			JFXButton colorButton = new JFXButton();
+			FontAwesomeIconView icon = new FontAwesomeIconView(FontAwesomeIcon.PAINT_BRUSH, "1.5em");
+			primaryIconFill = icon.getFill();
+			colorButton.setGraphic(icon);
+			if (environment.getColor() != null) {
+				icon.setFill(Color.web(environment.getColor()));
+			}
+			colorButton.setOnAction(e -> triggerEditEnvColorDialog(environment, icon));
+
 			JFXButton deleteButton = new JFXButton();
 			deleteButton.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.TIMES, "1.5em"));
 			deleteButton.setOnAction(e -> {
-				onCommand.invoke(new AppCommand.DeleteEnvironment(environment));
+				onCommand.invoke(new DeleteEnvironment(environment));
 				refresh();
 			});
 			
-			
-			
-			
 			Label envName = new Label(environment.getName());
 			HBox.setHgrow(envName, Priority.ALWAYS);
-			return new HBox(envName, renameButton, editButton, global, deleteButton);
+			return new HBox(envName, renameButton, editButton, global, colorButton, deleteButton);
 		}
 
 
@@ -86,18 +99,34 @@ public class ManageEnvironmentsDialog {
 			envDialog.showAndWait(environment);
 		}
 
+		private void triggerEditEnvColorDialog(Environment environment, FontAwesomeIconView icon) {
+			EditEnvironmentColorDialog envDialog = new EditEnvironmentColorDialog();
+			envDialog.showAndWait(environment);
+			if (!envDialog.isCancelled()) {
+				environment.setColor(envDialog.shouldUseColor() ? envDialog.getColor() : null);
+				applyEnvColorToIcon(environment, icon);
+			}
+		}
 
 		private void triggerRenameDialog(Environment environment) {
 			StringInputDialog inputDialog = new StringInputDialog();
 			inputDialog.showAndWait("Rename Environment", "New Name", environment.getName());
 			if (!inputDialog.isCancelled() && inputDialog.wasChanged()) {
 				String newName = inputDialog.getInput();
-				onCommand.invoke(new AppCommand.RenameEnvironment(environment, newName));
+				onCommand.invoke(new RenameEnvironment(environment, newName));
 				refresh();
 			}
 		}
 	}
-	
+
+	private void applyEnvColorToIcon(Environment environment, FontAwesomeIconView icon) {
+		if (environment.getColor() != null) {
+			icon.setFill(Color.web(environment.getColor()));
+		} else {
+			icon.setFill(primaryIconFill);
+		}
+	}
+
 	public void showAndWait(List<Environment> envs) {
 		this.originalList = envs;
 		JFXDialogLayout content = new ManageEnvironmentsDialogFxml(this);
@@ -129,7 +158,7 @@ public class ManageEnvironmentsDialog {
 		if (!inputDialog.isCancelled() && inputDialog.wasChanged()) {
 			String newEnvironmentName = inputDialog.getInput();
 			Environment newEnv = new Environment(newEnvironmentName);
-			onCommand.invoke(new AppCommand.CreateNewEnvironment(newEnv));
+			onCommand.invoke(new CreateNewEnvironment(newEnv));
 			//hack for first item, otherwise placeholder is not removed for some reason
 			environmentList.setItems(FXCollections.observableArrayList());
 			Platform.runLater(() -> environmentList.setItems(environments)); 
