@@ -8,7 +8,6 @@ import javafx.scene.paint.Color;
 import lombok.Getter;
 import milkman.domain.Environment;
 import milkman.utils.ColorUtil;
-import milkman.utils.fxml.FxmlBuilder.*;
 import milkman.utils.fxml.FxmlUtil;
 
 import static milkman.utils.fxml.FxmlBuilder.*;
@@ -60,13 +59,14 @@ public class EditEnvironmentColorDialog {
 			var useColor = controller.useColor = new CheckBox("Use Color");
 			var colorPicker = controller.colorPicker = new ColorPicker();
 			colorPicker.setOnMouseClicked(e -> useColor.setSelected(true));
-			setBody(new VboxExt(label("Set highlighting color of environment"), useColor, colorPicker));
+			setBody(new VboxExt(
+					label("Set highlighting color of environment"),
+					label(""),
+					new HboxExt(useColor, label("  "), colorPicker)));
 
 			setActions(submit(controller::onSave), cancel(controller::onCancel));
 		}
 
 	}
 
-	
-	
 }

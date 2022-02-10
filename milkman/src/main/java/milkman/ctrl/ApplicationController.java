@@ -290,6 +290,7 @@ public class ApplicationController {
 			EditEnvironmentDialog envDialog = new EditEnvironmentDialog();
 			envDialog.showAndWait(environment);			
 		});
+		toolbarComponent.initEnvironmentDropdown(workspaceController.getActiveWorkspace().getEnvironments());
 	}
 
 
