@@ -29,6 +29,10 @@ everything being a plugin, other things are possible, like database-requests or 
 
 latest changes can be seen in the [Changelog](changelog.md)
 
+# FAQ
+
+some resolved issues and FAQs are available in the [wiki](https://github.com/warmuuh/milkman/wiki).
+
 # Features
 
  * **Everything is a plugin:** Request-types (e.g. Http Request), request-aspects (e.g. Headers, Body, etc), editors for request aspects (e.g. table-based editors for headers), importers, whatever it is, you can extend it. The core application only handles Workspaces with Environments, Collections, Requests and their aspects.
