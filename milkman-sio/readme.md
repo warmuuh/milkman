@@ -1,19 +1,9 @@
-# Milkman Websockets Plugin
+# Milkman Socket.IO Plugin
 
-Support for websocket transport
+Support for Socket.IO transport
 
 ## Features
-
-  * supports ws and wss
-  * can interactively send messages
-  
-## Screenshot
-
-![Milkman Ws Streaming](/img/milkman-ws-demo.gif)
-
+  * supports Socket.IO
 
 ## Note
-
   * requires milkman-rest plugin
-  
-  

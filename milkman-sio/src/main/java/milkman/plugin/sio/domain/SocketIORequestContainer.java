@@ -1,4 +1,4 @@
-package milkman.plugin.ws.domain;
+package milkman.plugin.sio.domain;
 
 import lombok.*;
 import milkman.domain.RequestContainer;
@@ -7,16 +7,16 @@ import milkman.domain.RequestContainer;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class WebsocketRequestContainer extends RequestContainer {
+public class SocketIORequestContainer extends RequestContainer {
 
 	private String url; 
 	
 	@Override
 	public String getType() {
-		return "ws";
+		return "sio";
 	}
 
-	public WebsocketRequestContainer(String name, String url){
+	public SocketIORequestContainer(String name, String url){
 		super(name);
 		this.url = url;
 	}

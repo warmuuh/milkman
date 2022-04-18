@@ -1,4 +1,4 @@
-package milkman.plugin.ws.editor;
+package milkman.plugin.sio.editor;
 
 import com.jfoenix.controls.JFXTextField;
 import javafx.scene.Node;
@@ -8,18 +8,18 @@ import javafx.scene.layout.Priority;
 import lombok.SneakyThrows;
 import milkman.ctrl.ExecutionListenerManager;
 import milkman.domain.RequestContainer;
-import milkman.plugin.ws.domain.WebsocketRequestContainer;
+import milkman.plugin.sio.domain.SocketIORequestContainer;
 import milkman.ui.components.AutoCompleter;
 import milkman.ui.plugin.AutoCompletionAware;
 import milkman.ui.plugin.RequestTypeEditor;
 import milkman.utils.fxml.FxmlBuilder.HboxExt;
 import milkman.utils.fxml.GenericBinding;
 
-public class WebsocketRequestEditor implements RequestTypeEditor, AutoCompletionAware {
+public class SocketIORequestEditor implements RequestTypeEditor, AutoCompletionAware {
 
 	 TextField requestUrl;
 	
-	private GenericBinding<WebsocketRequestContainer, String> urlBinding = GenericBinding.of(WebsocketRequestContainer::getUrl, WebsocketRequestContainer::setUrl);
+	private GenericBinding<SocketIORequestContainer, String> urlBinding = GenericBinding.of(SocketIORequestContainer::getUrl, SocketIORequestContainer::setUrl);
 	private AutoCompleter completer;
 	private ExecutionListenerManager executionListenerManager;
 
@@ -27,16 +27,16 @@ public class WebsocketRequestEditor implements RequestTypeEditor, AutoCompletion
 	@Override
 	@SneakyThrows
 	public Node getRoot() {
-		Node root = new WebsocketRequestEditorFxml(this);
+		Node root = new SocketIORequestEditorFxml(this);
 		return root;
 	}
 
 	@Override
 	public void displayRequest(RequestContainer request) {
-		if (!(request instanceof WebsocketRequestContainer))
+		if (!(request instanceof SocketIORequestContainer))
 			throw new IllegalArgumentException("Other request types not yet supported");
 		
-		WebsocketRequestContainer restRequest = (WebsocketRequestContainer)request;
+		SocketIORequestContainer restRequest = (SocketIORequestContainer)request;
 		
 		urlBinding.bindTo(requestUrl.textProperty(), restRequest);
 		urlBinding.addListener(s -> request.setDirty(true));
@@ -50,15 +50,15 @@ public class WebsocketRequestEditor implements RequestTypeEditor, AutoCompletion
 		
 	}
 
-	public static class WebsocketRequestEditorFxml extends HboxExt {
-		private WebsocketRequestEditor controller; //avoid gc collection
+	public static class SocketIORequestEditorFxml extends HboxExt {
+		private SocketIORequestEditor controller; //avoid gc collection
 
-		public WebsocketRequestEditorFxml(WebsocketRequestEditor controller) {
+		public SocketIORequestEditorFxml(SocketIORequestEditor controller) {
 			this.controller = controller;
 			HBox.setHgrow(this, Priority.ALWAYS);
 			controller.requestUrl = add(new JFXTextField(), true);
 			controller.requestUrl.setId("requestUrl");
-			controller.requestUrl.setPromptText("ws(s)://host:port/url");
+			controller.requestUrl.setPromptText("ws|http(s)://host:port/url");
 		}
 	}
 	

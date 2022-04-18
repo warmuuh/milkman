@@ -1,4 +1,4 @@
-package milkman.plugin.ws;
+package milkman.plugin.sio;
 
 import milkman.utils.AsyncResponseControl.AsyncControl;
 import org.java_websocket.client.WebSocketClient;
@@ -7,13 +7,13 @@ import org.reactivestreams.Subscriber;
 
 import java.net.URI;
 
-public class MilkmanWebsocketClient extends WebSocketClient {
+public class MilkmanSocketIOClient extends WebSocketClient {
 
 	private final Subscriber<byte[]> responseSubscriber;
 	private final AsyncControl asyncControl;
 
 
-	public MilkmanWebsocketClient(URI serverUri,
+	public MilkmanSocketIOClient(URI serverUri,
 								  Subscriber<byte[]> responseSubscriber,
 								  AsyncControl asyncControl) {
 		super(serverUri);

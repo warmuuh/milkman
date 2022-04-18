@@ -7,7 +7,7 @@
 		<artifactId>milkman-parent</artifactId>
 		<version>5.5.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>milkman-ws</artifactId>
+	<artifactId>milkman-sio</artifactId>
 
 	<dependencies>
 		<dependency>
