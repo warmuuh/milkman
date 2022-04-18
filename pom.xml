@@ -25,6 +25,7 @@
 		<module>milkman-test</module>
 		<module>milkman-auth</module>
 		<module>milkman-ws</module>
+		<module>milkman-sio</module>
 	</modules>
 
 	<properties>
