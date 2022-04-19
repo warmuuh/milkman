@@ -1,7 +1,6 @@
 package milkman.plugin.sio.socketio;
 
 
-import io.socket.client.SocketOptionBuilder;
 import io.socket.parser.Parser;
 import okhttp3.Call;
 import okhttp3.WebSocket;

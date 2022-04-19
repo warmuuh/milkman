@@ -321,6 +321,8 @@ public class Socket extends Emitter {
             if (args.isEmpty()) return;
             String event = args.remove(0).toString();
             super.emit(event, args.toArray());
+            args.add(0, event);
+            super.emit("*", args.toArray());
         } else {
             this.receiveBuffer.add(args);
         }
