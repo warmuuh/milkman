@@ -18,8 +18,10 @@ import milkman.utils.fxml.GenericBinding;
 public class SocketIORequestEditor implements RequestTypeEditor, AutoCompletionAware {
 
 	 TextField requestUrl;
+	 TextField requestPath;
 	
 	private GenericBinding<SocketIORequestContainer, String> urlBinding = GenericBinding.of(SocketIORequestContainer::getUrl, SocketIORequestContainer::setUrl);
+	private GenericBinding<SocketIORequestContainer, String> pathBinding = GenericBinding.of(SocketIORequestContainer::getPath, SocketIORequestContainer::setPath);
 	private AutoCompleter completer;
 	private ExecutionListenerManager executionListenerManager;
 
@@ -41,6 +43,10 @@ public class SocketIORequestEditor implements RequestTypeEditor, AutoCompletionA
 		urlBinding.bindTo(requestUrl.textProperty(), restRequest);
 		urlBinding.addListener(s -> request.setDirty(true));
 		completer.attachVariableCompletionTo(requestUrl);
+
+		pathBinding.bindTo(requestPath.textProperty(), restRequest);
+		pathBinding.addListener(s -> request.setDirty(true));
+		completer.attachVariableCompletionTo(requestPath);
 	}
 
 
@@ -59,6 +65,10 @@ public class SocketIORequestEditor implements RequestTypeEditor, AutoCompletionA
 			controller.requestUrl = add(new JFXTextField(), true);
 			controller.requestUrl.setId("requestUrl");
 			controller.requestUrl.setPromptText("ws|http(s)://host:port/url");
+
+			controller.requestPath = add(new JFXTextField(), true);
+			controller.requestPath.setId("requestPath");
+			controller.requestPath.setPromptText("/socket.io/");
 		}
 	}
 	

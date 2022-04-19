@@ -9,16 +9,18 @@ import milkman.domain.RequestContainer;
 @EqualsAndHashCode(callSuper = true)
 public class SocketIORequestContainer extends RequestContainer {
 
-	private String url; 
+	private String url;
+	private String path;
 	
 	@Override
 	public String getType() {
 		return "sio";
 	}
 
-	public SocketIORequestContainer(String name, String url){
+	public SocketIORequestContainer(String name, String url, String path){
 		super(name);
 		this.url = url;
+		this.path = path;
 	}
 	
 }

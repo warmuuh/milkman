@@ -16,10 +16,11 @@ public class SocketIOProcessor {
 
 	public ResponseContainer executeRequest(SocketIORequestContainer request, Templater templater, AsyncResponseControl.AsyncControl asyncControl) {
 		var url = templater.replaceTags(request.getUrl());
+		var path = templater.replaceTags(request.getPath());
 
 		var emitter = ReplayProcessor.<byte[]>create();
 
-		var client = new MilkmanSocketIOClient(URI.create(url), emitter, asyncControl);
+		var client = new MilkmanSocketIOClient(URI.create(url), path, emitter, asyncControl);
 
 		asyncControl.triggerReqeuestStarted();
 		client.connect();

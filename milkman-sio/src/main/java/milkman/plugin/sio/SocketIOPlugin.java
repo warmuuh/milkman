@@ -38,7 +38,7 @@ public class SocketIOPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 			
 			if (!request.getAspect(RestHeaderAspect.class).isPresent()) {
 				var headers = new RestHeaderAspect();
-				headers.getEntries().add(new HeaderEntry(UUID.randomUUID().toString(), "Content-Type", "application/json", true));
+				// headers.getEntries().add(new HeaderEntry(UUID.randomUUID().toString(), "Content-Type", "application/json", true));
 				request.addAspect(headers);
 			}
 
@@ -58,7 +58,7 @@ public class SocketIOPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 
 	@Override
 	public RequestContainer createNewRequest() {
-		return new SocketIORequestContainer("New Socket.IO Request", "");
+		return new SocketIORequestContainer("New Socket.IO Request", "", "");
 	}
 
 	@Override
