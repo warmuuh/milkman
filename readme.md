@@ -91,6 +91,9 @@ An OAuth Plugin for managing oauth credentials and transparent refreshing of tok
 ### [Websocket Plugin](/milkman-ws)
 A websocket plugin for interacting with websocket endpoints
 
+### [Socket.IO Plugin](/milkman-sio)
+A Socket.IO plugin for interacting with Socket.IO endpoints
+
 
 # Showcase
 
