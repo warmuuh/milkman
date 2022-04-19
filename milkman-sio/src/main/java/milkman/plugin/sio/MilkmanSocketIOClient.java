@@ -64,8 +64,7 @@ public class MilkmanSocketIOClient {
 		asyncControl.onCancellationRequested.add(() -> socket.disconnect());
 	}
 
-	public void emit(String message) {
-		String event = "ping";
+	public void emit(String event, String message) {
 		outputMessage("SENT", event, message);
 		socket.emit(event, message, (Ack) args -> outputMessage(event, args[0]));
 	}

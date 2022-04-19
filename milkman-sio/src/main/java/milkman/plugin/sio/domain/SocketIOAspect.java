@@ -5,6 +5,7 @@ import milkman.domain.RequestAspect;
 
 @Data
 public class SocketIOAspect extends RequestAspect {
+	private String event = "";
 	private String message = "";
 
 	public SocketIOAspect() {

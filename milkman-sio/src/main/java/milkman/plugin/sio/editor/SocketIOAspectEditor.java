@@ -1,13 +1,17 @@
 package milkman.plugin.sio.editor;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXTextField;
+
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
-import javafx.scene.layout.StackPane;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import milkman.ctrl.ExecutionListenerManager;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
@@ -18,6 +22,7 @@ import milkman.ui.contenttype.PlainContentTypePlugin;
 import milkman.ui.plugin.ExecutionListenerAware;
 import milkman.ui.plugin.RequestAspectEditor;
 import milkman.ui.plugin.rest.contenttype.JsonContentType;
+import milkman.utils.fxml.GenericBinding;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -37,14 +42,23 @@ public class SocketIOAspectEditor implements RequestAspectEditor, ExecutionListe
     @Override
     public Tab getRoot(RequestContainer request, Optional<ResponseContainer> existingResponse) {
         SocketIOAspect sioAspect = request.getAspect(SocketIOAspect.class).get();
-        Tab tab = new Tab("Messages");
+
+        TextField textField = new JFXTextField();
+		GenericBinding<SocketIOAspect, String> binding = GenericBinding.of(
+            SocketIOAspect::getEvent, 
+            run(SocketIOAspect::setEvent)
+                .andThen(() -> sioAspect.setDirty(true)), //mark aspect as dirty propagates to the request itself and shows up in UI
+            sioAspect); 
+		textField.textProperty().bindBidirectional(binding);
+		textField.setUserData(binding); //need to add a strong reference to keep the binding from being GC-collected.
+		HBox.setHgrow(textField, Priority.ALWAYS);
 
         ContentEditor editor = new ContentEditor();
-        editor.setHeaderVisibility(false);
         editor.setEditable(true);
         editor.setContentTypePlugins(Arrays.asList(new JsonContentType(), new PlainContentTypePlugin()));
-        editor.setContentType("text/plain");
+        editor.setContentType("application/json");
         editor.setContent(sioAspect::getMessage, run(sioAspect::setMessage).andThen(() -> sioAspect.setDirty(true)));
+        VBox.setVgrow(editor, Priority.ALWAYS);
 
         var addItemBtn = new JFXButton();
         addItemBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -54,10 +68,6 @@ public class SocketIOAspectEditor implements RequestAspectEditor, ExecutionListe
         addItemBtn.setDisable(true);
 
         activateIfActive(sioAspect, addItemBtn, existingResponse);
-
-
-        StackPane.setAlignment(addItemBtn, Pos.BOTTOM_RIGHT);
-        StackPane.setMargin(addItemBtn, new Insets(0, 20, 20, 0));
 
         executionListenerManager.listenOnExecution(request, "sio-msg-sender-listener", new ExecutionListener() {
             @Override
@@ -69,7 +79,7 @@ public class SocketIOAspectEditor implements RequestAspectEditor, ExecutionListe
                 addItemBtn.setDisable(false);
                 addItemBtn.setOnAction(e -> response.getAspect(SocketIOResponseAspect.class).ifPresent(sio -> {
                     if (sio.getClient().connected()) {
-                        sio.getClient().emit(sioAspect.getMessage());
+                        sio.getClient().emit(sioAspect.getEvent(), sioAspect.getMessage());
                     }
                 }));
             }
@@ -80,9 +90,10 @@ public class SocketIOAspectEditor implements RequestAspectEditor, ExecutionListe
             }
         });
 
-
-        tab.setContent(new StackPane(editor, addItemBtn));
-        return tab;
+        return new Tab(
+            "Messages",
+            new VBox(new HBox(10, new Label("Event:"), textField), new Label("Message:"), editor, addItemBtn)
+        );
     }
 
     private void activateIfActive(SocketIOAspect sioAspect, JFXButton addItemBtn, Optional<ResponseContainer> existingResponse) {
@@ -92,7 +103,7 @@ public class SocketIOAspectEditor implements RequestAspectEditor, ExecutionListe
                     addItemBtn.setDisable(false);
                     addItemBtn.setOnAction(e -> {
                         if (sio.getClient().connected()) {
-                            sio.getClient().emit(sioAspect.getMessage());
+                            sio.getClient().emit(sioAspect.getEvent(), sioAspect.getMessage());
                         }
                     });
                 }));

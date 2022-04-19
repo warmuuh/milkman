@@ -8,13 +8,11 @@ import milkman.plugin.sio.domain.SocketIORequestContainer;
 import milkman.plugin.sio.editor.SocketIOAspectEditor;
 import milkman.plugin.sio.editor.SocketIORequestEditor;
 import milkman.ui.plugin.*;
-import milkman.ui.plugin.rest.domain.HeaderEntry;
 import milkman.ui.plugin.rest.domain.RestHeaderAspect;
 import milkman.utils.AsyncResponseControl.AsyncControl;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 public class SocketIOPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 
@@ -38,7 +36,6 @@ public class SocketIOPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 			
 			if (!request.getAspect(RestHeaderAspect.class).isPresent()) {
 				var headers = new RestHeaderAspect();
-				// headers.getEntries().add(new HeaderEntry(UUID.randomUUID().toString(), "Content-Type", "application/json", true));
 				request.addAspect(headers);
 			}
 
