@@ -1,54 +1,88 @@
 package milkman.plugin.sio;
 
+import milkman.plugin.sio.socketio.IO;
+import milkman.plugin.sio.socketio.Socket;
 import milkman.utils.AsyncResponseControl.AsyncControl;
-import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.handshake.ServerHandshake;
 import org.reactivestreams.Subscriber;
+
+import io.socket.client.Ack;
+import io.socket.emitter.Emitter;
 
 import java.net.URI;
 
-public class MilkmanSocketIOClient extends WebSocketClient {
+public class MilkmanSocketIOClient {
 
 	private final Subscriber<byte[]> responseSubscriber;
 	private final AsyncControl asyncControl;
-
+	private Socket socket;
 
 	public MilkmanSocketIOClient(URI serverUri,
+									String path,
 								  Subscriber<byte[]> responseSubscriber,
 								  AsyncControl asyncControl) {
-		super(serverUri);
+		if(path.length()==0) {
+			path = "/socket.io/";
+		}
+		IO.Options options = IO.Options.builder()
+			.setReconnection(false)
+			.setPath(path)
+			.build();
+		socket = IO.socket(serverUri, options);
+		socket
+			.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
+				@Override
+				public void call(Object... args) {
+					asyncControl.triggerReqeuestStarted();
+					asyncControl.triggerReqeuestReady();
+				}
+			})
+			.on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
+				@Override
+				public void call(Object... args) {
+					responseSubscriber.onComplete();
+					asyncControl.triggerRequestSucceeded();
+				}
+			})
+			.on(Socket.EVENT_CONNECT_ERROR, new Emitter.Listener() {
+				@Override
+				public void call(Object... args) {
+					Exception ex = new Exception("Socket.IO connection error");
+					responseSubscriber.onError(ex);
+					asyncControl.triggerRequestFailed(ex);
+				}
+			})
+			.on("*", new Emitter.Listener() {
+				@Override
+				public void call(Object... args) {
+					outputMessage(args[0].toString(), args[1]);
+				}
+			});
+		
+
 		this.responseSubscriber = responseSubscriber;
 		this.asyncControl = asyncControl;
-		asyncControl.onCancellationRequested.add(() -> close());
+		asyncControl.onCancellationRequested.add(() -> socket.disconnect());
 	}
 
-	@Override
-	public void onOpen(ServerHandshake handshakedata) {
-		asyncControl.triggerReqeuestReady();
+	public void emit(String message) {
+		String event = "ping";
+		outputMessage("SENT", event, message);
+		socket.emit(event, message, (Ack) args -> outputMessage(event, args[0]));
 	}
 
-	@Override
-	public void send(String message) {
-		String msg = "SENT: \n" + message + "\n\n";
+	public void connect() {
+		socket.connect();
+	}
+
+	public boolean connected() {
+		return socket.connected();
+	}
+
+	private void outputMessage(String direction, String event, Object message) {
+		String msg = String.format("%s [%s]: \n%s\n\n", direction, event, message.toString());
 		responseSubscriber.onNext(msg.getBytes());
-		super.send(message);
 	}
-
-	@Override
-	public void onMessage(String message) {
-		String msg = "RECEIVED: \n" + message + "\n\n";
-		responseSubscriber.onNext(msg.getBytes());
-	}
-
-	@Override
-	public void onClose(int code, String reason, boolean remote) {
-		responseSubscriber.onComplete();
-		asyncControl.triggerRequestSucceeded();
-	}
-
-	@Override
-	public void onError(Exception ex) {
-		responseSubscriber.onError(ex);
-		asyncControl.triggerRequestFailed(ex);
+	private void outputMessage(String event, Object message) {
+		outputMessage("RECEIVED", event, message);
 	}
 }

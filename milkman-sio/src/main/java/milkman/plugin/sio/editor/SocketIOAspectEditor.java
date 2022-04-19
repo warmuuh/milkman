@@ -68,8 +68,8 @@ public class SocketIOAspectEditor implements RequestAspectEditor, ExecutionListe
             public void onRequestReady(RequestContainer request, ResponseContainer response) {
                 addItemBtn.setDisable(false);
                 addItemBtn.setOnAction(e -> response.getAspect(SocketIOResponseAspect.class).ifPresent(sio -> {
-                    if (sio.getClient().isOpen()) {
-                        sio.getClient().send(sioAspect.getMessage());
+                    if (sio.getClient().connected()) {
+                        sio.getClient().emit(sioAspect.getMessage());
                     }
                 }));
             }
@@ -87,12 +87,12 @@ public class SocketIOAspectEditor implements RequestAspectEditor, ExecutionListe
 
     private void activateIfActive(SocketIOAspect sioAspect, JFXButton addItemBtn, Optional<ResponseContainer> existingResponse) {
         existingResponse.ifPresent(response -> response.getAspect(SocketIOResponseAspect.class)
-                .filter(sio -> sio.getClient().isOpen())
+                .filter(sio -> sio.getClient().connected())
                 .ifPresent(sio -> {
                     addItemBtn.setDisable(false);
                     addItemBtn.setOnAction(e -> {
-                        if (sio.getClient().isOpen()) {
-                            sio.getClient().send(sioAspect.getMessage());
+                        if (sio.getClient().connected()) {
+                            sio.getClient().emit(sioAspect.getMessage());
                         }
                     });
                 }));
