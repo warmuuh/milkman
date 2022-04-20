@@ -22,6 +22,7 @@ import milkman.ui.contenttype.PlainContentTypePlugin;
 import milkman.ui.plugin.ExecutionListenerAware;
 import milkman.ui.plugin.RequestAspectEditor;
 import milkman.ui.plugin.rest.contenttype.JsonContentType;
+import milkman.ui.plugin.rest.domain.RestHeaderAspect;
 import milkman.utils.fxml.GenericBinding;
 
 import java.util.Arrays;
@@ -56,7 +57,7 @@ public class SocketIOAspectEditor implements RequestAspectEditor, ExecutionListe
         ContentEditor editor = new ContentEditor();
         editor.setEditable(true);
         editor.setContentTypePlugins(Arrays.asList(new JsonContentType(), new PlainContentTypePlugin()));
-        editor.setContentType("application/json");
+        setContentTypeIfPresent(editor, request);
         editor.setContent(sioAspect::getMessage, run(sioAspect::setMessage).andThen(() -> sioAspect.setDirty(true)));
         VBox.setVgrow(editor, Priority.ALWAYS);
 
@@ -95,6 +96,14 @@ public class SocketIOAspectEditor implements RequestAspectEditor, ExecutionListe
             new VBox(new HBox(10, new Label("Event:"), textField), new Label("Message:"), editor, addItemBtn)
         );
     }
+
+    private void setContentTypeIfPresent(ContentEditor root, RequestContainer request) {
+		request.getAspect(RestHeaderAspect.class).flatMap(headers -> 
+			headers.getEntries().stream().filter(h -> h.getName().equalsIgnoreCase("Content-Type")).findAny()
+		)
+		.map(h -> h.getValue())
+		.ifPresent(root::setContentType);
+	}
 
     private void activateIfActive(SocketIOAspect sioAspect, JFXButton addItemBtn, Optional<ResponseContainer> existingResponse) {
         existingResponse.ifPresent(response -> response.getAspect(SocketIOResponseAspect.class)

@@ -9,6 +9,8 @@ import io.socket.client.Ack;
 import io.socket.emitter.Emitter;
 
 import java.net.URI;
+import java.util.List;
+import java.util.Map;
 
 public class MilkmanSocketIOClient {
 
@@ -18,6 +20,7 @@ public class MilkmanSocketIOClient {
 
 	public MilkmanSocketIOClient(URI serverUri,
 									String path,
+									Map<String, List<String>> headers,
 								  Subscriber<byte[]> responseSubscriber,
 								  AsyncControl asyncControl) {
 		if(path.length()==0) {
@@ -26,6 +29,7 @@ public class MilkmanSocketIOClient {
 		IO.Options options = IO.Options.builder()
 			.setReconnection(false)
 			.setPath(path)
+			.setExtraHeaders(headers)
 			.build();
 		socket = IO.socket(serverUri, options);
 		socket
@@ -46,7 +50,7 @@ public class MilkmanSocketIOClient {
 			.on(Socket.EVENT_CONNECT_ERROR, new Emitter.Listener() {
 				@Override
 				public void call(Object... args) {
-					Exception ex = new Exception("Socket.IO connection error");
+					Exception ex = new Exception(args[0].toString());
 					responseSubscriber.onError(ex);
 					asyncControl.triggerRequestFailed(ex);
 				}
