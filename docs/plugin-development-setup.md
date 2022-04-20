@@ -15,9 +15,16 @@ for creating a new plugin, you can use following pom:
 	
 	<dependencies>
 		<dependency>
-			<groupId>com.github.warmuuh</groupId>
+			<groupId>com.github.warmuuh.milkman</groupId>
 			<artifactId>milkman</artifactId>
-			<version>1.0.0</version>
+			<version>...</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- and for refering to plugins of milkman: -->
+		<dependency> 
+			<groupId>com.github.warmuuh.milkman</groupId> 
+			<artifactId>milkman-rest</artifactId> 
+			<version>...</version> 
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
