@@ -24,7 +24,7 @@ public class MilkmanSocketIOClient {
 								  Subscriber<byte[]> responseSubscriber,
 								  AsyncControl asyncControl) {
 		if(path.length()==0) {
-			path = "/socket.io/";
+			path = null;
 		}
 		IO.Options options = IO.Options.builder()
 			.setReconnection(false)
