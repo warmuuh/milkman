@@ -3,6 +3,10 @@ package milkman.plugin.sio;
 import milkman.plugin.sio.socketio.IO;
 import milkman.plugin.sio.socketio.Socket;
 import milkman.utils.AsyncResponseControl.AsyncControl;
+import okhttp3.Dispatcher;
+import okhttp3.OkHttpClient;
+import okhttp3.internal.Util;
+
 import org.reactivestreams.Subscriber;
 
 import io.socket.client.Ack;
@@ -11,6 +15,9 @@ import io.socket.emitter.Emitter;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class MilkmanSocketIOClient {
 
@@ -31,6 +38,15 @@ public class MilkmanSocketIOClient {
 			.setPath(path)
 			.setExtraHeaders(headers)
 			.build();
+
+		//a client that has an executor with 0 keepAliveTime
+		OkHttpClient client = new OkHttpClient().newBuilder()
+			.dispatcher(new Dispatcher(new ThreadPoolExecutor(0, Integer.MAX_VALUE, 0, TimeUnit.SECONDS,
+					new SynchronousQueue<Runnable>(), Util.threadFactory("OkHttp Dispatcher", false))))
+			.build();
+		IO.setDefaultOkHttpCallFactory(client);
+		IO.setDefaultOkHttpWebSocketFactory(client);
+
 		socket = IO.socket(serverUri, options);
 		socket
 			.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
@@ -82,8 +98,10 @@ public class MilkmanSocketIOClient {
 	}
 
 	private void outputMessage(String direction, String event, Object message) {
-		String msg = String.format("%s [%s]: \n%s\n\n", direction, event, message.toString());
-		responseSubscriber.onNext(msg.getBytes());
+		if(message != null) {
+			String msg = String.format("%s [%s]: \n%s\n\n", direction, event, message.toString());
+			responseSubscriber.onNext(msg.getBytes());
+		}
 	}
 	private void outputMessage(String event, Object message) {
 		outputMessage("RECEIVED", event, message);

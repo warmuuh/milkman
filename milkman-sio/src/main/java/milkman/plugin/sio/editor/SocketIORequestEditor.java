@@ -68,7 +68,7 @@ public class SocketIORequestEditor implements RequestTypeEditor, AutoCompletionA
 
 			controller.requestPath = add(new JFXTextField(), true);
 			controller.requestPath.setId("requestPath");
-			controller.requestPath.setPromptText("/socket.io/");
+			controller.requestPath.setPromptText("/socket.io");
 		}
 	}
 	
