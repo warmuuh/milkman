@@ -5,11 +5,13 @@ import com.jfoenix.controls.JFXComboBox;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.IndexRange;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyCombination.Modifier;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -63,7 +65,8 @@ public class ContentEditor extends VBox {
 
 	private static final String DEFAULT_CONTENTTYPE = "text/plain";
 
-	private static ExecutorService executor = Executors.newCachedThreadPool(new ThreadFactory() {
+	private static final ExecutorService executor = Executors.newCachedThreadPool(new ThreadFactory() {
+		@Override
 		public Thread newThread(Runnable r) {
 			Thread t = Executors.defaultThreadFactory().newThread(r);
 			t.setDaemon(true);
@@ -159,7 +162,7 @@ public class ContentEditor extends VBox {
 					}
 				}).subscribe(this::applyHighlighting);
 
-		KeyCombination.Modifier controlKey = KeyCombination.CONTROL_DOWN;
+		Modifier controlKey = KeyCombination.CONTROL_DOWN;
 		if (SystemUtils.IS_OS_MAC){
 			controlKey = KeyCombination.META_DOWN;
 		}
@@ -228,9 +231,17 @@ public class ContentEditor extends VBox {
 		getChildren().add(header);
 	}
 
+	public void addExtraHeaderElement(Node node, boolean atBeginning) {
+		if (atBeginning) {
+			header.getChildren().add(0, node);
+		} else {
+			header.getChildren().add(node);
+		}
+	}
+
 	public void setHeaderVisibility(boolean isVisible) {
 		if (isVisible && !getChildren().contains(header)) {
-			getChildren().add(header);
+			getChildren().add(0, header);
 		} else {
 			getChildren().remove(header);
 		}

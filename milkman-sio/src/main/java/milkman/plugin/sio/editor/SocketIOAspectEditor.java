@@ -2,15 +2,17 @@ package milkman.plugin.sio.editor;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
-
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import milkman.ctrl.ExecutionListenerManager;
 import milkman.domain.RequestContainer;
@@ -52,14 +54,15 @@ public class SocketIOAspectEditor implements RequestAspectEditor, ExecutionListe
             sioAspect); 
 		textField.textProperty().bindBidirectional(binding);
 		textField.setUserData(binding); //need to add a strong reference to keep the binding from being GC-collected.
-		HBox.setHgrow(textField, Priority.ALWAYS);
+
 
         ContentEditor editor = new ContentEditor();
         editor.setEditable(true);
         editor.setContentTypePlugins(Arrays.asList(new JsonContentType(), new PlainContentTypePlugin()));
         setContentTypeIfPresent(editor, request);
         editor.setContent(sioAspect::getMessage, run(sioAspect::setMessage).andThen(() -> sioAspect.setDirty(true)));
-        VBox.setVgrow(editor, Priority.ALWAYS);
+
+        editor.addExtraHeaderElement(new HBox(10, new Label("Event:"), textField), true);
 
         var addItemBtn = new JFXButton();
         addItemBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -69,6 +72,10 @@ public class SocketIOAspectEditor implements RequestAspectEditor, ExecutionListe
         addItemBtn.setDisable(true);
 
         activateIfActive(sioAspect, addItemBtn, existingResponse);
+
+        StackPane.setAlignment(addItemBtn, Pos.BOTTOM_RIGHT);
+        StackPane.setMargin(addItemBtn, new Insets(0, 20, 20, 0));
+
 
         executionListenerManager.listenOnExecution(request, "sio-msg-sender-listener", new ExecutionListener() {
             @Override
@@ -91,9 +98,12 @@ public class SocketIOAspectEditor implements RequestAspectEditor, ExecutionListe
             }
         });
 
+        StackPane stackPane = new StackPane(editor, addItemBtn);
+        VBox.setVgrow(stackPane, Priority.ALWAYS);
+
         return new Tab(
             "Messages",
-            new VBox(new HBox(10, new Label("Event:"), textField), new Label("Message:"), editor, addItemBtn)
+            new VBox(stackPane)
         );
     }
 
