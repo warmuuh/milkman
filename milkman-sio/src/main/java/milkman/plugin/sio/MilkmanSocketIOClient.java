@@ -1,10 +1,9 @@
 package milkman.plugin.sio;
 
-import io.socket.client.Ack;
-import milkman.plugin.sio.socketio.IO;
-import milkman.plugin.sio.socketio.IO.Options;
-import milkman.plugin.sio.socketio.Socket;
-import milkman.plugin.sio.socketio.SocketOptionBuilder;
+import milkman.sio.shaded.v4.client.Ack;
+import milkman.sio.shaded.v4.client.IO;
+import milkman.sio.shaded.v4.client.Socket;
+import milkman.sio.shaded.v4.client.SocketOptionBuilder;
 import milkman.utils.AsyncResponseControl.AsyncControl;
 import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
@@ -30,7 +29,7 @@ public class MilkmanSocketIOClient {
 								  Subscriber<byte[]> responseSubscriber,
 								  AsyncControl asyncControl) {
 
-		SocketOptionBuilder optionsBuilder = Options.builder()
+		SocketOptionBuilder optionsBuilder = IO.Options.builder()
 				.setReconnection(false)
 				.setExtraHeaders(headers);
 

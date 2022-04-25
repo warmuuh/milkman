@@ -23,14 +23,58 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>io.socket</groupId>
-			<artifactId>socket.io-client</artifactId>
-			<version>2.0.1</version>
+			<groupId>com.github.warmuuh.milkman-sio-shaded-clients</groupId>
+			<artifactId>sio-v4</artifactId>
+			<version>1.0.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.github.warmuuh.milkman-sio-shaded-clients</groupId>
+			<artifactId>sio-v3</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>io.socket</groupId>-->
+<!--			<artifactId>socket.io-client</artifactId>-->
+<!--			<version>2.0.1</version>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>com.github.warmuuh</groupId>-->
+<!--			<artifactId>milkman-shaded-socketio-v4</artifactId>-->
+<!--			<version>5.5.0-SNAPSHOT</version>-->
+<!--		</dependency>-->
 	</dependencies>
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.3.0</version>
+				<executions>
+					<execution>
+						<phase>process-sources</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<relocations>
+								<relocation>
+									<pattern>io.socket</pattern>
+									<shadedPattern>milkman.io.socket.v4</shadedPattern>
+								</relocation>
+							</relocations>
+							<artifactSet>
+								<includes>
+									<include>io.socket:socket.io-client</include>
+								</includes>
+							</artifactSet>
+							<shadedArtifactAttached>true</shadedArtifactAttached>
+							<shadedArtifactId>milkman-shaded-socketio-v4</shadedArtifactId>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>

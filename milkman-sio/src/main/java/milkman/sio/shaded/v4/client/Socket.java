@@ -1,12 +1,12 @@
-package milkman.plugin.sio.socketio;
+package milkman.sio.shaded.v4.client;
 
-import io.socket.client.Ack;
-import io.socket.client.On;
-import io.socket.client.SocketIOException;
-import io.socket.emitter.Emitter;
-import io.socket.parser.Packet;
-import io.socket.parser.Parser;
-import io.socket.thread.EventThread;
+import milkman.sio.shaded.v4.client.Ack;
+import milkman.sio.shaded.v4.client.On;
+import milkman.sio.shaded.v4.client.SocketIOException;
+import milkman.sio.shaded.v4.emitter.Emitter;
+import milkman.sio.shaded.v4.parser.Packet;
+import milkman.sio.shaded.v4.parser.Parser;
+import milkman.sio.shaded.v4.thread.EventThread;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,6 +14,10 @@ import org.json.JSONObject;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+/**
+ * monkey-patched onEvent to emit all events also to '*'
+ */
 
 /**
  * The socket class for Socket.IO Client.
