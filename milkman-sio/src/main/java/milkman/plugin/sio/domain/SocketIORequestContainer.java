@@ -10,17 +10,15 @@ import milkman.domain.RequestContainer;
 public class SocketIORequestContainer extends RequestContainer {
 
 	private String url;
-	private String path;
-	
+
 	@Override
 	public String getType() {
 		return "sio";
 	}
 
-	public SocketIORequestContainer(String name, String url, String path){
+	public SocketIORequestContainer(String name, String url){
 		super(name);
 		this.url = url;
-		this.path = path;
 	}
 	
 }

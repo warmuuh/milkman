@@ -25,6 +25,7 @@
 				<include>com.github.warmuuh:milkman-test</include>
 				<include>com.github.warmuuh:milkman-auth</include>
 				<include>com.github.warmuuh:milkman-ws</include>
+				<include>com.github.warmuuh:milkman-sio</include>
 			</includes>
 			<binaries>
 				<unpack>false</unpack>

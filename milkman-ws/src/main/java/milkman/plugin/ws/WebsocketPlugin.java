@@ -53,7 +53,7 @@ public class WebsocketPlugin implements RequestAspectsPlugin, RequestTypePlugin 
 
 	@Override
 	public int getOrder() {
-		return 15;
+		return 9;
 	}
 
 	@Override

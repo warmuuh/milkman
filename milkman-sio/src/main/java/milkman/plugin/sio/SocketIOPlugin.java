@@ -5,8 +5,10 @@ import milkman.domain.RequestExecutionContext;
 import milkman.domain.ResponseContainer;
 import milkman.plugin.sio.domain.SocketIOAspect;
 import milkman.plugin.sio.domain.SocketIORequestContainer;
+import milkman.plugin.sio.domain.SocketIoSettingsAspect;
 import milkman.plugin.sio.editor.SocketIOAspectEditor;
 import milkman.plugin.sio.editor.SocketIORequestEditor;
+import milkman.plugin.sio.editor.SocketIoSettingsAspectEditor;
 import milkman.ui.plugin.*;
 import milkman.ui.plugin.rest.domain.RestHeaderAspect;
 import milkman.utils.AsyncResponseControl.AsyncControl;
@@ -20,7 +22,7 @@ public class SocketIOPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 	
 	@Override
 	public List<RequestAspectEditor> getRequestTabs() {
-		return Collections.singletonList(new SocketIOAspectEditor());
+		return List.of(new SocketIOAspectEditor(), new SocketIoSettingsAspectEditor());
 	}
 
 	@Override
@@ -31,9 +33,14 @@ public class SocketIOPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 	@Override
 	public void initializeRequestAspects(RequestContainer request) {
 		if (request instanceof SocketIORequestContainer) {
-			if (!request.getAspect(SocketIOAspect.class).isPresent())
+			if (!request.getAspect(SocketIOAspect.class).isPresent()) {
 				request.addAspect(new SocketIOAspect());
-			
+			}
+
+			if (!request.getAspect(SocketIoSettingsAspect.class).isPresent()) {
+				request.addAspect(new SocketIoSettingsAspect());
+			}
+
 			if (!request.getAspect(RestHeaderAspect.class).isPresent()) {
 				var headers = new RestHeaderAspect();
 				request.addAspect(headers);
@@ -50,12 +57,12 @@ public class SocketIOPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 
 	@Override
 	public int getOrder() {
-		return 15;
+		return 9;
 	}
 
 	@Override
 	public RequestContainer createNewRequest() {
-		return new SocketIORequestContainer("New Socket.IO Request", "", "");
+		return new SocketIORequestContainer("New Socket.IO Request", "");
 	}
 
 	@Override
