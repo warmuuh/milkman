@@ -101,6 +101,11 @@
 			<artifactId>milkman-auth</artifactId>
 			<version>5.5.0-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>com.github.warmuuh</groupId>
+			<artifactId>milkman-sio</artifactId>
+			<version>5.5.0-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<build>
