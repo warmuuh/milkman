@@ -26,7 +26,6 @@
 		<module>milkman-auth</module>
 		<module>milkman-ws</module>
 		<module>milkman-sio</module>
-		<module>milkman-sio-shaded-v4</module>
 	</modules>
 
 	<properties>
