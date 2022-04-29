@@ -29,7 +29,12 @@ public class SocketIOProcessor {
 
 		var emitter = ReplayProcessor.<byte[]>create();
 
-		var client = new MilkmanSocketIOClient(URI.create(url), settings.getHandshakePath(), headers, emitter, asyncControl);
+		var client = new MilkmanSocketIOClient(URI.create(url),
+				settings.getHandshakePath(),
+				settings.getClientVersion(),
+				headers,
+				emitter,
+				asyncControl);
 
 		asyncControl.triggerReqeuestStarted();
 		client.connect();

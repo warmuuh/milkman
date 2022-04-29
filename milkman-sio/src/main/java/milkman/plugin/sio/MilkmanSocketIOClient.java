@@ -1,88 +1,78 @@
 package milkman.plugin.sio;
 
-import milkman.sio.shaded.v4.client.Ack;
-import milkman.sio.shaded.v4.client.IO;
-import milkman.sio.shaded.v4.client.Socket;
-import milkman.sio.shaded.v4.client.SocketOptionBuilder;
+import milkman.plugin.sio.domain.SocketIoVersion;
 import milkman.utils.AsyncResponseControl.AsyncControl;
-import okhttp3.Dispatcher;
-import okhttp3.OkHttpClient;
-import okhttp3.internal.Util;
 import org.reactivestreams.Subscriber;
 
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 public class MilkmanSocketIOClient {
 
 	private final Subscriber<byte[]> responseSubscriber;
 	private final AsyncControl asyncControl;
-	private final Socket socket;
+	private final SocketIoClient client;
 
 	public MilkmanSocketIOClient(URI serverUri,
 									String handshakePath,
+									SocketIoVersion version,
 									Map<String, List<String>> headers,
 								  Subscriber<byte[]> responseSubscriber,
 								  AsyncControl asyncControl) {
 
-		SocketOptionBuilder optionsBuilder = IO.Options.builder()
-				.setReconnection(false)
-				.setExtraHeaders(headers);
-
-		if(handshakePath.length() > 0) {
-			optionsBuilder.setPath(handshakePath);
-		}
-
-		initializeOkHttpClientForSocketIo();
-
-		socket = IO.socket(serverUri, optionsBuilder.build());
-		socket
-			.on(Socket.EVENT_CONNECT, args -> {
-				asyncControl.triggerReqeuestStarted();
-				asyncControl.triggerReqeuestReady();
-			})
-			.on(Socket.EVENT_DISCONNECT, args -> {
-				responseSubscriber.onComplete();
-				asyncControl.triggerRequestSucceeded();
-			})
-			.on(Socket.EVENT_CONNECT_ERROR, args -> {
-				Exception ex = new Exception(args[0].toString());
-				responseSubscriber.onError(ex);
-				asyncControl.triggerRequestFailed(ex);
-			})
-			.on("*", args -> outputMessage(args[0].toString(), args[1]));
-		
+		client = getSocketIoClientBuilder(version)
+				.serverUri(serverUri)
+				.handshakePath(handshakePath)
+				.headers(headers)
+				.onConnect(() -> {
+					asyncControl.triggerReqeuestStarted();
+					asyncControl.triggerReqeuestReady();
+				})
+				.onDisconnect(() -> {
+					responseSubscriber.onComplete();
+					asyncControl.triggerRequestSucceeded();
+				})
+				.onConnectError(err -> {
+					Exception ex = new Exception(err);
+					responseSubscriber.onError(ex);
+					asyncControl.triggerRequestFailed(ex);
+				})
+				.onEventMessage((evt, msg) -> outputMessage(evt, msg))
+				.build();
 
 		this.responseSubscriber = responseSubscriber;
 		this.asyncControl = asyncControl;
-		asyncControl.onCancellationRequested.add(() -> socket.disconnect());
+		asyncControl.onCancellationRequested.add(() -> client.disconnect());
 	}
 
-	private void initializeOkHttpClientForSocketIo() {
-		//a client that has an executor with 0 keepAliveTime
-		OkHttpClient client = new OkHttpClient().newBuilder()
-			.dispatcher(new Dispatcher(new ThreadPoolExecutor(0, Integer.MAX_VALUE, 0, TimeUnit.SECONDS,
-					new SynchronousQueue<Runnable>(), Util.threadFactory("OkHttp Dispatcher", false))))
-			.build();
-		IO.setDefaultOkHttpCallFactory(client);
-		IO.setDefaultOkHttpWebSocketFactory(client);
+	private SocketIoClientBuilder getSocketIoClientBuilder(SocketIoVersion version) {
+		// based on compatibility matrix:
+		// https://github.com/socketio/socket.io-client-java#compatibility
+		switch (version) {
+			case SOCKETIO_V1:
+				return SocketIoV09Client.builder();
+			case SOCKETIO_V2:
+				return SocketIoV1Client.builder();
+			case SOCKETIO_V3:
+			case SOCKETIO_V4:
+				return SocketIoV2Client.builder();
+			default:
+				throw new IllegalArgumentException("Unknown socket.io version");
+		}
 	}
 
 	public void emit(String event, String message) {
 		outputMessage("SENT", event, message);
-		socket.emit(event, message, (Ack) args -> outputMessage(event, args[0]));
+		client.emit(event, message, response -> outputMessage(event, response));
 	}
 
 	public void connect() {
-		socket.connect();
+		client.connect();
 	}
 
 	public boolean connected() {
-		return socket.connected();
+		return client.isConnected();
 	}
 
 	private void outputMessage(String direction, String event, Object message) {

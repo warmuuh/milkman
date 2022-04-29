@@ -24,13 +24,18 @@
 		</dependency>
 		<dependency>
 			<groupId>com.github.warmuuh.milkman-sio-shaded-clients</groupId>
-			<artifactId>sio-v4</artifactId>
-			<version>1.0.0</version>
+			<artifactId>sio-client-v09</artifactId>
+			<version>1.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.warmuuh.milkman-sio-shaded-clients</groupId>
-			<artifactId>sio-v3</artifactId>
-			<version>1.0.0</version>
+			<artifactId>sio-client-v1</artifactId>
+			<version>1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.warmuuh.milkman-sio-shaded-clients</groupId>
+			<artifactId>sio-client-v2</artifactId>
+			<version>1.2</version>
 		</dependency>
 <!--		<dependency>-->
 <!--			<groupId>io.socket</groupId>-->
