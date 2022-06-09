@@ -29,6 +29,11 @@
 			<artifactId>javafx-controls</artifactId>
 			<version>${javafx.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>np.com.ngopal</groupId>
+			<artifactId>javafx-autocomplete-field</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
