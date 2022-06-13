@@ -9,6 +9,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
+import javafx.util.StringConverter;
 
 
 public class AutoCompleteBox<T> implements EventHandler<KeyEvent> {
@@ -19,7 +20,17 @@ public class AutoCompleteBox<T> implements EventHandler<KeyEvent> {
   public AutoCompleteBox(final ComboBox<T> comboBox, Function<String, List<T>> lookupFunction) {
     this.comboBox = comboBox;
       this.lookupFunction = lookupFunction;
+      comboBox.setConverter(new StringConverter<T>() {
+        @Override
+        public String toString(T object) {
+          return object != null ? object.toString() : "";
+        }
 
+        @Override
+        public T fromString(String string) {
+          return comboBox.getItems().stream().filter(itm -> itm.toString().equals(string)).findAny().orElse(null);
+        }
+      });
       this.doAutoCompleteBox();
   }
 
