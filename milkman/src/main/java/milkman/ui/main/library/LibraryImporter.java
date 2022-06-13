@@ -10,6 +10,9 @@ import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.control.ComboBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import milkman.domain.Workspace;
 import milkman.ui.main.Toaster;
 import milkman.ui.main.library.LibraryOptionsProvider.LibraryOptions;
@@ -17,6 +20,8 @@ import milkman.ui.plugin.ImporterPlugin;
 import milkman.ui.plugin.LibraryPlugin;
 import milkman.ui.plugin.LibraryPlugin.LibraryEntry;
 import milkman.ui.plugin.LibraryPluginAware;
+import milkman.utils.fxml.FxmlBuilder.VboxExt;
+import milkman.utils.javafx.AutoCompleteBox;
 import milkman.utils.javafx.MappedList;
 import np.com.ngopal.control.AutoFillTextBox;
 import np.com.ngopal.control.AutoFillTextBoxSkin;
@@ -25,6 +30,7 @@ import org.reactfx.EventStreams;
 public class LibraryImporter implements ImporterPlugin, LibraryPluginAware {
 
   private List<LibraryPlugin> plugins;
+  private AutoCompleteBox<LibraryEntry> completeBox;
 
   @Override
   public String getName() {
@@ -33,20 +39,23 @@ public class LibraryImporter implements ImporterPlugin, LibraryPluginAware {
 
   @Override
   public Node getImportControls() {
-    ObservableList<String> data = FXCollections.observableArrayList();
 //    MappedList<String, LibraryEntry> mappedList = new MappedList<>(data, LibraryEntry::getDisplayName);
-    AutoFillTextBox<String> box = new AutoFillTextBox<>(data);
-    box.setSkin(new AutoFillTextBoxSkin<>(box));
-    EventStreams.nonNullValuesOf(box.getTextbox().textProperty())
-        .filter(s -> s.length() > 3)
-        .successionEnds(Duration.ofMillis(250))
-        .subscribe(qry -> {
-          List<LibraryEntry> entries = searchLibraries(qry);
-          data.setAll(entries.stream().map(e -> e.getDisplayName()).collect(Collectors.toList()));
-        });
+    ComboBox<LibraryEntry> box = new ComboBox<>();
+    this.completeBox = new AutoCompleteBox<>(box, this::searchLibraries);
+//    EventStreams.nonNullValuesOf(box.getTextbox().textProperty())
+//        .filter(s -> s.length() > 3)
+//        .successionEnds(Duration.ofMillis(250))
+//        .subscribe(qry -> {
+//          List<LibraryEntry> entries = searchLibraries(qry);
+//          data.setAll(entries.stream().map(e -> e.getDisplayName()).collect(Collectors.toList()));
+//        });
+    box.setMinWidth(200);
+    box.setPrefWidth(200);
 
-    return vbox(label("Search library:"))
-        .add(box, true);
+    VboxExt vbox = vbox(label("Search library:"));
+    vbox.add(box, true);
+    VBox.setVgrow(vbox, Priority.ALWAYS);
+    return vbox;
   }
 
   private List<LibraryEntry> searchLibraries(String qry) {
