@@ -1,31 +1,22 @@
 package milkman.ui.main.library;
 
-import static milkman.utils.fxml.FxmlBuilder.hbox;
 import static milkman.utils.fxml.FxmlBuilder.label;
 import static milkman.utils.fxml.FxmlBuilder.vbox;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import milkman.domain.Workspace;
 import milkman.ui.main.Toaster;
-import milkman.ui.main.library.LibraryOptionsProvider.LibraryOptions;
 import milkman.ui.plugin.ImporterPlugin;
 import milkman.ui.plugin.LibraryPlugin;
 import milkman.ui.plugin.LibraryPlugin.LibraryEntry;
 import milkman.ui.plugin.LibraryPluginAware;
 import milkman.utils.fxml.FxmlBuilder.VboxExt;
 import milkman.utils.javafx.AutoCompleteBox;
-import milkman.utils.javafx.MappedList;
-import np.com.ngopal.control.AutoFillTextBox;
-import np.com.ngopal.control.AutoFillTextBoxSkin;
-import org.reactfx.EventStreams;
 
 public class LibraryImporter implements ImporterPlugin, LibraryPluginAware {
 

@@ -83,15 +83,16 @@ public class AutoCompleteBox<T> implements EventHandler<KeyEvent> {
   private void setItems() {
     ObservableList<T> list = FXCollections.observableArrayList();
 
+    this.comboBox.hide();
     String searchString = this.comboBox.getEditor().getText().toLowerCase();
-    list.addAll(lookupFunction.apply(searchString));
+    List<T> foundItems = lookupFunction.apply(searchString);
+    list.addAll(foundItems);
 
-    if (list.isEmpty()) {
-      this.comboBox.hide();
+    if (!list.isEmpty()) {
+      this.comboBox.setItems(list);
+      this.comboBox.show();
     }
 
-    this.comboBox.setItems(list);
-    this.comboBox.show();
   }
 
   private void moveCaret(int textLength) {

@@ -31,8 +31,12 @@ public interface LibraryPlugin {
 	public Collection importCollection(String url, String libraryEntryId);
 
 	@Value
-	static class LibraryEntry {
+	class LibraryEntry {
 		String displayName;
 		String id;
+
+		public String toString() {
+			return displayName;
+		}
 	}
 }

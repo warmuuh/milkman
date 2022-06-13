@@ -41,7 +41,7 @@ public class ApiGuruLibrary implements LibraryPlugin {
   @Override
   public List<LibraryEntry> lookupEntry(String url, String searchInput) {
     return getLibrary(url).stream()
-        .filter(e -> e.getDisplayName().contains(searchInput))
+        .filter(e -> e.getDisplayName().toLowerCase().contains(searchInput))
         .map(e -> new LibraryEntry(e.getDisplayName(), e.getId()))
         .collect(Collectors.toList());
   }
