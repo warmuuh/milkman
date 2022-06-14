@@ -1,17 +1,23 @@
 package milkman.ui.main.library;
 
+import static milkman.utils.fxml.FxmlBuilder.hbox;
 import static milkman.utils.fxml.FxmlBuilder.label;
 import static milkman.utils.fxml.FxmlBuilder.vbox;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import lombok.Value;
 import milkman.domain.Collection;
 import milkman.domain.Workspace;
+import milkman.ui.components.TinySpinner;
 import milkman.ui.main.Toaster;
 import milkman.ui.main.library.LibraryOptionsProvider.LibraryDefinition;
 import milkman.ui.plugin.ImporterPlugin;
@@ -36,6 +42,7 @@ public class LibraryImporter implements ImporterPlugin, LibraryPluginAware {
   public Node getImportControls() {
 //    MappedList<String, LibraryEntry> mappedList = new MappedList<>(data, LibraryEntry::getDisplayName);
     this.searchBox = new ComboBox<>();
+
     this.completeBox = new AutoCompleteBox<>(searchBox, this::searchLibraries);
 //    EventStreams.nonNullValuesOf(box.getTextbox().textProperty())
 //        .filter(s -> s.length() > 3)
@@ -47,14 +54,21 @@ public class LibraryImporter implements ImporterPlugin, LibraryPluginAware {
     searchBox.setMinWidth(200);
     searchBox.setPrefWidth(200);
 
-    VboxExt vbox = vbox(label("Search library:"));
+
+    Label searchLabel = label("Search library");
+    VboxExt vbox = vbox(searchLabel);
     vbox.add(searchBox, true);
     VBox.setVgrow(vbox, Priority.ALWAYS);
+
+    if (LibraryOptionsProvider.options().getLibraryDefinitions().isEmpty()) {
+      vbox.add(label("No library definitions found. Add some definitions in the settings."));
+    }
+
     return vbox;
   }
 
   private List<SearchEntry> searchLibraries(String qry) {
-    return LibraryOptionsProvider.options()
+    List<SearchEntry> foundEntries = LibraryOptionsProvider.options()
         .getLibraryDefinitions().parallelStream()
         .flatMap(ld -> plugins.stream()
             .filter(p -> p.getName().equals(ld.getType()))
@@ -62,6 +76,7 @@ public class LibraryImporter implements ImporterPlugin, LibraryPluginAware {
                 libraryEntry -> new SearchEntry(ld, libraryEntry)
             ))
         ).collect(Collectors.toList());
+    return foundEntries;
   }
 
   @Override
