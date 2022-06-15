@@ -47,6 +47,10 @@ public class UiPluginManager {
 		return loadOrderedSpiInstances(KeyEditor.class);
 	}
 
+	public List<LibraryPlugin> loadLibraryPlugins(){
+		return loadSpiInstances(LibraryPlugin.class);
+	}
+
 	public List<UiThemePlugin> loadThemePlugins(){
 		return loadSpiInstances(UiThemePlugin.class);
 	}
@@ -102,6 +106,10 @@ public class UiPluginManager {
 
 		if (o instanceof ExecutionListenerAware) {
 			((ExecutionListenerAware) o).setExecutionListenerManager(executionListenerManager);
+		}
+
+		if (o instanceof LibraryPluginAware) {
+			((LibraryPluginAware)o).setLibraryPlugins(loadLibraryPlugins());
 		}
 	}
 	

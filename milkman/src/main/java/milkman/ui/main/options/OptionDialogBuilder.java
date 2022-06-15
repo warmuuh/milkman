@@ -2,6 +2,10 @@ package milkman.ui.main.options;
 
 import com.jfoenix.controls.*;
 import com.jfoenix.validation.IntegerValidator;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -25,25 +29,29 @@ public class OptionDialogBuilder  {
 		OptionPaneBuilder<T> numberInput(String name, Function<T, Integer> getter, BiConsumer<T, Integer> setter);
 		OptionPaneBuilder<T> button(String name, Runnable runnable);
 		OptionPaneBuilder<T> list(Function<T, List<String>> itemProvider);
+		<V> OptionPaneBuilder<T> list(Function<T, List<V>> itemProvider,
+				Map<String, Function<V, String>> columnValueProviders,
+				Supplier<V> newValueProvider,
+				Consumer<V> valueEditor);
 
 		OptionPaneBuilder<T> selection(String name, Function<T, String> getter, BiConsumer<T, String> setter, List<String> possibleValues);
 		OptionSectionBuilder<T> endSection();
 	}
-	
+
 	public interface OptionSectionBuilder<T> {
 		OptionPaneBuilder<T> section(String name);
 		OptionDialogPane build();
 	}
-	
+
 	@RequiredArgsConstructor
 	public static class OptionPageBuilder<T> implements OptionPaneBuilder<T>, OptionSectionBuilder<T> {
 
-		
+
 		private final String name;
 		private final T optionsObject;
 		private final List<Node> nodes = new LinkedList<Node>();
 		private final List<GenericBinding<?, ?>> bindings = new LinkedList<>();
-		
+
 		@Override
 		public OptionPaneBuilder<T> section(String name) {
 			Label lbl = new Label(name);
@@ -79,7 +87,7 @@ public class OptionDialogBuilder  {
 			nodes.add(hbox);
 			return this;
 		}
-		
+
 
 		@Override
 		public OptionPaneBuilder<T> passwordInput(String name, Function<T, String> getter, BiConsumer<T, String> setter) {
@@ -94,14 +102,14 @@ public class OptionDialogBuilder  {
 			nodes.add(hbox);
 			return this;
 		}
-		
+
 		@Override
 		public OptionPaneBuilder<T> numberInput(String name, Function<T, Integer> getter, BiConsumer<T, Integer> setter) {
 
 			Label lbl = new Label(name);
 			JFXTextField text = new JFXTextField();
 			text.setValidators(new IntegerValidator("Not an integer"));
-			
+
 			BiConsumer<T, String> setFn = (obj, val) -> {
 				if (text.validate())
 					setter.accept(obj, Integer.parseInt(val));
@@ -114,8 +122,8 @@ public class OptionDialogBuilder  {
 			nodes.add(hbox);
 			return this;
 		}
-		
-		
+
+
 		@Override
 		public OptionSectionBuilder<T> endSection() {
 			HBox hbox = new HBox();
@@ -123,7 +131,7 @@ public class OptionDialogBuilder  {
 			nodes.add(hbox);
 			return this;
 		}
-		
+
 		@Override
 		public OptionDialogPane build() {
 			OptionDialogPane pane = new OptionDialogPane(name, bindings);
@@ -135,7 +143,7 @@ public class OptionDialogBuilder  {
 		@Override
 		public OptionPaneBuilder<T> selection(String name, Function<T, String> getter, BiConsumer<T, String> setter,
 				List<String> possibleValues) {
-			
+
 			Label lbl = new Label(name);
 			JFXComboBox<String> text = new JFXComboBox();
 			GenericBinding<T,String> binding = GenericBinding.of(getter, setter, optionsObject);
@@ -181,12 +189,29 @@ public class OptionDialogBuilder  {
 			return this;
 		}
 
+		public <V> OptionPaneBuilder<T> list(Function<T, List<V>> itemProvider,
+				Map<String, Function<V, String>> columnValueProviders,
+				Supplier<V> newValueProvider,
+				Consumer<V> valueEditor
+				) {
+			List<V> items = itemProvider.apply(optionsObject);
+			JfxTableEditor<V> table = new JfxTableEditor<>("options.generic.list");
+			columnValueProviders.forEach(table::addReadOnlyColumn);
+			table.enableAddition(() -> {
+				V newValue = newValueProvider.get();
+				return newValue;
+			});
+			table.addDeleteColumn("remove", items::remove);
+			table.addCustomAction(FontAwesomeIcon.EDIT, valueEditor);
+			table.setItems(items);
+			nodes.add(table);
+			return this;
+		}
 
 	}
-	
-	
+
 	public <T> OptionSectionBuilder<T> page(String name, T optionBean){
 		return new OptionPageBuilder(name, optionBean);
 	}
-	
+
 }

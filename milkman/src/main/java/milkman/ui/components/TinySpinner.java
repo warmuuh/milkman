@@ -19,12 +19,18 @@ public class TinySpinner extends StackPane {
 	private JFXButton cancellation;
 
 	public TinySpinner() {
+		this(true);
+	}
+
+	public TinySpinner(boolean cancellationEnabled) {
 		this.getStyleClass().add("spinner");
 		this.getChildren().add(spinner("tiny-spinner", -40));
-		
-		cancellation = button("tiny-cancellation", icon(FontAwesomeIcon.TIMES, "1.5em"));
-		StackPane.setAlignment(cancellation, Pos.CENTER);
-		this.getChildren().add(cancellation);
+
+		if (cancellationEnabled) {
+			cancellation = button("tiny-cancellation", icon(FontAwesomeIcon.TIMES, "1.5em"));
+			StackPane.setAlignment(cancellation, Pos.CENTER);
+			this.getChildren().add(cancellation);
+		}
 	}
 
 	private JFXSpinner spinner(String cssClass, int startAngle) {
