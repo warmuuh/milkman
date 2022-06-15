@@ -11,6 +11,7 @@ version 5.4.0 - upcoming
   * disabled javafx off-color subpixel antialiasing for font (macOs)
   * openapi import: importing server-urls as environment variables
   * added colors to environments
+  * added importer for libraries such as [APIs.guru](http://apis.guru) or others via plugins
 
 version 5.3.0
   * mask plain-keys on overview
