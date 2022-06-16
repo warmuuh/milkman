@@ -1,6 +1,14 @@
 # Changelog
 
-version 5.4.0 - upcoming
+versuib 5.6.0 -- upcomming
+  * 
+
+version 5.5.0
+
+  * added new [Socket.io plugin](/milkman-sio) (thanks to @pauljakals)
+  * added importer for libraries such as [APIs.guru](http://apis.guru) or others via plugins
+
+version 5.4.0
   * added debug output to see what got send (http only for now)
   * store customized table-column widths
   * added option to not export keys on workspace export
@@ -11,7 +19,6 @@ version 5.4.0 - upcoming
   * disabled javafx off-color subpixel antialiasing for font (macOs)
   * openapi import: importing server-urls as environment variables
   * added colors to environments
-  * added importer for libraries such as [APIs.guru](http://apis.guru) or others via plugins
 
 version 5.3.0
   * mask plain-keys on overview
