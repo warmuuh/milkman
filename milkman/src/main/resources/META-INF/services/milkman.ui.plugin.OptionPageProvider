@@ -1,2 +1,3 @@
 milkman.ui.main.options.CoreApplicationOptionsProvider
 milkman.ui.main.library.LibraryOptionsProvider
+milkman.exporter.CustomTemplateOptionsProvider

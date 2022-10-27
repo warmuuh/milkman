@@ -39,6 +39,11 @@
 			<artifactId>controlsfx</artifactId>
 			<version>8.40.15</version>
 		</dependency>
+		<dependency>
+			<groupId>com.samskivert</groupId>
+			<artifactId>jmustache</artifactId>
+			<version>1.15</version>
+		</dependency>
 
 
 
