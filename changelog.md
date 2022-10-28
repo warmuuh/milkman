@@ -1,7 +1,9 @@
 # Changelog
 
-version 5.6.0 -- upcomming (nightly)
-  * custom export templates 
+version 5.6.0 -- upcoming (nightly)
+  * custom export templates (see [Features](/docs/features.md))
+  * some predefined exporters for
+    * Spring RestTemplate
 
 version 5.5.0
 
