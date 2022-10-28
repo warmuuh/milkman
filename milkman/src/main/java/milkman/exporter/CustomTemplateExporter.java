@@ -54,8 +54,13 @@ public class CustomTemplateExporter implements RequestExporterPlugin {
     return 	root;
   }
 
-  public void refreshCommand(Templater templater, CompiledTemplate n) {
-    textArea.setText(n.render(request));
+  public void refreshCommand(Templater templater, CompiledTemplate template) {
+    try{
+      String renderedValue = template.render(request);
+      textArea.setText(templater.replaceTags(renderedValue));
+    } catch (Exception e) {
+      textArea.setText("Failed to render template: \n" + e.getMessage());
+    }
   }
 
 

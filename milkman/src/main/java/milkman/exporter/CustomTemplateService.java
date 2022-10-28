@@ -28,7 +28,7 @@ public class CustomTemplateService {
     private final String templateName;
 
     public String render(RequestContainer requestContainer) {
-      return template.execute(requestContainer);
+      return template.execute(new RequestContainerTemplateContext(requestContainer));
     }
 
     @Override
