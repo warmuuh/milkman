@@ -49,7 +49,7 @@
 ## Custom Templates
 
 * you can define custom templates for every type of request yourself. Do you often need to write Spring Webclient code?
-setup some custom template for it.
+setup some custom template for it. (you can do so in the `options` dialog)
 * Some predefined templates are available already.
 * Syntax is similar to mustache but enhanced with whitespace control. example:
 ```
