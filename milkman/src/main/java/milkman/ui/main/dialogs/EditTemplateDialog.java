@@ -1,14 +1,19 @@
 package milkman.ui.main.dialogs;
 
 import static milkman.utils.fxml.FxmlBuilder.cancel;
+import static milkman.utils.fxml.FxmlBuilder.comboBox;
+import static milkman.utils.fxml.FxmlBuilder.hbox;
 import static milkman.utils.fxml.FxmlBuilder.label;
 import static milkman.utils.fxml.FxmlBuilder.submit;
 import static milkman.utils.fxml.FxmlBuilder.text;
 import static milkman.utils.fxml.FxmlBuilder.vbox;
+import static milkman.utils.fxml.FxmlBuilder.vspace;
 
+import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
+import java.util.List;
 import javafx.scene.control.Dialog;
 import lombok.Getter;
 import milkman.utils.fxml.FxmlUtil;
@@ -20,14 +25,23 @@ public class EditTemplateDialog {
 
 	JFXTextArea template;
 	JFXTextField name;
-	JFXTextField requestType;
+	JFXComboBox requestType;
+	private List<String> registeredRequestTypes;
 
-	public EditTemplateDialog() {}
+	public EditTemplateDialog(List<String> registeredRequestTypes) {
+		this.registeredRequestTypes = registeredRequestTypes;
+	}
 
 	public void showAndWait(String templateName, String requestType, String template) {
 		JFXDialogLayout content = new EditTemplateDialogFxml(this);
 		this.name.setText(templateName);
-		this.requestType.setText(requestType);
+		this.requestType.getItems().addAll(registeredRequestTypes);
+		if (requestType != null) {
+			this.requestType.getSelectionModel().select(requestType);
+		} else {
+			this.requestType.getSelectionModel().selectFirst();
+		}
+
 		this.template.setText(template);
 
 		dialog = FxmlUtil.createDialog(content);
@@ -43,7 +57,7 @@ public class EditTemplateDialog {
 	}
 
 	public String getRequestType() {
-		return requestType.getText();
+		return (String) requestType.getSelectionModel().getSelectedItem();
 	}
 
 	private void onSave() {
@@ -64,7 +78,13 @@ public class EditTemplateDialog {
 
 			setBody(vbox(
 					controller.name = text("tmpl-name", "Template name", true),
-					controller.requestType = text("tmpl-type", "Request Type", true),
+					vspace(5),
+					hbox(
+						label("Request Type:"),
+						controller.requestType = comboBox("tmpl-type")
+					),
+					vspace(5),
+					label("Template:"),
 					controller.template = new JFXTextArea()
 			));
 

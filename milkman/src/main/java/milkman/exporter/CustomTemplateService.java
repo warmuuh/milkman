@@ -12,8 +12,18 @@ public class CustomTemplateService {
   List<CompiledTemplate> getTemplatesForType(String type) {
     return CustomTemplateOptionsProvider.options().getExportTemplates().stream()
         .filter(t -> t.getRequestType().equals(type))
-        .map(t -> new CompiledTemplate(Mustache.compiler().compile(t.getTemplate()), t.getName()))
+        .map(t -> new CompiledTemplate(compileTemplate(t.getTemplate()), t.getName()))
         .collect(Collectors.toList());
+  }
+
+  Template compileTemplate(String template) {
+    //apply whitespace control
+    String cleanedTemplate = template
+        .replaceAll("\\s*\\{\\{-", "{{")
+        .replaceAll("-}}\\s*", "}}")
+        .replaceAll("\\s*\\{\\{_", " {{")
+        .replaceAll("_}}\\s*", "}} ");
+    return Mustache.compiler().compile(cleanedTemplate);
   }
 
   public boolean canHandleRequestType(String type) {

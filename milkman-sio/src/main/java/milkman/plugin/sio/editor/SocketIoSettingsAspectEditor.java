@@ -1,5 +1,6 @@
 package milkman.plugin.sio.editor;
 
+import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
@@ -17,7 +18,7 @@ import static milkman.utils.fxml.FxmlBuilder.*;
 public class SocketIoSettingsAspectEditor implements RequestAspectEditor {
 
 	private JFXTextField txtHandshakePath;
-	private ChoiceBox<SocketIoVersion> cbSocketIoVersion;
+	private JFXComboBox<SocketIoVersion> cbSocketIoVersion;
 
 	private final GenericBinding<SocketIoSettingsAspect, String> handshakePathBinding =
 			GenericBinding.of(SocketIoSettingsAspect::getHandshakePath, SocketIoSettingsAspect::setHandshakePath);
@@ -57,7 +58,7 @@ public class SocketIoSettingsAspectEditor implements RequestAspectEditor {
 			controller.txtHandshakePath = text("handshakePath", "/socket.io");
 			add(hbox(label("Handshake path"), controller.txtHandshakePath));
 
-			controller.cbSocketIoVersion = choiceBox("socketIoVersion");
+			controller.cbSocketIoVersion = comboBox("socketIoVersion");
 			controller.cbSocketIoVersion.getItems().addAll(SocketIoVersion.values());
 			add(hbox(label("Socket.io Version"), controller.cbSocketIoVersion));
 

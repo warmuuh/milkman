@@ -3,14 +3,21 @@ package milkman.exporter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.Data;
 import milkman.ui.main.dialogs.EditTemplateDialog;
 import milkman.ui.main.options.OptionDialogBuilder;
 import milkman.ui.main.options.OptionDialogPane;
 import milkman.ui.plugin.OptionPageProvider;
 import milkman.ui.plugin.OptionsObject;
+import milkman.ui.plugin.RequestTypePlugin;
+import milkman.ui.plugin.RequestTypePluginAware;
 
-public class CustomTemplateOptionsProvider implements OptionPageProvider<CustomTemplateOptionsProvider.CustomTemplateOptions> {
+public class CustomTemplateOptionsProvider implements
+    OptionPageProvider<CustomTemplateOptionsProvider.CustomTemplateOptions>,
+    RequestTypePluginAware {
+
+  private List<String> registeredRequestTypes;
 
   @Data
   public static class CustomTemplateOptions implements OptionsObject {
@@ -50,7 +57,7 @@ public class CustomTemplateOptionsProvider implements OptionPageProvider<CustomT
   }
 
   private void editTemplate(ExportTemplate template) {
-    EditTemplateDialog dialog = new EditTemplateDialog();
+    EditTemplateDialog dialog = new EditTemplateDialog(registeredRequestTypes);
     dialog.showAndWait(template.getName(), template.getRequestType(), template.getTemplate());
     if (!dialog.isCancelled()) {
       template.setName(dialog.getName());
@@ -60,8 +67,8 @@ public class CustomTemplateOptionsProvider implements OptionPageProvider<CustomT
   }
 
   private ExportTemplate createTemplate() {
-    EditTemplateDialog dialog = new EditTemplateDialog();
-    dialog.showAndWait("new template", "HTTP", "");
+    EditTemplateDialog dialog = new EditTemplateDialog(registeredRequestTypes);
+    dialog.showAndWait("new template", null, "");
     if (dialog.isCancelled()) {
       return null;
     }
@@ -71,6 +78,11 @@ public class CustomTemplateOptionsProvider implements OptionPageProvider<CustomT
 
   @Override
   public int getOrder() {
-    return 500;
+    return 1100;
+  }
+
+  @Override
+  public void setRequestTypePlugins(List<RequestTypePlugin> plugins) {
+    this.registeredRequestTypes = plugins.stream().map(RequestTypePlugin::getRequestType).collect(Collectors.toList());
   }
 }

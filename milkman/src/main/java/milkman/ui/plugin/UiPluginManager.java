@@ -111,6 +111,10 @@ public class UiPluginManager {
 		if (o instanceof LibraryPluginAware) {
 			((LibraryPluginAware)o).setLibraryPlugins(loadLibraryPlugins());
 		}
+
+		if (o instanceof RequestTypePluginAware) {
+			((RequestTypePluginAware)o).setRequestTypePlugins(loadRequestTypePlugins());
+		}
 	}
 	
 	public <T> List<T> loadSpiInstances(Class<T> type) {

@@ -1,7 +1,6 @@
 package milkman.exporter;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import com.samskivert.mustache.Mustache;
 import milkman.domain.RequestAspect;
@@ -14,13 +13,29 @@ class CustomTemplateServiceTest {
 
   @Test
   void shouldRenderTemplate() {
-    CompiledTemplate template = new CompiledTemplate(Mustache.compiler().compile("{{testVar}} {{headers.value}}"), "testtemplate");
+    CompiledTemplate template = new CompiledTemplate(
+        new CustomTemplateService().compileTemplate("{{testVar}} {{headers.value}}"),
+        "testtemplate");
     TestRequestContainer requestContainer = new TestRequestContainer();
     requestContainer.addAspect(new RequestAspect("headers") {
-      String value= "World";
+      String value = "World";
     });
     String result = template.render(requestContainer);
     assertThat(result).isEqualTo("Hello World");
+  }
+
+
+  @Test
+  void shouldRenderTemplateWithWhitespaceControl() {
+    CompiledTemplate template = new CompiledTemplate(
+        new CustomTemplateService().compileTemplate("  {{- testVar -}} \r\ncruel \n\t{{-headers.value-}}  \n  "),
+        "testtemplate");
+    TestRequestContainer requestContainer = new TestRequestContainer();
+    requestContainer.addAspect(new RequestAspect("headers") {
+      String value = "World";
+    });
+    String result = template.render(requestContainer);
+    assertThat(result).isEqualTo("HellocruelWorld");
   }
 
   private static class TestRequestContainer extends RequestContainer {
