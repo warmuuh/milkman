@@ -1,6 +1,7 @@
 package milkman.utils.fxml;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXToggleNode;
 import com.jfoenix.validation.RequiredFieldValidator;
@@ -127,6 +128,12 @@ public class FxmlBuilder {
 		return spacer;
 	}
 
+	public static Region vspace(double space) {
+		var spacer = new Region();
+		spacer.setMinHeight(space);
+		return spacer;
+	}
+
 	public static Region space() {
 		var spacer = new Region();
 		HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -136,6 +143,14 @@ public class FxmlBuilder {
 	public static ChoiceBox choiceBox(String id) {
 		ChoiceBox cb = new ChoiceBox();
 		cb.setId(id);
+		return cb;
+	}
+
+
+	public static JFXComboBox comboBox(String id) {
+		JFXComboBox cb = new JFXComboBox<>();
+		cb.setId(id);
+		cb.setEditable(false);
 		return cb;
 	}
 

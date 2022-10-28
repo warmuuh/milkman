@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.SneakyThrows;
@@ -26,7 +27,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public class ApiGuruLibrary implements LibraryPlugin {
 
-  Map<String, List<ApiGuruEntry>> libraryCache = new HashMap<>();
+  Map<String, List<ApiGuruEntry>> libraryCache = new ConcurrentHashMap<>();
 
   @Override
   public String getName() {

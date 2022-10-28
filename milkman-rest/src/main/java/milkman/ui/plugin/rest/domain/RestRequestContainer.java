@@ -33,7 +33,7 @@ public class RestRequestContainer extends RequestContainer {
 
 	@Override
 	public String getType() {
-		return httpMethod;
+		return "HTTP";
 	}
 
 	@Override
