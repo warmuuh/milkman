@@ -49,6 +49,7 @@ public class CustomTemplateService {
 
   private Stream<ExportTemplate> loadAllTemplates(Properties properties) {
     return Arrays.stream(properties.getProperty("templates").split(","))
+        .map(String::trim)
         .map(templateId -> {
           String templatePath = "META-INF/" + templateId + ".template";
           InputStream templateResource = getClass().getClassLoader().getResourceAsStream(templatePath);

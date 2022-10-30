@@ -14,7 +14,6 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import lombok.Data;
 import lombok.Value;
 import milkman.domain.RequestContainer;
 import milkman.exporter.CustomTemplateService.CompiledTemplate;
@@ -37,7 +36,7 @@ public class CustomTemplateExporter implements RequestExporterPlugin, RequestTyp
 
   @Override
   public String getName() {
-    return "Custom Templates";
+    return "Code Templates";
   }
 
   @Override

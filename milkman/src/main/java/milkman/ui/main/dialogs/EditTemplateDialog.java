@@ -4,18 +4,24 @@ import static milkman.utils.fxml.FxmlBuilder.cancel;
 import static milkman.utils.fxml.FxmlBuilder.comboBox;
 import static milkman.utils.fxml.FxmlBuilder.hbox;
 import static milkman.utils.fxml.FxmlBuilder.label;
+import static milkman.utils.fxml.FxmlBuilder.space;
 import static milkman.utils.fxml.FxmlBuilder.submit;
 import static milkman.utils.fxml.FxmlBuilder.text;
 import static milkman.utils.fxml.FxmlBuilder.vbox;
 import static milkman.utils.fxml.FxmlBuilder.vspace;
 
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import java.util.List;
 import javafx.scene.control.Dialog;
+import javafx.scene.layout.StackPane;
 import lombok.Getter;
+import milkman.PlatformUtil;
 import milkman.utils.fxml.FxmlUtil;
 
 public class EditTemplateDialog {
@@ -74,9 +80,20 @@ public class EditTemplateDialog {
 
 	public static class EditTemplateDialogFxml extends JFXDialogLayout {
 		public EditTemplateDialogFxml(EditTemplateDialog controller){
-			setHeading(label("Edit custom template..."));
+			JFXButton helpBtn = new JFXButton();
+			helpBtn.setOnAction(e -> PlatformUtil.tryOpenBrowser("https://github.com/warmuuh/milkman/blob/master/docs/features.md#custom-templates"));
+			helpBtn.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.QUESTION_CIRCLE, "1.5em"));
 
-			setBody(vbox(
+			setHeading(
+					hbox(
+							label("Edit custom template..."),
+							space(),
+							helpBtn
+					)
+			);
+
+			setBody(
+					vbox(
 					controller.name = text("tmpl-name", "Template name", true),
 					vspace(5),
 					hbox(
