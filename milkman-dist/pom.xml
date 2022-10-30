@@ -17,7 +17,7 @@
 
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>
-		<jdk.version>11.0.16.1+1</jdk.version>
+		<jdk.version>11.0.17+7</jdk.version>
 	</properties>
 	<dependencies>
 		<dependency>
