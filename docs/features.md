@@ -46,6 +46,13 @@
 * can be accessed using {{key:name-of-key}} variable
 
 
+# Libraries
+
+you can register libraries to easily look-up and import services from a central registry, such as [APIs.guru](http://apis.guru).
+
+![Example of setting up and using Libraries](/images/milkman-library.gif)
+
+
 ## Code Templates
 
 * you can define custom templates for every type of request yourself. Do you often need to write Spring Webclient code?
