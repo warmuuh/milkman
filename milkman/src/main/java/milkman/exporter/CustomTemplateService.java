@@ -6,10 +6,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import milkman.domain.RequestContainer;
 import org.apache.commons.io.IOUtils;
@@ -17,14 +19,19 @@ import org.apache.commons.io.IOUtils;
 public class CustomTemplateService {
 
   List<CompiledTemplate> getTemplatesForType(String type) {
-    return Stream.concat(
-            CustomTemplateOptionsProvider.options().getExportTemplates().stream(),
-            loadPredefinedTemplates().stream()
-        )
+    return CustomTemplateOptionsProvider.options().getExportTemplates().stream()
         .filter(t -> t.getRequestType().equals(type))
         .map(t -> new CompiledTemplate(compileTemplate(t.getTemplate()), t.getName()))
         .collect(Collectors.toList());
   }
+
+  List<CompiledTemplate> getPredefinedTemplates(String type) {
+    return loadPredefinedTemplates().stream()
+        .filter(t -> t.getRequestType().equals(type))
+        .map(t -> new CompiledTemplate(compileTemplate(t.getTemplate()), t.getName()))
+        .collect(Collectors.toList());
+  }
+
 
   List<ExportTemplate> loadPredefinedTemplates() {
     return getClass().getClassLoader().resources("META-INF/templates.properties")
@@ -80,6 +87,7 @@ public class CustomTemplateService {
   public static class CompiledTemplate {
 
     private final Template template;
+    @Getter
     private final String templateName;
 
     public String render(RequestContainer requestContainer) {

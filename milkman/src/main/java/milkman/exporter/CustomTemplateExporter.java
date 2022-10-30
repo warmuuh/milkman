@@ -6,11 +6,16 @@ import static milkman.utils.fxml.FxmlBuilder.label;
 import static milkman.utils.fxml.FxmlBuilder.space;
 
 import com.jfoenix.controls.JFXComboBox;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import javafx.scene.Node;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import lombok.Data;
+import lombok.Value;
 import milkman.domain.RequestContainer;
 import milkman.exporter.CustomTemplateService.CompiledTemplate;
 import milkman.ui.main.Toaster;
@@ -27,8 +32,7 @@ public class CustomTemplateExporter implements RequestExporterPlugin, RequestTyp
   private TextArea textArea;
 
   private RequestContainer request;
-  private List<CompiledTemplate> exporters;
-  private JFXComboBox<CompiledTemplate> cbTemplate;
+  private JFXComboBox<ExportHolder> cbTemplate;
   private List<RequestTypePlugin> registeredRequestTypePlugins;
 
   @Override
@@ -41,15 +45,22 @@ public class CustomTemplateExporter implements RequestExporterPlugin, RequestTyp
     this.request = request;
     String requestType = registeredRequestTypePlugins.stream().filter(r -> r.canHandle(request))
         .map(r -> r.getRequestType()).findAny().orElse("");
-    this.exporters = templateService.getTemplatesForType(requestType);
     textArea = new TextArea();
     textArea.setEditable(false);
 
     cbTemplate = comboBox("templateName");
-    cbTemplate.getItems().addAll(exporters);
+    cbTemplate.getItems().addAll(templateService.getTemplatesForType(requestType).stream()
+        .sorted(Comparator.comparing(CompiledTemplate::getTemplateName))
+        .map(ExportHolderWrap::new).collect(Collectors.toList()));
+    cbTemplate.getItems().add(new ExportSeparator());
+    cbTemplate.getItems().addAll(templateService.getPredefinedTemplates(requestType).stream()
+        .sorted(Comparator.comparing(CompiledTemplate::getTemplateName))
+        .map(ExportHolderWrap::new)
+        .collect(Collectors.toList()));
+
     cbTemplate.valueProperty().addListener((obs, o, n) -> {
       if (n != null) {
-        refreshCommand(templater, n);
+        refreshCommand(templater, n.getExporter());
       }
     });
     cbTemplate.getSelectionModel().selectFirst();
@@ -89,5 +100,27 @@ public class CustomTemplateExporter implements RequestExporterPlugin, RequestTyp
   @Override
   public void setRequestTypePlugins(List<RequestTypePlugin> plugins) {
     this.registeredRequestTypePlugins = plugins;
+  }
+
+
+  public interface ExportHolder {
+    CompiledTemplate getExporter();
+  }
+
+  @Value
+  public static class ExportHolderWrap implements ExportHolder{
+    CompiledTemplate exporter;
+
+    @Override
+    public String toString() {
+      return exporter.getTemplateName();
+    }
+  }
+
+  public static class ExportSeparator extends Separator implements ExportHolder {
+    @Override
+    public CompiledTemplate getExporter() {
+      return null;
+    }
   }
 }
