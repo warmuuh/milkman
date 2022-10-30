@@ -46,12 +46,13 @@
 * can be accessed using {{key:name-of-key}} variable
 
 
-## Custom Templates
+## Code Templates
 
 * you can define custom templates for every type of request yourself. Do you often need to write Spring Webclient code?
 setup some custom template for it. (you can do so in the `options` dialog)
-* Some predefined templates are available already.
-* Syntax is similar to mustache but enhanced with whitespace control. example:
+* Some predefined templates are available already. (see [here](/milkman-rest/src/main/resources/META-INF))
+* Syntax is similar to [mustache](https://github.com/samskivert/jmustache) but enhanced with whitespace control. example:
+
 ```
 curl -X {{httpMethod}}  
 
@@ -61,6 +62,7 @@ curl -X {{httpMethod}}
 
 {{url}}
 ```
+
 * Whitespace control: 
     * `{{-` removes all whitespaces (including linebreaks) *before* the tag
     * `{{_` removes all whitespaces (including linebreaks) *before* the tag and replaces it with one space

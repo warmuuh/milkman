@@ -56,6 +56,7 @@ public class ExportDialog<T> {
 				exportBtn.setDisable(v.isAdhocExporter());
 			} 
 		});
+		exportSelector.getSelectionModel().selectFirst();
 		dialog = FxmlUtil.createDialog(content);
 		dialog.showAndWait();
 	}

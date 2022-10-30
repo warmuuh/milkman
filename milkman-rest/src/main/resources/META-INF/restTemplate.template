@@ -1,9 +1,11 @@
 RestTemplate restTemplate = new RestTemplate();
 
 Headers headers = new Headers();
-{{#headers.entries-}}
+
+{{-#headers.entries}}{{#enabled-}}
 headers.add("{{name}}", "{{value}}");
-{{-/headers.entries}}
+{{/enabled}}{{/headers.entries-}}
+
 {{#body.body-}}
 String body = "{{.}}";
 {{-/body.body}}
