@@ -246,7 +246,7 @@
 							<provider>BELLSOFT</provider><!-- liberica contains javafx -->
 							<providerConfig>
 								<version>${jdk.version}</version>
-								<arch>amd64</arch>
+								<arch>amd64-full</arch>
 								<type>jdk</type>
 								<os>windows</os>
 							</providerConfig>
@@ -264,7 +264,7 @@
 							<provider>BELLSOFT</provider><!-- liberica contains javafx -->
 							<providerConfig>
 								<version>${jdk.version}</version>
-								<arch>amd64</arch>
+								<arch>amd64-full</arch>
 								<type>jdk</type>
 								<os>linux</os>
 							</providerConfig>
@@ -282,7 +282,7 @@
 							<provider>BELLSOFT</provider><!-- liberica contains javafx -->
 							<providerConfig>
 								<version>${jdk.version}</version>
-								<arch>amd64</arch>
+								<arch>amd64-full</arch>
 								<type>jdk</type>
 								<os>macos</os>
 							</providerConfig>
