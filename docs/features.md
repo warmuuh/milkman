@@ -50,7 +50,7 @@
 
 you can register libraries to easily look-up and import services from a central registry, such as [APIs.guru](http://apis.guru).
 
-![Example of setting up and using Libraries](/images/milkman-library.gif)
+![Example of setting up and using Libraries](/img/gif/milkman-library.gif)
 
 
 ## Code Templates
