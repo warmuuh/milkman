@@ -2,10 +2,10 @@ String result = WebClient.create()
   .method(HttpMethod.{{httpMethod}})
   .uri("{{url}}")
   {{#body.body-}}
-  .bodyValue("{{.}}")
+  .bodyValue("{{&.}}")
   {{-/body.body}}
-  {{-#headers.entries}}{{#enabled-}}
-  .header("{{name}}", "{{value}}")
+  {{#headers.entries}}{{#enabled-}}
+  .header("{{&name}}", "{{&value}}")
   {{/enabled}}{{/headers.entries-}}
   .retrieve()
   .bodyToMono(String.class);

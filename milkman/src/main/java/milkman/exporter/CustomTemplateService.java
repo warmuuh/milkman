@@ -4,7 +4,9 @@ import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -15,6 +17,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import milkman.domain.RequestContainer;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 public class CustomTemplateService {
 
@@ -75,11 +78,16 @@ public class CustomTemplateService {
         .replaceAll("-}}\\s*", "}}")
         .replaceAll("\\s*\\{\\{_", " {{")
         .replaceAll("_}}\\s*", "}} ");
-    return Mustache.compiler().compile(cleanedTemplate);
+    return Mustache.compiler()
+        .withEscaper(str -> URLEncoder.encode(str, StandardCharsets.UTF_8))
+        .emptyStringIsFalse(true)
+        .compile(cleanedTemplate);
   }
 
   public boolean canHandleRequestType(String type) {
-    return CustomTemplateOptionsProvider.options().getExportTemplates().stream()
+    return Stream.concat(
+        CustomTemplateOptionsProvider.options().getExportTemplates().stream(),
+        loadPredefinedTemplates().stream())
         .anyMatch(t -> t.getRequestType().equals(type));
   }
 

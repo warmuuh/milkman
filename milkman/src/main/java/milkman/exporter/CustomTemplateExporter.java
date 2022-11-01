@@ -48,14 +48,19 @@ public class CustomTemplateExporter implements RequestExporterPlugin, RequestTyp
     textArea.setEditable(false);
 
     cbTemplate = comboBox("templateName");
-    cbTemplate.getItems().addAll(templateService.getTemplatesForType(requestType).stream()
+    List<ExportHolderWrap> userTemplates = templateService.getTemplatesForType(requestType).stream()
         .sorted(Comparator.comparing(CompiledTemplate::getTemplateName))
-        .map(ExportHolderWrap::new).collect(Collectors.toList()));
-    cbTemplate.getItems().add(new ExportSeparator());
-    cbTemplate.getItems().addAll(templateService.getPredefinedTemplates(requestType).stream()
+        .map(ExportHolderWrap::new).collect(Collectors.toList());
+    List<ExportHolderWrap> predefTemplates = templateService.getPredefinedTemplates(requestType).stream()
         .sorted(Comparator.comparing(CompiledTemplate::getTemplateName))
         .map(ExportHolderWrap::new)
-        .collect(Collectors.toList()));
+        .collect(Collectors.toList());
+
+    cbTemplate.getItems().addAll(userTemplates);
+    if (!userTemplates.isEmpty() && !predefTemplates.isEmpty()) {
+      cbTemplate.getItems().add(new ExportSeparator());
+    }
+    cbTemplate.getItems().addAll(predefTemplates);
 
     cbTemplate.valueProperty().addListener((obs, o, n) -> {
       if (n != null) {
@@ -121,5 +126,10 @@ public class CustomTemplateExporter implements RequestExporterPlugin, RequestTyp
     public CompiledTemplate getExporter() {
       return null;
     }
+  }
+
+  @Override
+  public int getOrder() {
+    return 100;
   }
 }

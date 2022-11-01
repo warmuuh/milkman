@@ -60,15 +60,15 @@ public class UiPluginManager {
 	}
 
 	public List<RequestExporterPlugin> loadRequestExportPlugins(){
-		return loadSpiInstances(RequestExporterPlugin.class);
+		return loadOrderedSpiInstances(RequestExporterPlugin.class);
 	}
 	
 	public List<CollectionExporterPlugin> loadCollectionExportPlugins(){
-		return loadSpiInstances(CollectionExporterPlugin.class);
+		return loadOrderedSpiInstances(CollectionExporterPlugin.class);
 	}
 
 	public List<WorkspaceExporterPlugin> loadWorkspaceExportPlugins(){
-		return loadSpiInstances(WorkspaceExporterPlugin.class);
+		return loadOrderedSpiInstances(WorkspaceExporterPlugin.class);
 	}
 
 	public List<TemplateParameterResolverPlugin> loadTemplaterPlugins(){
