@@ -1,8 +1,19 @@
 package milkman.ui.plugin.rest.contenttype;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.StringBufferInputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.Iterator;
 import lombok.extern.slf4j.Slf4j;
 import milkman.ui.components.CodeFoldingContentEditor;
 import milkman.ui.plugin.ContentTypePlugin;
@@ -50,9 +61,25 @@ public class JsonContentType implements ContentTypePlugin {
 	public String formatContent(String text) {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+		StringWriter writer = new StringWriter();
 		try {
-			JsonNode node = mapper.readTree(text);
-			return mapper.writeValueAsString(node);
+			JsonFactory jsonFactory = new JsonFactory();
+			try(BufferedReader br = new BufferedReader(new StringReader(text))) {
+				Iterator<JsonNode> value = mapper.readValues( jsonFactory.createParser(br), JsonNode.class);
+				value.forEachRemaining(u-> {
+					try {
+						boolean first = writer.getBuffer().length() == 0;
+						if (!first) {
+							writer.write("\n\n");
+						}
+						mapper.writeValue(writer, u);
+					} catch (IOException e) {
+						throw new RuntimeException(e);
+					}
+				});
+			}
+			return writer.toString();
 		} catch (Throwable t) {
 			log.warn("failed to format json", t);
 		}
