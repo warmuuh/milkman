@@ -5,6 +5,7 @@ version 5.6.0 -- upcoming (nightly)
   * some predefined exporters for
     * Spring RestTemplate
     * Spring Webclient
+  * added auto-issuing of oauth2 tokens, when necessary (e.g. no refresh token or refresh failed)
 
 version 5.5.0
 
