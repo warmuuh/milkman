@@ -22,6 +22,8 @@ public class CoreApplicationOptionsProvider implements OptionPageProvider<CoreAp
 		private boolean debug;
 		private UiPrefs uiPrefs = new UiPrefs();
 		private boolean disableColorfulUi;
+		private boolean useSocksProxy;
+		private String socksProxyAddress;
 
 		@Data
 		public static class UiPrefs {
@@ -67,9 +69,13 @@ public class CoreApplicationOptionsProvider implements OptionPageProvider<CoreAp
 				.section("General")
 					.toggle("Check for Updates", CoreApplicationOptions::isCheckForUpdates, CoreApplicationOptions::setCheckForUpdates)
 					.selection("Theme", CoreApplicationOptions::getTheme, this::setTheme, themeSwitcher.getThemes())
-				.toggle("Disable Animations", CoreApplicationOptions::isDisableAnimations, CoreApplicationOptions::setDisableAnimations)
-				.toggle("Disable Colorful Ui", CoreApplicationOptions::isDisableColorfulUi, CoreApplicationOptions::setDisableColorfulUi)
-				.toggle("Enable Debug Output", CoreApplicationOptions::isDebug, CoreApplicationOptions::setDebug)
+					.toggle("Disable Animations", CoreApplicationOptions::isDisableAnimations, CoreApplicationOptions::setDisableAnimations)
+					.toggle("Disable Colorful Ui", CoreApplicationOptions::isDisableColorfulUi, CoreApplicationOptions::setDisableColorfulUi)
+					.toggle("Enable Debug Output", CoreApplicationOptions::isDebug, CoreApplicationOptions::setDebug)
+				.endSection()
+				.section("Connections")
+					.toggle("Use Socks Proxy", CoreApplicationOptions::isUseSocksProxy, CoreApplicationOptions::setUseSocksProxy)
+					.textInput("Socks Proxy Address", CoreApplicationOptions::getSocksProxyAddress, CoreApplicationOptions::setSocksProxyAddress)
 				.endSection()
 				.section("Code Editor/Viewer")
 					.toggle("Autoformat Content", CoreApplicationOptions::isAutoformatContent, this::toggleAnimations)
