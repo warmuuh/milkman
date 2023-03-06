@@ -32,11 +32,9 @@ public class JdbcQueryProcessor extends AbstractJdbcProcessor {
 		
 		
 		JdbcRequestContainer jdbcRequest = (JdbcRequestContainer)request;
-		String jdbcUrl = jdbcRequest.getJdbcUrl();
-		log.info("Executing Sql: " + finalSql);
+		String jdbcUrl = getJdbcUrl(jdbcRequest, templater);
 
-		
-		Connection connection = DriverManager.getConnection(templater.replaceTags(jdbcUrl));
+		Connection connection = DriverManager.getConnection(jdbcUrl);
 		Statement statement = connection.createStatement();
 		long startTime = System.currentTimeMillis();
 		boolean isResultSet = statement.execute(finalSql);

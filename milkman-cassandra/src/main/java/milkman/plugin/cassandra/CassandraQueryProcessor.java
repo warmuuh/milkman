@@ -13,6 +13,7 @@ import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 import milkman.domain.ResponseContainer.StyledText;
 import milkman.plugin.cassandra.domain.CassandraRequestContainer;
+import milkman.plugin.cassandra.proxy.SocksProxyAwareSessionBuilder;
 import milkman.plugin.jdbc.domain.JdbcSqlAspect;
 import milkman.plugin.jdbc.domain.RowSetResponseAspect;
 import milkman.plugin.jdbc.domain.TableResponseContainer;
@@ -113,7 +114,7 @@ public class CassandraQueryProcessor {
 			}
 		}
 
-		var builder = CqlSession.builder()
+		var builder = new SocksProxyAwareSessionBuilder()
 				.withLocalDatacenter(conProps.getDatacenter())
 				.addContactPoint(InetSocketAddress.createUnresolved(conProps.getHost(), conProps.getPort()));
 

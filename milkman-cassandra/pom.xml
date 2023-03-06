@@ -25,7 +25,12 @@
 		  <artifactId>java-driver-core</artifactId>
 		  <version>4.6.1</version>
 	  </dependency>
-  </dependencies>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-handler-proxy</artifactId>
+			<version>4.1.45.Final</version>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<plugins>

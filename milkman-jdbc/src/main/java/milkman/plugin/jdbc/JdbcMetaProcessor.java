@@ -25,9 +25,9 @@ public class JdbcMetaProcessor extends AbstractJdbcProcessor {
 			throw new IllegalArgumentException("Unsupported request container: " + request.getType());
 		}
 		JdbcRequestContainer jdbcRequest = (JdbcRequestContainer) request;
-		String jdbcUrl = jdbcRequest.getJdbcUrl();
-		
-		Connection connection = DriverManager.getConnection(templater.replaceTags(jdbcUrl));
+		String jdbcUrl = getJdbcUrl(jdbcRequest, templater);
+
+		Connection connection = DriverManager.getConnection(jdbcUrl);
 	
 		DatabaseMetaData md = connection.getMetaData();
 		ResultSet rs = md.getTables(null, null, "%", null);
