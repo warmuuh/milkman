@@ -34,8 +34,8 @@ jobs:
         with:
           servers: '[{ "id": "github", "privateKey": "${{ secrets.DEPLOYMENT_KEY }}", "username": "${{ github.actor }}", "password": "${{ secrets.GITHUB_TOKEN }}" }]'
       - name: Maven stats
-        run: mvnw.cmd -version
+        run: ./mvnw.cmd -version
       - name: Package
-        run: mvnw.cmd -B package -DexcludedGroups=ui
+        run: ./mvnw.cmd -B package -DexcludedGroups=ui
       - name: Deploy to nightly
-        run: mvnw.cmd --% -B de.jutzig:github-release-plugin:release@deploy-nightly -pl milkman-dist
+        run: ./mvnw.cmd --% -B de.jutzig:github-release-plugin:release@deploy-nightly -pl milkman-dist
