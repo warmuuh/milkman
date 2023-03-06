@@ -6,6 +6,7 @@ version 5.6.0 -- upcoming (nightly)
     * Spring RestTemplate
     * Spring Webclient
   * added auto-issuing of oauth2 tokens, when necessary (e.g. no refresh token or refresh failed)
+  * SOCKS proxy support for jdbc (if the driver supports it) and cassandra
 
 version 5.5.0
 

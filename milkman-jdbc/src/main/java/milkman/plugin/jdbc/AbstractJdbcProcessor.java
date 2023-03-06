@@ -30,14 +30,15 @@ public class AbstractJdbcProcessor {
 
 	/**
 	 * some drivers ignore environment variable and only use the parameters (jdbc for example)
+	 * TODO: maybe we want to have a "customizer" by database-type
 	 */
 	private String jdbcUrlWithSocksProxy(String finalUrl) {
 		String[] proxyAddress = CoreApplicationOptionsProvider.options().getSocksProxyAddress().split(":");
 		String[] urlComponents = finalUrl.split("\\?");
 		if (urlComponents.length == 1) {
-			return finalUrl + "?socksProxyPort=" + proxyAddress[1] + "&socksProxyHost=" + proxyAddress[0];
+			return finalUrl + "?socksProxyPort=" + proxyAddress[1] + "&socksProxyHost=" + proxyAddress[0] + "&socksProxyRemoteDns=true";
 		} else {
-			return finalUrl + "&socksProxyPort=" + proxyAddress[1] + "&socksProxyHost=" + proxyAddress[0];
+			return finalUrl + "&socksProxyPort=" + proxyAddress[1] + "&socksProxyHost=" + proxyAddress[0] + "&socksProxyRemoteDns=true";
 		}
 	}
 
