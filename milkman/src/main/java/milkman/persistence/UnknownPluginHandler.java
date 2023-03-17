@@ -9,6 +9,9 @@ import com.fasterxml.jackson.databind.jsontype.TypeIdResolver;
 import com.fasterxml.jackson.databind.type.ReferenceType;
 
 import lombok.extern.slf4j.Slf4j;
+import milkman.domain.KeySet;
+import milkman.domain.KeySet.KeyEntry;
+import milkman.domain.KeySet.KeyEntry.UnknownKeyEntryObject;
 import milkman.domain.RequestAspect;
 import milkman.domain.RequestContainer;
 import milkman.domain.RequestAspect.UnknownRequestAspect;
@@ -32,6 +35,10 @@ public final class UnknownPluginHandler extends DeserializationProblemHandler {
 		if (baseType.hasRawClass(RequestContainer.class)) {
 			log.error("Unknown RequestContainer found: " + subTypeId + ".");
 			return ReferenceType.construct(UnknownRequestContainer.class);
+		}
+		if (baseType.hasRawClass(KeyEntry.class)) {
+			log.error("Unknown KeySet found: " + subTypeId + ".");
+			return ReferenceType.construct(UnknownKeyEntryObject.class);
 		}
 		return null;
 	}
