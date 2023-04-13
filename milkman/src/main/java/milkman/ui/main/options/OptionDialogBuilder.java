@@ -1,10 +1,20 @@
 package milkman.ui.main.options;
 
-import com.jfoenix.controls.*;
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXComboBox;
+import com.jfoenix.controls.JFXPasswordField;
+import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.JFXToggleButton;
 import com.jfoenix.validation.IntegerValidator;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -12,13 +22,6 @@ import javafx.scene.layout.HBox;
 import lombok.RequiredArgsConstructor;
 import milkman.ui.components.JfxTableEditor;
 import milkman.utils.fxml.GenericBinding;
-
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 public class OptionDialogBuilder  {
 

@@ -10,6 +10,7 @@ import milkman.ui.main.dialogs.CredentialsInputDialog;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.ui.plugin.Templater;
 import milkman.ui.plugin.rest.domain.*;
+import milkman.ui.plugin.rest.http3.JettyHttp3Client;
 import milkman.utils.AsyncResponseControl.AsyncControl;
 import milkman.utils.json.BlockingFluxByteToStringConverter;
 import org.apache.commons.lang3.StringUtils;
@@ -72,6 +73,11 @@ public class JavaRequestProcessor implements RequestProcessor {
 
 	@SneakyThrows
 	private HttpClient buildClient() {
+
+		if (HttpOptionsPluginProvider.options().isHttp3Support()) {
+			return new JettyHttp3Client();
+		}
+
 		Builder builder = HttpClient.newBuilder();
 		if (!HttpOptionsPluginProvider.options().isHttp2Support()){
 			builder.version(Version.HTTP_1_1);
@@ -304,11 +310,13 @@ public class JavaRequestProcessor implements RequestProcessor {
 	}
 
 	private void buildStatusView(ResponseInfo httpResponse, RestResponseContainer response, long responseTimeInMs) {
-		String versionStr = httpResponse.version().toString();
+		String versionStr = "undefined";
 		if (httpResponse.version() == Version.HTTP_1_1) {
 			versionStr = "1.1";
 		} else if (httpResponse.version() == Version.HTTP_2) {
 			versionStr = "2.0";
+		} else if (httpResponse.version() == null) { //special case for custom http_3 implementation
+			versionStr = "3.0";
 		}
 		LinkedHashMap<String, StyledText> statusKeys = new LinkedHashMap<>();
 		statusKeys.put("Status", new StyledText(""+httpResponse.statusCode(), getStyle(httpResponse.statusCode())));

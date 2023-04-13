@@ -1,20 +1,20 @@
 package milkman.ui.main.dialogs;
 
+import static milkman.utils.fxml.FxmlBuilder.cancel;
+import static milkman.utils.fxml.FxmlBuilder.label;
+
 import com.jfoenix.controls.JFXDialogLayout;
+import java.util.List;
 import javafx.geometry.Side;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import milkman.ui.main.options.OptionDialogBuilder;
 import milkman.ui.main.options.OptionDialogPane;
 import milkman.ui.plugin.OptionPageProvider;
 import milkman.utils.fxml.FxmlUtil;
-
-import java.util.List;
-
-import static milkman.utils.fxml.FxmlBuilder.cancel;
-import static milkman.utils.fxml.FxmlBuilder.label;
 
 public class OptionsDialog {
 	 TabPane tabs;
@@ -26,7 +26,12 @@ public class OptionsDialog {
 		content.setPrefWidth(600);
 		for(OptionPageProvider<?> p : optionPageProviders) {
 			OptionDialogPane pane = p.getOptionsDialog(new OptionDialogBuilder());
-			Tab tab = new Tab("", pane);
+			ScrollPane scrollPane = new ScrollPane();
+			scrollPane.setContent(pane);
+			scrollPane.setFitToHeight(true);
+			scrollPane.setFitToWidth(true);
+
+			Tab tab = new Tab("", scrollPane);
 			Label label = new Label(pane.getName());
 			label.setRotate(90);
 			label.setMinWidth(100);

@@ -1,5 +1,9 @@
 # Changelog
 
+version 5.7.0 - upcoming
+  * minor UI fixes
+  * Http/3 protocol support (experimental)
+
 version 5.6.0
   * code templates (see [Features](/docs/features.md))
   * some predefined exporters for

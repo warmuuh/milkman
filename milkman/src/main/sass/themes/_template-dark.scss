@@ -74,6 +74,7 @@
 }
 
 .options-page {
+	-fx-border-color: $background;
 	-fx-padding: 20;
 	>.section-header {
 		-fx-text-fill: $main-accent;
