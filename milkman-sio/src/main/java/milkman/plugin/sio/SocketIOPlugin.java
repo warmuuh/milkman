@@ -57,7 +57,7 @@ public class SocketIOPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 
 	@Override
 	public int getOrder() {
-		return 9;
+		return 13;
 	}
 
 	@Override

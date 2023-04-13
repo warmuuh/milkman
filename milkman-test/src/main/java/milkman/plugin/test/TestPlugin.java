@@ -52,7 +52,7 @@ public class TestPlugin implements RequestAspectsPlugin, RequestTypePlugin, Requ
 
     @Override
     public int getOrder() {
-        return 10;
+        return 30;
     }
 
 

@@ -65,7 +65,7 @@ public class CassandraRequestPlugin implements RequestTypePlugin, RequestAspects
 
 	@Override
 	public int getOrder() {
-		return 18;
+		return 20;
 	}
 
 }
