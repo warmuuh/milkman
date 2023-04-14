@@ -30,8 +30,8 @@ public class RequestExecutor extends Service<AsyncResponseControl> {
 			
 			@Override
 			protected AsyncResponseControl call() {
+				var asyncCtrl = new AsyncResponseControl();
 				try {
-					var asyncCtrl = new AsyncResponseControl();
 					if (customCommand.isPresent()) {
 						String commandId = customCommand.get().getCommandId();
 						log.info("Execute custom command: " + commandId);
@@ -54,6 +54,7 @@ public class RequestExecutor extends Service<AsyncResponseControl> {
 					}
 				} catch (Throwable e) {
 					log.error("Execution of request failed", e);
+					asyncCtrl.cancleRequest();
 					String rootCauseMessage = ExceptionUtils.getRootCauseMessage(e);
 					updateMessage(rootCauseMessage);
 					throw e;

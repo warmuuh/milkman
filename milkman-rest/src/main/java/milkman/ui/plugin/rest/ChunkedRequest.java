@@ -82,6 +82,11 @@ public class ChunkedRequest {
 			}
 		});
 
+		cancellationEvent.add(() -> {
+			System.out.println("Cancelling future");
+			future.cancel(true);
+		});
+
 		future.handle((res, err) -> {
 //				System.out.println("Received response: " + res);
 //				System.out.println("Received err: " + err);

@@ -1,5 +1,6 @@
 package milkman.ui.plugin.rest;
 
+import java.util.List;
 import lombok.Data;
 import milkman.ui.main.options.OptionDialogBuilder;
 import milkman.ui.main.options.OptionDialogPane;
@@ -16,8 +17,15 @@ public class HttpOptionsPluginProvider implements OptionPageProvider<HttpOptions
 		private boolean askForProxyAuth = false;
 		private boolean certificateValidation = false;
 		private boolean followRedirects = false;
-		private boolean http2Support = true;
-		private boolean http3Support = false;
+		private String httpProtocol = "HTTP/2";
+
+		public boolean isHttp2Support() {
+			return httpProtocol.contains("HTTP/2");
+		}
+
+		public boolean isHttp3Support() {
+			return httpProtocol.contains("HTTP/3");
+		}
 	}
 
 	
@@ -48,8 +56,7 @@ public class HttpOptionsPluginProvider implements OptionPageProvider<HttpOptions
 				.section("Requests")
 					.toggle("Validate Certificates", HttpOptions::isCertificateValidation, HttpOptions::setCertificateValidation)
 					.toggle("Follow Redirects", HttpOptions::isFollowRedirects, HttpOptions::setFollowRedirects)
-					.toggle("Http2 enabled", HttpOptions::isHttp2Support, HttpOptions::setHttp2Support)
-					.toggle("Http3 enabled (experimental)", HttpOptions::isHttp3Support, HttpOptions::setHttp3Support)
+				.selection("Protocol", HttpOptions::getHttpProtocol, HttpOptions::setHttpProtocol, List.of("HTTP/1.1", "HTTP/2", "HTTP/3"))
 				.endSection()
 				.build();
 	}
