@@ -27,17 +27,16 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.http.HttpFields;
-import org.eclipse.jetty.http.HttpFields.Mutable;
 import org.eclipse.jetty.http.HttpURI;
 import org.eclipse.jetty.http.HttpVersion;
-import org.eclipse.jetty.http.MetaData;
 import org.eclipse.jetty.http.MetaData.Request;
 import org.eclipse.jetty.http3.api.Session;
 import org.eclipse.jetty.http3.api.Stream;
 import org.eclipse.jetty.http3.client.HTTP3Client;
 import org.eclipse.jetty.http3.frames.DataFrame;
+import org.eclipse.jetty.http3.frames.GoAwayFrame;
 import org.eclipse.jetty.http3.frames.HeadersFrame;
-import org.eclipse.jetty.util.FutureCallback;
+import org.eclipse.jetty.http3.frames.SettingsFrame;
 
 @Slf4j
 public class JettyHttp3Client extends HttpClient {
@@ -73,26 +72,46 @@ public class JettyHttp3Client extends HttpClient {
   @SneakyThrows
   public <T> CompletableFuture<HttpResponse<T>> sendAsync(HttpRequest request, BodyHandler<T> responseBodyHandler) {
     URI uri = request.uri();
-    int port = uri.getPort();
-    if (port < 0) {
-      if (uri.getScheme().equals("http")) {
-        port = 80;
-      } else if (uri.getScheme().equals("https")) {
-        port = 443;
-      }
-    }
-    SocketAddress serverAddress = new InetSocketAddress(uri.getHost(), port);
+    SocketAddress serverAddress = new InetSocketAddress(uri.getHost(), getPort(uri));
 
     CompletableFuture<HttpResponse<T>> futureResponse = new CompletableFuture<>();
     Jetty3ResponseListener<T> responseListener = new Jetty3ResponseListener<>(this, uri, responseBodyHandler, futureResponse);
 
-    CompletableFuture<Session.Client> sessionCF = httpClient.connect(serverAddress, new Session.Client.Listener() {});
+    CompletableFuture<Session.Client> sessionCF = httpClient.connect(serverAddress, new Session.Client.Listener() {
+      @Override
+      public void onFailure(Session session, long error, String reason, Throwable failure) {
+        System.out.println("Failure: " + failure);
+        System.out.println("Failure Reason: " + reason);
+      }
+
+      @Override
+      public void onSettings(Session session, SettingsFrame frame) {
+        System.out.println("Settings: " + frame);
+      }
+
+      @Override
+      public void onDisconnect(Session session, long error, String reason) {
+        System.out.println("Disconnect: " + reason + "(error: " + error + ")");
+      }
+
+      @Override
+      public void onGoAway(Session session, GoAwayFrame frame) {
+        System.out.println("Go Away: " + frame);
+      }
+
+    });
+
     CompletableFuture<Stream> streamCF = sessionCF.thenCompose(session -> {
       // Add request headers
       HttpFields requestHeaders = buildHeaders(request, uri);
-      Request jettyRequest = new Request(request.method(), HttpURI.from(uri), HttpVersion.HTTP_3, requestHeaders);
-      HeadersFrame headersFrame = new HeadersFrame(jettyRequest, !hasBody(request));
 
+      String path = uri.toString();
+      if (StringUtils.isEmpty(uri.getPath()) && !path.endsWith("/")) {
+        path += "/";
+      }
+
+      Request jettyRequest = new Request(request.method(), HttpURI.from(path), HttpVersion.HTTP_3, requestHeaders);
+      HeadersFrame headersFrame = new HeadersFrame(jettyRequest, !hasBody(request));
       // Open a Stream by sending the HEADERS frame.
       return session.newRequest(headersFrame, responseListener);
     });
@@ -104,24 +123,30 @@ public class JettyHttp3Client extends HttpClient {
     CompletableFuture<HttpResponse<T>> result = streamCF.thenCombine(futureResponse,
         (stream, response) -> response);
 
-    result.handle((c,t) -> {
+    //register cancellation callback
+    result.whenComplete((c,t) -> {
       if (t != null) {
         close();
       }
-      return null;
     });
 
     return result;
   }
 
+  private static int getPort(URI uri) {
+    int port = uri.getPort();
+    if (port < 0) {
+      if (uri.getScheme().equals("http")) {
+        port = 80;
+      } else if (uri.getScheme().equals("https")) {
+        port = 443;
+      }
+    }
+    return port;
+  }
+
   private static HttpFields buildHeaders(HttpRequest request, URI uri) {
     HttpFields.Mutable requestHeaders = HttpFields.build();
-    //pseudo-headers
-    requestHeaders.put(":method", request.method());
-    requestHeaders.put(":scheme", uri.getScheme());
-    requestHeaders.put(":authority", uri.getHost());
-    requestHeaders.put(":path", StringUtils.isEmpty(uri.getPath()) ? "/" : uri.getPath());
-    //other headers
     request.headers().map().forEach((name, values) -> {
       for (String value : values) {
         requestHeaders.put(name, value);
@@ -150,8 +175,18 @@ public class JettyHttp3Client extends HttpClient {
   }
 
   public void close() {
+    //hack: when immediatly disconnecting bc of "session closed remotely", the selector is not yet in a state to handle stopping
+    // so .stop() hangs indefinitely. we simply wait a second and try it then...seems to work.
     try {
-      httpClient.stop();
+      new Thread(() -> {
+        try {
+          Thread.sleep(1000);
+          httpClient.stop();
+        } catch (Exception e) {
+          System.out.println("client stop failed: " + e);
+          throw new RuntimeException(e);
+        }
+      }).start();
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

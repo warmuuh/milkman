@@ -35,6 +35,15 @@ class Jetty3ResponseListener<T> implements Client.Listener {
   }
 
   @Override
+  public void onFailure(Client stream, long error, Throwable failure) {
+    log.error("Received exception", failure);
+    //for UI:
+    RuntimeException ex = new RuntimeException("Error received: " + error + " (" + failure + ")");
+    futureResponse.completeExceptionally(ex);
+    publisher.closeExceptionally(ex);
+  }
+
+  @Override
   public void onResponse(Client stream, HeadersFrame frame) {
     MetaData metaData = frame.getMetaData();
     Response response = (Response) metaData;
