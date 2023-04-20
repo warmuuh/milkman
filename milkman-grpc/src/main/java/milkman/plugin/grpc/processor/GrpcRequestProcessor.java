@@ -111,7 +111,7 @@ public class GrpcRequestProcessor extends BaseGrpcProcessor {
 		}, MoreExecutors.directExecutor());
 	    
 	    
-    	var responseStream = publisher.map(deenc::serializeToJson);
+    	var responseStream = publisher.map(deenc::serializeToJson).map(String::getBytes);
 		return new ResponseDataHolder(responseStream, clientInterceptor.getResponseHeaders(), requestTime);
 	}
 	
@@ -136,7 +136,7 @@ public class GrpcRequestProcessor extends BaseGrpcProcessor {
 	
 	@Value
 	static class ResponseDataHolder{
-		Flux<String> bodyStream;
+		Flux<byte[]> bodyStream;
 		CompletableFuture<Map<String, String>> headerFuture;
 		CompletableFuture<Long> requestTime;
 	}

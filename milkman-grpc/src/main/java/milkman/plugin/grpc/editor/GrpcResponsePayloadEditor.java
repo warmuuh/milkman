@@ -1,5 +1,6 @@
 package milkman.plugin.grpc.editor;
 
+import java.nio.charset.StandardCharsets;
 import javafx.application.Platform;
 import javafx.scene.control.Tab;
 import lombok.SneakyThrows;
@@ -31,12 +32,12 @@ public class GrpcResponsePayloadEditor implements ResponseAspectEditor, ContentT
 		if (plugins != null)
 			root.setContentTypePlugins(plugins);
 		root.setContentType("application/json");
-		
+
 		payload.getPayloads().subscribe(
 			value -> {
 				Platform.runLater(() -> {
 					root.addContent("\n");
-					root.addContent(value);
+					root.addContent(new String(value, StandardCharsets.UTF_8));
 				});
 			},
 			throwable -> {

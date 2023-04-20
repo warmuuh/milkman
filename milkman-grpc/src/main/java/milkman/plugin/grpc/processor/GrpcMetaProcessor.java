@@ -6,6 +6,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.DescriptorProtos.FileDescriptorSet;
 import io.grpc.ManagedChannel;
+import java.nio.charset.StandardCharsets;
 import javafx.application.Platform;
 import lombok.SneakyThrows;
 import me.dinowernli.grpc.polyglot.grpc.ServerReflectionClient;
@@ -34,7 +35,7 @@ public class GrpcMetaProcessor extends BaseGrpcProcessor {
 	public GrpcResponseContainer listServices(GrpcRequestContainer request, Templater templater) {
 		var response = new GrpcResponseContainer(templater.replaceTags(request.getEndpoint()));
 
-		ReplayProcessor<String> processor = ReplayProcessor.create();
+		ReplayProcessor<byte[]> processor = ReplayProcessor.create();
 		fetchServiceList(processor.sink(), request, templater);
 	  
     	var responsePayloadAspect = new GrpcResponsePayloadAspect(processor);
@@ -47,7 +48,7 @@ public class GrpcMetaProcessor extends BaseGrpcProcessor {
 	public GrpcResponseContainer showServiceDefinition(GrpcRequestContainer request, Templater templater) {
 		String fullServiceName = queryServiceName(request, templater);
 
-		ReplayProcessor<String> processor = ReplayProcessor.create();
+		ReplayProcessor<byte[]> processor = ReplayProcessor.create();
 		fetchServiceDefinition(processor.sink(), request, fullServiceName, templater);
 	    var response = new GrpcResponseContainer(templater.replaceTags(request.getEndpoint()));
     	var responsePayloadAspect = new GrpcResponsePayloadAspect(processor);
@@ -58,9 +59,9 @@ public class GrpcMetaProcessor extends BaseGrpcProcessor {
 
 	@SneakyThrows
 	private String queryServiceName(GrpcRequestContainer request, Templater templater) {
-		ReplayProcessor<String> processor = ReplayProcessor.create();
+		ReplayProcessor<byte[]> processor = ReplayProcessor.create();
 		fetchServiceList(processor.sink(), request, templater);
-		var serviceDefinitions = Flux.from(processor).collectList().block();
+		var serviceDefinitions = Flux.from(processor).map(v -> new String(v, StandardCharsets.UTF_8)).collectList().block();
 
 		var inputDialog = new SelectValueDialog();
 		CountDownLatch latch = new CountDownLatch(1);
@@ -84,11 +85,11 @@ public class GrpcMetaProcessor extends BaseGrpcProcessor {
 
 
 	@SneakyThrows
-	private void fetchServiceDefinition(FluxSink<String> sink, GrpcRequestContainer request, String fullServiceName, Templater templater) {
+	private void fetchServiceDefinition(FluxSink<byte[]> sink, GrpcRequestContainer request, String fullServiceName, Templater templater) {
 		ManagedChannel channel = createChannel(request, templater);
 		FileDescriptorSet descriptorSet = fetchServiceDescriptionViaReflection(channel, fullServiceName);
 		String protoContent = toProto(descriptorSet);
-		sink.next(protoContent);
+		sink.next(protoContent.getBytes());
 		sink.complete();
 	}
 
@@ -100,7 +101,7 @@ public class GrpcMetaProcessor extends BaseGrpcProcessor {
 			.collect(Collectors.joining("\n---\n"));
 	}
 
-	protected void fetchServiceList(FluxSink<String> sink, GrpcRequestContainer request, Templater templater) {
+	protected void fetchServiceList(FluxSink<byte[]> sink, GrpcRequestContainer request, Templater templater) {
 		ManagedChannel channel = createChannel(request, templater);
 	    var client = ServerReflectionClient.create(channel);
 
@@ -109,7 +110,7 @@ public class GrpcMetaProcessor extends BaseGrpcProcessor {
 
 			@Override
 			public void onSuccess(ImmutableList<String> result) {
-				result.forEach(sink::next);
+				result.forEach(t -> sink.next(t.getBytes()));
 				channel.shutdown();
 				sink.complete();
 			}

@@ -13,7 +13,7 @@ import reactor.core.publisher.Flux;
 public class GrpcResponsePayloadAspect implements ResponseAspect {
 
 	@JsonSerialize(converter = BlockingFluxByteToStringConverter.class)
-	private Flux<String> payloads;
+	private Flux<byte[]> payloads;
 
 	
 	@Override
