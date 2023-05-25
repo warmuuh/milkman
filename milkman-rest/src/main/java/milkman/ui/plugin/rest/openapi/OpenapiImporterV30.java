@@ -17,6 +17,7 @@ import milkman.ui.plugin.rest.domain.HeaderEntry;
 import milkman.ui.plugin.rest.domain.RestBodyAspect;
 import milkman.ui.plugin.rest.domain.RestHeaderAspect;
 import milkman.ui.plugin.rest.domain.RestRequestContainer;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.IOException;
@@ -95,7 +96,7 @@ public class OpenapiImporterV30 {
         }
 
 
-        String requestName = Objects.requireNonNullElse(operation.getOperationId(), operation.getSummary());
+        String requestName = ObjectUtils.firstNonNull(operation.getOperationId(), operation.getSummary(), path);
         
         RestRequestContainer container = new RestRequestContainer(requestName, host + path + qryStr, method.name());
 
