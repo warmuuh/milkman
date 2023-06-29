@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringBufferInputStream;
@@ -17,6 +19,8 @@ import java.util.Iterator;
 import lombok.extern.slf4j.Slf4j;
 import milkman.ui.components.CodeFoldingContentEditor;
 import milkman.ui.plugin.ContentTypePlugin;
+import milkman.utils.Stopwatch;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
@@ -164,4 +168,37 @@ public class JsonContentType implements ContentTypePlugin {
 		}
 		return curIndentation;
 	}
+
+//
+//	public static void main(String[] args) throws Exception {
+//		JsonContentType contentType = new JsonContentType();
+//		String bigJson = IOUtils.toString(new FileInputStream("/Users/peter.mucha/swork/big.json"));
+//
+//		Stopwatch.start("formatting");
+//		contentType.formatContent(bigJson);
+//		Stopwatch.stop("formatting");
+//
+//
+//		Stopwatch.start("folding");
+//		contentType.computeFolding(bigJson);
+//		Stopwatch.stop("folding");
+//
+//
+//		Stopwatch.start("formatting");
+//		contentType.formatContent(bigJson);
+//		Stopwatch.stop("formatting");
+//
+//
+//
+//		Stopwatch.start("highlight");
+//		StyleSpans<Collection<String>> styleSpans = contentType.computeHighlighting(bigJson);
+//		System.out.println(styleSpans.length());
+//		Stopwatch.stop("highlight");
+//
+//		Stopwatch.start("fmthighlight");
+//		StyleSpans<Collection<String>> styleSpans2 = contentType.computeHighlighting(contentType.formatContent(bigJson));
+//		System.out.println(styleSpans2.length());
+//		Stopwatch.stop("fmthighlight");
+//
+//	}
 }

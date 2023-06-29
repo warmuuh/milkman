@@ -302,7 +302,7 @@ public class ContentEditor extends VBox {
 		StopWatch s = new StopWatch();
 		s.start();
 		try {
-			if (getCurrentContenttypePlugin() != null && !shouldSkipHighlighting(text))
+			if (getCurrentContenttypePlugin() != null && !shouldSkipExpensiveOperations(text))
 				return getCurrentContenttypePlugin().computeHighlighting(text);
 			else
 				return noHighlight(text);
@@ -319,7 +319,7 @@ public class ContentEditor extends VBox {
 	 * @param text
 	 * @return
 	 */
-	private boolean shouldSkipHighlighting(String text) {
+	protected boolean shouldSkipExpensiveOperations(String text) {
 		/**
 		 * iterates over the string, counting the chars until next \n thereby.
 		 * If line is above max, it returns true

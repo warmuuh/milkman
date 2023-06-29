@@ -182,10 +182,15 @@ public class CodeFoldingContentEditor extends ContentEditor {
         Stopwatch.logTime("redraw", "range cache update");
         
         int caretPos = 0;
-        if (codeArea.getText() != null && codeArea.getText().length() > 0 && codeArea.getWidth() > 0)
+        if (codeArea.getText() != null
+            && codeArea.getText().length() > 0
+            && codeArea.getWidth() > 0
+            && !shouldSkipExpensiveOperations(codeArea.getText())) {
+            //hit test seems to be expensive
             caretPos = codeArea.hit(50, 10).getInsertionIndex();
+            Stopwatch.logTime("redraw", "hit test");
+        }
 
-    	Stopwatch.logTime("redraw", "hit test");
         StringBuilder b = new StringBuilder();
         rootRange.appendToString(b);
         Stopwatch.logTime("redraw", "build content");
