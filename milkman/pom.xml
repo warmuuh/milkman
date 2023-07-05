@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.warmuuh</groupId>
 	<artifactId>milkman</artifactId>
@@ -104,21 +104,24 @@
 		</resources>
 		<plugins>
 			<plugin>
-				<groupId>com.github.warmuuh</groupId>
-				<artifactId>libsass-maven-plugin</artifactId>
-				<version>0.2.10-libsass_3.5.3</version>
+				<groupId>us.hebi.sass</groupId>
+				<artifactId>sass-cli-maven-plugin</artifactId>
+				<version>1.0.3</version>
+				<configuration>
+					<sassVersion>1.62.0</sassVersion>
+					<args> <!-- Any argument that should be forwarded to the sass cli -->
+						<arg>${basedir}/src/main/sass:${basedir}/target/generated-sources/sass</arg>
+					</args>
+				</configuration>
 				<executions>
 					<execution>
+						<id>sass-exec</id>
 						<phase>generate-resources</phase>
 						<goals>
-							<goal>compile</goal>
+							<goal>run</goal>
 						</goals>
 					</execution>
 				</executions>
-				<configuration>
-					<inputPath>${basedir}/src/main/sass/</inputPath>
-					<outputPath>${basedir}/target/generated-sources/sass</outputPath>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>com.github.warmuuh</groupId>
@@ -136,74 +139,74 @@
 					</execution>
 				</executions>
 			</plugin>
-<!--			<plugin>-->
-<!--				<groupId>org.codehaus.mojo</groupId>-->
-<!--				<artifactId>exec-maven-plugin</artifactId>-->
-<!--				<version>1.6.0</version>-->
-<!--				<executions>-->
-<!--					<execution>-->
-<!--						<id>gen-binary-themes</id>-->
-<!--						<phase>process-resources</phase>-->
-<!--						<goals>-->
-<!--							<goal>java</goal>-->
-<!--						</goals>-->
-<!--						<configuration>-->
-<!--							<arguments>-->
-<!--								<argument>${project.basedir}${file.separator}target${file.separator}generated-sources${file.separator}sass${file.separator}themes${file.separator}milkman.css</argument>-->
-<!--								<argument>${project.basedir}${file.separator}target${file.separator}classes${file.separator}themes${file.separator}milkman.bss</argument>-->
-<!--							</arguments>-->
-<!--						</configuration>-->
-<!--					</execution>-->
+			<!--			<plugin>-->
+			<!--				<groupId>org.codehaus.mojo</groupId>-->
+			<!--				<artifactId>exec-maven-plugin</artifactId>-->
+			<!--				<version>1.6.0</version>-->
+			<!--				<executions>-->
+			<!--					<execution>-->
+			<!--						<id>gen-binary-themes</id>-->
+			<!--						<phase>process-resources</phase>-->
+			<!--						<goals>-->
+			<!--							<goal>java</goal>-->
+			<!--						</goals>-->
+			<!--						<configuration>-->
+			<!--							<arguments>-->
+			<!--								<argument>${project.basedir}${file.separator}target${file.separator}generated-sources${file.separator}sass${file.separator}themes${file.separator}milkman.css</argument>-->
+			<!--								<argument>${project.basedir}${file.separator}target${file.separator}classes${file.separator}themes${file.separator}milkman.bss</argument>-->
+			<!--							</arguments>-->
+			<!--						</configuration>-->
+			<!--					</execution>-->
 
-<!--					<execution>-->
-<!--						<id>gen-binary-themes-dark</id>-->
-<!--						<phase>process-resources</phase>-->
-<!--						<goals>-->
-<!--							<goal>java</goal>-->
-<!--						</goals>-->
-<!--						<configuration>-->
-<!--							<arguments>-->
-<!--								<argument>${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}themes${file.separator}milkman-dark.css</argument>-->
-<!--								<argument>${project.basedir}${file.separator}target${file.separator}classes${file.separator}themes${file.separator}milkman-dark.bss</argument>-->
-<!--							</arguments>-->
-<!--						</configuration>-->
-<!--					</execution>-->
+			<!--					<execution>-->
+			<!--						<id>gen-binary-themes-dark</id>-->
+			<!--						<phase>process-resources</phase>-->
+			<!--						<goals>-->
+			<!--							<goal>java</goal>-->
+			<!--						</goals>-->
+			<!--						<configuration>-->
+			<!--							<arguments>-->
+			<!--								<argument>${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}themes${file.separator}milkman-dark.css</argument>-->
+			<!--								<argument>${project.basedir}${file.separator}target${file.separator}classes${file.separator}themes${file.separator}milkman-dark.bss</argument>-->
+			<!--							</arguments>-->
+			<!--						</configuration>-->
+			<!--					</execution>-->
 
-<!--					<execution>-->
-<!--						<id>gen-binary-themes-syntax</id>-->
-<!--						<phase>process-resources</phase>-->
-<!--						<goals>-->
-<!--							<goal>java</goal>-->
-<!--						</goals>-->
-<!--						<configuration>-->
-<!--							<arguments>-->
-<!--								<argument>${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}themes${file.separator}syntax${file.separator}milkman-syntax.css</argument>-->
-<!--								<argument>${project.basedir}${file.separator}target${file.separator}classes${file.separator}themes${file.separator}syntax${file.separator}milkman-syntax.bss</argument>-->
-<!--							</arguments>-->
-<!--						</configuration>-->
-<!--					</execution>-->
+			<!--					<execution>-->
+			<!--						<id>gen-binary-themes-syntax</id>-->
+			<!--						<phase>process-resources</phase>-->
+			<!--						<goals>-->
+			<!--							<goal>java</goal>-->
+			<!--						</goals>-->
+			<!--						<configuration>-->
+			<!--							<arguments>-->
+			<!--								<argument>${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}themes${file.separator}syntax${file.separator}milkman-syntax.css</argument>-->
+			<!--								<argument>${project.basedir}${file.separator}target${file.separator}classes${file.separator}themes${file.separator}syntax${file.separator}milkman-syntax.bss</argument>-->
+			<!--							</arguments>-->
+			<!--						</configuration>-->
+			<!--					</execution>-->
 
-<!--					<execution>-->
-<!--						<id>gen-binary-themes-syntax-dark</id>-->
-<!--						<phase>process-resources</phase>-->
-<!--						<goals>-->
-<!--							<goal>java</goal>-->
-<!--						</goals>-->
-<!--						<configuration>-->
-<!--							<arguments>-->
-<!--								<argument>${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}themes${file.separator}syntax${file.separator}milkman-dark-syntax.css</argument>-->
-<!--								<argument>${project.basedir}${file.separator}target${file.separator}classes${file.separator}themes${file.separator}syntax${file.separator}milkman-dark-syntax.bss</argument>-->
-<!--							</arguments>-->
-<!--						</configuration>-->
-<!--					</execution>-->
+			<!--					<execution>-->
+			<!--						<id>gen-binary-themes-syntax-dark</id>-->
+			<!--						<phase>process-resources</phase>-->
+			<!--						<goals>-->
+			<!--							<goal>java</goal>-->
+			<!--						</goals>-->
+			<!--						<configuration>-->
+			<!--							<arguments>-->
+			<!--								<argument>${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}themes${file.separator}syntax${file.separator}milkman-dark-syntax.css</argument>-->
+			<!--								<argument>${project.basedir}${file.separator}target${file.separator}classes${file.separator}themes${file.separator}syntax${file.separator}milkman-dark-syntax.bss</argument>-->
+			<!--							</arguments>-->
+			<!--						</configuration>-->
+			<!--					</execution>-->
 
 
-<!--				</executions>-->
+			<!--				</executions>-->
 
-<!--				<configuration>-->
-<!--					<mainClass>com.sun.javafx.css.parser.Css2Bin</mainClass>-->
-<!--				</configuration>-->
-<!--			</plugin>-->
+			<!--				<configuration>-->
+			<!--					<mainClass>com.sun.javafx.css.parser.Css2Bin</mainClass>-->
+			<!--				</configuration>-->
+			<!--			</plugin>-->
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -240,11 +243,11 @@
 
 	<dependencyManagement>
 		<dependencies>
-<!--			<dependency>-->
-<!--				<groupId>org.fxmisc.flowless</groupId>-->
-<!--				<artifactId>flowless</artifactId>-->
-<!--				<version>0.6.1</version>-->
-<!--			</dependency>-->
+			<!--			<dependency>-->
+			<!--				<groupId>org.fxmisc.flowless</groupId>-->
+			<!--				<artifactId>flowless</artifactId>-->
+			<!--				<version>0.6.1</version>-->
+			<!--			</dependency>-->
 		</dependencies>
 	</dependencyManagement>
 
