@@ -71,7 +71,7 @@ public class TestRunner {
 						var requestContainer = tuple.getT3();
 						sink.next(new TestResultEvent(requestId.toString(), requestContainer.getName(), STARTED, Map.of()));
 					})
-					.flatMap(tuple -> execute(tuple, testEnvironment, sink))
+					.flatMap(tuple -> execute(tuple, testEnvironment, sink, asyncControl))
 					.flatMap(testSuccess -> {
 						if (!testSuccess && testAspect.isStopOnFirstFailure()) {
 							return Mono.error(new RuntimeException("Test failed"));
@@ -111,10 +111,14 @@ public class TestRunner {
 		return environment;
 	}
 
-	private Mono<Boolean> execute(Tuple3<Long, TestDetails, RequestContainer> request, Environment overrideEnv, FluxSink<TestResultEvent> replay) {
+	private Mono<Boolean> execute(
+			Tuple3<Long, TestDetails, RequestContainer> request,
+			Environment overrideEnv,
+			FluxSink<TestResultEvent> replay,
+			AsyncControl asyncControl) {
 		var testDetails = request.getT2();
 		var retryDelay = Duration.ofMillis(testDetails.getWaitBetweenRetriesInMs());
-		return Mono.defer(() -> Mono.just(executor.executeRequest(request.getT3(), Optional.of(overrideEnv))))
+		return Mono.defer(() -> Mono.just(executor.executeRequest(request.getT3(), Optional.of(overrideEnv), asyncControl)))
 				.retryWhen(Retry.fixedDelay(testDetails.getRetries(), retryDelay)
 //						.filter(t -> !testDetails.isIgnore()) // might be wanted behavior: retry on error but ignore result, so we dont use this filter here
 						.scheduler(Schedulers.elastic()))
