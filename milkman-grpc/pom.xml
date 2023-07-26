@@ -44,9 +44,9 @@
 
 		
 		<dependency>
-			<groupId>com.github.os72</groupId>
+			<groupId>io.github.minhhoangvn</groupId>
 			<artifactId>protoc-jar</artifactId>
-			<version>3.8.0</version>
+			<version>3.21.4</version>
 		</dependency>
 	</dependencies>
 
