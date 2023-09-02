@@ -13,7 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
 import milkman.domain.KeySet;
 import milkman.domain.KeySet.KeyEntry;
-import milkman.ui.components.JfxTableEditor;
+import milkman.ui.components.TableEditor;
 import milkman.ui.plugin.KeyEditor;
 import milkman.utils.ObjectUtils;
 import milkman.utils.fxml.FxmlUtil;
@@ -21,7 +21,7 @@ import milkman.utils.fxml.facade.DialogLayoutBase;
 
 public class ManageKeysDialog {
 
-	JfxTableEditor<KeyEntry> editor;
+	TableEditor<KeyEntry> editor;
 	private Dialog dialog;
 	private List<KeyEditor> keyEditors;
 
@@ -94,7 +94,7 @@ public class ManageKeysDialog {
 		public ManageKeysDialogFxml(ManageKeysDialog controller){
 			setHeading(label("Edit Key-Set"));
 
-			var editor = controller.editor = new JfxTableEditor<>("keys.list");
+			var editor = controller.editor = new TableEditor<>("keys.list");
 			editor.setMinHeight(500);
 			editor.setMinWidth(800);
 			setBody(editor);

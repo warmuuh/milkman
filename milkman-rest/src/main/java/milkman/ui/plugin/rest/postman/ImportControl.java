@@ -1,6 +1,9 @@
 package milkman.ui.plugin.rest.postman;
 
-import com.jfoenix.controls.JFXTabPane;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
@@ -12,13 +15,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import lombok.extern.slf4j.Slf4j;
 import milkman.utils.fxml.FxmlUtil;
+import milkman.utils.fxml.facade.SimpleTabPane;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 
 /**
  * a control that allows for different ways of importing a file
@@ -28,7 +27,7 @@ import java.io.InputStream;
  *
  */
 @Slf4j
-public class ImportControl extends JFXTabPane {
+public class ImportControl extends SimpleTabPane {
 
 	
 	TextArea rawContent;

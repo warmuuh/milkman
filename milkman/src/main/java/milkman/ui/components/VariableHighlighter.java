@@ -61,7 +61,7 @@ import static milkman.utils.fxml.facade.FxmlBuilder.*;
 
 
 /**
- * JFXHighlighter is used to highlight Text and LabeledText nodes
+ * VariableHighlighter is used to highlight Text and LabeledText nodes
  * (in a specific {@link Parent}) that matches the user query.
  *
  * @author Shadi Shaheen

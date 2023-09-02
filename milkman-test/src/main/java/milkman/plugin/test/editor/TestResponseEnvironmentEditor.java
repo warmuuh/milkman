@@ -9,7 +9,7 @@ import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 import milkman.plugin.test.domain.TestResultAspect;
 import milkman.plugin.test.domain.TestResultEnvAspect;
-import milkman.ui.components.JfxTableEditor;
+import milkman.ui.components.TableEditor;
 import milkman.ui.plugin.ResponseAspectEditor;
 
 public class TestResponseEnvironmentEditor implements ResponseAspectEditor {
@@ -18,7 +18,7 @@ public class TestResponseEnvironmentEditor implements ResponseAspectEditor {
     @Override
     public Tab getRoot(RequestContainer request, ResponseContainer response) {
         TestResultEnvAspect testAspect = response.getAspect(TestResultEnvAspect.class).get();
-        JfxTableEditor<EnvironmentEntry> editor = new JfxTableEditor<>("tests.list");
+        TableEditor<EnvironmentEntry> editor = new TableEditor<>("tests.list");
         editor.addReadOnlyColumn("name", EnvironmentEntry::getName);
         editor.addReadOnlyColumn("value", EnvironmentEntry::getValue);
 

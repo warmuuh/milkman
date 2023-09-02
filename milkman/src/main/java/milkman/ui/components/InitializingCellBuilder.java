@@ -6,7 +6,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
 import lombok.RequiredArgsConstructor;
-import milkman.ui.components.JfxTableEditor.TextFieldEditorBuilderPatch;
+import milkman.ui.components.TableEditor.TextFieldEditorBuilderPatch;
 
 import java.util.function.Consumer;
 

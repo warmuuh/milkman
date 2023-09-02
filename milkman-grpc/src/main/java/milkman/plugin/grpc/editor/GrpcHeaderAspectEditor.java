@@ -12,7 +12,7 @@ import milkman.domain.RequestContainer;
 import milkman.plugin.grpc.domain.GrpcHeaderAspect;
 import milkman.plugin.grpc.domain.HeaderEntry;
 import milkman.ui.components.AutoCompleter;
-import milkman.ui.components.JfxTableEditor;
+import milkman.ui.components.TableEditor;
 import milkman.ui.plugin.AutoCompletionAware;
 import milkman.ui.plugin.RequestAspectEditor;
 
@@ -26,7 +26,7 @@ public class GrpcHeaderAspectEditor implements RequestAspectEditor, AutoCompleti
 	@SneakyThrows
 	public Tab getRoot(RequestContainer request) {
 		GrpcHeaderAspect headers = request.getAspect(GrpcHeaderAspect.class).get();
-		JfxTableEditor<HeaderEntry> editor = new JfxTableEditor<HeaderEntry>("grpc.headers.list");
+		TableEditor<HeaderEntry> editor = new TableEditor<HeaderEntry>("grpc.headers.list");
 		editor.enableAddition(() -> {
 			Platform.runLater( () -> headers.setDirty(true));
 			return new HeaderEntry(UUID.randomUUID().toString(), "", "", true);

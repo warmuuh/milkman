@@ -10,10 +10,10 @@ import static milkman.utils.fxml.facade.FxmlBuilder.text;
 import static milkman.utils.fxml.facade.FxmlBuilder.vbox;
 import static milkman.utils.fxml.facade.FxmlBuilder.vspace;
 
-import com.jfoenix.controls.JFXButton;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import java.util.List;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.TextField;
@@ -80,7 +80,7 @@ public class EditTemplateDialog {
 
 	public static class EditTemplateDialogFxml extends DialogLayoutBase {
 		public EditTemplateDialogFxml(EditTemplateDialog controller){
-			JFXButton helpBtn = new JFXButton();
+			Button helpBtn = FxmlBuilder.button();
 			helpBtn.setOnAction(e -> PlatformUtil.tryOpenBrowser("https://github.com/warmuuh/milkman/blob/master/docs/features.md#custom-templates"));
 			helpBtn.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.QUESTION_CIRCLE, "1.5em"));
 

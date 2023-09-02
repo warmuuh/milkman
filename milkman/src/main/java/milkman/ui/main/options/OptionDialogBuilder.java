@@ -17,7 +17,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import lombok.RequiredArgsConstructor;
-import milkman.ui.components.JfxTableEditor;
+import milkman.ui.components.TableEditor;
 import milkman.utils.fxml.GenericBinding;
 import milkman.utils.fxml.facade.BindableComboBox;
 import milkman.utils.fxml.facade.FxmlBuilder;
@@ -173,7 +173,7 @@ public class OptionDialogBuilder  {
 			for (int i = 0; i < items.size(); i++) {
 				zipWithIndex.add(new HashMap.SimpleEntry<>(i, items.get(i)));
 			}
-			JfxTableEditor<Entry<Integer, String>> table = new JfxTableEditor<>("options.list");
+			TableEditor<Entry<Integer, String>> table = new TableEditor<>("options.list");
 			table.addColumn("Script Url", Entry::getValue, (e, v) -> {
 				e.setValue(v);
 				items.set(e.getKey(), v);
@@ -194,7 +194,7 @@ public class OptionDialogBuilder  {
 				Consumer<V> valueEditor
 				) {
 			List<V> items = itemProvider.apply(optionsObject);
-			JfxTableEditor<V> table = new JfxTableEditor<>("options.generic.list");
+			TableEditor<V> table = new TableEditor<>("options.generic.list");
 			columnValueProviders.forEach(table::addReadOnlyColumn);
 			table.enableAddition(() -> {
 				V newValue = newValueProvider.get();

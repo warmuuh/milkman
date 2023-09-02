@@ -12,7 +12,7 @@ import javafx.scene.control.Tab;
 import lombok.SneakyThrows;
 import milkman.domain.RequestContainer;
 import milkman.ui.components.AutoCompleter;
-import milkman.ui.components.JfxTableEditor;
+import milkman.ui.components.TableEditor;
 import milkman.ui.plugin.AutoCompletionAware;
 import milkman.ui.plugin.RequestAspectEditor;
 import milkman.ui.plugin.rest.domain.HeaderEntry;
@@ -30,7 +30,7 @@ public class RequestHeaderTabController implements RequestAspectEditor, AutoComp
 	@SneakyThrows
 	public Tab getRoot(RequestContainer request) {
 		RestHeaderAspect headers = request.getAspect(RestHeaderAspect.class).get();
-		JfxTableEditor<HeaderEntry> editor = new JfxTableEditor<HeaderEntry>("rest.headers.list");
+		TableEditor<HeaderEntry> editor = new TableEditor<HeaderEntry>("rest.headers.list");
 		editor.enableAddition(() -> {
 			Platform.runLater( () -> headers.setDirty(true));
 			return new HeaderEntry(UUID.randomUUID().toString(), "", "", true);

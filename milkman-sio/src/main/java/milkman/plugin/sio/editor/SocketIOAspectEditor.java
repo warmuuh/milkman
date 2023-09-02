@@ -2,14 +2,13 @@ package milkman.plugin.sio.editor;
 
 import static milkman.utils.FunctionalUtils.run;
 
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXTextField;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import java.util.Arrays;
 import java.util.Optional;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
@@ -30,6 +29,7 @@ import milkman.ui.plugin.RequestAspectEditor;
 import milkman.ui.plugin.rest.contenttype.JsonContentType;
 import milkman.ui.plugin.rest.domain.RestHeaderAspect;
 import milkman.utils.fxml.GenericBinding;
+import milkman.utils.fxml.facade.FxmlBuilder;
 
 public class SocketIOAspectEditor implements RequestAspectEditor, ExecutionListenerAware {
 
@@ -45,7 +45,7 @@ public class SocketIOAspectEditor implements RequestAspectEditor, ExecutionListe
     public Tab getRoot(RequestContainer request, Optional<ResponseContainer> existingResponse) {
         SocketIOAspect sioAspect = request.getAspect(SocketIOAspect.class).get();
 
-        TextField textField = new JFXTextField();
+        TextField textField = FxmlBuilder.text();
 		GenericBinding<SocketIOAspect, String> binding = GenericBinding.of(
             SocketIOAspect::getEvent, 
             run(SocketIOAspect::setEvent)
@@ -63,7 +63,7 @@ public class SocketIOAspectEditor implements RequestAspectEditor, ExecutionListe
 
         editor.addExtraHeaderElement(new HBox(10, new Label("Event:"), textField), true);
 
-        var addItemBtn = new JFXButton();
+        var addItemBtn = FxmlBuilder.button();
         addItemBtn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         addItemBtn.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PAPER_PLANE, "1.5em"));
         addItemBtn.getStyleClass().add("btn-add-entry");
@@ -114,7 +114,7 @@ public class SocketIOAspectEditor implements RequestAspectEditor, ExecutionListe
 		.ifPresent(root::setContentType);
 	}
 
-    private void activateIfActive(SocketIOAspect sioAspect, JFXButton addItemBtn, Optional<ResponseContainer> existingResponse) {
+    private void activateIfActive(SocketIOAspect sioAspect, Button addItemBtn, Optional<ResponseContainer> existingResponse) {
         existingResponse.ifPresent(response -> response.getAspect(SocketIOResponseAspect.class)
                 .filter(sio -> sio.getClient().connected())
                 .ifPresent(sio -> {

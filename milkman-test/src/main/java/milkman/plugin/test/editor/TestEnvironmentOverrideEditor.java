@@ -9,7 +9,7 @@ import javafx.scene.control.Tab;
 import lombok.SneakyThrows;
 import milkman.domain.RequestContainer;
 import milkman.plugin.test.domain.TestAspect;
-import milkman.ui.components.JfxTableEditor;
+import milkman.ui.components.TableEditor;
 import milkman.ui.plugin.RequestAspectEditor;
 
 public class TestEnvironmentOverrideEditor implements RequestAspectEditor {
@@ -19,7 +19,7 @@ public class TestEnvironmentOverrideEditor implements RequestAspectEditor {
 	@SneakyThrows
 	public Tab getRoot(RequestContainer request) {
 		TestAspect testAspect = request.getAspect(TestAspect.class).get();
-		JfxTableEditor<EnvironmentEntry> editor = new JfxTableEditor<>("tests.env.list");
+		TableEditor<EnvironmentEntry> editor = new TableEditor<>("tests.env.list");
 		editor.enableAddition(() -> {
 			Platform.runLater( () -> testAspect.setDirty(true));
 			return new EnvironmentEntry(UUID.randomUUID().toString(), "", "", true);

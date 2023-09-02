@@ -48,7 +48,7 @@ import milkman.utils.javafx.JavaFxUtils;
 
 
 @Slf4j
-public class JfxTableEditor<T> extends StackPane {
+public class TableEditor<T> extends StackPane {
 
 	private final String tableId;
 
@@ -69,7 +69,7 @@ public class JfxTableEditor<T> extends StackPane {
 	private Supplier<T> newItemCreator;
 
 
-	public JfxTableEditor(String tableId) {
+	public TableEditor(String tableId) {
 		this.tableId = tableId;
 		table.setEditable(true);
 		table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
