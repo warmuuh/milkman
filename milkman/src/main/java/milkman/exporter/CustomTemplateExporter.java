@@ -22,6 +22,7 @@ import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.RequestTypePluginAware;
 import milkman.ui.plugin.Templater;
 import milkman.utils.fxml.facade.FxmlBuilder;
+import milkman.utils.fxml.facade.SimpleComboBox;
 
 public class CustomTemplateExporter implements RequestExporterPlugin, RequestTypePluginAware {
 
@@ -30,7 +31,7 @@ public class CustomTemplateExporter implements RequestExporterPlugin, RequestTyp
   private TextArea textArea;
 
   private RequestContainer request;
-  private ComboBox<ExportHolder> cbTemplate;
+  private SimpleComboBox<ExportHolder> cbTemplate;
   private List<RequestTypePlugin> registeredRequestTypePlugins;
 
   @Override

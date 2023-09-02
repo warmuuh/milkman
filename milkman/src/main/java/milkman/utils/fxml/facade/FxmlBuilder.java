@@ -15,9 +15,14 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXCheckbox;
+import io.github.palexdev.materialfx.controls.MFXComboBox;
 import io.github.palexdev.materialfx.controls.MFXListView;
+import io.github.palexdev.materialfx.controls.MFXPasswordField;
 import io.github.palexdev.materialfx.controls.MFXRectangleToggleNode;
+import io.github.palexdev.materialfx.controls.MFXTextField;
 import io.github.palexdev.materialfx.controls.MFXToggleButton;
+import io.github.palexdev.materialfx.controls.MFXTreeView;
+import io.github.palexdev.materialfx.enums.FloatMode;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import javafx.geometry.Pos;
@@ -159,15 +164,15 @@ public class FxmlBuilder {
     }
 
     public static TextField text(String text) {
-        return new JFXTextField(text);
+        return new MFXTextField(text);
     }
 
     public static TextField text() {
-        return new JFXTextField();
+        return new MFXTextField();
     }
 
 	public static TextField password() {
-		return new JFXPasswordField();
+		return new MFXPasswordField();
 	}
 
     public static ValidatablePaswordField vpassword() {
@@ -188,10 +193,10 @@ public class FxmlBuilder {
     }
 
     public static TextField text(String id, String prompt, boolean lblFloat) {
-        JFXTextField txt = new JFXTextField();
+        MFXTextField txt = new MFXTextField();
         txt.setId(id);
         txt.setPromptText(prompt);
-        txt.setLabelFloat(lblFloat);
+        txt.setFloatMode(lblFloat ? FloatMode.ABOVE : FloatMode.DISABLED);
         return txt;
     }
 
@@ -205,7 +210,7 @@ public class FxmlBuilder {
     }
 
     public static Button submit(Runnable action, String text) {
-        JFXButton apply = new JFXButton(text);
+        MFXButton apply = new MFXButton(text);
         apply.setDefaultButton(true);
         apply.setOnAction(e -> action.run());
         return apply;
@@ -216,7 +221,7 @@ public class FxmlBuilder {
     }
 
     public static Button cancel(Runnable action, String text) {
-        JFXButton cancel = new JFXButton(text);
+        MFXButton cancel = new MFXButton(text);
         cancel.setCancelButton(true);
         cancel.setOnAction(e -> action.run());
         return cancel;
@@ -258,8 +263,8 @@ public class FxmlBuilder {
     }
 
 
-    public static ComboBox comboBox(String id) {
-        JFXComboBox cb = new JFXComboBox<>();
+    public static SimpleComboBox comboBox(String id) {
+        SimpleComboBox cb = new SimpleComboBox();
         cb.setId(id);
         cb.setEditable(false);
         return cb;

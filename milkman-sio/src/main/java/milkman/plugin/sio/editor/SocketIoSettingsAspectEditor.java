@@ -16,12 +16,13 @@ import milkman.plugin.sio.domain.SocketIoSettingsAspect;
 import milkman.plugin.sio.domain.SocketIoVersion;
 import milkman.ui.plugin.RequestAspectEditor;
 import milkman.utils.fxml.GenericBinding;
+import milkman.utils.fxml.facade.SimpleComboBox;
 
 @Slf4j
 public class SocketIoSettingsAspectEditor implements RequestAspectEditor {
 
 	private TextField txtHandshakePath;
-	private ComboBox<SocketIoVersion> cbSocketIoVersion;
+	private SimpleComboBox<SocketIoVersion> cbSocketIoVersion;
 
 	private final GenericBinding<SocketIoSettingsAspect, String> handshakePathBinding =
 			GenericBinding.of(SocketIoSettingsAspect::getHandshakePath, SocketIoSettingsAspect::setHandshakePath);

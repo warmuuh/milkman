@@ -22,6 +22,7 @@ import milkman.PlatformUtil;
 import milkman.utils.fxml.FxmlUtil;
 import milkman.utils.fxml.facade.DialogLayoutBase;
 import milkman.utils.fxml.facade.FxmlBuilder;
+import milkman.utils.fxml.facade.SimpleComboBox;
 import milkman.utils.fxml.facade.ValidatableTextArea;
 
 public class EditTemplateDialog {
@@ -31,7 +32,7 @@ public class EditTemplateDialog {
 
 	ValidatableTextArea template;
 	TextField name;
-	ComboBox requestType;
+	SimpleComboBox requestType;
 	private List<String> registeredRequestTypes;
 
 	public EditTemplateDialog(List<String> registeredRequestTypes) {
@@ -43,7 +44,7 @@ public class EditTemplateDialog {
 		this.name.setText(templateName);
 		this.requestType.getItems().addAll(registeredRequestTypes);
 		if (requestType != null) {
-			this.requestType.getSelectionModel().select(requestType);
+			this.requestType.getSelectionModel().selectItem(requestType);
 		} else {
 			this.requestType.getSelectionModel().selectFirst();
 		}
