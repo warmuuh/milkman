@@ -33,11 +33,12 @@ import milkman.utils.Event;
 import milkman.utils.fxml.FxmlUtil;
 import milkman.utils.fxml.NoSelectionModel;
 import milkman.utils.fxml.facade.DialogLayoutBase;
+import milkman.utils.fxml.facade.SimpleListView;
 import milkman.utils.javafx.JavaFxUtils;
 
 public class ManageEnvironmentsDialog {
 
-	ListView<Environment> environmentList;
+	SimpleListView<Environment> environmentList;
 	private Dialog dialog;
 	private ObservableList<Environment> environments;
 
@@ -53,14 +54,14 @@ public class ManageEnvironmentsDialog {
 
 		environments = FXCollections.observableList(envs);
 		environmentList.setItems(environments);
-		environmentList.setSelectionModel(new NoSelectionModel<Environment>());
-		environmentList.setPlaceholder(new Label("No Environments created..."));
+//		environmentList.setSelectionModel(new NoSelectionModel<Environment>());
+//		environmentList.setPlaceholder(new Label("No Environments created..."));
 		dialog = FxmlUtil.createDialog(content);
 		dialog.showAndWait();
 	}
 
 	private void refresh() {
-		environmentList.refresh();
+//		environmentList.refresh();
 	}
 
 

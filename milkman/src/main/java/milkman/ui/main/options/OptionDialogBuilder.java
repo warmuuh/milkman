@@ -14,6 +14,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import milkman.ui.components.TableEditor;
 import milkman.utils.fxml.GenericBinding;
 import milkman.utils.fxml.facade.BindableComboBox;
 import milkman.utils.fxml.facade.FxmlBuilder;
+import milkman.utils.fxml.facade.SimpleToggleButton;
 
 public class OptionDialogBuilder  {
 
@@ -64,7 +66,7 @@ public class OptionDialogBuilder  {
 		@Override
 		public OptionPaneBuilder<T> toggle(String name, Function<T, Boolean> getter, BiConsumer<T, Boolean> setter) {
 
-			ToggleButton button = FxmlBuilder.toggle(name);
+			SimpleToggleButton button = FxmlBuilder.toggle(name);
 			GenericBinding<T,Boolean> binding = GenericBinding.of(getter, setter, optionsObject);
 			bindings.add(binding);
 			button.selectedProperty().bindBidirectional(binding);
@@ -147,8 +149,8 @@ public class OptionDialogBuilder  {
 			BindableComboBox<String> text = FxmlBuilder.combobox();
 			GenericBinding<T,String> binding = GenericBinding.of(getter, setter);
 			bindings.add(binding);
-			text.bindTo(binding, optionsObject);
 			text.getItems().addAll(possibleValues);
+			text.bindTo(binding, optionsObject);
 			HBox hbox = new HBox(lbl, text);
 			hbox.getStyleClass().add("options-entry");
 			nodes.add(hbox);

@@ -2,6 +2,7 @@ package milkman.plugin.test.editor;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
+import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
@@ -15,8 +16,8 @@ import static milkman.utils.fxml.facade.FxmlBuilder.VboxExt;
 @Slf4j
 public class TestAspectScenarioEditor implements RequestAspectEditor {
 
-	private ToggleButton cbFailOnFirst;
-	private ToggleButton cbPropagateEnvironment;
+	private Toggle cbFailOnFirst;
+	private Toggle cbPropagateEnvironment;
 
 	private final GenericBinding<TestAspect, Boolean> stopOnFirstFailureBinding = GenericBinding.of(TestAspect::isStopOnFirstFailure, TestAspect::setStopOnFirstFailure);
 	private final GenericBinding<TestAspect, Boolean> propagateEnvBinding = GenericBinding.of(TestAspect::isPropagateResultEnvironment, TestAspect::setPropagateResultEnvironment);

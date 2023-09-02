@@ -19,6 +19,7 @@ import milkman.utils.Event;
 import milkman.utils.fxml.FxmlUtil;
 import milkman.utils.fxml.NoSelectionModel;
 import milkman.utils.fxml.facade.DialogLayoutBase;
+import milkman.utils.fxml.facade.SimpleListView;
 import milkman.utils.javafx.JavaFxUtils;
 
 import java.util.List;
@@ -27,7 +28,7 @@ import static milkman.utils.fxml.facade.FxmlBuilder.*;
 
 public class ManageWorkspacesDialog {
 
-	ListView<String> workspaceList;
+	SimpleListView<String> workspaceList;
 	private Dialog dialog;
 	private ObservableList<String> workspaces;
 
@@ -39,7 +40,7 @@ public class ManageWorkspacesDialog {
 
 		workspaces = FXCollections.observableList(workspaceNames);
 		workspaceList.setItems(workspaces);
-		workspaceList.setSelectionModel(new NoSelectionModel<String>());
+//		workspaceList.setSelectionModel(new NoSelectionModel<String>());
 		dialog = FxmlUtil.createDialog(content);
 		dialog.showAndWait();
 	}

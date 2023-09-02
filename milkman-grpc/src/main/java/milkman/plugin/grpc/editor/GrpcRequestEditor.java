@@ -14,12 +14,13 @@ import milkman.ui.plugin.RequestTypeEditor;
 import milkman.utils.fxml.GenericBinding;
 import milkman.utils.fxml.facade.FxmlBuilder;
 import milkman.utils.fxml.facade.FxmlBuilder.HboxExt;
+import milkman.utils.fxml.facade.SimpleToggleButton;
 
 public class GrpcRequestEditor implements RequestTypeEditor, AutoCompletionAware {
 
 
 	TextField endpoint;
-	ToggleButton useTls;
+	SimpleToggleButton useTls;
 
 	private final GenericBinding<GrpcRequestContainer, String> endpointBinding = GenericBinding.of(GrpcRequestContainer::getEndpoint, GrpcRequestContainer::setEndpoint);
 	private final GenericBinding<GrpcRequestContainer, Boolean> tlsBinding = GenericBinding.of(GrpcRequestContainer::isUseTls, GrpcRequestContainer::setUseTls);

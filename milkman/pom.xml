@@ -72,7 +72,7 @@
 		<dependency>
 			<groupId>io.github.palexdev</groupId>
 			<artifactId>materialfx</artifactId>
-			<version>11.12.0</version>
+			<version>11.16.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.jfoenix</groupId>

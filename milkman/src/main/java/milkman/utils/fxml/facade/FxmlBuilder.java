@@ -32,6 +32,7 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeView;
@@ -101,8 +102,8 @@ public class FxmlBuilder {
         return new MFXCheckbox(text);
     }
 
-    public static ToggleButton toggle(String text) {
-        MFXToggleButton toggleButton = new MFXToggleButton();
+    public static SimpleToggleButton toggle(String text) {
+        SimpleToggleButton toggleButton = new SimpleToggleButton();
         toggleButton.setPrefHeight(30);
         toggleButton.setText(text);
         return toggleButton;
@@ -126,10 +127,9 @@ public class FxmlBuilder {
         return new BindableComboBox<>();
     }
 
-    public static <T> ListView<T> list(double verticalGap, Function<T, Node> cellGraphicFactory) {
-        var listView = new MFXListView<T>();
-        listView.setCellFactory(l -> new ListViewNullSafeCell<>(cellGraphicFactory));
-//        listView.setVerticalGap(verticalGap);
+    public static <T> SimpleListView<T> list(double verticalGap, Function<T, Node> cellGraphicFactory) {
+        var listView = new SimpleListView<T>();
+        listView.setCellFactory(l -> new ListViewNullSafeCell<>(listView, l, cellGraphicFactory));
         return listView;
     }
 

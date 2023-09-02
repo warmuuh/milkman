@@ -73,7 +73,6 @@ public class RestRequestEditController implements RequestTypeEditor, AutoComplet
 			add(methods);
 			methods.setId("httpMethods");
 			controller.httpMethod = methods;
-			methods.setValue("GET");
 			methods.getItems().add("GET");
 			methods.getItems().add("POST");
 			methods.getItems().add("PUT");
@@ -81,6 +80,7 @@ public class RestRequestEditController implements RequestTypeEditor, AutoComplet
 			methods.getItems().add("PATCH");
 			methods.getItems().add("HEAD");
 			methods.getItems().add("OPTIONS");
+			methods.setValue("GET");
 			
 			controller.requestUrl = add(new LongTextField(), true);
 			controller.requestUrl.setId("requestUrl");
