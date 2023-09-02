@@ -1,13 +1,12 @@
 package milkman.plugin.auth.oauth.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Date;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.KeySet.KeyEntry;
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.Date;
 
 @Slf4j
 @Data
@@ -18,10 +17,14 @@ public class Oauth2Credentials extends KeyEntry {
     String accessTokenEndpoint;
     String scopes;
     boolean autoRefresh;
+    boolean autoIssue;
     boolean requestBodyAuthScheme;
 
     @JsonIgnore
     boolean refreshFailed;
+
+    @JsonIgnore
+    boolean autoIssueFailed;
 
     Oauth2Grant grantType;
     OAuth2Token token;
@@ -53,6 +56,16 @@ public class Oauth2Credentials extends KeyEntry {
                 refreshFailed = true;
             }
         }
+        //if still expired, refresh didnt work
+        if (isExpired() && isAutoIssue() && !autoIssueFailed) {
+            try {
+                fetchNewToken();
+            } catch (Exception e) {
+                log.error("Failed to issue token", e.getMessage());
+                autoIssueFailed = true;
+            }
+        }
+
         return token.getAccessToken();
     }
 

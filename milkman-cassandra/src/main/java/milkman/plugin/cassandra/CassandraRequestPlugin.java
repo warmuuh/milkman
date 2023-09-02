@@ -1,15 +1,19 @@
 package milkman.plugin.cassandra;
 
+import java.util.Collections;
+import java.util.List;
 import milkman.domain.RequestContainer;
 import milkman.domain.RequestExecutionContext;
 import milkman.domain.ResponseContainer;
 import milkman.plugin.cassandra.domain.CassandraRequestContainer;
 import milkman.plugin.cassandra.editor.CassandraRequestEditor;
 import milkman.plugin.jdbc.domain.JdbcSqlAspect;
-import milkman.ui.plugin.*;
-
-import java.util.Collections;
-import java.util.List;
+import milkman.ui.plugin.RequestAspectEditor;
+import milkman.ui.plugin.RequestAspectsPlugin;
+import milkman.ui.plugin.RequestTypeEditor;
+import milkman.ui.plugin.RequestTypePlugin;
+import milkman.ui.plugin.ResponseAspectEditor;
+import milkman.ui.plugin.Templater;
 
 public class CassandraRequestPlugin implements RequestTypePlugin, RequestAspectsPlugin {
 
@@ -65,7 +69,7 @@ public class CassandraRequestPlugin implements RequestTypePlugin, RequestAspects
 
 	@Override
 	public int getOrder() {
-		return 18;
+		return 20;
 	}
 
 }

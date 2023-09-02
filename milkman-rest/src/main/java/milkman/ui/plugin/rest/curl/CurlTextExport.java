@@ -1,5 +1,7 @@
 package milkman.ui.plugin.rest.curl;
 
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import milkman.ui.plugin.Templater;
 import milkman.ui.plugin.TextExport;
@@ -9,9 +11,6 @@ import milkman.ui.plugin.rest.domain.RestBodyAspect;
 import milkman.ui.plugin.rest.domain.RestHeaderAspect;
 import milkman.ui.plugin.rest.domain.RestRequestContainer;
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class CurlTextExport implements TextExport<RestRequestContainer> {
@@ -61,7 +60,7 @@ public class CurlTextExport implements TextExport<RestRequestContainer> {
     private Optional<String> getContentType(RestRequestContainer request) {
         return request.getAspect(RestHeaderAspect.class)
                 .flatMap(h -> h.getEntries().stream()
-                        .filter(e -> e.getValue().equalsIgnoreCase("content-type"))
+                        .filter(e -> e.getName().equalsIgnoreCase("content-type"))
                         .map(HeaderEntry::getValue)
                         .findAny());
     }

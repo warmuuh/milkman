@@ -1,5 +1,8 @@
 package milkman.plugin.ws;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 import milkman.domain.RequestContainer;
 import milkman.domain.RequestExecutionContext;
 import milkman.domain.ResponseContainer;
@@ -7,14 +10,15 @@ import milkman.plugin.ws.domain.WebsocketAspect;
 import milkman.plugin.ws.domain.WebsocketRequestContainer;
 import milkman.plugin.ws.editor.WebSocketAspectEditor;
 import milkman.plugin.ws.editor.WebsocketRequestEditor;
-import milkman.ui.plugin.*;
+import milkman.ui.plugin.RequestAspectEditor;
+import milkman.ui.plugin.RequestAspectsPlugin;
+import milkman.ui.plugin.RequestTypeEditor;
+import milkman.ui.plugin.RequestTypePlugin;
+import milkman.ui.plugin.ResponseAspectEditor;
+import milkman.ui.plugin.Templater;
 import milkman.ui.plugin.rest.domain.HeaderEntry;
 import milkman.ui.plugin.rest.domain.RestHeaderAspect;
 import milkman.utils.AsyncResponseControl.AsyncControl;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
 
 public class WebsocketPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 
@@ -53,7 +57,7 @@ public class WebsocketPlugin implements RequestAspectsPlugin, RequestTypePlugin 
 
 	@Override
 	public int getOrder() {
-		return 15;
+		return 12;
 	}
 
 	@Override

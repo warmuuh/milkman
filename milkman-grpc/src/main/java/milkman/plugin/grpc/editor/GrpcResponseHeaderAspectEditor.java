@@ -16,7 +16,7 @@ public class GrpcResponseHeaderAspectEditor implements ResponseAspectEditor {
 	@SneakyThrows
 	public Tab getRoot(RequestContainer request, ResponseContainer response) {
 		GrpcResponseHeaderAspect headers = response.getAspect(GrpcResponseHeaderAspect.class).get();
-		JfxTableEditor<HeaderEntry> editor = new JfxTableEditor<HeaderEntry>();
+		JfxTableEditor<HeaderEntry> editor = new JfxTableEditor<HeaderEntry>("grpc.resheaders.list");
 		editor.disableAddition();
 		editor.addReadOnlyColumn("Name", HeaderEntry::getName);
 		editor.addReadOnlyColumn("Value", HeaderEntry::getValue);

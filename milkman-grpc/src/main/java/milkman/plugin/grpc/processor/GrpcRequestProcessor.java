@@ -8,24 +8,31 @@ import com.google.protobuf.DynamicMessage;
 import io.grpc.CallOptions;
 import io.grpc.Channel;
 import io.grpc.ClientInterceptors;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import lombok.Value;
 import me.dinowernli.grpc.polyglot.grpc.DynamicGrpcClient;
 import me.dinowernli.grpc.polyglot.protobuf.ProtoMethodName;
 import me.dinowernli.grpc.polyglot.protobuf.ProtocInvoker;
-import milkman.plugin.grpc.domain.*;
+import milkman.domain.ResponseContainer.StyledText;
+import milkman.plugin.grpc.domain.GrpcHeaderAspect;
+import milkman.plugin.grpc.domain.GrpcOperationAspect;
+import milkman.plugin.grpc.domain.GrpcPayloadAspect;
+import milkman.plugin.grpc.domain.GrpcRequestContainer;
+import milkman.plugin.grpc.domain.GrpcResponseContainer;
+import milkman.plugin.grpc.domain.GrpcResponseHeaderAspect;
+import milkman.plugin.grpc.domain.GrpcResponsePayloadAspect;
+import milkman.plugin.grpc.domain.HeaderEntry;
 import milkman.ui.plugin.Templater;
 import milkman.utils.AsyncResponseControl.AsyncControl;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.ReplayProcessor;
-
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 public class GrpcRequestProcessor extends BaseGrpcProcessor {
 
@@ -48,10 +55,7 @@ public class GrpcRequestProcessor extends BaseGrpcProcessor {
 		var responseHeaderAspect = new GrpcResponseHeaderAspect(responseData.getHeaderFuture().thenApply(this::convertToEntries));
 		response.getAspects().add(responseHeaderAspect);
 
-		responseData.getRequestTime().thenAccept(t -> response.getStatusInformations().complete(Map.of("Time", t + "ms")));
-		
-		
-		
+		responseData.getRequestTime().thenAccept(t -> response.getStatusInformations().complete(Map.of("Time", new StyledText(t + "ms"))));
 		return response;
 	}
 
@@ -113,7 +117,7 @@ public class GrpcRequestProcessor extends BaseGrpcProcessor {
 		}, MoreExecutors.directExecutor());
 	    
 	    
-    	var responseStream = publisher.map(deenc::serializeToJson);
+    	var responseStream = publisher.map(deenc::serializeToJson).map(String::getBytes);
 		return new ResponseDataHolder(responseStream, clientInterceptor.getResponseHeaders(), requestTime);
 	}
 	
@@ -138,7 +142,7 @@ public class GrpcRequestProcessor extends BaseGrpcProcessor {
 	
 	@Value
 	static class ResponseDataHolder{
-		Flux<String> bodyStream;
+		Flux<byte[]> bodyStream;
 		CompletableFuture<Map<String, String>> headerFuture;
 		CompletableFuture<Long> requestTime;
 	}

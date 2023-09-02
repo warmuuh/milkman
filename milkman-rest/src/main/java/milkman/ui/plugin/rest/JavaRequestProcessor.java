@@ -1,20 +1,5 @@
 package milkman.ui.plugin.rest;
 
-import javafx.application.Platform;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.experimental.Delegate;
-import lombok.extern.slf4j.Slf4j;
-import milkman.ui.main.dialogs.CredentialsInputDialog;
-import milkman.ui.plugin.Templater;
-import milkman.ui.plugin.rest.domain.*;
-import milkman.utils.AsyncResponseControl.AsyncControl;
-import reactor.core.publisher.Flux;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLParameters;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import java.net.PasswordAuthentication;
 import java.net.URI;
 import java.net.URL;
@@ -27,15 +12,48 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.ResponseInfo;
+import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
+import javafx.application.Platform;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLParameters;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.experimental.Delegate;
+import lombok.extern.slf4j.Slf4j;
+import milkman.domain.ResponseContainer.StyledText;
+import milkman.ui.main.dialogs.CredentialsInputDialog;
+import milkman.ui.main.options.CoreApplicationOptionsProvider;
+import milkman.ui.plugin.Templater;
+import milkman.ui.plugin.rest.domain.DebugRequestBodyAspect;
+import milkman.ui.plugin.rest.domain.DebugRequestHeaderAspect;
+import milkman.ui.plugin.rest.domain.HeaderEntry;
+import milkman.ui.plugin.rest.domain.RestBodyAspect;
+import milkman.ui.plugin.rest.domain.RestHeaderAspect;
+import milkman.ui.plugin.rest.domain.RestRequestContainer;
+import milkman.ui.plugin.rest.domain.RestResponseBodyAspect;
+import milkman.ui.plugin.rest.domain.RestResponseContainer;
+import milkman.ui.plugin.rest.domain.RestResponseHeaderAspect;
+import milkman.ui.plugin.rest.http3.JettyHttp3Client;
+import milkman.utils.AsyncResponseControl.AsyncControl;
+import milkman.utils.json.BlockingFluxByteToStringConverter;
+import org.apache.commons.lang3.StringUtils;
+import reactor.adapter.JdkFlowAdapter;
+import reactor.core.publisher.Flux;
 
 @Slf4j
 public class JavaRequestProcessor implements RequestProcessor {
@@ -66,6 +84,11 @@ public class JavaRequestProcessor implements RequestProcessor {
 
 	@SneakyThrows
 	private HttpClient buildClient() {
+
+		if (HttpOptionsPluginProvider.options().isHttp3Support()) {
+			return new JettyHttp3Client();
+		}
+
 		Builder builder = HttpClient.newBuilder();
 		if (!HttpOptionsPluginProvider.options().isHttp2Support()){
 			builder.version(Version.HTTP_1_1);
@@ -195,7 +218,7 @@ public class JavaRequestProcessor implements RequestProcessor {
 			return null;
 		});
 
-		return toResponseContainer(httpRequest.uri().toString(),
+		return toResponseContainer(httpRequest,
 																chReq.getEmitterProcessor(),
 																chReq.getResponseInfo(),
 																startTime);
@@ -250,10 +273,13 @@ public class JavaRequestProcessor implements RequestProcessor {
 	
 
 	@SneakyThrows
-	private RestResponseContainer toResponseContainer(String url, Flux<byte[]> bodyPublisher, CompletableFuture<ResponseInfo> httpResponse, AtomicLong startTime) {
-		RestResponseContainer response = new RestResponseContainer(url);
+	private RestResponseContainer toResponseContainer(HttpRequest request, Flux<byte[]> bodyPublisher, CompletableFuture<ResponseInfo> httpResponse, AtomicLong startTime) {
+		RestResponseContainer response = new RestResponseContainer(request.uri().toString());
 		response.getAspects().add(new RestResponseBodyAspect(bodyPublisher));
-		
+
+		addDebugOutput(request, response);
+
+
 		var entries = httpResponse.thenApply(res -> {
 			List<HeaderEntry> result = new LinkedList<>();
 			for (Entry<String, List<String>> h : res.headers().map().entrySet()) {
@@ -275,19 +301,55 @@ public class JavaRequestProcessor implements RequestProcessor {
 		return response;
 	}
 
+	private void addDebugOutput(HttpRequest request, RestResponseContainer response) {
+		if (CoreApplicationOptionsProvider.options().isDebug()) {
+			var dheaders = new DebugRequestHeaderAspect();
+			request.headers().map().forEach((k, vs) -> {
+				vs.forEach(v -> {
+					dheaders.getEntries().add(new HeaderEntry(UUID.randomUUID().toString(), k, v, true));
+				});
+			});
+			response.getAspects().add(dheaders);
+
+			request.bodyPublisher()
+					.map(JdkFlowAdapter::flowPublisherToFlux)
+					.map(flux -> flux.map(ByteBuffer::array))
+					.map(flux -> new BlockingFluxByteToStringConverter().convert(flux))
+					.filter(StringUtils::isNotBlank)
+					.ifPresent(body -> response.getAspects().add(new DebugRequestBodyAspect(body)));
+		}
+	}
+
 	private void buildStatusView(ResponseInfo httpResponse, RestResponseContainer response, long responseTimeInMs) {
-		String versionStr = httpResponse.version().toString();
+		String versionStr = "undefined";
 		if (httpResponse.version() == Version.HTTP_1_1) {
 			versionStr = "1.1";
 		} else if (httpResponse.version() == Version.HTTP_2) {
 			versionStr = "2.0";
+		} else if (httpResponse.version() == null) { //special case for custom http_3 implementation
+			versionStr = "3.0";
 		}
-		LinkedHashMap<String, String> statusKeys = new LinkedHashMap<>();
-		statusKeys.put("Status", ""+httpResponse.statusCode());
-		statusKeys.put("Time", responseTimeInMs + "ms");
-		statusKeys.put("Http", versionStr);
+		LinkedHashMap<String, StyledText> statusKeys = new LinkedHashMap<>();
+		statusKeys.put("Status", new StyledText(""+httpResponse.statusCode(), getStyle(httpResponse.statusCode())));
+		statusKeys.put("Time", new StyledText(responseTimeInMs + "ms"));
+		statusKeys.put("Http", new StyledText(versionStr));
 		
 		response.getStatusInformations().complete(statusKeys);
+	}
+
+	private String getStyle(int statusCode) {
+		String style = "-fx-text-fill: ";
+		if (statusCode < 300) {
+			return style + "#257a35";
+		}
+		if (statusCode < 400) {
+			return style + "#edc600";
+		}
+		if (statusCode < 500) {
+			return style + "#fab237";
+		}
+
+		return style + "#fc3b14";
 	}
 
 	@RequiredArgsConstructor

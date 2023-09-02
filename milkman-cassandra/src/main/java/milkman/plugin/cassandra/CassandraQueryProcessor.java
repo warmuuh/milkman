@@ -7,17 +7,6 @@ import com.datastax.oss.driver.api.core.config.TypedDriverOption;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
 import com.datastax.oss.driver.api.core.cql.Row;
 import com.datastax.oss.driver.shaded.guava.common.collect.Streams;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import milkman.domain.RequestContainer;
-import milkman.domain.ResponseContainer;
-import milkman.plugin.cassandra.domain.CassandraRequestContainer;
-import milkman.plugin.jdbc.domain.JdbcSqlAspect;
-import milkman.plugin.jdbc.domain.RowSetResponseAspect;
-import milkman.plugin.jdbc.domain.TableResponseContainer;
-import milkman.ui.plugin.Templater;
-import org.apache.commons.lang3.StringUtils;
-
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.HashMap;
@@ -26,6 +15,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import milkman.domain.RequestContainer;
+import milkman.domain.ResponseContainer;
+import milkman.domain.ResponseContainer.StyledText;
+import milkman.plugin.cassandra.domain.CassandraRequestContainer;
+import milkman.plugin.cassandra.proxy.SocksProxyAwareSessionBuilder;
+import milkman.plugin.jdbc.domain.JdbcSqlAspect;
+import milkman.plugin.jdbc.domain.RowSetResponseAspect;
+import milkman.plugin.jdbc.domain.TableResponseContainer;
+import milkman.ui.plugin.Templater;
+import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
 public class CassandraQueryProcessor {
@@ -95,8 +96,8 @@ public class CassandraQueryProcessor {
 
 		response.getAspects().add(rowSetAspect);
 		response.getStatusInformations().complete(Map.of(
-				"Rows", ""+ rowSetAspect.getRows().size(),
-				"Time", requestTimeInMs + "ms"));
+				"Rows", new StyledText(""+ rowSetAspect.getRows().size()),
+				"Time", new StyledText(requestTimeInMs + "ms")));
 
 
 		return response;
@@ -112,7 +113,7 @@ public class CassandraQueryProcessor {
 			}
 		}
 
-		var builder = CqlSession.builder()
+		var builder = new SocksProxyAwareSessionBuilder()
 				.withLocalDatacenter(conProps.getDatacenter())
 				.addContactPoint(InetSocketAddress.createUnresolved(conProps.getHost(), conProps.getPort()));
 

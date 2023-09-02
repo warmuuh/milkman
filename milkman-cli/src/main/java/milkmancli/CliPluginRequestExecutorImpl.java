@@ -1,11 +1,11 @@
 package milkmancli;
 
+import java.util.Optional;
 import milkman.domain.Environment;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 import milkman.ui.plugin.PluginRequestExecutor;
-
-import java.util.Optional;
+import milkman.utils.AsyncResponseControl.AsyncControl;
 
 public class CliPluginRequestExecutorImpl implements PluginRequestExecutor {
 	@Override
@@ -14,7 +14,7 @@ public class CliPluginRequestExecutorImpl implements PluginRequestExecutor {
 	}
 
 	@Override
-	public ResponseContainer executeRequest(RequestContainer request, Optional<Environment> environmentOverride) {
+	public ResponseContainer executeRequest(RequestContainer request, Optional<Environment> environmentOverride, AsyncControl asyncControl) {
 		return null;
 	}
 }

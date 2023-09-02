@@ -23,6 +23,10 @@ public class JdbcRequestContainer extends RequestContainer {
 	}
 
 
+	@Override
+	public RequestTypeDescriptor getTypeDescriptor() {
+		return new RequestTypeDescriptor("SQL", getClass().getResource("/icons/sql.png"));
+	}
 
 	public JdbcRequestContainer(String name, String jdbcUrl) {
 		super(name);

@@ -1,13 +1,14 @@
 package milkman.plugin.test.domain;
 
+import static milkman.domain.ResponseContainer.StyledText;
+
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Value;
 import milkman.domain.ResponseAspect;
 import reactor.core.publisher.Flux;
-
-import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -32,7 +33,7 @@ public class TestResultAspect implements ResponseAspect {
 		String requestId;
 		String requestName;
 		TestResultState resultState;
-		Map<String, String> details;
+		Map<String, StyledText> details;
 	}
 
 

@@ -1,15 +1,18 @@
 package milkman.ui.plugin;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.ServiceLoader;
+import java.util.function.Supplier;
+import javax.inject.Inject;
 import lombok.RequiredArgsConstructor;
 import milkman.ctrl.ExecutionListenerManager;
 import milkman.domain.Workspace;
 import milkman.ui.components.AutoCompleter;
 import milkman.ui.main.ActiveEnvironmentProvider;
 import milkman.ui.main.Toaster;
-
-import javax.inject.Inject;
-import java.util.*;
-import java.util.function.Supplier;
 
 @RequiredArgsConstructor(onConstructor_={@Inject})
 public class UiPluginManager {
@@ -47,6 +50,10 @@ public class UiPluginManager {
 		return loadOrderedSpiInstances(KeyEditor.class);
 	}
 
+	public List<LibraryPlugin> loadLibraryPlugins(){
+		return loadSpiInstances(LibraryPlugin.class);
+	}
+
 	public List<UiThemePlugin> loadThemePlugins(){
 		return loadSpiInstances(UiThemePlugin.class);
 	}
@@ -56,15 +63,15 @@ public class UiPluginManager {
 	}
 
 	public List<RequestExporterPlugin> loadRequestExportPlugins(){
-		return loadSpiInstances(RequestExporterPlugin.class);
+		return loadOrderedSpiInstances(RequestExporterPlugin.class);
 	}
 	
 	public List<CollectionExporterPlugin> loadCollectionExportPlugins(){
-		return loadSpiInstances(CollectionExporterPlugin.class);
+		return loadOrderedSpiInstances(CollectionExporterPlugin.class);
 	}
 
 	public List<WorkspaceExporterPlugin> loadWorkspaceExportPlugins(){
-		return loadSpiInstances(WorkspaceExporterPlugin.class);
+		return loadOrderedSpiInstances(WorkspaceExporterPlugin.class);
 	}
 
 	public List<TemplateParameterResolverPlugin> loadTemplaterPlugins(){
@@ -102,6 +109,14 @@ public class UiPluginManager {
 
 		if (o instanceof ExecutionListenerAware) {
 			((ExecutionListenerAware) o).setExecutionListenerManager(executionListenerManager);
+		}
+
+		if (o instanceof LibraryPluginAware) {
+			((LibraryPluginAware)o).setLibraryPlugins(loadLibraryPlugins());
+		}
+
+		if (o instanceof RequestTypePluginAware) {
+			((RequestTypePluginAware)o).setRequestTypePlugins(loadRequestTypePlugins());
 		}
 	}
 	

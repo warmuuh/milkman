@@ -66,9 +66,8 @@ public class PrivateBinImporter implements ImporterPlugin {
 		if (!dialog.isCancelled()){
 			activeWorkspace.getCollections().addAll(newWorkspace.getCollections());
 			activeWorkspace.getEnvironments().addAll(newWorkspace.getEnvironments());
+			toast.showToast("Workspace imported: " + newWorkspace.getName());
 		}
-
-		toast.showToast("Workspace imported: " + newWorkspace.getName());
 	}
 
 	private void handleImportedRequest(Workspace workspace, RequestContainer request, Toaster toast) {

@@ -44,3 +44,34 @@
 * secret keys that should not be exported or synced can be setup using the key-symbol
 * currently, secret keys are only plain type keys, but will be e.g. oauth-keys etc
 * can be accessed using {{key:name-of-key}} variable
+
+
+# Libraries
+
+you can register libraries to easily look-up and import services from a central registry, such as [APIs.guru](http://apis.guru).
+
+![Example of setting up and using Libraries](/img/gif/milkman-library.gif)
+
+
+## Code Templates
+
+* you can define custom templates for every type of request yourself. Do you often need to write Spring Webclient code?
+setup some custom template for it. (you can do so in the `options` dialog)
+* Some predefined templates are available already. (see [here](/milkman-rest/src/main/resources/META-INF))
+* Syntax is similar to [mustache](https://github.com/samskivert/jmustache) but enhanced with whitespace control. example:
+
+```
+curl -X {{httpMethod}}  
+
+{{_#headers.entries-}}
+-H "{{name}}: {{value}}"
+{{-/headers.entries_}}
+
+{{url}}
+```
+
+* Whitespace control: 
+    * `{{-` removes all whitespaces (including linebreaks) *before* the tag
+    * `{{_` removes all whitespaces (including linebreaks) *before* the tag and replaces it with one space
+    * `-}}` removes all whitespaces (including linebreaks) *after* the tag
+    * `_}}` removes all whitespaces (including linebreaks) *after* the tag  and replaces it with one space

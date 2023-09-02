@@ -1,10 +1,20 @@
 package milkman.ui.components;
 
+import static milkman.utils.fxml.facade.FxmlBuilder.button;
+
 import com.jfoenix.controls.cells.editors.TextFieldEditorBuilder;
 import com.jfoenix.controls.cells.editors.base.GenericEditableTableCell;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import io.github.palexdev.materialfx.controls.legacy.MFXLegacyTableView;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
@@ -12,28 +22,35 @@ import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
-import javafx.scene.input.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
+import javafx.scene.control.TextField;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.DataFormat;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import milkman.PlatformUtil;
+import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.utils.fxml.GenericBinding;
 import milkman.utils.javafx.JavaFxUtils;
-
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.function.*;
-
-import static milkman.utils.fxml.facade.FxmlBuilder.button;
 
 
 @Slf4j
 public class JfxTableEditor<T> extends StackPane {
 
+	private final String tableId;
 
 	private final MFXLegacyTableView<T> table = new MFXLegacyTableView<T>();
 
@@ -52,7 +69,8 @@ public class JfxTableEditor<T> extends StackPane {
 	private Supplier<T> newItemCreator;
 
 
-	public JfxTableEditor() {
+	public JfxTableEditor(String tableId) {
+		this.tableId = tableId;
 		table.setEditable(true);
 		table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
@@ -138,27 +156,27 @@ public class JfxTableEditor<T> extends StackPane {
 
 	public void addReadOnlyColumn(String name, Function<T, String> getter) {
 		TableColumn<T, String> column = new TableColumn<>(name);
+		var columnIdx = table.getColumns().size();
+		loadPrefWidthOfColumn(column, columnIdx);
 		column.setCellFactory((TableColumn<T, String> param) -> {
 			return new GenericEditableTableCell<T, String>(new SelectableTextFieldBuilder());
 		});
 		column.setCellValueFactory(param -> GenericBinding.of(getter, (e, o) -> {}, param.getValue()));
 
-		column.setMaxWidth(400);
-		column.setMinWidth(100);
-//		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
+
 		table.getColumns().add(column);
 	}
 
 	public void addColumn(String name, Function<T, String> getter, BiConsumer<T, String> setter) {
 		TableColumn<T, String> column = new TableColumn<>(name);
+		var columnIdx = table.getColumns().size();
+		loadPrefWidthOfColumn(column, columnIdx);
 		column.setCellFactory((TableColumn<T, String> param) -> {
 			var cell = new GenericEditableTableCell<T, String>(new TextFieldEditorBuilderPatch());
 			cell.setStepFunction(getStepFunction());
 			return cell;
 		});
 		column.setCellValueFactory(param -> GenericBinding.of(getter, setter, param.getValue()));
-		column.setMaxWidth(400);
-		column.setMinWidth(100);
 		table.getColumns().add(column);
 //		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
 		if (firstEditableColumn == null)
@@ -185,27 +203,29 @@ public class JfxTableEditor<T> extends StackPane {
 
 	public void addColumn(String name, Function<T, String> getter, BiConsumer<T, String> setter, Consumer<TextField> textFieldInitializer) {
 		TableColumn<T, String> column = new TableColumn<>(name);
+		var columnIdx = table.getColumns().size();
+		loadPrefWidthOfColumn(column, columnIdx);
 		column.setCellFactory((TableColumn<T, String> param) -> {
 			var cell = new GenericEditableTableCell<T, String>(new InitializingCellBuilder(textFieldInitializer));
 			cell.setStepFunction(getStepFunction());
 			return cell;
 		});
 		column.setCellValueFactory(param -> GenericBinding.of(getter, setter, param.getValue()));
-		column.setMaxWidth(400);
-		column.setMinWidth(100);
 		table.getColumns().add(column);
 //		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
 		if (firstEditableColumn == null)
 			firstEditableColumn = table.getColumns().size() -1;
 	}
 
+
 	public void addCheckboxColumn(String name, Function<T, Boolean> getter, BiConsumer<T, Boolean> setter) {
 		TableColumn<T, Boolean> column = new TableColumn<>(name);
+		var columnIdx = table.getColumns().size();
+		loadPrefWidthOfColumn(column, columnIdx);
 		column.setCellValueFactory(param -> {
 			return GenericBinding.of(getter, setter, param.getValue());
 		});
 		column.setCellFactory(param -> new BooleanCell<>(column));
-		column.setMinWidth(100);
 		column.setEditable(false);
 		table.getColumns().add(column);
 //		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
@@ -217,8 +237,9 @@ public class JfxTableEditor<T> extends StackPane {
 
 	public void addDeleteColumn(String name, Consumer<T> listener) {
 		TableColumn<T, String> column = new TableColumn<>(name);
+		var columnIdx = table.getColumns().size();
+		loadPrefWidthOfColumn(column, columnIdx);
 		column.setCellFactory(c -> new CustomActionsCell());
-		column.setMinWidth(100);
 		column.setEditable(false);
 		table.getColumns().add(column);
 //		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
@@ -230,6 +251,19 @@ public class JfxTableEditor<T> extends StackPane {
 			}
 		}));
 	}
+
+
+	private <O>  void loadPrefWidthOfColumn(TableColumn<T, O> column, int columnIdx) {
+		CoreApplicationOptionsProvider.options().getUiPrefs()
+				.getPrefWidth(tableId, columnIdx)
+				.ifPresent(column::setPrefWidth);
+		column.widthProperty().addListener((obs, o, n) -> {
+			CoreApplicationOptionsProvider.options().getUiPrefs().setWidthForColumn(tableId, columnIdx, n.intValue());
+		});
+	}
+
+
+
 
 	public void enableAddition(Supplier<T> newItemCreator) {
 		this.newItemCreator = newItemCreator;

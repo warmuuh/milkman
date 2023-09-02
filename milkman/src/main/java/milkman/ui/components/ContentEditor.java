@@ -1,8 +1,25 @@
 package milkman.ui.components;
 
+import static javafx.scene.input.KeyCombination.SHIFT_DOWN;
+import static milkman.utils.fxml.facade.FxmlBuilder.button;
+import static milkman.utils.fxml.facade.FxmlBuilder.combobox;
+
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
+import java.time.Duration;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.IndexRange;
 import javafx.scene.control.Label;
@@ -22,6 +39,7 @@ import lombok.val;
 import milkman.PlatformUtil;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.ui.plugin.ContentTypePlugin;
+import milkman.utils.ContentTypeMatcher;
 import milkman.utils.Stopwatch;
 import milkman.utils.StringUtils;
 import milkman.utils.fxml.GenericBinding;
@@ -39,23 +57,6 @@ import org.fxmisc.wellbehaved.event.Nodes;
 import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
 import org.reactfx.Subscription;
-
-import java.text.CharacterIterator;
-import java.text.StringCharacterIterator;
-import java.time.Duration;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
-import static javafx.scene.input.KeyCombination.SHIFT_DOWN;
-import static milkman.utils.fxml.facade.FxmlBuilder.button;
-import static milkman.utils.fxml.facade.FxmlBuilder.combobox;
 
 /**
  * @author peter
@@ -231,9 +232,17 @@ public class ContentEditor extends VBox {
 		getChildren().add(header);
 	}
 
+	public void addExtraHeaderElement(Node node, boolean atBeginning) {
+		if (atBeginning) {
+			header.getChildren().add(0, node);
+		} else {
+			header.getChildren().add(node);
+		}
+	}
+
 	public void setHeaderVisibility(boolean isVisible) {
 		if (isVisible && !getChildren().contains(header)) {
-			getChildren().add(header);
+			getChildren().add(0, header);
 		} else {
 			getChildren().remove(header);
 		}
@@ -294,7 +303,7 @@ public class ContentEditor extends VBox {
 		StopWatch s = new StopWatch();
 		s.start();
 		try {
-			if (getCurrentContenttypePlugin() != null && !shouldSkipHighlighting(text))
+			if (getCurrentContenttypePlugin() != null && !shouldSkipExpensiveOperations(text))
 				return getCurrentContenttypePlugin().computeHighlighting(text);
 			else
 				return noHighlight(text);
@@ -307,16 +316,16 @@ public class ContentEditor extends VBox {
 	/**
 	 * Because Flowless cannot handle syntax highlighting of very long lines that well,
 	 * we just disable highlighting, if text contains very long lines
-	 * 
+	 *
 	 * @param text
 	 * @return
 	 */
-	private boolean shouldSkipHighlighting(String text) {
+	protected boolean shouldSkipExpensiveOperations(String text) {
 		/**
 		 * iterates over the string, counting the chars until next \n thereby.
 		 * If line is above max, it returns true
 		 */
-		
+
 		StringCharacterIterator iterator = new StringCharacterIterator(text);
 		long curLineLength = 0;
 		while(true) {
@@ -331,7 +340,7 @@ public class ContentEditor extends VBox {
 				}
 				curLineLength = 0;
 			}
-				
+
 		}
 		return curLineLength > 1_000;
 	}
@@ -368,12 +377,14 @@ public class ContentEditor extends VBox {
 	}
 
 	private void setActiveContentType(List<ContentTypePlugin> plugins, String contentType) {
-		plugins.stream().filter(p -> contentType.contains(p.getContentType())).findAny().ifPresent(t -> {
-			format.setVisible(t.supportFormatting());
-//			System.out.println("Setting active highlighter: " + t);
-			highlighters.setValue(t);
-//			System.out.println("End Setting active highlighter");
-		});
+		plugins.stream()
+			.filter(p -> ContentTypeMatcher.matches(p.getContentType(), contentType))
+			.findAny().ifPresent(t -> {
+				format.setVisible(t.supportFormatting());
+				//System.out.println("Setting active highlighter: " + t);
+				highlighters.setValue(t);
+				//System.out.println("End Setting active highlighter");
+			});
 	}
 
 	public void setContentType(String contentType) {
@@ -405,7 +416,7 @@ public class ContentEditor extends VBox {
 			}
 		});
 	}
-	
+
 	public void addContent(String additiveContent) {
 //		if (contentBinding != null) {
 //			Bindings.unbindBidirectional(codeAreaTextBinding, contentBinding);
@@ -415,7 +426,7 @@ public class ContentEditor extends VBox {
 
 		codeArea.appendText(additiveContent);
 	}
-	
+
 	protected void replaceText(String newText) {
 		codeArea.replaceText(newText != null ? newText : "");
 	}
@@ -423,7 +434,7 @@ public class ContentEditor extends VBox {
 	public void setDisableContent(Boolean disable) {
 		if (disable)
 			codeArea.getStyleClass().add("disabled");
-		else 
+		else
 			codeArea.getStyleClass().remove("disabled");
 		codeArea.setDisable(disable);
 	}

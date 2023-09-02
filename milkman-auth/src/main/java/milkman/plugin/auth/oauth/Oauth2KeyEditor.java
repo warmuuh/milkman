@@ -1,5 +1,16 @@
 package milkman.plugin.auth.oauth;
 
+import static milkman.plugin.auth.oauth.GrantTypeBuilder.AuthorizationCodeBuilder;
+import static milkman.utils.fxml.facade.FxmlBuilder.VboxExt;
+import static milkman.utils.fxml.facade.FxmlBuilder.button;
+import static milkman.utils.fxml.facade.FxmlBuilder.formEntry;
+import static milkman.utils.fxml.facade.FxmlBuilder.hbox;
+import static milkman.utils.fxml.facade.FxmlBuilder.label;
+import static milkman.utils.fxml.facade.FxmlBuilder.text;
+import static milkman.utils.fxml.facade.FxmlBuilder.toggle;
+import static milkman.utils.fxml.facade.FxmlBuilder.vbox;
+
+import java.util.UUID;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
@@ -14,12 +25,6 @@ import milkman.ui.plugin.KeyEditor;
 import milkman.ui.plugin.ToasterAware;
 import milkman.utils.fxml.GenericBinding;
 import milkman.utils.fxml.facade.FxmlBuilder;
-import milkman.utils.fxml.facade.FxmlBuilder.*;
-
-import java.util.UUID;
-
-import static milkman.plugin.auth.oauth.GrantTypeBuilder.AuthorizationCodeBuilder;
-import static milkman.utils.fxml.facade.FxmlBuilder.*;
 
 public class Oauth2KeyEditor implements KeyEditor<Oauth2Credentials>, ToasterAware {
 
@@ -29,6 +34,7 @@ public class Oauth2KeyEditor implements KeyEditor<Oauth2Credentials>, ToasterAwa
     private final GenericBinding<Oauth2Credentials, String> clientSecretBinding = GenericBinding.of(Oauth2Credentials::getClientSecret, Oauth2Credentials::setClientSecret);
     private final GenericBinding<Oauth2Credentials, String> scopesBinding = GenericBinding.of(Oauth2Credentials::getScopes, Oauth2Credentials::setScopes);
     private final GenericBinding<Oauth2Credentials, Boolean> autoRefreshBinding = GenericBinding.of(Oauth2Credentials::isAutoRefresh, Oauth2Credentials::setAutoRefresh);
+    private final GenericBinding<Oauth2Credentials, Boolean> autoIssueBinding = GenericBinding.of(Oauth2Credentials::isAutoIssue, Oauth2Credentials::setAutoIssue);
     private final GenericBinding<Oauth2Credentials, Boolean> requestBodyAuthSchemeBinding = GenericBinding.of(Oauth2Credentials::isRequestBodyAuthScheme, Oauth2Credentials::setRequestBodyAuthScheme);
 
     private Toaster toaster;
@@ -53,12 +59,18 @@ public class Oauth2KeyEditor implements KeyEditor<Oauth2Credentials>, ToasterAwa
         root.add(formEntry("Client Id", clientIdBinding, keyEntry));
         root.add(formEntry("Client Secret", clientSecretBinding, keyEntry));
         root.add(formEntry("Scopes", scopesBinding, keyEntry));
+
         var autoRefresh = toggle("Refresh Token on expiry");
         autoRefreshBinding.bindTo(autoRefresh.selectedProperty(), keyEntry);
+
+        var autoIssue = toggle("Issue new token if necessary");
+        autoIssueBinding.bindTo(autoIssue.selectedProperty(), keyEntry);
+
+
         var requestBodyAuthScheme = toggle("Credentials in Body");
         requestBodyAuthSchemeBinding.bindTo(requestBodyAuthScheme.selectedProperty(), keyEntry);
 
-        root.add(new HBox(autoRefresh, requestBodyAuthScheme));
+        root.add(new HBox(autoRefresh, autoIssue, requestBodyAuthScheme));
 
         var combobox = root.add(FxmlBuilder.<GrantTypeBuilder>combobox());
         combobox.getItems().addAll(

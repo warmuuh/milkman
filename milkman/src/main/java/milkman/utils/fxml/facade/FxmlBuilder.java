@@ -1,20 +1,47 @@
 package milkman.utils.fxml.facade;
 
-import com.jfoenix.controls.*;
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXComboBox;
+import com.jfoenix.controls.JFXPasswordField;
+import com.jfoenix.controls.JFXSpinner;
+import com.jfoenix.controls.JFXTabPane;
+import com.jfoenix.controls.JFXTextArea;
+import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.JFXTooltip;
+import com.jfoenix.controls.JFXTreeView;
 import com.jfoenix.validation.IntegerValidator;
 import com.jfoenix.validation.RequiredFieldValidator;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import io.github.palexdev.materialfx.controls.*;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.util.Duration;
-import milkman.utils.fxml.GenericBinding;
-
+import io.github.palexdev.materialfx.controls.MFXButton;
+import io.github.palexdev.materialfx.controls.MFXCheckbox;
+import io.github.palexdev.materialfx.controls.MFXListView;
+import io.github.palexdev.materialfx.controls.MFXRectangleToggleNode;
+import io.github.palexdev.materialfx.controls.MFXToggleButton;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.Tooltip;
+import javafx.scene.control.TreeView;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+import javafx.util.Duration;
+import milkman.utils.fxml.GenericBinding;
 
 public class FxmlBuilder {
 
@@ -212,6 +239,12 @@ public class FxmlBuilder {
         return spacer;
     }
 
+    public static Region vspace(double space) {
+        var spacer = new Region();
+        spacer.setMinHeight(space);
+        return spacer;
+    }
+
     public static Region space() {
         var spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -221,6 +254,14 @@ public class FxmlBuilder {
     public static ChoiceBox choiceBox(String id) {
         ChoiceBox cb = new ChoiceBox();
         cb.setId(id);
+        return cb;
+    }
+
+
+    public static ComboBox comboBox(String id) {
+        JFXComboBox cb = new JFXComboBox<>();
+        cb.setId(id);
+        cb.setEditable(false);
         return cb;
     }
 
@@ -294,7 +335,9 @@ public class FxmlBuilder {
         return tt;
     }
 
-
+    public static ValidatableTextArea vtextArea() {
+        return new ValidatableTextArea();
+    }
 
     public static class HboxExt extends HBox {
 

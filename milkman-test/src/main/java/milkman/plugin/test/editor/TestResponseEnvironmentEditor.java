@@ -1,5 +1,8 @@
 package milkman.plugin.test.editor;
 
+import static milkman.domain.Environment.EnvironmentEntry;
+
+import java.util.Comparator;
 import javafx.application.Platform;
 import javafx.scene.control.Tab;
 import milkman.domain.RequestContainer;
@@ -9,17 +12,13 @@ import milkman.plugin.test.domain.TestResultEnvAspect;
 import milkman.ui.components.JfxTableEditor;
 import milkman.ui.plugin.ResponseAspectEditor;
 
-import java.util.Comparator;
-
-import static milkman.domain.Environment.EnvironmentEntry;
-
 public class TestResponseEnvironmentEditor implements ResponseAspectEditor {
 
 
     @Override
     public Tab getRoot(RequestContainer request, ResponseContainer response) {
         TestResultEnvAspect testAspect = response.getAspect(TestResultEnvAspect.class).get();
-        JfxTableEditor<EnvironmentEntry> editor = new JfxTableEditor<>();
+        JfxTableEditor<EnvironmentEntry> editor = new JfxTableEditor<>("tests.list");
         editor.addReadOnlyColumn("name", EnvironmentEntry::getName);
         editor.addReadOnlyColumn("value", EnvironmentEntry::getValue);
 

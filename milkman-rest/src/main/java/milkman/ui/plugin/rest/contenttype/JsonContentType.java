@@ -1,19 +1,24 @@
 package milkman.ui.plugin.rest.contenttype;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
 import milkman.ui.components.CodeFoldingContentEditor;
 import milkman.ui.plugin.ContentTypePlugin;
 import org.apache.commons.lang3.StringUtils;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 @Slf4j
@@ -50,9 +55,25 @@ public class JsonContentType implements ContentTypePlugin {
 	public String formatContent(String text) {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+		StringWriter writer = new StringWriter();
 		try {
-			JsonNode node = mapper.readTree(text);
-			return mapper.writeValueAsString(node);
+			JsonFactory jsonFactory = new JsonFactory();
+			try(BufferedReader br = new BufferedReader(new StringReader(text))) {
+				Iterator<JsonNode> value = mapper.readValues( jsonFactory.createParser(br), JsonNode.class);
+				value.forEachRemaining(u-> {
+					try {
+						boolean first = writer.getBuffer().length() == 0;
+						if (!first) {
+							writer.write("\n\n");
+						}
+						mapper.writeValue(writer, u);
+					} catch (IOException e) {
+						throw new RuntimeException(e);
+					}
+				});
+			}
+			return writer.toString();
 		} catch (Throwable t) {
 			log.warn("failed to format json", t);
 		}
@@ -137,4 +158,37 @@ public class JsonContentType implements ContentTypePlugin {
 		}
 		return curIndentation;
 	}
+
+//
+//	public static void main(String[] args) throws Exception {
+//		JsonContentType contentType = new JsonContentType();
+//		String bigJson = IOUtils.toString(new FileInputStream("/Users/peter.mucha/swork/big.json"));
+//
+//		Stopwatch.start("formatting");
+//		contentType.formatContent(bigJson);
+//		Stopwatch.stop("formatting");
+//
+//
+//		Stopwatch.start("folding");
+//		contentType.computeFolding(bigJson);
+//		Stopwatch.stop("folding");
+//
+//
+//		Stopwatch.start("formatting");
+//		contentType.formatContent(bigJson);
+//		Stopwatch.stop("formatting");
+//
+//
+//
+//		Stopwatch.start("highlight");
+//		StyleSpans<Collection<String>> styleSpans = contentType.computeHighlighting(bigJson);
+//		System.out.println(styleSpans.length());
+//		Stopwatch.stop("highlight");
+//
+//		Stopwatch.start("fmthighlight");
+//		StyleSpans<Collection<String>> styleSpans2 = contentType.computeHighlighting(contentType.formatContent(bigJson));
+//		System.out.println(styleSpans2.length());
+//		Stopwatch.stop("fmthighlight");
+//
+//	}
 }

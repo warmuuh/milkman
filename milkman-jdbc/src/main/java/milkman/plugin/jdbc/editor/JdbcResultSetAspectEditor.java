@@ -1,5 +1,8 @@
 package milkman.plugin.jdbc.editor;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.function.Function;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.input.Clipboard;
@@ -14,10 +17,6 @@ import milkman.ui.components.JfxTableEditor;
 import milkman.ui.plugin.ResponseAspectEditor;
 import milkman.utils.fxml.facade.FxmlBuilder;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.function.Function;
-
 public class JdbcResultSetAspectEditor implements ResponseAspectEditor {
 
 	private JfxTableEditor<List<String>> editor;
@@ -28,7 +27,7 @@ public class JdbcResultSetAspectEditor implements ResponseAspectEditor {
 
 	@Override
 	public Tab getRoot(RequestContainer request, ResponseContainer response) {
-		editor = new JfxTableEditor<>();
+		editor = new JfxTableEditor<>("jdbc.result.list");
 		editor.disableAddition();
 		editor.setRowToStringConverter(this::rowToString);
 		VBox.setVgrow(editor, Priority.ALWAYS);

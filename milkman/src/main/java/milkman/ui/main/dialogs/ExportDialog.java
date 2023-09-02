@@ -1,5 +1,13 @@
 package milkman.ui.main.dialogs;
 
+import static milkman.utils.fxml.facade.FxmlBuilder.VboxExt;
+import static milkman.utils.fxml.facade.FxmlBuilder.cancel;
+import static milkman.utils.fxml.facade.FxmlBuilder.combobox;
+import static milkman.utils.fxml.facade.FxmlBuilder.label;
+import static milkman.utils.fxml.facade.FxmlBuilder.submit;
+import static milkman.utils.fxml.facade.FxmlBuilder.vbox;
+
+import java.util.List;
 import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
 import javafx.scene.layout.VBox;
@@ -10,11 +18,6 @@ import milkman.ui.plugin.Templater;
 import milkman.utils.fxml.FxmlUtil;
 import milkman.utils.fxml.facade.BindableComboBox;
 import milkman.utils.fxml.facade.DialogLayoutBase;
-import milkman.utils.fxml.facade.FxmlBuilder.*;
-
-import java.util.List;
-
-import static milkman.utils.fxml.facade.FxmlBuilder.*;
 
 public class ExportDialog<T> {
     VBox exportArea;
@@ -56,7 +59,7 @@ public class ExportDialog<T> {
                 exportBtn.setDisable(v.isAdhocExporter());
             }
         });
-        dialog = FxmlUtil.createDialog(content);
+        exportSelector.getSelectionModel().selectFirst();dialog = FxmlUtil.createDialog(content);
         dialog.showAndWait();
     }
 

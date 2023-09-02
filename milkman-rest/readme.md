@@ -19,4 +19,5 @@ Introduces Http request (despite the wrong naming) capabilities to milkman. Cons
  * Importers for Postman exports (Collections, Environments, Data-Dump)
  * Importers for OpenApi v3.0
  * (planned) Exporters
-
+ * Support import of APIs listed at [APIs.guru](https://apis.guru/), see [demo](/img/gif/milkman-library.gif)
+ * http/2, http/3 support (see options-dialog)

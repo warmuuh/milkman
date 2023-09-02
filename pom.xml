@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.warmuuh</groupId>
 	<artifactId>milkman-parent</artifactId>
-	<version>5.4.0-SNAPSHOT</version>
+	<version>5.7.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>milkman-parent</name>
 
@@ -25,6 +25,7 @@
 		<module>milkman-test</module>
 		<module>milkman-auth</module>
 		<module>milkman-ws</module>
+		<module>milkman-sio</module>
 	</modules>
 
 	<properties>
@@ -142,7 +143,7 @@
 		</repository>
 		<repository>
 			<id>spring</id>
-			<url>http://repo.spring.io/plugins-release</url>
+			<url>https://repo.spring.io/plugins-release</url>
 		</repository>
 	</repositories>
 

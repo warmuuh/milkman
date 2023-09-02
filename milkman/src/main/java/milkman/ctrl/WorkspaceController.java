@@ -1,35 +1,75 @@
 package milkman.ctrl;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import javafx.application.Platform;
 import javafx.scene.Node;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import milkman.domain.Collection;
-import milkman.domain.*;
+import milkman.domain.Environment;
+import milkman.domain.Folder;
+import milkman.domain.RequestContainer;
 import milkman.domain.RequestContainer.UnknownRequestContainer;
+import milkman.domain.RequestExecutionContext;
+import milkman.domain.Workspace;
 import milkman.templater.EnvironmentTemplater;
 import milkman.templater.PrefixedTemplaterResolver;
 import milkman.ui.commands.AppCommand;
 import milkman.ui.commands.AppCommand.PersistWorkspace;
 import milkman.ui.commands.UiCommand;
-import milkman.ui.commands.UiCommand.*;
+import milkman.ui.commands.UiCommand.AddFolder;
+import milkman.ui.commands.UiCommand.CancelActiveRequest;
+import milkman.ui.commands.UiCommand.CancelHighlight;
+import milkman.ui.commands.UiCommand.CloseActiveRequest;
+import milkman.ui.commands.UiCommand.CloseRequest;
 import milkman.ui.commands.UiCommand.CloseRequest.CloseType;
+import milkman.ui.commands.UiCommand.DeleteCollection;
+import milkman.ui.commands.UiCommand.DeleteFolder;
+import milkman.ui.commands.UiCommand.DeleteRequest;
+import milkman.ui.commands.UiCommand.DuplicateRequest;
+import milkman.ui.commands.UiCommand.ExportCollection;
+import milkman.ui.commands.UiCommand.ExportRequest;
+import milkman.ui.commands.UiCommand.HighlightVariables;
+import milkman.ui.commands.UiCommand.LoadRequest;
+import milkman.ui.commands.UiCommand.NewRequest;
+import milkman.ui.commands.UiCommand.RenameActiveRequest;
+import milkman.ui.commands.UiCommand.RenameCollection;
+import milkman.ui.commands.UiCommand.RenameRequest;
+import milkman.ui.commands.UiCommand.SaveActiveRequest;
+import milkman.ui.commands.UiCommand.SaveRequestAsCommand;
+import milkman.ui.commands.UiCommand.SaveRequestCommand;
+import milkman.ui.commands.UiCommand.SelectRequest;
+import milkman.ui.commands.UiCommand.SubmitActiveRequest;
+import milkman.ui.commands.UiCommand.SubmitCustomCommand;
+import milkman.ui.commands.UiCommand.SubmitRequest;
+import milkman.ui.commands.UiCommand.SwitchToRequest;
 import milkman.ui.components.VariableHighlighter;
-import milkman.ui.main.*;
+import milkman.ui.main.HotkeyManager;
+import milkman.ui.main.RequestCollectionComponent;
+import milkman.ui.main.RequestComponent;
+import milkman.ui.main.Toaster;
+import milkman.ui.main.WorkingAreaComponent;
 import milkman.ui.main.dialogs.ExportDialog;
 import milkman.ui.main.dialogs.SaveRequestDialog;
 import milkman.ui.main.dialogs.StringInputDialog;
-import milkman.ui.plugin.*;
+import milkman.ui.plugin.CustomCommand;
+import milkman.ui.plugin.Exporter;
+import milkman.ui.plugin.RequestTypePlugin;
+import milkman.ui.plugin.Templater;
+import milkman.ui.plugin.UiPluginManager;
 import milkman.utils.AsyncResponseControl;
 import milkman.utils.Event;
 import milkman.utils.ObjectUtils;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_={@Inject})
@@ -140,6 +180,10 @@ public class WorkspaceController {
 		else {
 			workingAreaView.clearResponse();
 		}
+	}
+
+	public void selectRequestInCollections(RequestContainer request) {
+		collectionView.selectRequest(request);
 	}
 
 	protected void addToDisplayHistory(RequestContainer request) {
@@ -269,6 +313,8 @@ public class WorkspaceController {
 			saveRequest(saveCmd.getRequest());
 		} else if (command instanceof SaveActiveRequest) {
 			saveRequest(activeWorkspace.getActiveRequest());
+		} else if (command instanceof SelectRequest) {
+			selectRequestInCollections(((SelectRequest) command).getRequest());
 		} else if (command instanceof CloseActiveRequest) {
 			closeRequest(activeWorkspace.getActiveRequest(), CloseType.CLOSE_THIS);
 		} else if (command instanceof DuplicateRequest) {
@@ -573,6 +619,7 @@ public class WorkspaceController {
 
 		loadCollections(activeWorkspace);
 		displayRequest(request);
+		Platform.runLater(() -> selectRequestInCollections(request));
 	}
 
 	private void duplicateRequest(RequestContainer request) {

@@ -1,14 +1,29 @@
 package milkman.plugin.test;
 
+import java.util.List;
 import milkman.domain.RequestContainer;
 import milkman.domain.RequestExecutionContext;
 import milkman.domain.ResponseContainer;
-import milkman.plugin.test.domain.*;
-import milkman.plugin.test.editor.*;
-import milkman.ui.plugin.*;
+import milkman.plugin.test.domain.TestAspect;
+import milkman.plugin.test.domain.TestContainer;
+import milkman.plugin.test.domain.TestResultAspect;
+import milkman.plugin.test.domain.TestResultContainer;
+import milkman.plugin.test.domain.TestResultEnvAspect;
+import milkman.plugin.test.editor.TestAspectEditor;
+import milkman.plugin.test.editor.TestAspectScenarioEditor;
+import milkman.plugin.test.editor.TestContainerEditor;
+import milkman.plugin.test.editor.TestEnvironmentOverrideEditor;
+import milkman.plugin.test.editor.TestResponseAspectEditor;
+import milkman.plugin.test.editor.TestResponseEnvironmentEditor;
+import milkman.ui.plugin.PluginRequestExecutor;
+import milkman.ui.plugin.RequestAspectEditor;
+import milkman.ui.plugin.RequestAspectsPlugin;
+import milkman.ui.plugin.RequestExecutorAware;
+import milkman.ui.plugin.RequestTypeEditor;
+import milkman.ui.plugin.RequestTypePlugin;
+import milkman.ui.plugin.ResponseAspectEditor;
+import milkman.ui.plugin.Templater;
 import milkman.utils.AsyncResponseControl.AsyncControl;
-
-import java.util.List;
 
 public class TestPlugin implements RequestAspectsPlugin, RequestTypePlugin, RequestExecutorAware {
 
@@ -52,7 +67,7 @@ public class TestPlugin implements RequestAspectsPlugin, RequestTypePlugin, Requ
 
     @Override
     public int getOrder() {
-        return 10;
+        return 30;
     }
 
 

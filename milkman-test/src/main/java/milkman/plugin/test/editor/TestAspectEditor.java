@@ -1,10 +1,27 @@
 package milkman.plugin.test.editor;
 
+import static milkman.utils.fxml.facade.FxmlBuilder.HboxExt;
+import static milkman.utils.fxml.facade.FxmlBuilder.VboxExt;
+import static milkman.utils.fxml.facade.FxmlBuilder.button;
+import static milkman.utils.fxml.facade.FxmlBuilder.hbox;
+import static milkman.utils.fxml.facade.FxmlBuilder.icon;
+import static milkman.utils.fxml.facade.FxmlBuilder.integerValidator;
+import static milkman.utils.fxml.facade.FxmlBuilder.toggle;
+import static milkman.utils.fxml.facade.FxmlBuilder.treeView;
+import static milkman.utils.fxml.facade.FxmlBuilder.vbox;
+import static milkman.utils.fxml.facade.FxmlBuilder.vtext;
+import static milkman.utils.javafx.DndUtil.JAVA_FORMAT;
+import static milkman.utils.javafx.DndUtil.deserialize;
+
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.input.TransferMode;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
@@ -13,12 +30,9 @@ import milkman.plugin.test.domain.TestAspect.TestDetails;
 import milkman.ui.plugin.PluginRequestExecutor;
 import milkman.ui.plugin.RequestAspectEditor;
 import milkman.ui.plugin.RequestExecutorAware;
+import milkman.utils.fxml.facade.FxmlBuilder;
 import milkman.utils.javafx.MappedList;
 import milkman.utils.javafx.SettableTreeItem;
-
-import static milkman.utils.fxml.facade.FxmlBuilder.*;
-import static milkman.utils.javafx.DndUtil.JAVA_FORMAT;
-import static milkman.utils.javafx.DndUtil.deserialize;
 
 @Slf4j
 public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAware {
@@ -86,7 +100,7 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 					&& e.getDragboard().hasContent(JAVA_FORMAT)) {
 				try {
 					var content = deserialize((String) e.getDragboard().getContent(JAVA_FORMAT), RequestContainer.class);
-					requests.add(new TestDetails(content.getId(), false, false, 0, 0));
+					requests.add(new TestDetails(content.getId(), false, false, 0, 0, 0));
 					testAspect.setDirty(true);
 					e.setDropCompleted(true);
 				} catch (Exception ex) {
@@ -167,6 +181,20 @@ public class TestAspectEditor implements RequestAspectEditor, RequestExecutorAwa
 			}
 		});
 		requestDetails.add(delayInMs);
+
+		var repeat = new HboxExt();
+		repeat.add(new Label("Repeated Runs"));
+		var repeatTxt = repeat.add(FxmlBuilder.vtext());
+		repeatTxt.setText(""+details.getRepeat());
+		repeatTxt.setValidators(FxmlBuilder.integerValidator());
+		repeatTxt.textProperty().addListener((obs, o, n) -> {
+			if (n != null) {
+				details.setRepeat(Integer.parseInt(n));
+				markDirtyRunnable.run();
+			}
+		});
+		requestDetails.add(repeat);
+
 	}
 
 	private void moveUp() {

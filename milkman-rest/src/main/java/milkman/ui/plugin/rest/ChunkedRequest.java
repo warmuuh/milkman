@@ -1,12 +1,5 @@
 package milkman.ui.plugin.rest;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import milkman.utils.Event0;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.ReplayProcessor;
-
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -17,6 +10,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Flow;
 import java.util.concurrent.atomic.AtomicBoolean;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import milkman.utils.Event0;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.ReplayProcessor;
 
 @RequiredArgsConstructor
 public class ChunkedRequest {
@@ -80,6 +79,11 @@ public class ChunkedRequest {
 			public CompletionStage<String> getBody() {
 				return requestDone.thenApply(x -> "");
 			}
+		});
+
+		cancellationEvent.add(() -> {
+			System.out.println("Cancelling future");
+			future.cancel(true);
 		});
 
 		future.handle((res, err) -> {

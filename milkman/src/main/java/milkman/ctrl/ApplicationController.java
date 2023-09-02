@@ -1,6 +1,16 @@
 package milkman.ctrl;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 import javafx.application.Platform;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import milkman.domain.Environment;
@@ -13,23 +23,46 @@ import milkman.persistence.WorkbenchState;
 import milkman.templater.EnvironmentTemplater;
 import milkman.templater.PrefixedTemplaterResolver;
 import milkman.ui.commands.AppCommand;
-import milkman.ui.commands.AppCommand.*;
+import milkman.ui.commands.AppCommand.ActivateEnvironment;
+import milkman.ui.commands.AppCommand.CreateNewEnvironment;
+import milkman.ui.commands.AppCommand.CreateNewWorkspace;
+import milkman.ui.commands.AppCommand.DeleteEnvironment;
+import milkman.ui.commands.AppCommand.DeleteWorkspace;
+import milkman.ui.commands.AppCommand.EditCurrentEnvironment;
+import milkman.ui.commands.AppCommand.ExportWorkspace;
+import milkman.ui.commands.AppCommand.LoadWorkspace;
+import milkman.ui.commands.AppCommand.ManageEnvironments;
+import milkman.ui.commands.AppCommand.ManageKeys;
+import milkman.ui.commands.AppCommand.ManageOptions;
+import milkman.ui.commands.AppCommand.ManageWorkspaces;
+import milkman.ui.commands.AppCommand.PersistWorkspace;
+import milkman.ui.commands.AppCommand.RenameEnvironment;
+import milkman.ui.commands.AppCommand.RenameWorkspace;
+import milkman.ui.commands.AppCommand.RequestImport;
+import milkman.ui.commands.AppCommand.ShowAbout;
+import milkman.ui.commands.AppCommand.SyncWorkspace;
+import milkman.ui.commands.AppCommand.ToggleLayout;
 import milkman.ui.main.HotkeyManager;
 import milkman.ui.main.Toaster;
 import milkman.ui.main.ToolbarComponent;
-import milkman.ui.main.dialogs.*;
+import milkman.ui.main.dialogs.AboutDialog;
+import milkman.ui.main.dialogs.CreateWorkspaceDialog;
+import milkman.ui.main.dialogs.EditEnvironmentDialog;
+import milkman.ui.main.dialogs.ExportDialog;
+import milkman.ui.main.dialogs.ImportDialog;
+import milkman.ui.main.dialogs.ManageEnvironmentsDialog;
+import milkman.ui.main.dialogs.ManageKeysDialog;
+import milkman.ui.main.dialogs.ManageWorkspacesDialog;
+import milkman.ui.main.dialogs.OptionsDialog;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.ui.main.sync.NoSyncDetails;
-import milkman.ui.plugin.*;
+import milkman.ui.plugin.Exporter;
+import milkman.ui.plugin.OptionPageProvider;
+import milkman.ui.plugin.OptionsObject;
+import milkman.ui.plugin.Templater;
+import milkman.ui.plugin.UiPluginManager;
 import milkman.update.UpdateChecker;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_={@Inject})
@@ -290,6 +323,7 @@ public class ApplicationController {
 			EditEnvironmentDialog envDialog = new EditEnvironmentDialog();
 			envDialog.showAndWait(environment);			
 		});
+		toolbarComponent.initEnvironmentDropdown(workspaceController.getActiveWorkspace().getEnvironments());
 	}
 
 

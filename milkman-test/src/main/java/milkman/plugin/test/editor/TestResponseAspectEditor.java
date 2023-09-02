@@ -1,24 +1,32 @@
 package milkman.plugin.test.editor;
 
+import static milkman.utils.fxml.facade.FxmlBuilder.VboxExt;
+import static milkman.utils.fxml.facade.FxmlBuilder.hbox;
+import static milkman.utils.fxml.facade.FxmlBuilder.icon;
+import static milkman.utils.fxml.facade.FxmlBuilder.treeView;
+import static milkman.utils.fxml.facade.FxmlBuilder.vbox;
+
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import java.util.LinkedList;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 import milkman.plugin.test.domain.TestResultAspect;
 import milkman.plugin.test.domain.TestResultAspect.TestResultEvent;
+import milkman.plugin.test.domain.TestResultAspect.TestResultState;
+import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.ui.plugin.ResponseAspectEditor;
-import milkman.utils.fxml.facade.FxmlBuilder.*;
 import milkman.utils.javafx.SettableTreeItem;
-
-import java.util.LinkedList;
-
-import static milkman.utils.fxml.facade.FxmlBuilder.*;
 
 public class TestResponseAspectEditor implements ResponseAspectEditor {
 
@@ -87,7 +95,9 @@ public class TestResponseAspectEditor implements ResponseAspectEditor {
 		boolean updated = false;
 		for (TreeItem<Node> item : resultList) {
 			TestResultEvent oldEvent = (TestResultEvent) item.getValue().getUserData();
-			if (oldEvent.getRequestId().equals(evt.getRequestId())) {
+			//if already succeeded, this is a repeated run and we report it separately
+			boolean succeededAlready = oldEvent.getResultState() == TestResultState.SUCCEEDED;
+			if (!succeededAlready && oldEvent.getRequestId().equals(evt.getRequestId())) {
 				item.setValue(treeItem);
 				updated = true;
 				break;
@@ -117,7 +127,10 @@ public class TestResponseAspectEditor implements ResponseAspectEditor {
 		int curRow = 2;
 		for (var entry : resultEvent.getDetails().entrySet()) {
 			grid.add(new Label(entry.getKey()), 0, curRow);
-			var valueLabel = new Label(entry.getValue());
+			var valueLabel = new Label(entry.getValue().getText());
+			if (!CoreApplicationOptionsProvider.options().isDisableColorfulUi()) {
+				entry.getValue().getStyle().ifPresent(valueLabel::setStyle);
+			}
 			valueLabel.setWrapText(true);
 			grid.add(valueLabel, 1, curRow);
 			curRow += 1;

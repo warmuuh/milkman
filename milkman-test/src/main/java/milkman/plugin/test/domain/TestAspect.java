@@ -1,14 +1,13 @@
 package milkman.plugin.test.domain;
 
+import static milkman.domain.Environment.EnvironmentEntry;
+
+import java.util.LinkedList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import milkman.domain.RequestAspect;
-
-import java.util.LinkedList;
-import java.util.List;
-
-import static milkman.domain.Environment.EnvironmentEntry;
 
 @Data
 public class TestAspect extends RequestAspect {
@@ -30,5 +29,6 @@ public class TestAspect extends RequestAspect {
 		private boolean ignore;
 		private int retries;
 		private int waitBetweenRetriesInMs;
+		private int repeat;
 	}
 }

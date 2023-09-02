@@ -1,8 +1,5 @@
 package milkman.plugin.jdbc;
 
-import milkman.plugin.jdbc.domain.RowSetResponseAspect;
-import org.apache.commons.io.IOUtils;
-
 import java.io.IOException;
 import java.sql.Blob;
 import java.sql.ResultSet;
@@ -10,8 +7,39 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
+import milkman.plugin.jdbc.domain.JdbcRequestContainer;
+import milkman.plugin.jdbc.domain.RowSetResponseAspect;
+import milkman.ui.main.options.CoreApplicationOptionsProvider;
+import milkman.ui.plugin.Templater;
+import org.apache.commons.io.IOUtils;
 
 public class AbstractJdbcProcessor {
+
+
+	protected String getJdbcUrl(JdbcRequestContainer jdbcRequest, Templater templater) {
+		String jdbcUrl = jdbcRequest.getJdbcUrl();
+		String finalUrl = templater.replaceTags(jdbcUrl);
+
+		if (CoreApplicationOptionsProvider.options().isUseSocksProxy()) {
+			return jdbcUrlWithSocksProxy(finalUrl);
+		}
+
+		return finalUrl;
+	}
+
+	/**
+	 * some drivers ignore environment variable and only use the parameters (jdbc for example)
+	 * TODO: maybe we want to have a "customizer" by database-type
+	 */
+	private String jdbcUrlWithSocksProxy(String finalUrl) {
+		String[] proxyAddress = CoreApplicationOptionsProvider.options().getSocksProxyAddress().split(":");
+		String[] urlComponents = finalUrl.split("\\?");
+		if (urlComponents.length == 1) {
+			return finalUrl + "?socksProxyPort=" + proxyAddress[1] + "&socksProxyHost=" + proxyAddress[0] + "&socksProxyRemoteDns=true";
+		} else {
+			return finalUrl + "&socksProxyPort=" + proxyAddress[1] + "&socksProxyHost=" + proxyAddress[0] + "&socksProxyRemoteDns=true";
+		}
+	}
 
 	protected void extractRows(ResultSet resultSet, RowSetResponseAspect rowSetAspect) throws SQLException {
 		ResultSetMetaData metaData = resultSet.getMetaData();		

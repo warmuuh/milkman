@@ -1,5 +1,12 @@
 package milkman.ctrl;
 
+import java.util.LinkedList;
+import java.util.Optional;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import milkman.domain.Environment;
@@ -10,15 +17,7 @@ import milkman.ui.plugin.PluginRequestExecutor;
 import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.UiPluginManager;
 import milkman.utils.AsyncResponseControl;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.util.LinkedList;
-import java.util.Optional;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-
+import milkman.utils.AsyncResponseControl.AsyncControl;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_={@Inject})
@@ -35,13 +34,15 @@ public class PluginRequestExecutorImpl implements PluginRequestExecutor {
 
 	@Override
 	@SneakyThrows
-	public ResponseContainer executeRequest(RequestContainer requestContainer, Optional<Environment> environmentOverride) {
+	public ResponseContainer executeRequest(RequestContainer requestContainer, Optional<Environment> environmentOverride, AsyncControl parentAsyncControl) {
 		RequestTypePlugin requestTypePlugin = requestTypeManager.getPluginFor(requestContainer);
 		RequestExecutionContext context = getExecutionCtx(environmentOverride);
 
 		plugins.loadRequestAspectPlugins().forEach(a -> a.beforeRequestExecution(requestContainer, context));
 
 		var responseControl = new AsyncResponseControl();
+		parentAsyncControl.onCancellationRequested.add(responseControl::cancleRequest);
+
 		var templater = environmentOverride.map(workspaceController::buildTemplater)
 				.orElseGet(workspaceController::buildTemplater);
 		var responseContainer = requestTypePlugin.executeRequestAsync(requestContainer, templater, responseControl.getCancellationControl());
@@ -49,6 +50,8 @@ public class PluginRequestExecutorImpl implements PluginRequestExecutor {
 			throw responseControl.onRequestFailed.get();
 		} catch (InterruptedException|ExecutionException|CancellationException e) {
 			/* fail-future got cancelled, everything ok */
+		} catch (RuntimeException e) {
+			throw e;
 		}
 
 		plugins.loadRequestAspectPlugins().forEach(a -> a.initializeResponseAspects(requestContainer, responseContainer, context));

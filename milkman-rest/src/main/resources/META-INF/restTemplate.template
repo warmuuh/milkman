@@ -1,0 +1,18 @@
+RestTemplate restTemplate = new RestTemplate();
+
+Headers headers = new Headers();
+{{#headers.entries}}{{#enabled-}}
+headers.add("{{&name}}", "{{&value}}");
+{{/enabled}}{{/headers.entries-}}
+{{#body.body-}}
+String body = "{{&.}}";
+{{-/body.body}}
+HttpEntity<String> request = new HttpEntity<>(
+{{-#body.body-}}
+body,
+{{-/body.body-}}
+headers);
+ResponseEntity<String> response = restTemplate
+  .exchange("{{url}}", HttpMethod.{{httpMethod}}, request, String.class);
+
+String responseBody = response.getBody();

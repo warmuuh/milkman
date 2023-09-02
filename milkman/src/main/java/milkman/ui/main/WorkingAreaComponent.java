@@ -1,35 +1,48 @@
 package milkman.ui.main;
 
+import static milkman.utils.fxml.facade.FxmlBuilder.HboxExt;
+import static milkman.utils.fxml.facade.FxmlBuilder.VboxExt;
+import static milkman.utils.fxml.facade.FxmlBuilder.button;
+import static milkman.utils.fxml.facade.FxmlBuilder.hbox;
+import static milkman.utils.fxml.facade.FxmlBuilder.icon;
+import static milkman.utils.fxml.facade.FxmlBuilder.tabPane;
+
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import java.util.List;
+import java.util.Optional;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Orientation;
 import javafx.scene.Parent;
-import javafx.scene.control.*;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.Circle;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 import milkman.ui.commands.UiCommand;
-import milkman.ui.commands.UiCommand.*;
+import milkman.ui.commands.UiCommand.CloseRequest;
 import milkman.ui.commands.UiCommand.CloseRequest.CloseType;
+import milkman.ui.commands.UiCommand.DuplicateRequest;
+import milkman.ui.commands.UiCommand.NewRequest;
+import milkman.ui.commands.UiCommand.RenameRequest;
+import milkman.ui.commands.UiCommand.SelectRequest;
+import milkman.ui.commands.UiCommand.SwitchToRequest;
 import milkman.ui.main.RequestComponent.RequestComponentFxml;
 import milkman.ui.main.ResponseComponent.ResponseComponentFxml;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.utils.AsyncResponseControl;
 import milkman.utils.Event;
-import milkman.utils.fxml.facade.FxmlBuilder.*;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.util.List;
-import java.util.Optional;
-
-import static milkman.utils.fxml.facade.FxmlBuilder.*;
 
 @Singleton
 @RequiredArgsConstructor(onConstructor_={@Inject})
@@ -120,8 +133,22 @@ public class WorkingAreaComponent {
 		duplicateEntry.setOnAction(a -> {
 			onCommand.invoke(new DuplicateRequest(r));
 		});
+		var contextMenu = new ContextMenu(closeEntry,
+				closeRightEntry,
+				closeAllEntry,
+				closeOtherEntry,
+				renameEntry,
+				duplicateEntry);
 
-		tab.setContextMenu(new ContextMenu(closeEntry, closeRightEntry,closeAllEntry, closeOtherEntry, renameEntry, duplicateEntry));
+		if (r.isInStorage()){
+			MenuItem selectEntry = new MenuItem("Select in Collections");
+			selectEntry.setOnAction(a -> {
+				onCommand.invoke(new SelectRequest(r));
+			});
+			contextMenu.getItems().add(selectEntry);
+		}
+
+		tab.setContextMenu(contextMenu);
 		tab.setUserData(r);
 
 		tab.getGraphic().setOnMouseClicked(e -> {

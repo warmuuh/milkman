@@ -1,6 +1,14 @@
 package milkman.ui.main.dialogs;
 
+import static milkman.utils.fxml.facade.FxmlBuilder.cancel;
+import static milkman.utils.fxml.facade.FxmlBuilder.label;
+
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
 import milkman.domain.KeySet;
@@ -10,15 +18,6 @@ import milkman.ui.plugin.KeyEditor;
 import milkman.utils.ObjectUtils;
 import milkman.utils.fxml.FxmlUtil;
 import milkman.utils.fxml.facade.DialogLayoutBase;
-
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import static milkman.utils.fxml.facade.FxmlBuilder.cancel;
-import static milkman.utils.fxml.facade.FxmlBuilder.label;
 
 public class ManageKeysDialog {
 
@@ -95,7 +94,7 @@ public class ManageKeysDialog {
 		public ManageKeysDialogFxml(ManageKeysDialog controller){
 			setHeading(label("Edit Key-Set"));
 
-			var editor = controller.editor = new JfxTableEditor<>();
+			var editor = controller.editor = new JfxTableEditor<>("keys.list");
 			editor.setMinHeight(500);
 			editor.setMinWidth(800);
 			setBody(editor);

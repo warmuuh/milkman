@@ -1,7 +1,16 @@
 package milkman.ui.components;
 
+import static milkman.utils.fxml.facade.FxmlBuilder.button;
+
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Stack;
+import java.util.function.IntFunction;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -12,11 +21,6 @@ import lombok.Data;
 import milkman.utils.Stopwatch;
 import org.apache.commons.lang3.StringUtils;
 import org.fxmisc.richtext.LineNumberFactory;
-
-import java.util.*;
-import java.util.function.IntFunction;
-
-import static milkman.utils.fxml.facade.FxmlBuilder.button;
 
 /**
  * this editor supports code folding
@@ -178,10 +182,15 @@ public class CodeFoldingContentEditor extends ContentEditor {
         Stopwatch.logTime("redraw", "range cache update");
         
         int caretPos = 0;
-        if (codeArea.getText() != null && codeArea.getText().length() > 0 && codeArea.getWidth() > 0)
+        if (codeArea.getText() != null
+            && codeArea.getText().length() > 0
+            && codeArea.getWidth() > 0
+            && !shouldSkipExpensiveOperations(codeArea.getText())) {
+            //hit test seems to be expensive
             caretPos = codeArea.hit(50, 10).getInsertionIndex();
+            Stopwatch.logTime("redraw", "hit test");
+        }
 
-    	Stopwatch.logTime("redraw", "hit test");
         StringBuilder b = new StringBuilder();
         rootRange.appendToString(b);
         Stopwatch.logTime("redraw", "build content");

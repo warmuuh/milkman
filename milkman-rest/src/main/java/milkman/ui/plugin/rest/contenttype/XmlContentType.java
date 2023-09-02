@@ -2,11 +2,11 @@ package milkman.ui.plugin.rest.contenttype;
 
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -16,16 +16,14 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
-
+import lombok.extern.slf4j.Slf4j;
+import milkman.ui.plugin.ContentTypePlugin;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
-
-import lombok.extern.slf4j.Slf4j;
-import milkman.ui.plugin.ContentTypePlugin;
 
 @Slf4j
 public class XmlContentType implements ContentTypePlugin {
@@ -50,7 +48,7 @@ public class XmlContentType implements ContentTypePlugin {
 
 	@Override
 	public String getContentType() {
-		return "/xml"; //matches application/xml and text/xml
+		return "*/xml"; //matches application/xml and text/xml
 	}
 
 	@Override
@@ -118,7 +116,7 @@ public class XmlContentType implements ContentTypePlugin {
 	        // Turn xml string into a document
 	        Document document = DocumentBuilderFactory.newInstance()
 	                .newDocumentBuilder()
-	                .parse(new InputSource(new ByteArrayInputStream(xml.getBytes("utf-8"))));
+	                .parse(new InputSource(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8))));
 
 	        // Remove whitespaces outside tags
 	        document.normalize();

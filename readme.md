@@ -29,6 +29,10 @@ everything being a plugin, other things are possible, like database-requests or 
 
 latest changes can be seen in the [Changelog](changelog.md)
 
+# FAQ
+
+some resolved issues and FAQs are available in the [wiki](https://github.com/warmuuh/milkman/wiki).
+
 # Features
 
  * **Everything is a plugin:** Request-types (e.g. Http Request), request-aspects (e.g. Headers, Body, etc), editors for request aspects (e.g. table-based editors for headers), importers, whatever it is, you can extend it. The core application only handles Workspaces with Environments, Collections, Requests and their aspects.
@@ -87,6 +91,9 @@ An OAuth Plugin for managing oauth credentials and transparent refreshing of tok
 ### [Websocket Plugin](/milkman-ws)
 A websocket plugin for interacting with websocket endpoints
 
+### [Socket.IO Plugin](/milkman-sio)
+A Socket.IO plugin for interacting with Socket.IO endpoints
+
 
 # Showcase
 
@@ -104,11 +111,6 @@ More details about developing plugins can be found in the [plugin development gu
 
 *Installation:* all plugins are to be copied to the `/plugins` folder
 
-# Roadmap
-This is only the beginning. Following features are already planned:
-
- * javascript runner for pre request actions / testing of responses
- * more exports
- * different request types (e.g. GraphQl Client, Grpc, protobuf etc)
+# Changes
 
 latest changes can be seen in the (Changelog)[changelog.md]

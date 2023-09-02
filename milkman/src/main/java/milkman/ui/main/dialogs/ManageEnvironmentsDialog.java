@@ -1,15 +1,29 @@
 package milkman.ui.main.dialogs;
 
+import static milkman.utils.fxml.facade.FxmlBuilder.button;
+import static milkman.utils.fxml.facade.FxmlBuilder.cancel;
+import static milkman.utils.fxml.facade.FxmlBuilder.icon;
+import static milkman.utils.fxml.facade.FxmlBuilder.label;
+import static milkman.utils.fxml.facade.FxmlBuilder.list;
+import static milkman.utils.fxml.facade.FxmlBuilder.toggle;
+
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import java.util.List;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import milkman.domain.Environment;
 import milkman.ui.commands.AppCommand;
 import milkman.ui.commands.AppCommand.CreateNewEnvironment;
@@ -21,24 +35,20 @@ import milkman.utils.fxml.NoSelectionModel;
 import milkman.utils.fxml.facade.DialogLayoutBase;
 import milkman.utils.javafx.JavaFxUtils;
 
-import java.util.List;
-
-import static milkman.utils.fxml.facade.FxmlBuilder.*;
-
 public class ManageEnvironmentsDialog {
 
 	ListView<Environment> environmentList;
 	private Dialog dialog;
 	private ObservableList<Environment> environments;
 
+	private Paint primaryIconFill;
+
 	public Event<AppCommand> onCommand = new Event<AppCommand>();
 	private List<Environment> originalList;
 
-	
-
 	public void showAndWait(List<Environment> envs) {
 		this.originalList = envs;
-		var content = new ManageEnvironmentsDialogFxml(this);
+		DialogLayoutBase content = new ManageEnvironmentsDialogFxml(this);
 		JavaFxUtils.publishEscToParent(environmentList);
 
 		environments = FXCollections.observableList(envs);
@@ -48,13 +58,13 @@ public class ManageEnvironmentsDialog {
 		dialog = FxmlUtil.createDialog(content);
 		dialog.showAndWait();
 	}
-	
+
 	private void refresh() {
 		environmentList.refresh();
 	}
-	
-	
-	
+
+
+
 	 public void onClose() {
 		dialog.close();
 	}
@@ -69,9 +79,9 @@ public class ManageEnvironmentsDialog {
 			onCommand.invoke(new CreateNewEnvironment(newEnv));
 			//hack for first item, otherwise placeholder is not removed for some reason
 			environmentList.setItems(FXCollections.observableArrayList());
-			Platform.runLater(() -> environmentList.setItems(environments)); 
+			Platform.runLater(() -> environmentList.setItems(environments));
 		}
-		
+
 	}
 
 
@@ -94,6 +104,17 @@ public class ManageEnvironmentsDialog {
 			}
 		});
 
+		Button colorButton = new Button();
+		FontAwesomeIconView icon = new FontAwesomeIconView(FontAwesomeIcon.PAINT_BRUSH, "1.5em");
+		primaryIconFill = icon.getFill();
+		colorButton.setGraphic(icon);
+		if (environment.getColor() != null) {
+			icon.setFill(Color.web(environment.getColor()));
+		}
+		colorButton.setOnAction(e -> triggerEditEnvColorDialog(environment, icon));
+
+
+
 		Button deleteButton = button();
 		deleteButton.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.TIMES, "1.5em"));
 		deleteButton.setOnAction(e -> {
@@ -102,19 +123,24 @@ public class ManageEnvironmentsDialog {
 		});
 
 
-
-
 		Label envName = new Label(environment.getName());
 		HBox.setHgrow(envName, Priority.ALWAYS);
 		return new HBox(envName, renameButton, editButton, global, deleteButton);
 	}
-
 
 	private void triggerEditEnvDialog(Environment environment) {
 		EditEnvironmentDialog envDialog = new EditEnvironmentDialog();
 		envDialog.showAndWait(environment);
 	}
 
+		private void triggerEditEnvColorDialog(Environment environment, FontAwesomeIconView icon) {
+			EditEnvironmentColorDialog envDialog = new EditEnvironmentColorDialog();
+			envDialog.showAndWait(environment);
+			if (!envDialog.isCancelled()) {
+				environment.setColor(envDialog.shouldUseColor() ? envDialog.getColor() : null);
+				applyEnvColorToIcon(environment, icon);
+			}
+		}
 
 	private void triggerRenameDialog(Environment environment) {
 		StringInputDialog inputDialog = new StringInputDialog();
@@ -126,6 +152,13 @@ public class ManageEnvironmentsDialog {
 		}
 	}
 
+	private void applyEnvColorToIcon(Environment environment, FontAwesomeIconView icon) {
+		if (environment.getColor() != null) {
+			icon.setFill(Color.web(environment.getColor()));
+		} else {
+			icon.setFill(primaryIconFill);
+		}
+	}
 
 	public static class ManageEnvironmentsDialogFxml extends DialogLayoutBase {
 		public ManageEnvironmentsDialogFxml(ManageEnvironmentsDialog controller){

@@ -1,6 +1,10 @@
 package milkman.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,11 +15,6 @@ import org.dizitart.no2.IndexType;
 import org.dizitart.no2.objects.Id;
 import org.dizitart.no2.objects.Index;
 import org.dizitart.no2.objects.Indices;
-
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -55,7 +54,7 @@ public class Workspace {
 		this.activeRequest = activeRequest;
 	}
 
-
+	@JsonIgnore
     public KeySet getActiveKeySet() {
 		return keySets.get(0);
     }

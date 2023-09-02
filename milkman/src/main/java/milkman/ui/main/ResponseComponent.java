@@ -1,6 +1,16 @@
 package milkman.ui.main;
 
+import static milkman.utils.fxml.facade.FxmlBuilder.VboxExt;
+import static milkman.utils.fxml.facade.FxmlBuilder.anchorNode;
+import static milkman.utils.fxml.facade.FxmlBuilder.button;
+import static milkman.utils.fxml.facade.FxmlBuilder.hbox;
+import static milkman.utils.fxml.facade.FxmlBuilder.icon;
+import static milkman.utils.fxml.facade.FxmlBuilder.tabPane;
+
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.CompletableFuture;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -11,20 +21,15 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import milkman.domain.RequestContainer;
-import milkman.ui.components.FancySpinner;
-import milkman.ui.components.TinySpinner;
-import milkman.ui.plugin.UiPluginManager;
-import milkman.utils.AsyncResponseControl;
-import milkman.utils.fxml.facade.FxmlBuilder.*;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.CompletableFuture;
-
-import static milkman.utils.fxml.facade.FxmlBuilder.*;
+import milkman.domain.RequestContainer;
+import milkman.domain.ResponseContainer.StyledText;
+import milkman.ui.components.FancySpinner;
+import milkman.ui.components.TinySpinner;
+import milkman.ui.main.options.CoreApplicationOptionsProvider;
+import milkman.ui.plugin.UiPluginManager;
+import milkman.utils.AsyncResponseControl;
 
 @Singleton
 public class ResponseComponent {
@@ -86,12 +91,15 @@ public class ResponseComponent {
 	}
 
 
-	private void addStatusInformation(CompletableFuture<Map<String, String>> statusInformations) {
+	private void addStatusInformation(CompletableFuture<Map<String, StyledText>> statusInformations) {
 		statusDisplay.getChildren().clear();
 		statusInformations.thenAccept(stats ->  Platform.runLater(() -> {
-			for (Entry<String, String> entry : stats.entrySet()) {
+			for (Entry<String, StyledText> entry : stats.entrySet()) {
 				Label name = new Label(entry.getKey() + ":");
-				Label value = new Label(entry.getValue());
+				Label value = new Label(entry.getValue().getText());
+				if (!CoreApplicationOptionsProvider.options().isDisableColorfulUi()) {
+					entry.getValue().getStyle().ifPresent(value::setStyle);
+				}
 				value.getStyleClass().add("emphasized");
 				statusDisplay.getChildren().add(new HBox(name, value));	
 			}

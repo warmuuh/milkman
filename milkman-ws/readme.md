@@ -1,4 +1,4 @@
-# Milkman Websockets Plugin
+#0 Milkman Websockets Plugin
 
 Support for websocket transport
 
@@ -9,7 +9,7 @@ Support for websocket transport
   
 ## Screenshot
 
-![Milkman Ws Streaming](/img/gif/milkman-ws-demo.gif)
+![Milkman Ws Streaming](/img/milkman-ws-demo.gif)
 
 
 ## Note

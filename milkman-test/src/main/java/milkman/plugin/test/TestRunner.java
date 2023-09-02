@@ -1,13 +1,27 @@
 package milkman.plugin.test;
 
+import static milkman.domain.ResponseContainer.StyledText;
+import static milkman.plugin.test.domain.TestResultAspect.TestResultState.FAILED;
+import static milkman.plugin.test.domain.TestResultAspect.TestResultState.IGNORED;
+import static milkman.plugin.test.domain.TestResultAspect.TestResultState.SKIPPED;
+import static milkman.plugin.test.domain.TestResultAspect.TestResultState.STARTED;
+import static milkman.plugin.test.domain.TestResultAspect.TestResultState.SUCCEEDED;
+
+import java.time.Duration;
+import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.Environment;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
-import milkman.plugin.test.domain.*;
+import milkman.plugin.test.domain.TestAspect;
 import milkman.plugin.test.domain.TestAspect.TestDetails;
+import milkman.plugin.test.domain.TestContainer;
+import milkman.plugin.test.domain.TestResultAspect;
 import milkman.plugin.test.domain.TestResultAspect.TestResultEvent;
+import milkman.plugin.test.domain.TestResultContainer;
+import milkman.plugin.test.domain.TestResultEnvAspect;
 import milkman.ui.plugin.PluginRequestExecutor;
 import milkman.ui.plugin.Templater;
 import milkman.utils.AsyncResponseControl.AsyncControl;
@@ -19,12 +33,6 @@ import reactor.core.scheduler.Schedulers;
 import reactor.util.function.Tuple3;
 import reactor.util.function.Tuples;
 import reactor.util.retry.Retry;
-
-import java.time.Duration;
-import java.util.Map;
-import java.util.Optional;
-
-import static milkman.plugin.test.domain.TestResultAspect.TestResultState.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -48,16 +56,29 @@ public class TestRunner {
 		Flux<TestResultEvent> resultFlux = Flux.<TestResultEvent>create(sink -> {
 			var subscription = Flux.fromIterable(testAspect.getRequests())
 					.index()
-					.flatMap(tuple -> Mono.justOrEmpty(executor.getDetails(tuple.getT2().getId()).map(r -> Tuples.of(tuple.getT1(), tuple.getT2(), r))))
-					.filter(t -> {
-						var skip = t.getT2().isSkip();
-						if (skip){
-							sink.next(new TestResultEvent(t.getT1().toString(), t.getT3().getName(), SKIPPED, Map.of()));
-						}
-						return !skip;
+					.flatMap(tuple -> {
+						var requestId = tuple.getT1();
+						var testDetails = tuple.getT2();
+						return Mono.defer(() ->
+								Mono.justOrEmpty(executor.getDetails(testDetails.getId())
+										.map(r -> Tuples.of(requestId, testDetails, r))))
+								.repeat(testDetails.getRepeat());
 					})
-					.doOnNext(tuple -> sink.next(new TestResultEvent(tuple.getT1().toString(), tuple.getT3().getName(), STARTED, Map.of())))
-					.flatMap(tuple -> execute(tuple, testEnvironment, sink))
+					.filter(t -> {
+						var requestId = t.getT1();
+						var testDetails = t.getT2();
+						var requestContainer = t.getT3();
+						if (testDetails.isSkip()){
+							sink.next(new TestResultEvent(requestId.toString(), requestContainer.getName(), SKIPPED, Map.of()));
+						}
+						return !testDetails.isSkip();
+					})
+					.doOnNext(tuple -> {
+						var requestId = tuple.getT1();
+						var requestContainer = tuple.getT3();
+						sink.next(new TestResultEvent(requestId.toString(), requestContainer.getName(), STARTED, Map.of()));
+					})
+					.flatMap(tuple -> execute(tuple, testEnvironment, sink, asyncControl))
 					.flatMap(testSuccess -> {
 						if (!testSuccess && testAspect.isStopOnFirstFailure()) {
 							return Mono.error(new RuntimeException("Test failed"));
@@ -97,10 +118,14 @@ public class TestRunner {
 		return environment;
 	}
 
-	private Mono<Boolean> execute(Tuple3<Long, TestDetails, RequestContainer> request, Environment overrideEnv, FluxSink<TestResultEvent> replay) {
+	private Mono<Boolean> execute(
+			Tuple3<Long, TestDetails, RequestContainer> request,
+			Environment overrideEnv,
+			FluxSink<TestResultEvent> replay,
+			AsyncControl asyncControl) {
 		var testDetails = request.getT2();
 		var retryDelay = Duration.ofMillis(testDetails.getWaitBetweenRetriesInMs());
-		return Mono.defer(() -> Mono.just(executor.executeRequest(request.getT3(), Optional.of(overrideEnv))))
+		return Mono.defer(() -> Mono.just(executor.executeRequest(request.getT3(), Optional.of(overrideEnv), asyncControl)))
 				.retryWhen(Retry.fixedDelay(testDetails.getRetries(), retryDelay)
 //						.filter(t -> !testDetails.isIgnore()) // might be wanted behavior: retry on error but ignore result, so we dont use this filter here
 						.scheduler(Schedulers.elastic()))
@@ -110,7 +135,7 @@ public class TestRunner {
 				.onErrorResume(err -> {
 					var state = testDetails.isIgnore() ? IGNORED : FAILED;
 					var message = getErrorMessage(err);
-					replay.next(new TestResultEvent(request.getT1().toString(), request.getT3().getName(), state, Map.of("exception", message)));
+					replay.next(new TestResultEvent(request.getT1().toString(), request.getT3().getName(), state, Map.of("exception", new StyledText(message))));
 					return Mono.just(testDetails.isIgnore()); //pretend success, if ignore is true
 				});
 	}

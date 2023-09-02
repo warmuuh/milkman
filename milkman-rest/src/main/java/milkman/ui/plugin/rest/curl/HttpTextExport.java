@@ -1,5 +1,8 @@
 package milkman.ui.plugin.rest.curl;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import milkman.ui.plugin.Templater;
@@ -10,10 +13,6 @@ import milkman.ui.plugin.rest.domain.RestBodyAspect;
 import milkman.ui.plugin.rest.domain.RestHeaderAspect;
 import milkman.ui.plugin.rest.domain.RestRequestContainer;
 import org.apache.commons.lang3.StringUtils;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -44,7 +43,9 @@ public class HttpTextExport implements TextExport<RestRequestContainer> {
             var headerAspect = request.getAspect(RestHeaderAspect.class).orElseThrow(() -> new IllegalArgumentException("missing aspect"));
 
             for (HeaderEntry entry : headerAspect.getEntries()) {
-                appendHeader(b, entry.getName(), entry.getValue());
+                if (entry.isEnabled()) {
+                    appendHeader(b, entry.getName(), entry.getValue());
+                }
             }
 
             var bodyAspect = request.getAspect(RestBodyAspect.class).orElseThrow(() -> new IllegalArgumentException("missing aspect"));
@@ -59,8 +60,9 @@ public class HttpTextExport implements TextExport<RestRequestContainer> {
             return templater.replaceTags(b.toString());
         } catch (MalformedURLException e) {
             log.warn("failed to export http", e);
+            return "export failed: " + e.getMessage();
         }
-        return "export failed";
+
     }
 
     private void appendHeader(StringBuilder b,String name, String value) {

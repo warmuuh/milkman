@@ -1,0 +1,23 @@
+package milkman.utils;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+
+class ContentTypeMatcherTest {
+
+    @ParameterizedTest
+    @CsvSource({
+            "application/json, application/json, true",
+            "application/json, application/json; param=123, true",
+            "application/json, application/blubber+json, true",
+            "*/json, application/json, true",
+            "application/json+blubber, application/json, false",
+            "application/json, application/html, false"
+    })
+    public void shouldMatchSubtypes(String contentType, String contenTypeToMatch, boolean matching) {
+        assertThat(ContentTypeMatcher.matches(contentType, contenTypeToMatch)).isEqualTo(matching);
+    }
+
+}

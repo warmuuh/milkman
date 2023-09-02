@@ -1,6 +1,5 @@
 package milkman.ui.plugin.rest;
 
-import javafx.application.Platform;
 import javafx.scene.control.Tab;
 import lombok.SneakyThrows;
 import milkman.domain.RequestContainer;
@@ -16,7 +15,7 @@ public class ResponseHeaderTabController implements ResponseAspectEditor {
 	@SneakyThrows
 	public Tab getRoot(RequestContainer request, ResponseContainer response) {
 		RestResponseHeaderAspect headers = response.getAspect(RestResponseHeaderAspect.class).get();
-		JfxTableEditor<HeaderEntry> editor = new JfxTableEditor<HeaderEntry>();
+		JfxTableEditor<HeaderEntry> editor = new JfxTableEditor<HeaderEntry>("rest.resHeaders.list");
 		editor.disableAddition();
 		editor.addReadOnlyColumn("Name", HeaderEntry::getName);
 		editor.addReadOnlyColumn("Value", HeaderEntry::getValue);

@@ -1,9 +1,11 @@
 package milkman.plugin.privatebin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Collections;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.Workspace;
@@ -21,6 +23,7 @@ public class PrivateBinWorkspaceExporter implements WorkspaceExporterPlugin {
 	private TextField textField;
 	private final PrivateBinApi api = new PrivateBinApi(PrivateBinOptionsPluginProvider.options().getPrivateBinUrl());
 	private CheckBox burnCheckbox;
+	private CheckBox exportKeysCheckbox;
 	
 	@Override
 	public String getName() {
@@ -33,7 +36,8 @@ public class PrivateBinWorkspaceExporter implements WorkspaceExporterPlugin {
 		textField = FxmlBuilder.text();
 		textField.setEditable(false);
 		burnCheckbox = FxmlBuilder.checkbox("Burn after reading");
-		VBox vBox = new VBox(burnCheckbox, textField);
+		exportKeysCheckbox = FxmlBuilder.checkbox("Export keys");
+		VBox vBox = new VBox(new HBox(exportKeysCheckbox, burnCheckbox), textField);
 		return vBox;
 	}
 
@@ -49,6 +53,9 @@ public class PrivateBinWorkspaceExporter implements WorkspaceExporterPlugin {
 			//we strip sync details as they might contain passwords
 			var workspaceClone = ObjectUtils.deepClone(workspace);
 			workspaceClone.setSyncDetails(new NoSyncDetails());
+			if (!exportKeysCheckbox.isSelected()) {
+				workspaceClone.setKeySets(Collections.emptyList());
+			}
 			String content = objectMapper.writeValueAsString(new WorkspaceDataContainer(workspaceClone));
 			String pasteUrl = api.createPaste(content, burnCheckbox.isSelected());
 			textField.setText(pasteUrl);

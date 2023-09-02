@@ -1,5 +1,8 @@
 package milkman.ui.main.options;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import lombok.Data;
 import milkman.ui.main.ThemeSwitcher;
 import milkman.ui.main.options.CoreApplicationOptionsProvider.CoreApplicationOptions;
@@ -15,6 +18,26 @@ public class CoreApplicationOptionsProvider implements OptionPageProvider<CoreAp
 		private String theme = "Milkman";
 		private boolean disableAnimations;
 		private boolean horizontalLayout;
+		private boolean debug;
+		private UiPrefs uiPrefs = new UiPrefs();
+		private boolean disableColorfulUi;
+		private boolean useSocksProxy;
+		private String socksProxyAddress;
+
+		@Data
+		public static class UiPrefs {
+			private Map<String, Integer> tableColumnsWidth = new HashMap<>();
+
+			public void setWidthForColumn(String tableId, int columnIdx, int width){
+				var columnId = tableId + "-" + columnIdx;
+				tableColumnsWidth.put(columnId, width);
+			}
+
+			public Optional<Integer> getPrefWidth(String tableId, int columnIdx){
+				var columnId = tableId + "-" + columnIdx;
+				return Optional.ofNullable(tableColumnsWidth.get(columnId));
+			}
+		}
 	} 
 
 	private static CoreApplicationOptions currentOptions = new CoreApplicationOptions();
@@ -46,6 +69,12 @@ public class CoreApplicationOptionsProvider implements OptionPageProvider<CoreAp
 					.toggle("Check for Updates", CoreApplicationOptions::isCheckForUpdates, CoreApplicationOptions::setCheckForUpdates)
 					.selection("Theme", CoreApplicationOptions::getTheme, this::setTheme, themeSwitcher.getThemes())
 					.toggle("Disable Animations", CoreApplicationOptions::isDisableAnimations, CoreApplicationOptions::setDisableAnimations)
+					.toggle("Disable Colorful Ui", CoreApplicationOptions::isDisableColorfulUi, CoreApplicationOptions::setDisableColorfulUi)
+					.toggle("Enable Debug Output", CoreApplicationOptions::isDebug, CoreApplicationOptions::setDebug)
+				.endSection()
+				.section("Connections")
+					.toggle("Use Socks Proxy", CoreApplicationOptions::isUseSocksProxy, CoreApplicationOptions::setUseSocksProxy)
+					.textInput("Socks Proxy Address", CoreApplicationOptions::getSocksProxyAddress, CoreApplicationOptions::setSocksProxyAddress)
 				.endSection()
 				.section("Code Editor/Viewer")
 					.toggle("Autoformat Content", CoreApplicationOptions::isAutoformatContent, this::toggleAnimations)

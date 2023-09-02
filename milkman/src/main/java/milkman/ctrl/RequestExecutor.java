@@ -1,5 +1,7 @@
 package milkman.ctrl;
 
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import lombok.RequiredArgsConstructor;
@@ -10,9 +12,6 @@ import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.Templater;
 import milkman.utils.AsyncResponseControl;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -30,8 +29,8 @@ public class RequestExecutor extends Service<AsyncResponseControl> {
 			
 			@Override
 			protected AsyncResponseControl call() {
+				var asyncCtrl = new AsyncResponseControl();
 				try {
-					var asyncCtrl = new AsyncResponseControl();
 					if (customCommand.isPresent()) {
 						String commandId = customCommand.get().getCommandId();
 						log.info("Execute custom command: " + commandId);
@@ -54,6 +53,7 @@ public class RequestExecutor extends Service<AsyncResponseControl> {
 					}
 				} catch (Throwable e) {
 					log.error("Execution of request failed", e);
+					asyncCtrl.cancleRequest();
 					String rootCauseMessage = ExceptionUtils.getRootCauseMessage(e);
 					updateMessage(rootCauseMessage);
 					throw e;
