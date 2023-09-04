@@ -4,6 +4,7 @@ version 5.7.0 - upcoming
   * minor UI fixes
   * Http/3 protocol support (experimental)
   * improving drawing-performance for big json responses
+  * using java 17
 
 version 5.6.0
   * code templates (see [Features](/docs/features.md))
