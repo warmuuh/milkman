@@ -49,7 +49,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.6</version>
+			<version>1.18.28</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- <dependency> -->
@@ -159,9 +159,9 @@
 					<goal>compile</goal>
 				</goals>
 				<configuration>
-					<release>11</release>
-					<source>11</source>
-					<target>11</target>
+					<release>17</release>
+					<source>17</source>
+					<target>17</target>
 					<annotationProcessors>
 						<annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor</annotationProcessor>
 						<annotationProcessor>wrm.hardwire.processor.AnnotationProcessor</annotationProcessor>

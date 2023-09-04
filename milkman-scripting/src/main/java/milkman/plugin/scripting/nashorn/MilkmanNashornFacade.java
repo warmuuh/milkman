@@ -31,7 +31,7 @@ public class MilkmanNashornFacade {
 	public void toast(String text){
 		toaster.showToast(text);
 	}
-	
+
 	public void setEnvironmentVariable(String varName, String varValue) {
 		activeEnv.ifPresent(e -> e.setOrAdd(varName, varValue));
 	}
@@ -41,7 +41,7 @@ public class MilkmanNashornFacade {
 	}
 
 	@RequiredArgsConstructor
-	public static class MilkmanResponseFacade extends jdk.nashorn.api.scripting.AbstractJSObject {
+	public static class MilkmanResponseFacade extends org.openjdk.nashorn.api.scripting.AbstractJSObject {
 		private final ResponseContainer response;
 		private final ObjectMapper mapper = new ObjectMapper();
 		@Override
@@ -77,7 +77,7 @@ public class MilkmanNashornFacade {
 
 
 	@RequiredArgsConstructor
-	public static class MilkmanRequestFacade extends jdk.nashorn.api.scripting.AbstractJSObject {
+	public static class MilkmanRequestFacade extends org.openjdk.nashorn.api.scripting.AbstractJSObject {
 		private final RequestContainer request;
 		private final ObjectMapper mapper = new ObjectMapper();
 		@Override
@@ -110,5 +110,5 @@ public class MilkmanNashornFacade {
 			super.setMember(name, value);
 		}
 	}
-	
+
 }

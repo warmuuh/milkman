@@ -11,5 +11,6 @@ chmod +x "$JRE_DIR"/bin/java
 
 "$JRE_DIR"/bin/java \
 	-client \
+  --add-opens java.base/java.lang.reflect=ALL-UNNAMED \
 	-cp "$BASE_DIR"/plugins/*:"$BASE_DIR"/milkman.jar:"$BASE_DIR"/milkman-cli.jar milkmancli.MilkmanCli $@
 	
