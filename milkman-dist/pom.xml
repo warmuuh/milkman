@@ -17,7 +17,7 @@
 
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>
-		<jdk.version>11.0.17+7</jdk.version>
+		<jdk.version>17.0.8.1+1</jdk.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -154,12 +154,14 @@
 									<opt><![CDATA[--add-exports javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED]]></opt>
 									<opt><![CDATA[--add-exports javafx.graphics/com.sun.javafx.scene.text=ALL-UNNAMED]]></opt>
 									<opt><![CDATA[--add-exports javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED]]></opt>
+									<opt><![CDATA[--add-exports javafx.graphics/com.sun.glass.ui=ALL-UNNAMED]]></opt>
 									<opt><![CDATA[--add-exports javafx.base/com.sun.javafx.event=ALL-UNNAMED]]></opt>
 									<opt><![CDATA[--add-opens javafx.controls/javafx.scene.control.skin=ALL-UNNAMED]]></opt>
 									<opt><![CDATA[--add-opens javafx.controls/javafx.scene.control=ALL-UNNAMED]]></opt>
 									<opt><![CDATA[--add-opens javafx.graphics/javafx.scene=ALL-UNNAMED]]></opt>
 									<opt><![CDATA[--add-opens javafx.graphics/javafx.scene.text=ALL-UNNAMED]]></opt>
 									<opt><![CDATA[--add-opens javafx.graphics/com.sun.javafx.text=ALL-UNNAMED]]></opt>
+									<opt><![CDATA[--add-opens java.base/java.lang.reflect=ALL-UNNAMED]]></opt>
 									<opt>-Dprism.dirtyopts=false</opt>
 								</opts>
 							</jre>
