@@ -17,6 +17,14 @@
 			<version>5.7.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<!-- this is provided as we assume that script-dependency is available and we dont double-package this dep -->
+			<!-- TODO: re-implement de/encrypt in java, so we dont need nashorn for this -->
+			<groupId>org.openjdk.nashorn</groupId>
+			<artifactId>nashorn-core</artifactId>
+			<version>15.4</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
