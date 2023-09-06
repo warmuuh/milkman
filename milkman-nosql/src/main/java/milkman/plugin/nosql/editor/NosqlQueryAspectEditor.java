@@ -24,7 +24,7 @@ public class NosqlQueryAspectEditor implements RequestAspectEditor {
 		root.setContent(queryAspect::getQuery, run(queryAspect::setQuery).andThen(() -> queryAspect.setDirty(true)));
 		root.setContentTypePlugins(Collections.singletonList(new NosqlContentType()));
 		root.setContentType("application/nosql");
-		return new Tab("Body", root);
+		return new Tab("Query", root);
 	}
 
 	@Override

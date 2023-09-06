@@ -13,7 +13,7 @@ public class NosqlContentType implements ContentTypePlugin {
 		// https://github.com/eclipse/jnosql/blob/main/antlr4/org/eclipse/jnosql/query/grammar/Query.g4
     private static final String[] KEYWORDS = new String[] {
     		"select", "from", "delete", "insert", "update", "get", "del", "put",
-				"*", "skip", "limit", "order", "by", "where", "=", ">", "<", "<=", ">=",
+				"\\*", "skip", "limit", "order", "by", "where",
 				"between", "and", "in", "like", "not", "asc", "desc", "or",
 				"day", "hour", "minute", "second", "millisecond", "nanosecond"
     };
