@@ -228,7 +228,6 @@
 						<addModule>jdk.unsupported.desktop</addModule>
 						<addModule>jdk.xml.dom</addModule>
 						<addModule>javafx.controls</addModule>
-						<addModule>jdk.scripting.nashorn</addModule>
 						<addModule>java.security.jgss</addModule>
 						<addModule>jdk.httpserver</addModule>
 					</addModules>
