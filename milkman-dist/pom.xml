@@ -157,7 +157,7 @@
 			<plugin>
 				<groupId>com.akathist.maven.plugins.launch4j</groupId>
 				<artifactId>launch4j-maven-plugin</artifactId>
-				<version>1.7.25</version>
+				<version>2.4.1</version>
 				<executions>
 					<execution>
 						<id>l4j-clui</id>
@@ -266,7 +266,6 @@
 						<addModule>jdk.unsupported.desktop</addModule>
 						<addModule>jdk.xml.dom</addModule>
 						<addModule>javafx.controls</addModule>
-						<addModule>jdk.scripting.nashorn</addModule>
 						<addModule>java.security.jgss</addModule>
 						<addModule>jdk.httpserver</addModule>
 					</addModules>
