@@ -1,26 +1,25 @@
 package milkman.plugin.nosql;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.SneakyThrows;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
-import milkman.domain.ResponseContainer.StyledText;
 import milkman.plugin.nosql.domain.NosqlParameterAspect;
 import milkman.plugin.nosql.domain.NosqlQueryAspect;
 import milkman.plugin.nosql.domain.NosqlRequestContainer;
 import milkman.plugin.nosql.domain.NosqlResponseAspect;
 import milkman.plugin.nosql.domain.NosqlResponseContainer;
-import milkman.plugin.nosql.domain.ParameterEntry;
 import milkman.ui.plugin.Templater;
 import org.eclipse.jnosql.communication.Settings;
-import org.eclipse.jnosql.communication.Value;
-import org.eclipse.jnosql.communication.keyvalue.BucketManager;
-import org.eclipse.jnosql.communication.keyvalue.BucketManagerFactory;
-import org.eclipse.jnosql.communication.keyvalue.KeyValueConfiguration;
+import org.eclipse.jnosql.communication.document.DocumentConfiguration;
+import org.eclipse.jnosql.communication.document.DocumentEntity;
 
 public class NosqlRequestProcessor {
 
@@ -42,20 +41,28 @@ public class NosqlRequestProcessor {
             e -> templater.replaceTags(e.getValue())
         ));
 
-    if (!params.containsKey("jnosql.keyvalue.provider")) {
-      throw new IllegalArgumentException("only keyvalue providers are supported for now or jnosql.keyvalue.provider parameter missing");
+    if (!params.containsKey("jnosql.document.provider")) {
+      throw new IllegalArgumentException("only document providers are supported for now or jnosql.document.provider parameter missing");
     }
 
-    String keyvalueProviderClass = params.get("jnosql.keyvalue.provider").toString();
+    String providerClass = params.get("jnosql.document.provider").toString();
 
-    KeyValueConfiguration configuration = KeyValueConfiguration.getConfiguration((Class<KeyValueConfiguration>) Class.forName(keyvalueProviderClass));
-    try (BucketManagerFactory factory = configuration.apply(Settings.of(params))) {
-      BucketManager bucketManager = factory.apply(database);
+    DocumentConfiguration configuration = DocumentConfiguration.getConfiguration((Class<DocumentConfiguration>) Class.forName(providerClass));
+    try (var factory = configuration.apply(Settings.of(params))) {
+      var manager = factory.apply(database);
+      Stream<DocumentEntity> resultStream = manager.query(query.getQuery());
 
-      Stream<Value> resultStream = bucketManager.query(query.getQuery());
-      List<List<String>> resultRows = resultStream.map(v -> List.of(v.get().toString())).collect(Collectors.toList());
+      Set<String> keys = new LinkedHashSet<>();
+
+      List<List<String>> resultRows = resultStream.map(document -> {
+        keys.addAll(document.getDocumentNames());
+        return keys.stream()
+            .map(k -> document.find(k).map(entry -> entry.get().toString()).orElse(null))
+            .toList();
+      }).collect(Collectors.toList());
+
       NosqlResponseAspect responseAspect = new NosqlResponseAspect();
-      responseAspect.setColumnNames(List.of("results"));
+      responseAspect.setColumnNames(new LinkedList<>(keys));
       responseAspect.setRows(resultRows);
 
       NosqlResponseContainer response = new NosqlResponseContainer();

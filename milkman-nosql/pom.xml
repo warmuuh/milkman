@@ -21,7 +21,7 @@
 
     <dependency>
       <groupId>org.eclipse.jnosql.communication</groupId>
-      <artifactId>jnosql-communication-key-value</artifactId>
+      <artifactId>jnosql-communication-document</artifactId>
       <version>1.0.1</version>
     </dependency>
 

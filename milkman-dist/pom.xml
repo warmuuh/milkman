@@ -114,9 +114,9 @@
 
 		<!-- dynamodb deps -->
 		<dependency>
-			<groupId>org.eclipse.jnosql.databases</groupId>
-			<artifactId>jnosql-dynamodb</artifactId>
-			<version>1.0.1</version>
+			<groupId>com.github.warmuuh</groupId>
+			<artifactId>jnosql-dynamodb-document</artifactId>
+			<version>1.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>software.amazon.awssdk</groupId>
