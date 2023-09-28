@@ -26,7 +26,8 @@
 		<module>milkman-auth</module>
 		<module>milkman-ws</module>
 		<module>milkman-sio</module>
-	</modules>
+    <module>milkman-nosql</module>
+  </modules>
 
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>

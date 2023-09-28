@@ -94,6 +94,9 @@ A websocket plugin for interacting with websocket endpoints
 ### [Socket.IO Plugin](/milkman-sio)
 A Socket.IO plugin for interacting with Socket.IO endpoints
 
+### [NoSql Plugin](/milkman-nosql)
+A NoSql plugin for interacting with all kinds of NoSql Databases
+
 
 # Showcase
 

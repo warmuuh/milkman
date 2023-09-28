@@ -35,7 +35,7 @@ public class NotesAspectPlugin implements RequestAspectsPlugin {
 
 	@Override
 	public int getOrder() {
-		return 20;
+		return 99;
 	}
 
 	
