@@ -236,6 +236,7 @@
 						<addModule>javafx.controls</addModule>
 						<addModule>java.security.jgss</addModule>
 						<addModule>jdk.httpserver</addModule>
+						<addModule>jdk.dynalink</addModule>
 					</addModules>
 					<options>
 						<option>--compress=2</option>
