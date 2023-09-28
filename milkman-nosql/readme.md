@@ -23,13 +23,11 @@ TBD
 
 ## DynamoDb
 
-you need to add these artifacts into the plugin folder:
+you need to add these artifacts into the plugin folder (refering to my [dynamodb jnosql driver](https://github.com/warmuuh/jnosql-dynamodb-document))
 
 ```yaml
 com.github.warmuuh:jnosql-dynamodb-document:1.0.1-SNAPSHOT
-jakarta.json.bind:jakarta.json.bind-api:3.0.0
-org.eclipse:yasson:3.0.3
-org.glassfish:jakarta.json:2.0.1
+
 
 # if you use `aws sso login` 
 software.amazon.awssdk:sso:2.20.98
