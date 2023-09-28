@@ -17,9 +17,9 @@ import milkman.utils.fxml.GenericBinding;
 public class NosqlRequestEditor implements RequestTypeEditor, AutoCompletionAware {
 
 	
-	 TextField url;
+	 TextField database;
 	
-	private GenericBinding<NosqlRequestContainer, String> urlBinding = GenericBinding.of(NosqlRequestContainer::getUrl, NosqlRequestContainer::setUrl);
+	private GenericBinding<NosqlRequestContainer, String> databaseBinding = GenericBinding.of(NosqlRequestContainer::getDatabase, NosqlRequestContainer::setDatabase);
 
 	private AutoCompleter completer;
 	
@@ -37,9 +37,9 @@ public class NosqlRequestEditor implements RequestTypeEditor, AutoCompletionAwar
 			throw new IllegalArgumentException("Other request types not yet supported");
 
 		NosqlRequestContainer restRequest = (NosqlRequestContainer)request;
-		urlBinding.bindTo(url.textProperty(), restRequest);
-		urlBinding.addListener(s -> request.setDirty(true));
-		completer.attachVariableCompletionTo(url);
+		databaseBinding.bindTo(database.textProperty(), restRequest);
+		databaseBinding.addListener(s -> request.setDirty(true));
+		completer.attachVariableCompletionTo(database);
 		
 	}
 
@@ -54,9 +54,9 @@ public class NosqlRequestEditor implements RequestTypeEditor, AutoCompletionAwar
 		public NosqlRequestEditorFxml(NosqlRequestEditor controller) {
 			this.controller = controller;
 			HBox.setHgrow(this, Priority.ALWAYS);
-			controller.url = add(new JFXTextField(), true);
-			controller.url.setId("url");
-			controller.url.setPromptText("host:port");
+			controller.database = add(new JFXTextField(), true);
+			controller.database.setId("database");
+			controller.database.setPromptText("database");
 		}
 	}
 	

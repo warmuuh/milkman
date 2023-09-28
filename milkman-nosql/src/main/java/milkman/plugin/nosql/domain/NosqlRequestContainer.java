@@ -14,16 +14,16 @@ import milkman.domain.RequestContainer;
 @EqualsAndHashCode(callSuper = true)
 public class NosqlRequestContainer extends RequestContainer {
 
-  private String url;
+  private String database;
 
   @Override
   public String getType() {
     return "NoSql";
   }
 
-  public NosqlRequestContainer(String name, String url) {
+  public NosqlRequestContainer(String name, String database) {
     super(name);
-    this.url = url;
+    this.database = database;
   }
 
 }
