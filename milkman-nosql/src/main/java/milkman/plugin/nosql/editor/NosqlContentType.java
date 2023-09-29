@@ -59,7 +59,7 @@ public class NosqlContentType implements ContentTypePlugin {
 	
 	@Override
 	public StyleSpans<Collection<String>> computeHighlighting(String text) {
-		Matcher matcher = PATTERN.matcher(text.toUpperCase());
+		Matcher matcher = PATTERN.matcher(text.toLowerCase());
         int lastKwEnd = 0;
         StyleSpansBuilder<Collection<String>> spansBuilder
                 = new StyleSpansBuilder<>();

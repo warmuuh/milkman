@@ -60,8 +60,10 @@ public class NosqlRequestProcessor {
     responseAspect.setRows(resultRows);
 
     NosqlResponseContainer response = new NosqlResponseContainer();
-    response.getStatusInformations().complete(Map.of("Selected Rows", new StyledText(String.valueOf(resultRows.size()))));
-    response.getStatusInformations().complete(Map.of("Time", new StyledText(requestTimeInMs + "ms")));
+    response.getStatusInformations().complete(Map.of(
+        "Rows", new StyledText(String.valueOf(resultRows.size())),
+        "Time", new StyledText(requestTimeInMs + "ms")
+    ));
 
     response.getAspects().add(responseAspect);
     return response;
