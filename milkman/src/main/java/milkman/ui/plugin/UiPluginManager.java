@@ -115,6 +115,10 @@ public class UiPluginManager {
 		if (o instanceof RequestTypePluginAware) {
 			((RequestTypePluginAware)o).setRequestTypePlugins(loadRequestTypePlugins());
 		}
+
+		if (o instanceof PluginManagerAware) {
+			((PluginManagerAware)o).setPluginManager(this);
+		}
 	}
 	
 	public <T> List<T> loadSpiInstances(Class<T> type) {

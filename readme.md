@@ -8,6 +8,11 @@ Milkman is heavily inspired by Postman. But I got sick of all those electron-bas
 Therefore i created a JavaFx-based workbench for crafting requests / responses. It is not limited to e.g. http (or more specifically rest) requests. Due to nearly
 everything being a plugin, other things are possible, like database-requests or GRPC, GraphQl, etc...
 
+## :exclamation::exclamation: Update on Insomnia
+
+Hello Insomnia Users :wave:. Recently, a way to [import insomnia data](docs/features.md#insomnia-import) was added due to the latest changes on insomnia. 
+Rest assured that the restriction of having an account in Postman (and now, Insomnia) was one of the main reasons to create Milkman and
+such a thing will never ever happen.
 
 # Download
 
@@ -36,7 +41,7 @@ some resolved issues and FAQs are available in the [wiki](https://github.com/war
 # Features
 
  * **Everything is a plugin:** Request-types (e.g. Http Request), request-aspects (e.g. Headers, Body, etc), editors for request aspects (e.g. table-based editors for headers), importers, whatever it is, you can extend it. The core application only handles Workspaces with Environments, Collections, Requests and their aspects.
- * **Http Request Plugin:** Several plugins are provided already that extend the core application to be a replacement for postman. Crafting and Executing Http/Rest requests with json highlighting. Support Proxy-server configuration and SSE.
+ * **Http Request Plugin:** Several plugins are provided already that extend the core application to be a replacement for postman/insomnia. Crafting and Executing Http/Rest requests with json highlighting. Support Proxy-server configuration and SSE.
  * **Grpc Plugin:** support of Grpc Services, Server Reflection and Streaming
  * **Test Runner:** run several requests as separate test-scenario
  * **JavaFX Application:** as in: *fast* (compared to electron at least :D) and skinn-able (you can extend milkman with your own themes using simple CSS).
@@ -49,8 +54,9 @@ some resolved issues and FAQs are available in the [wiki](https://github.com/war
 *Note: see respective plugin folder for more details*
 
 ### [Http Request Plugin](/milkman-rest): (included in main distribution)
-The Http request plugin packaged with the release contains all means to do http request as well as import collections, environments or dumps from postman.
-To migrate from postman, just [export a dump-file from postman](https://learning.getpostman.com/docs/postman/collections/data_formats/#data-dumps) and import it by pasting its content into the `Postman (v2.1) Dump`-Importer.
+The Http request plugin packaged with the release contains all means to do http request as well as import collections, environments or dumps from postman or insomnia.
+To migrate from postman, just [export a dump-file from postman](https://learning.getpostman.com/docs/postman/collections/data_formats/#data-dumps) and import it by pasting its content into the `Postman (v2.1) Dump`-Importer. \
+To migrate from insomnia, see [docs](docs/features.md#insomnia-import).
 The Http Request Plugin also comes with Proxy-support. Some proxies require credentials and support for supplying `BASIC` proxy credentials is built into the plugin. See Options-page to activate that as it is off by default.
 Additionally, the plugin supports chunked responses, enabling testing of Server-sent events ([SSE](https://en.wikipedia.org/wiki/Server-sent_events)).
 

@@ -20,7 +20,15 @@
 			<version>5.7.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
+		<!-- only for insomnia-import. if not provided, it doesnt hurt -->
+		<dependency>
+			<groupId>com.github.warmuuh</groupId>
+			<artifactId>milkman-rest</artifactId>
+			<version>5.7.0-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-netty</artifactId>

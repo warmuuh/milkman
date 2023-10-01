@@ -75,3 +75,14 @@ curl -X {{httpMethod}}
     * `{{_` removes all whitespaces (including linebreaks) *before* the tag and replaces it with one space
     * `-}}` removes all whitespaces (including linebreaks) *after* the tag
     * `_}}` removes all whitespaces (including linebreaks) *after* the tag  and replaces it with one space
+
+
+## Insomnia Import
+
+* exported Collections (see [Insomnia Documentation](https://docs.insomnia.rest/insomnia/import-export-data#export-data)) can be imported into Milkman.
+* currently, Http, Websocket, event-stream, Grpc and Gql requests are supported
+* environments are also imported
+* :exclamation: There are some conceptual differences between insomnia and milkman though:
+    * Insomnia root-level requests are imported into a collection with the name of the workspace
+    * Insomnia environments overload each other based on a hierarchy. this is flattened on import.
+    * Grpc requests refere to a shared file in the workspace. This is flattened in milkman (i.e. file-content is copied to each request refering to it)
