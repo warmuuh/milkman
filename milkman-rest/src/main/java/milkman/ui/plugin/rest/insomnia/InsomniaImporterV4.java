@@ -175,7 +175,7 @@ public class InsomniaImporterV4 {
 
 	@Data
 	@JsonTypeInfo(use = Id.NAME,
-			include = As.PROPERTY, property = "_type", visible = true)
+			include = As.PROPERTY, property = "_type", visible = true, defaultImpl = Void.class)
 	@JsonSubTypes({
 			@JsonSubTypes.Type(value = InsomniaRequestGroup.class, name = "request_group"),
 			@JsonSubTypes.Type(value = InsomniaWorkspace.class, name = "workspace"),
