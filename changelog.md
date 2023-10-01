@@ -5,6 +5,8 @@ version 5.7.0 - upcoming
   * Http/3 protocol support (experimental)
   * improving drawing-performance for big json responses
   * using java 17
+  * new [NoSql](/milkman-nosql) plugin, supporting all nosql DBs via [JNoSql](https://github.com/eclipse/jnosql)
+  * Insomnia Import (due to [recent events](https://github.com/Kong/insomnia/issues/6577))
 
 version 5.6.0
   * code templates (see [Features](/docs/features.md))
