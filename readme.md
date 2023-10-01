@@ -8,6 +8,11 @@ Milkman is heavily inspired by Postman. But I got sick of all those electron-bas
 Therefore i created a JavaFx-based workbench for crafting requests / responses. It is not limited to e.g. http (or more specifically rest) requests. Due to nearly
 everything being a plugin, other things are possible, like database-requests or GRPC, GraphQl, etc...
 
+## :exclamation::exclamation: Update on Insomnia
+
+Hello Insomnia Users :wave:. Recently, a way to [import insomnia data](docs/features.md#insomnia-import) was added due to the latest changes on insomnia. 
+Rest assured that the restriction of having an account in Postman (and now, Insomnia) was one of the main reasons to create Milkman and
+such a thing will never ever happen.
 
 # Download
 
