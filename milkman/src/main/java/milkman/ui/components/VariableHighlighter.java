@@ -150,13 +150,30 @@ public class VariableHighlighter {
         for (Node node : nodes) {
             Text text = ((Text) node);
             var matcher = tagPattern.matcher(text.getText());
-            if (matcher.find() && NodeHelper.isTreeVisible(node)) {
+            if (matcher.find() && NodeHelper.isTreeVisible(node) && visibleInParent(node)) {
                 ArrayList<Rectangle> rectangles = getRectangles(text);
                 result.addAll(rectangles);
                 boxes.put(node, rectangles);
             }
         }
         return result;
+    }
+
+    private boolean visibleInParent(Node node) {
+        Bounds nodeBounds = node.localToScene(node.getBoundsInLocal());
+
+        Node parent = node.getParent();
+        while(parent != null) {
+            parent = parent.getParent();
+            if (parent != null) {
+                Bounds parentBounds = parent.localToScene(parent.getBoundsInLocal());
+                if (!parentBounds.intersects(nodeBounds)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     private ArrayList<Rectangle> getRectangles(Text text) {
