@@ -18,11 +18,12 @@
 #toolbar {
 	-fx-background-color: $main-accent;
 	.label {
-		-fx-text-fill: white;
-		-fx-text-fill: white;
+		-fx-text-fill: $foreground-alt;
 	}
 	.choice-box {
 		-fx-background-color: $secondary-accent;
+		-fx-text-fill: $foreground-alt;
+		-fx-mark-color: $foreground-alt;
 	}
 
     .context-menu {
@@ -31,7 +32,7 @@
             -fx-background-color: $secondary-accent;
 
             .label {
-                -fx-text-fill: $background;
+                -fx-text-fill: $foreground-alt;
                 -fx-font-weight: normal;
                 -fx-padding: 0 0 0 0;
             }
@@ -40,15 +41,14 @@
             -fx-background-color: darken($secondary-accent, 10%);
 
             .label {
-                -fx-text-fill: $background;
+                -fx-text-fill: $foreground-alt;
             }
         }
     }
 
     #syncButton {
         -fx-background-color: $secondary-accent;
-        -fx-text-fill: white;
-        -fx-text-fill: white;
+        -fx-text-fill: $foreground-alt;
         -fx-translate-y: 1;
         -fx-pref-height: 24px;
         -fx-min-height: -fx-pref-height;
@@ -56,11 +56,11 @@
     }
 
 	.jfx-button {
-		-fx-text-fill: white;
+		-fx-text-fill: $foreground-alt;
 		-fx-background-color: $secondary-accent;
 		-fx-translate-y: 1;
 		.icon {
-			-fx-fill: white;
+			-fx-fill: $foreground-alt;
 		}
 	}
 }
@@ -74,6 +74,7 @@
 }
 
 .options-page {
+	-fx-background-color: $background;
 	-fx-border-color: $background;
 	-fx-padding: 20;
 	>.section-header {
