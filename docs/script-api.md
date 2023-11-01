@@ -22,17 +22,17 @@ pre or post scripts.
 
 #### Request properties
 
+* Aspect `payload` (GrpcPayloadAspect)
+  * name (String)
+  * payload (String)
+* Aspect `headers` (GrpcHeaderAspect)
+  * entries (List)
+  * name (String)
 * Aspect `operation` (GrpcOperationAspect)
   * name (String)
   * operation (String)
   * protoSchema (String)
   * useReflection (boolean)
-* Aspect `headers` (GrpcHeaderAspect)
-  * entries (List)
-  * name (String)
-* Aspect `payload` (GrpcPayloadAspect)
-  * name (String)
-  * payload (String)
 #### Response properties
 
 * Aspect `headers` (GrpcResponseHeaderAspect)
@@ -46,11 +46,11 @@ pre or post scripts.
 
 #### Request properties
 
-* Aspect `body` (RestBodyAspect)
-  * body (String)
-  * name (String)
 * Aspect `headers` (RestHeaderAspect)
   * entries (List)
+  * name (String)
+* Aspect `body` (RestBodyAspect)
+  * body (String)
   * name (String)
 * Aspect `query` (RestQueryParamAspect)
   * entries (List)
@@ -60,15 +60,32 @@ pre or post scripts.
 * Aspect `debugBody` (DebugRequestBodyAspect)
   * body (String)
   * name (String)
+* Aspect `debugHeaders` (DebugRequestHeaderAspect)
+  * entries (List)
+  * name (String)
 * Aspect `body` (RestResponseBodyAspect)
   * body (Flux)
   * name (String)
 * Aspect `headers` (RestResponseHeaderAspect)
   * entries (List)
   * name (String)
-* Aspect `debugHeaders` (DebugRequestHeaderAspect)
+
+### Request Type: NoSql
+
+#### Request properties
+
+* Aspect `query` (NosqlQueryAspect)
+  * name (String)
+  * query (String)
+* Aspect `parameters` (NosqlParameterAspect)
   * entries (List)
   * name (String)
+#### Response properties
+
+* Aspect `result` (NosqlResponseAspect)
+  * columnNames (List)
+  * name (String)
+  * rows (List)
 
 ### Request Type: SQL
 
@@ -88,13 +105,13 @@ pre or post scripts.
 
 #### Request properties
 
-* Aspect `sio` (SocketIOAspect)
-  * event (String)
-  * message (String)
-  * name (String)
 * Aspect `settings` (SocketIoSettingsAspect)
   * clientVersion (SocketIoVersion)
   * handshakePath (String)
+  * name (String)
+* Aspect `sio` (SocketIOAspect)
+  * event (String)
+  * message (String)
   * name (String)
 #### Response properties
 
@@ -114,12 +131,12 @@ pre or post scripts.
   * stopOnFirstFailure (boolean)
 #### Response properties
 
-* Aspect `Results` (TestResultAspect)
-  * name (String)
-  * results (Flux)
 * Aspect `Environment` (TestResultEnvAspect)
   * environment (Environment)
   * name (String)
+* Aspect `Results` (TestResultAspect)
+  * name (String)
+  * results (Flux)
 
 ### Request Type: WebSocket
 
