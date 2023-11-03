@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import milkman.ui.main.dialogs.StringInputDialog;
 import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.MonoSink;
@@ -29,7 +30,14 @@ public class AuthorizationCodeCaptureServer {
     private final HttpServer server;
 
     public AuthorizationCodeCaptureServer() throws IOException {
-        server = HttpServer.create(new InetSocketAddress(0), 0);
+        StringInputDialog portQueryDialog = new StringInputDialog();
+        portQueryDialog.showAndWait("Authentication server port",
+            "Choose port to listen to when returning from authentication flow:", "8080");
+        if (portQueryDialog.isCancelled()) {
+            throw new IllegalStateException("Autnentication Server cancelled");
+        }
+        int port = Integer.parseInt(portQueryDialog.getInput());
+        server = HttpServer.create(new InetSocketAddress(port), 0);
         server.setExecutor(Executors.newCachedThreadPool());
         code = Mono.create(this::startServer)
                 .doFinally(s -> stopServer());
