@@ -1,6 +1,11 @@
 # Changelog
 
-version 5.7.0 - upcoming
+version 5.8.0 - upcoming
+  * base64 keytype
+  * Oauth: Authentication Grant flow now supports choosing port for return url
+
+
+version 5.7.0
   * minor UI fixes
   * Http/3 protocol support (experimental)
   * improving drawing-performance for big json responses
