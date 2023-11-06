@@ -1,5 +1,7 @@
 package milkman.ui.plugin.rest;
 
+import java.util.Optional;
+import javax.net.ssl.SSLSession;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import milkman.utils.Event0;
@@ -24,8 +26,11 @@ public class ChunkedRequest {
 	private final HttpRequest httpRequest;
 	
 	@Getter
-	private final CompletableFuture<ResponseInfo> responseInfo = new CompletableFuture<>(); 
-	
+	private final CompletableFuture<ResponseInfo> responseInfo = new CompletableFuture<>();
+
+	@Getter
+	private final CompletableFuture<Optional<SSLSession>> sslSessionInfo = new CompletableFuture<>();
+
 	@Getter
 	private CompletableFuture<Void> requestDone;
 	
@@ -91,9 +96,16 @@ public class ChunkedRequest {
 //				System.out.println("Received response: " + res);
 //				System.out.println("Received err: " + err);
 //				System.out.println("has subscription: " + isSubscribed.get());
-				//under certain circumstances, the stringSubscriber was not subscribed (body handler not activated)
-				//leading to the call-future resolve but the futures in the subscriber to not be resolved.
-				if (!isSubscribed.get()) {
+
+			if (err == null) {
+				sslSessionInfo.complete(res.sslSession());
+			} else {
+				sslSessionInfo.complete(Optional.empty());
+			}
+
+			//under certain circumstances, the stringSubscriber was not subscribed (body handler not activated)
+			//leading to the call-future resolve but the futures in the subscriber to not be resolved.
+			if (!isSubscribed.get()) {
 					if (err != null) {
 						emitterProcessor.onError(ExceptionUtils.getRootCause(err));
 						responseInfo.complete(new JavaRequestProcessor.EmptyResponseInfo());

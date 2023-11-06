@@ -1,6 +1,7 @@
 package milkman.ui.plugin.rest;
 
 import javafx.application.Platform;
+import javax.net.ssl.SSLSession;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.experimental.Delegate;
@@ -210,6 +211,7 @@ public class JavaRequestProcessor implements RequestProcessor {
 		return toResponseContainer(httpRequest,
 																chReq.getEmitterProcessor(),
 																chReq.getResponseInfo(),
+																chReq.getSslSessionInfo(),
 																startTime);
 	}
 
@@ -262,8 +264,20 @@ public class JavaRequestProcessor implements RequestProcessor {
 	
 
 	@SneakyThrows
-	private RestResponseContainer toResponseContainer(HttpRequest request, Flux<byte[]> bodyPublisher, CompletableFuture<ResponseInfo> httpResponse, AtomicLong startTime) {
+	private RestResponseContainer toResponseContainer(HttpRequest request,
+			Flux<byte[]> bodyPublisher,
+			CompletableFuture<ResponseInfo> httpResponse,
+			CompletableFuture<Optional<SSLSession>> sslSessionInfo,
+			AtomicLong startTime) {
 		RestResponseContainer response = new RestResponseContainer(request.uri().toString());
+
+		bodyPublisher = tapContentLength(bodyPublisher, response);
+		bodyPublisher = bodyPublisher.doOnComplete(() -> {
+			response.getStatusInformations().add("TTLB", (System.currentTimeMillis() - startTime.get()) + "ms");
+//			response.getStatusInformations().complete();
+		});
+
+
 		response.getAspects().add(new RestResponseBodyAspect(bodyPublisher));
 
 		addDebugOutput(request, response);
@@ -281,13 +295,27 @@ public class JavaRequestProcessor implements RequestProcessor {
 		RestResponseHeaderAspect headers = new RestResponseHeaderAspect(entries.get());
 		
 		response.getAspects().add(headers);
-		
+
+
+		sslSessionInfo.thenAccept(ssl -> ssl.ifPresent(sslSession -> {
+			response.getStatusInformations().add("SSL", sslSession.getProtocol());
+		}));
+
 		httpResponse.thenAccept(res -> {
 			var responseTimeInMs = System.currentTimeMillis() - startTime.get();
 			buildStatusView(res, response, responseTimeInMs);
 		});
-		
+
 		return response;
+	}
+
+	private static Flux<byte[]> tapContentLength(Flux<byte[]> bodyPublisher, RestResponseContainer response) {
+		AtomicLong byteCount = new AtomicLong(0);
+		bodyPublisher = bodyPublisher.doOnNext(bytes -> {
+			var curByteCount = byteCount.addAndGet(bytes.length);
+			response.getStatusInformations().add("Size", "" + curByteCount);
+		});
+		return bodyPublisher;
 	}
 
 	private void addDebugOutput(HttpRequest request, RestResponseContainer response) {
@@ -318,12 +346,10 @@ public class JavaRequestProcessor implements RequestProcessor {
 		} else if (httpResponse.version() == null) { //special case for custom http_3 implementation
 			versionStr = "3.0";
 		}
-		LinkedHashMap<String, StyledText> statusKeys = new LinkedHashMap<>();
-		statusKeys.put("Status", new StyledText(""+httpResponse.statusCode(), getStyle(httpResponse.statusCode())));
-		statusKeys.put("Time", new StyledText(responseTimeInMs + "ms"));
-		statusKeys.put("Http", new StyledText(versionStr));
-		
-		response.getStatusInformations().complete(statusKeys);
+		response.getStatusInformations()
+				.add("Status", new StyledText(""+httpResponse.statusCode(), getStyle(httpResponse.statusCode())))
+				.add("Time", new StyledText(responseTimeInMs + "ms"))
+				.add("Http", new StyledText(versionStr));
 	}
 
 	private String getStyle(int statusCode) {

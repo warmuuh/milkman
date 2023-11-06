@@ -22,7 +22,7 @@ public abstract class ResponseContainer {
 
 	
 	@JsonIgnore
-	private CompletableFuture<Map<String, StyledText>> statusInformations = new CompletableFuture<>();
+	private StatusInfoContainer statusInformations = new StatusInfoContainer();
 	
 	
 	public <T extends ResponseAspect> Optional<T> getAspect(Class<T> aspectType) {

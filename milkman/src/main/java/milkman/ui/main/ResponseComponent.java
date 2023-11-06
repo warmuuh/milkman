@@ -13,6 +13,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer.StyledText;
+import milkman.domain.StatusInfoContainer;
 import milkman.ui.components.FancySpinner;
 import milkman.ui.components.TinySpinner;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
@@ -24,6 +25,7 @@ import javax.inject.Singleton;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
+import milkman.utils.CollectionUtils;
 
 import static milkman.utils.fxml.FxmlBuilder.*;
 
@@ -87,17 +89,22 @@ public class ResponseComponent {
 	}
 
 
-	private void addStatusInformation(CompletableFuture<Map<String, StyledText>> statusInformations) {
+	private void addStatusInformation(StatusInfoContainer statusInformations) {
 		statusDisplay.getChildren().clear();
-		statusInformations.thenAccept(stats ->  Platform.runLater(() -> {
-			for (Entry<String, StyledText> entry : stats.entrySet()) {
-				Label name = new Label(entry.getKey() + ":");
-				Label value = new Label(entry.getValue().getText());
-				if (!CoreApplicationOptionsProvider.options().isDisableColorfulUi()) {
-					entry.getValue().getStyle().ifPresent(value::setStyle);
-				}
-				value.getStyleClass().add("emphasized");
-				statusDisplay.getChildren().add(new HBox(name, value));	
+		statusInformations.subscribe(entry ->  Platform.runLater(() -> {
+			Label name = new Label(entry.getKey() + ":");
+			Label value = new Label(entry.getValue().getText());
+			if (!CoreApplicationOptionsProvider.options().isDisableColorfulUi()) {
+				entry.getValue().getStyle().ifPresent(value::setStyle);
+			}
+			value.getStyleClass().add("emphasized");
+			HBox node = new HBox(name, value);
+			node.setUserData(entry.getKey());
+			int idx = CollectionUtils.indexOfFirst(statusDisplay.getChildren(), e -> entry.getKey().equals(e.getUserData()));
+			if (idx < 0) {
+				statusDisplay.getChildren().add(node);
+			} else {
+				statusDisplay.getChildren().set(idx, node);
 			}
 		}));
 		

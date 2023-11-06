@@ -122,7 +122,7 @@ public class TestRunner {
 				.retryWhen(Retry.fixedDelay(testDetails.getRetries(), retryDelay)
 //						.filter(t -> !testDetails.isIgnore()) // might be wanted behavior: retry on error but ignore result, so we dont use this filter here
 						.scheduler(Schedulers.elastic()))
-				.flatMap(res -> Mono.fromFuture(res.getStatusInformations()))
+				.flatMap(res -> res.getStatusInformations().toMono())
 				.doOnNext(si -> replay.next(new TestResultEvent(request.getT1().toString(), request.getT3().getName(), SUCCEEDED, si)))
 				.then(Mono.just(true))
 				.onErrorResume(err -> {
