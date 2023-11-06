@@ -1,9 +1,14 @@
 package milkman.ui.main;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXPopup;
+import com.jfoenix.controls.JFXPopup.PopupVPosition;
 import com.jfoenix.controls.JFXTabPane;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import java.util.Comparator;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.transformation.SortedList;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -14,7 +19,9 @@ import javafx.scene.layout.StackPane;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer.StyledText;
 import milkman.domain.StatusInfoContainer;
+import milkman.domain.StatusInfoContainer.StatusEntry;
 import milkman.ui.components.FancySpinner;
+import milkman.ui.components.StatusPopup;
 import milkman.ui.components.TinySpinner;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.ui.plugin.UiPluginManager;
@@ -92,6 +99,29 @@ public class ResponseComponent {
 	private void addStatusInformation(StatusInfoContainer statusInformations) {
 		statusDisplay.getChildren().clear();
 		statusInformations.subscribe(entry ->  Platform.runLater(() -> {
+			HBox node = renderStatusInfo(entry);
+			node.setUserData(entry.getKey());
+			int idx = CollectionUtils.indexOfFirst(statusDisplay.getChildren(), e -> entry.getKey().equals(e.getUserData()));
+			if (idx < 0) {
+				statusDisplay.getChildren().add(node);
+				FXCollections.sort(statusDisplay.getChildren(), Comparator.comparing(n -> (Comparable)n.getUserData()));
+			} else {
+				statusDisplay.getChildren().set(idx, node);
+			}
+		}));
+	}
+
+	private HBox renderStatusInfo(StatusEntry entry) {
+		if (entry.isGroup()) {
+			Label name = new Label(entry.getKey());
+			name.setUnderline(true);
+			HBox hBox = new HBox(name);
+			hBox.setStyle("-fx-cursor: hand");
+			hBox.setOnMouseClicked(e -> {
+				new StatusPopup(entry.getValueMap()).show(hBox, PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 0, 20);
+			});
+			return hBox;
+		} else {
 			Label name = new Label(entry.getKey() + ":");
 			Label value = new Label(entry.getValue().getText());
 			if (!CoreApplicationOptionsProvider.options().isDisableColorfulUi()) {
@@ -99,15 +129,8 @@ public class ResponseComponent {
 			}
 			value.getStyleClass().add("emphasized");
 			HBox node = new HBox(name, value);
-			node.setUserData(entry.getKey());
-			int idx = CollectionUtils.indexOfFirst(statusDisplay.getChildren(), e -> entry.getKey().equals(e.getUserData()));
-			if (idx < 0) {
-				statusDisplay.getChildren().add(node);
-			} else {
-				statusDisplay.getChildren().set(idx, node);
-			}
-		}));
-		
+			return node;
+		}
 	}
 
 	public void clear() {

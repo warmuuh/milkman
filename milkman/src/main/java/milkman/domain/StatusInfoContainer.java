@@ -1,5 +1,6 @@
 package milkman.domain;
 
+import java.util.Comparator;
 import java.util.Map;
 import java.util.function.Consumer;
 import lombok.Value;
@@ -34,7 +35,10 @@ public class StatusInfoContainer {
     add(key, new StyledText(value));
     return this;
   }
-
+  public StatusInfoContainer add(String key, Map<String, String> values) {
+    emitter.onNext(new StatusEntry(key, values));
+    return this;
+  }
   public StatusInfoContainer add(String key, StyledText value) {
     emitter.onNext(new StatusEntry(key, value));
     return this;
@@ -49,5 +53,22 @@ public class StatusInfoContainer {
   public static class StatusEntry {
      String key;
      StyledText value;
+     Map<String, String> valueMap;
+
+    public StatusEntry(String key, StyledText value) {
+      this.key = key;
+      this.value = value;
+      valueMap = null;
+    }
+
+    public StatusEntry(String key, Map<String, String> valueMap) {
+      this.key = key;
+      this.valueMap = valueMap;
+      value = null;
+    }
+
+    public boolean isGroup() {
+       return valueMap != null;
+     }
   }
 }

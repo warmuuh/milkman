@@ -1,6 +1,8 @@
 package milkman.ui.plugin.rest;
 
+import java.security.cert.Certificate;
 import javafx.application.Platform;
+import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -273,7 +275,7 @@ public class JavaRequestProcessor implements RequestProcessor {
 
 		bodyPublisher = tapContentLength(bodyPublisher, response);
 		bodyPublisher = bodyPublisher.doOnComplete(() -> {
-			response.getStatusInformations().add("TTLB", (System.currentTimeMillis() - startTime.get()) + "ms");
+			response.getStatusInformations().add("Time", (System.currentTimeMillis() - startTime.get()) + "ms");
 //			response.getStatusInformations().complete();
 		});
 
@@ -297,9 +299,8 @@ public class JavaRequestProcessor implements RequestProcessor {
 		response.getAspects().add(headers);
 
 
-		sslSessionInfo.thenAccept(ssl -> ssl.ifPresent(sslSession -> {
-			response.getStatusInformations().add("SSL", sslSession.getProtocol());
-		}));
+		sslSessionInfo.thenAccept(ssl -> ssl.ifPresent(sslSession ->
+				response.getStatusInformations().add("SSL", getCertDetails(sslSession))));
 
 		httpResponse.thenAccept(res -> {
 			var responseTimeInMs = System.currentTimeMillis() - startTime.get();
@@ -307,6 +308,21 @@ public class JavaRequestProcessor implements RequestProcessor {
 		});
 
 		return response;
+	}
+
+	@SneakyThrows
+	private static Map<String, String> getCertDetails(SSLSession sslSession)  {
+		LinkedHashMap<String, String> result = new LinkedHashMap<>();
+		result.put("Protocol", sslSession.getProtocol());
+		Certificate cert = sslSession.getPeerCertificates()[0];
+		result.put("Certificate type:", cert.getType());
+		if (cert instanceof X509Certificate) {
+			var x509 = (X509Certificate) sslSession.getPeerCertificates()[0];
+			result.put("Subject", x509.getSubjectX500Principal().getName());
+			result.put("Valid from", x509.getNotBefore().toInstant().toString());
+			result.put("Valid until", x509.getNotAfter().toInstant().toString());
+		}
+		return result;
 	}
 
 	private static Flux<byte[]> tapContentLength(Flux<byte[]> bodyPublisher, RestResponseContainer response) {
@@ -348,7 +364,7 @@ public class JavaRequestProcessor implements RequestProcessor {
 		}
 		response.getStatusInformations()
 				.add("Status", new StyledText(""+httpResponse.statusCode(), getStyle(httpResponse.statusCode())))
-				.add("Time", new StyledText(responseTimeInMs + "ms"))
+				.add("TTFB", new StyledText(responseTimeInMs + "ms"))
 				.add("Http", new StyledText(versionStr));
 	}
 
