@@ -315,7 +315,7 @@ public class JavaRequestProcessor implements RequestProcessor {
 		LinkedHashMap<String, String> result = new LinkedHashMap<>();
 		result.put("Protocol", sslSession.getProtocol());
 		Certificate cert = sslSession.getPeerCertificates()[0];
-		result.put("Certificate type:", cert.getType());
+		result.put("Certificate type", cert.getType());
 		if (cert instanceof X509Certificate) {
 			var x509 = (X509Certificate) sslSession.getPeerCertificates()[0];
 			result.put("Subject", x509.getSubjectX500Principal().getName());
@@ -329,7 +329,7 @@ public class JavaRequestProcessor implements RequestProcessor {
 		AtomicLong byteCount = new AtomicLong(0);
 		bodyPublisher = bodyPublisher.doOnNext(bytes -> {
 			var curByteCount = byteCount.addAndGet(bytes.length);
-			response.getStatusInformations().add("Size", "" + curByteCount);
+			response.getStatusInformations().add("Details", Map.of("Size", "" + curByteCount));
 		});
 		return bodyPublisher;
 	}
@@ -364,8 +364,10 @@ public class JavaRequestProcessor implements RequestProcessor {
 		}
 		response.getStatusInformations()
 				.add("Status", new StyledText(""+httpResponse.statusCode(), getStyle(httpResponse.statusCode())))
-				.add("TTFB", new StyledText(responseTimeInMs + "ms"))
-				.add("Http", new StyledText(versionStr));
+				.add("Details", Map.of(
+						"TTFB", responseTimeInMs + "ms",
+						"Http", versionStr
+				));
 	}
 
 	private String getStyle(int statusCode) {
