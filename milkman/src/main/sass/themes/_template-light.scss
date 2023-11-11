@@ -58,6 +58,10 @@
 			-fx-padding: 0 20 0 0;
 		}
 	}
+
+	.jfx-tree-table-view {
+		-fx-min-height: 200px;
+	}
 }
 .options-tabs {
 	.tab-header-background {
