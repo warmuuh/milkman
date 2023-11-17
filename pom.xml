@@ -142,10 +142,10 @@
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
 		</repository>
-		<repository>
-			<id>spring</id>
-			<url>https://repo.spring.io/plugins-release</url>
-		</repository>
+<!--		<repository>-->
+<!--			<id>spring</id>-->
+<!--			<url>https://repo.spring.io/plugins-release</url>-->
+<!--		</repository>-->
 	</repositories>
 
 	<build>

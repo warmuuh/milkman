@@ -1,8 +1,9 @@
 package milkman.ui.plugin.rest;
 
+import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import javafx.application.Platform;
-import javax.net.ssl.SSLPeerUnverifiedException;
+import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLSession;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -12,6 +13,9 @@ import milkman.domain.ResponseContainer.StyledText;
 import milkman.ui.main.dialogs.CredentialsInputDialog;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.ui.plugin.Templater;
+import milkman.ui.plugin.rest.tls.CertificateReader;
+import milkman.ui.plugin.rest.tls.CustomCertificateKeyManager;
+import milkman.ui.plugin.rest.tls.TrustAllTrustManager;
 import milkman.ui.plugin.rest.domain.*;
 import milkman.ui.plugin.rest.http3.JettyHttp3Client;
 import milkman.utils.AsyncResponseControl.AsyncControl;
@@ -23,7 +27,6 @@ import reactor.core.publisher.Flux;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import java.net.PasswordAuthentication;
 import java.net.URI;
 import java.net.URL;
@@ -75,7 +78,7 @@ public class JavaRequestProcessor implements RequestProcessor {
 	}
 
 	@SneakyThrows
-	private HttpClient buildClient() {
+	private HttpClient buildClient(RestRequestContainer request) {
 
 		if (HttpOptionsPluginProvider.options().isHttp3Support()) {
 			return new JettyHttp3Client();
@@ -103,10 +106,21 @@ public class JavaRequestProcessor implements RequestProcessor {
 //			}
 		}
 
-		if (!HttpOptionsPluginProvider.options().isCertificateValidation()) {
-			disableSsl(builder);
+		if (StringUtils.isNotEmpty(request.getClientCertificate())) {
+			CertificateReader certReader = new CertificateReader();
+			milkman.ui.plugin.rest.tls.Certificate cert = HttpOptionsPluginProvider.options().getCertificates().stream()
+					.filter(c -> c.getName().equals(request.getClientCertificate()))
+					.findAny()
+					.orElseThrow(() -> new IllegalStateException("Certificate not found: " + request.getClientCertificate()));
+
+			var x509Certificate = certReader.readCertificate(cert);
+			var privateKey = certReader.readPrivateKey(cert);
+			configureSsl(builder, !HttpOptionsPluginProvider.options().isCertificateValidation(), x509Certificate, privateKey);
+		} else {
+			configureSsl(builder, !HttpOptionsPluginProvider.options().isCertificateValidation(), null, null);
 		}
-		
+
+
 		if (HttpOptionsPluginProvider.options().isFollowRedirects()) {
 			builder.followRedirects(Redirect.ALWAYS);
 		}
@@ -123,32 +137,31 @@ public class JavaRequestProcessor implements RequestProcessor {
 		builder.sslParameters(sslParameters);
 	}
 
-	private void disableSsl(Builder builder) {
+	private void configureSsl(Builder builder,
+			boolean disableSslVerification,
+			X509Certificate clientCertificate,
+			PrivateKey privateKey) {
 
-		// Create a trust manager that does not validate certificate chains
-		TrustManager[] trustAllCerts = {
-		    new X509TrustManager() {
-		        @Override
-				public X509Certificate[] getAcceptedIssuers() {
-		            return null;
-		        }
-		        @Override
-				public void checkClientTrusted(
-		            X509Certificate[] certs, String authType) {
-		        }
-		        @Override
-				public void checkServerTrusted(
-		            X509Certificate[] certs, String authType) {
-		        }
-		    }
-		};
+		TrustManager[] trustManagers = null;
+		if (disableSslVerification) {
+			// Create a trust manager that does not validate certificate chains
+			trustManagers = new TrustManager[]{
+					new TrustAllTrustManager()
+			};
+		}
 
-		// Install the all-trusting trust manager
+		KeyManager[] keyManagers = null;
+		if (privateKey != null && clientCertificate != null) {
+			 keyManagers =  new KeyManager[]{
+					 new CustomCertificateKeyManager(clientCertificate, privateKey)
+				};
+			};
+
 		try {
 		    SSLContext sc = SSLContext.getInstance("SSL");
-		    sc.init(null, trustAllCerts, new SecureRandom());
+		    sc.init(keyManagers, trustManagers, new SecureRandom());
 
-			builder.sslContext(sc);
+				builder.sslContext(sc);
 		} catch (Exception e) {
 			/* */
 		}
@@ -163,7 +176,7 @@ public class JavaRequestProcessor implements RequestProcessor {
 		AtomicLong startTime = new AtomicLong(System.currentTimeMillis());
 		
 		
-		var chReq = new ChunkedRequest(buildClient(), httpRequest);
+		var chReq = new ChunkedRequest(buildClient(request), httpRequest);
 		chReq.executeRequest(asyncControl.onCancellationRequested);
 		
 		//we block until we get the headers:
@@ -182,7 +195,7 @@ public class JavaRequestProcessor implements RequestProcessor {
 						var newRequest = toHttpRequest(request, templater);
 						startTime.set(System.currentTimeMillis());
 						//TODO i actually need a new flux here, no?
-						var proxyReq = new ChunkedRequest(buildClient(), newRequest);
+						var proxyReq = new ChunkedRequest(buildClient(request), newRequest);
 						proxyReq.executeRequest(asyncControl.onCancellationRequested);
 						responseHolder.set(proxyReq);
 					} catch (Exception e) {

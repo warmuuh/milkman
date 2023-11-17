@@ -20,6 +20,17 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>com.github.ChristopherSchultz</groupId>
+			<artifactId>pem-utils</artifactId>
+			<version>fd7c800ab5</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>dependency-check-maven</artifactId>
+					<groupId>org.owasp</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
 			<groupId>io.projectreactor</groupId>
 			<artifactId>reactor-core</artifactId>
 			<version>3.4.2</version>

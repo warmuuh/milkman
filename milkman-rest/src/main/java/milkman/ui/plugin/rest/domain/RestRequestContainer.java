@@ -5,17 +5,24 @@ import milkman.domain.RequestContainer;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Locale;
+import reactor.util.annotation.Nullable;
 
 @Getter @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class RestRequestContainer extends RequestContainer {
 
 	private String url;
 	private String httpMethod;
-	
-	
+
+	@Nullable
+	private String clientCertificate;
+
+	public RestRequestContainer(String url, String httpMethod) {
+		this.url = url;
+		this.httpMethod = httpMethod;
+	}
+
 	public RestRequestContainer(String name, String url, String httpMethod) {
 		super(name);
 		this.url = url;
