@@ -11,6 +11,7 @@ public class Certificate {
 
   String base64Certificate;
   String base64PrivateKey;
+  String password;
   String name;
   CertificateType type;
 }

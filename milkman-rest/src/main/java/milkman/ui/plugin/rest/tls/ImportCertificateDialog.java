@@ -10,6 +10,7 @@ import static milkman.utils.fxml.FxmlBuilder.submit;
 import static milkman.utils.fxml.FxmlBuilder.vspace;
 
 import com.jfoenix.controls.JFXDialogLayout;
+import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +32,7 @@ public class ImportCertificateDialog {
   boolean cancelled = true;
 
   JFXTextField input;
+  JFXPasswordField password;
   String base64Certificate = null;
   String base64PrivateKey = null;
 
@@ -55,7 +57,7 @@ public class ImportCertificateDialog {
   }
 
   public Certificate getCertificate() throws IOException {
-    return new Certificate(base64Certificate, base64PrivateKey, input.getText(), CertificateType.PEM);
+    return new Certificate(base64Certificate, base64PrivateKey, password.getText(), input.getText(), CertificateType.PEM);
   }
 
   private void onSave() {
@@ -102,6 +104,11 @@ public class ImportCertificateDialog {
       vbox.add(label("Certificate Name"));
       controller.input = vbox.add(new JFXTextField());
       controller.input.setValidators(requiredValidator());
+
+      vbox.add(vspace(20));
+
+      vbox.add(label("Private Key Password (Optional)"));
+      controller.password = vbox.add(new JFXPasswordField());
 
       vbox.add(vspace(20));
 

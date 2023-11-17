@@ -115,6 +115,7 @@ public class HttpOptionsPluginProvider implements OptionPageProvider<HttpOptions
 				existingCertificate.setName(certificate.getName());
 				existingCertificate.setBase64Certificate(certificate.getBase64Certificate());
 				existingCertificate.setBase64PrivateKey(certificate.getBase64PrivateKey());
+				existingCertificate.setPassword(certificate.getPassword());
 			} catch (Exception e) {
 				toaster.showToast("Failed to import certificate: " + e.getMessage());
 			}
