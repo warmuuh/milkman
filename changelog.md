@@ -3,7 +3,8 @@
 version 5.8.0 - upcoming
   * base64 keytype
   * Oauth: Authentication Grant flow now supports choosing port for return url
-
+  * extended information on http responses (ssl certificate, body size etc)
+  * support for client certificate (for testing mTls)
 
 version 5.7.0
   * minor UI fixes
