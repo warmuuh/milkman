@@ -21,3 +21,13 @@ Introduces Http request (despite the wrong naming) capabilities to milkman. Cons
  * (planned) Exporters
  * Support import of APIs listed at [APIs.guru](https://apis.guru/), see [demo](/img/gif/milkman-library.gif)
  * http/2, http/3 support (see options-dialog)
+
+## Client-Certificates 
+
+You can import client-certificates that will be used when the server asks. Just add the according PEM files in the `HTTP` options:
+
+![Milkman Rest Client Certificate Options](/img/client-cert-option.png)
+
+and then, you can choose the client-certificate in the options of the request:
+
+![Choosing Client Certificate](/img/choose-client-certificate.png)
