@@ -123,4 +123,4 @@ More details about developing plugins can be found in the [plugin development gu
 
 # Changes
 
-latest changes can be seen in the (Changelog)[changelog.md]
+latest changes can be seen in the [Changelog](changelog.md)
