@@ -55,6 +55,16 @@
             <descriptorRef>jar-with-dependencies</descriptorRef>
           </descriptorRefs>
           <appendAssemblyId>false</appendAssemblyId>
+			<archive>
+				<manifestSections>
+					<manifestSection>
+						<name>milkman.plugin</name>
+						<manifestEntries>
+							<Id>Milkman NoSQL Plugin</Id>
+						</manifestEntries>
+					</manifestSection>
+				</manifestSections>
+			</archive>
         </configuration>
         <executions>
           <execution>

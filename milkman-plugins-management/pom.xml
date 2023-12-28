@@ -1,13 +1,14 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.github.warmuuh</groupId>
 		<artifactId>milkman-parent</artifactId>
 		<version>5.8.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>milkman-sio</artifactId>
+
+	<artifactId>milkman-plugins-management</artifactId>
+	<name>Milkman Plugins Management</name>
 
 	<dependencies>
 		<dependency>
@@ -15,27 +16,6 @@
 			<artifactId>milkman</artifactId>
 			<version>5.8.0-SNAPSHOT</version>
 			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.github.warmuuh</groupId>
-			<artifactId>milkman-rest</artifactId>
-			<version>5.8.0-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.github.warmuuh.milkman-sio-shaded-clients</groupId>
-			<artifactId>sio-client-v09</artifactId>
-			<version>1.2</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.warmuuh.milkman-sio-shaded-clients</groupId>
-			<artifactId>sio-client-v1</artifactId>
-			<version>1.2</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.warmuuh.milkman-sio-shaded-clients</groupId>
-			<artifactId>sio-client-v2</artifactId>
-			<version>1.2</version>
 		</dependency>
 	</dependencies>
 
@@ -54,7 +34,7 @@
 							<manifestSection>
 								<name>milkman.plugin</name>
 								<manifestEntries>
-									<Id>Milkman Socket.IO Plugin</Id>
+									<Id>Milkman Plugins Management Plugin</Id>
 								</manifestEntries>
 							</manifestSection>
 						</manifestSections>
