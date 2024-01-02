@@ -56,5 +56,15 @@ public class ExceptionDialog extends Alert {
 		getDialogPane().setExpandableContent(expContent);
 	}
 
-	
+	public static void showExceptionDialog(String headerText, Throwable ex) {
+		new ExceptionDialog(headerText, ex.getClass().getName() + ": " + ex.getMessage(), ex).showAndWait();
+	}
+
+	public static void showExceptionDialog(String headerText, String contentText, Throwable ex) {
+		new ExceptionDialog(headerText, contentText, ex).showAndWait();
+	}
+
+	public static void showExceptionDialog(String title, String headerText, String contentText, Throwable ex) {
+		new ExceptionDialog(title, headerText, contentText, ex).showAndWait();
+	}
 }

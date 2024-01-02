@@ -32,6 +32,7 @@
 								<name>milkman.plugin</name>
 								<manifestEntries>
 									<Id>Milkman JDBC Plugin</Id>
+									<Author>warmuuh</Author>
 								</manifestEntries>
 							</manifestSection>
 						</manifestSections>

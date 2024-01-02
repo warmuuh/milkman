@@ -43,6 +43,7 @@
 								<name>milkman.plugin</name>
 								<manifestEntries>
 									<Id>Milkman Pastebin Plugin</Id>
+									<Author>warmuuh</Author>
 								</manifestEntries>
 							</manifestSection>
 						</manifestSections>

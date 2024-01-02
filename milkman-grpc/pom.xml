@@ -74,6 +74,7 @@
 								<name>milkman.plugin</name>
 								<manifestEntries>
 									<Id>Milkman GRPC Plugin</Id>
+									<Author>warmuuh</Author>
 								</manifestEntries>
 							</manifestSection>
 						</manifestSections>

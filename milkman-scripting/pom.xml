@@ -76,6 +76,7 @@
 								<name>milkman.plugin</name>
 								<manifestEntries>
 									<Id>Milkman Scripting Plugin</Id>
+									<Author>warmuuh</Author>
 								</manifestEntries>
 							</manifestSection>
 						</manifestSections>

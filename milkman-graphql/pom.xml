@@ -40,6 +40,7 @@
 								<name>milkman.plugin</name>
 								<manifestEntries>
 									<Id>Milkman GraphQL Plugin</Id>
+									<Author>warmuuh</Author>
 								</manifestEntries>
 							</manifestSection>
 						</manifestSections>

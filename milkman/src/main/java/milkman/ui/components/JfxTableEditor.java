@@ -1,5 +1,17 @@
 package milkman.ui.components;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.cells.editors.TextFieldEditorBuilder;
@@ -16,8 +28,19 @@ import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
-import javafx.scene.input.*;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableCell;
+import javafx.scene.control.TreeTableColumn;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.DataFormat;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -26,15 +49,11 @@ import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import milkman.PlatformUtil;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
+import milkman.ui.main.options.VetoableListItemRemovalListener;
 import milkman.utils.fxml.GenericBinding;
 import milkman.utils.javafx.JavaFxUtils;
 import milkman.utils.javafx.ResizableJfxTreeTableView;
-
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.function.*;
-import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
 
 @Value
 @EqualsAndHashCode(callSuper = true)
@@ -96,45 +115,33 @@ public class JfxTableEditor<T> extends StackPane {
 	private void copySelectionToClipboard() {
 		if (rowToStringConverter == null)
 			return;
-		StringBuilder b = new StringBuilder();
-		boolean first = true;
-		for (TreeItem<RecursiveWrapper<T>> treeItm : table.getSelectionModel().getSelectedItems()) {
-			if (!first)
-				b.append(System.lineSeparator());
-			first = false;
-			b.append(rowToStringConverter.apply(treeItm.getValue().getData()));	
-		}
+		var content = table
+			.getSelectionModel()
+			.getSelectedItems()
+			.stream()
+			.map(item -> rowToStringConverter.apply(item.getValue().getData()))
+			.collect(Collectors.joining(System.lineSeparator()));
 		
 		ClipboardContent clipboardContent = new ClipboardContent();
-	    clipboardContent.putString(b.toString());
+		clipboardContent.putString(content);
 	    Clipboard.getSystemClipboard().setContent(clipboardContent);
 	}
-	
 	
 	private void pasteSelectionFromClipboard() {
 		if (stringToRowConverter == null)
 			return;
-		
-	    String content = (String) Clipboard.getSystemClipboard().getContent(DataFormat.PLAIN_TEXT);
-		if (content != null) {
-			String[] lines = content.split("\\r?\\n");
-			try {
-				for (String line : lines) {
-					T newEntry = stringToRowConverter.apply(line);
-					if (newEntry != null) {
-						obsWrappedItems.add(new RecursiveWrapper<>(newEntry));
-					}
-				}
-			} catch (Throwable t) {
-				log.error("Failed to parse clipboard content: {}", t.getMessage());
-			}
-		
+
+		String content = (String) Clipboard.getSystemClipboard().getContent(DataFormat.PLAIN_TEXT);
+		try {
+			Arrays
+				.stream(StringUtils.defaultString(content).split("\\r?\\n"))
+				.map(stringToRowConverter)
+				.filter(Objects::nonNull)
+				.forEach(line -> obsWrappedItems.add(new RecursiveWrapper<>(line)));
+		} catch (Throwable t) {
+			log.error("Failed to parse clipboard content: {}", t.getMessage());
 		}
-		
-		
 	}
-	
-	
 
 	/**
 	 * used for converting selected rows to clipboard content
@@ -209,10 +216,14 @@ public class JfxTableEditor<T> extends StackPane {
 	}
 
 	public void addDeleteColumn(String name) {
-		addDeleteColumn(name, null);
+		addDeleteColumn(name, null, null);
 	}
 
 	public void addDeleteColumn(String name, Consumer<T> listener) {
+		addDeleteColumn(name, listener, null);
+	}
+
+	public void addDeleteColumn(String name, Consumer<T> listener, VetoableListItemRemovalListener<T> vetoableListener) {
 		TreeTableColumn<RecursiveWrapper<T>, String> column = new TreeTableColumn<>(name);
 		var columnIdx = table.getColumns().size();
 		loadPrefWidthOfColumn(column, columnIdx);
@@ -222,8 +233,9 @@ public class JfxTableEditor<T> extends StackPane {
 //		column.setPrefWidth(Control.USE_COMPUTED_SIZE);
 
 		customActions.add(new CustomAction(FontAwesomeIcon.TIMES, (wrappedItem) -> {
-			obsWrappedItems.remove(wrappedItem);
-			if (listener != null) {
+			var removeAllowed = vetoableListener == null || vetoableListener.isElementRemovalAllowed(wrappedItem.getData());
+			if (removeAllowed) {
+				obsWrappedItems.remove(wrappedItem);
 				listener.accept(wrappedItem.getData());
 			}
 		}));
@@ -256,16 +268,11 @@ public class JfxTableEditor<T> extends StackPane {
 		};
 	}
 
-
-
 	public void enableAddition(Supplier<T> newItemCreator) {
 		this.newItemCreator = newItemCreator;
 		addItemBtn.setVisible(true);
-		addItemBtn.setOnAction(e -> {
-			addNewItem();
-		});
+		addItemBtn.setOnAction(e -> addNewItem());
 	}
-
 
 	protected boolean addNewItem() {
 		if (newItemCreator != null) {
@@ -280,9 +287,7 @@ public class JfxTableEditor<T> extends StackPane {
 
 	public void addNewItemManually(T newItem){
 		obsWrappedItems.add(new RecursiveWrapper<>(newItem));
-		Platform.runLater(() -> {
-			table.refresh();
-		});
+		Platform.runLater(table::refresh);
 	}
 
 	public void disableAddition() {
@@ -296,32 +301,27 @@ public class JfxTableEditor<T> extends StackPane {
 	public void setItems(List<T> items) {
 		setItems(items, null);
 	}
+
 	public void setItems(List<T> items, Comparator<T> comparator) {
-		List<RecursiveWrapper<T>> wrappedItems = items.stream().map(i -> new RecursiveWrapper<>(i)).collect(Collectors.toList());
+		List<RecursiveWrapper<T>> wrappedItems = items.stream().map(RecursiveWrapper::new).collect(Collectors.toCollection(LinkedList::new));
 		obsWrappedItems = FXCollections.observableList(wrappedItems);
 		if (comparator != null) {
 			FXCollections.sort(obsWrappedItems, (ra, rb) -> comparator.compare(ra.getData(), rb.getData()));
 		}
-		
-		
-		obsWrappedItems.addListener(new ListChangeListener<RecursiveWrapper<T>>() {
 
-			@Override
-			public void onChanged(Change<? extends RecursiveWrapper<T>> c) {
-				//forward removals:
-				if (!c.next())
-					return;
-				
-				if (c.wasRemoved()) {
-					for(var ri : c.getRemoved()) {
-						items.remove(ri.getData());
-					}
-				}
-				
-				if (c.wasAdded()) {
-					RecursiveWrapper<T> newEntry = c.getAddedSubList().get(0);
-					items.add(newEntry.getData());
-				}
+
+		obsWrappedItems.addListener((ListChangeListener<RecursiveWrapper<T>>) c -> {
+			//forward removals:
+			if (!c.next())
+				return;
+
+			if (c.wasRemoved()) {
+				c.getRemoved().forEach(ri -> items.remove(ri.getData()));
+			}
+
+			if (c.wasAdded()) {
+				RecursiveWrapper<T> newEntry = c.getAddedSubList().get(0);
+				items.add(newEntry.getData());
 			}
 		});
 		

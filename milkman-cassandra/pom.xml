@@ -49,6 +49,7 @@
 								<name>milkman.plugin</name>
 								<manifestEntries>
 									<Id>Milkman Cassandra Plugin</Id>
+									<Author>warmuuh</Author>
 								</manifestEntries>
 							</manifestSection>
 						</manifestSections>

@@ -47,6 +47,7 @@
 								<name>milkman.plugin</name>
 								<manifestEntries>
 									<Id>Milkman Explore Plugin</Id>
+									<Author>warmuuh</Author>
 								</manifestEntries>
 							</manifestSection>
 						</manifestSections>

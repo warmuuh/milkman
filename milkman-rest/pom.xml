@@ -158,6 +158,7 @@
 								<name>milkman.plugin</name>
 								<manifestEntries>
 									<Id>Milkman REST Plugin</Id>
+									<Author>warmuuh</Author>
 								</manifestEntries>
 							</manifestSection>
 						</manifestSections>

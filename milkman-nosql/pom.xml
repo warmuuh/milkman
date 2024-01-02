@@ -61,6 +61,7 @@
 						<name>milkman.plugin</name>
 						<manifestEntries>
 							<Id>Milkman NoSQL Plugin</Id>
+                          <Author>warmuuh</Author>
 						</manifestEntries>
 					</manifestSection>
 				</manifestSections>

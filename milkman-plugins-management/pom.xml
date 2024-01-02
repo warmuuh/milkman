@@ -35,6 +35,7 @@
 								<name>milkman.plugin</name>
 								<manifestEntries>
 									<Id>Milkman Plugins Management Plugin</Id>
+									<Author>Lars Opitz</Author>
 								</manifestEntries>
 							</manifestSection>
 						</manifestSections>

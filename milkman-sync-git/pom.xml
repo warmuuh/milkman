@@ -68,6 +68,7 @@
 								<name>milkman.plugin</name>
 								<manifestEntries>
 									<Id>Milkman Git Sync Plugin</Id>
+									<Author>warmuuh</Author>
 								</manifestEntries>
 							</manifestSection>
 						</manifestSections>

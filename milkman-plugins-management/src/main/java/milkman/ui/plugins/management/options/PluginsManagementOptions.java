@@ -11,5 +11,5 @@ import milkman.ui.plugin.OptionsObject;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PluginsManagementOptions implements OptionsObject {
-	private List<String> plugins;
+	private List<PluginMetaData> plugins;
 }
