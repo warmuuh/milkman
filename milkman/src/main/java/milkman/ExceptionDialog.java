@@ -12,10 +12,22 @@ import javafx.scene.layout.Priority;
 public class ExceptionDialog extends Alert {
 
 	public ExceptionDialog(Throwable ex) {
+		this("Exception during startup of application", ex);
+	}
+
+	public ExceptionDialog(String headerText, Throwable ex) {
+		this(headerText, ex.getClass().getName() + ": " + ex.getMessage(), ex);
+	}
+
+	public ExceptionDialog(String headerText, String contentText, Throwable ex) {
+		this("Exception", headerText, contentText, ex);
+	}
+
+	public ExceptionDialog(String title, String headerText, String contentText, Throwable ex) {
 		super(AlertType.ERROR);
-		setTitle("Exception");
-		setHeaderText("Exception during startup of application");
-		setContentText(ex.getClass().getName() + ": " + ex.getMessage());
+		setTitle(title);
+		setHeaderText(headerText);
+		setContentText(contentText);
 
 
 		// Create expandable Exception.
@@ -44,5 +56,15 @@ public class ExceptionDialog extends Alert {
 		getDialogPane().setExpandableContent(expContent);
 	}
 
-	
+	public static void showExceptionDialog(String headerText, Throwable ex) {
+		new ExceptionDialog(headerText, ex.getClass().getName() + ": " + ex.getMessage(), ex).showAndWait();
+	}
+
+	public static void showExceptionDialog(String headerText, String contentText, Throwable ex) {
+		new ExceptionDialog(headerText, contentText, ex).showAndWait();
+	}
+
+	public static void showExceptionDialog(String title, String headerText, String contentText, Throwable ex) {
+		new ExceptionDialog(title, headerText, contentText, ex).showAndWait();
+	}
 }

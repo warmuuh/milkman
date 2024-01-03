@@ -41,6 +41,17 @@ for creating a new plugin, you can use following pom:
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
 					<appendAssemblyId>false</appendAssemblyId>
+                    <archive>
+                        <manifestSections>
+                            <manifestSection>
+                                <name>milkman.plugin</name>
+                                <manifestEntries>
+                                    <Id>Plugin Name</Id>
+                                    <Author>Author's Name</Author>
+                                </manifestEntries>
+                            </manifestSection>
+                        </manifestSections>
+                    </archive>
 				</configuration>
 				<executions>
 					<execution>

@@ -1,30 +1,31 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>com.github.warmuuh</groupId>
-    <artifactId>milkman-parent</artifactId>
-    <version>5.8.0-SNAPSHOT</version>
-  </parent>
-  <artifactId>milkman-cassandra</artifactId>
-  
-  <dependencies>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.github.warmuuh</groupId>
+		<artifactId>milkman-parent</artifactId>
+		<version>5.8.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>milkman-cassandra</artifactId>
+
+	<dependencies>
 		<dependency>
 			<groupId>com.github.warmuuh</groupId>
 			<artifactId>milkman</artifactId>
 			<version>5.8.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
-      <dependency>
-          <groupId>com.github.warmuuh</groupId>
-          <artifactId>milkman-jdbc</artifactId>
-          <version>5.8.0-SNAPSHOT</version>
-		  <scope>provided</scope>
-      </dependency>
-	  <dependency>
-		  <groupId>com.datastax.oss</groupId>
-		  <artifactId>java-driver-core</artifactId>
-		  <version>4.6.1</version>
-	  </dependency>
+		<dependency>
+			<groupId>com.github.warmuuh</groupId>
+			<artifactId>milkman-jdbc</artifactId>
+			<version>5.8.0-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.datastax.oss</groupId>
+			<artifactId>java-driver-core</artifactId>
+			<version>4.6.1</version>
+		</dependency>
 		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty-handler-proxy</artifactId>
@@ -42,6 +43,17 @@
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
 					<appendAssemblyId>false</appendAssemblyId>
+					<archive>
+						<manifestSections>
+							<manifestSection>
+								<name>milkman.plugin</name>
+								<manifestEntries>
+									<Id>Milkman Cassandra Plugin</Id>
+									<Author>warmuuh</Author>
+								</manifestEntries>
+							</manifestSection>
+						</manifestSections>
+					</archive>
 				</configuration>
 				<executions>
 					<execution>
@@ -55,5 +67,5 @@
 			</plugin>
 		</plugins>
 	</build>
-	
+
 </project>

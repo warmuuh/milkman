@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.warmuuh</groupId>
 	<artifactId>milkman-parent</artifactId>
@@ -26,8 +26,9 @@
 		<module>milkman-auth</module>
 		<module>milkman-ws</module>
 		<module>milkman-sio</module>
-    <module>milkman-nosql</module>
-  </modules>
+		<module>milkman-nosql</module>
+		<module>milkman-plugins-management</module>
+	</modules>
 
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>
@@ -109,15 +110,10 @@
 			<dependency>
 				<groupId>com.fasterxml.jackson</groupId>
 				<artifactId>jackson-bom</artifactId>
-				<version>2.10.0</version>
+				<version>2.16.1</version>
 				<scope>import</scope>
 				<type>pom</type>
 			</dependency>
-<!-- 			<dependency> -->
-<!-- 				<groupId>com.fasterxml.jackson.core</groupId> -->
-<!-- 				<artifactId>jackson-databind</artifactId> -->
-<!-- 				<version>2.9.9.2</version> -->
-<!-- 			</dependency> -->
 		</dependencies>
 	</dependencyManagement>
 
@@ -142,10 +138,10 @@
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
 		</repository>
-<!--		<repository>-->
-<!--			<id>spring</id>-->
-<!--			<url>https://repo.spring.io/plugins-release</url>-->
-<!--		</repository>-->
+		<!--		<repository>-->
+		<!--			<id>spring</id>-->
+		<!--			<url>https://repo.spring.io/plugins-release</url>-->
+		<!--		</repository>-->
 	</repositories>
 
 	<build>

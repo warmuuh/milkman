@@ -26,6 +26,17 @@
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
 					<appendAssemblyId>false</appendAssemblyId>
+					<archive>
+						<manifestSections>
+							<manifestSection>
+								<name>milkman.plugin</name>
+								<manifestEntries>
+									<Id>Milkman JDBC Plugin</Id>
+									<Author>warmuuh</Author>
+								</manifestEntries>
+							</manifestSection>
+						</manifestSections>
+					</archive>
 				</configuration>
 				<executions>
 					<execution>

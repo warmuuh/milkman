@@ -1,13 +1,14 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.github.warmuuh</groupId>
 		<artifactId>milkman-parent</artifactId>
 		<version>5.8.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>milkman-auth</artifactId>
+
+	<artifactId>milkman-plugins-management</artifactId>
+	<name>Milkman Plugins Management</name>
 
 	<dependencies>
 		<dependency>
@@ -15,17 +16,6 @@
 			<artifactId>milkman</artifactId>
 			<version>5.8.0-SNAPSHOT</version>
 			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.github.scribejava</groupId>
-			<artifactId>scribejava-core</artifactId>
-			<version>8.1.0</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>jackson-databind</artifactId>
-					<groupId>com.fasterxml.jackson.core</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 	</dependencies>
 
@@ -44,8 +34,8 @@
 							<manifestSection>
 								<name>milkman.plugin</name>
 								<manifestEntries>
-									<Id>Milkman Auth Plugin</Id>
-									<Author>warmuuh</Author>
+									<Id>Milkman Plugins Management Plugin</Id>
+									<Author>Lars Opitz</Author>
 								</manifestEntries>
 							</manifestSection>
 						</manifestSections>

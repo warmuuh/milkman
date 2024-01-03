@@ -56,6 +56,7 @@
 			<useAllReactorProjects>true</useAllReactorProjects>
 			<includes>
 				<include>com.github.warmuuh:milkman-rest</include>
+				<include>com.github.warmuuh:milkman-plugins-management</include>
 			</includes>
 			<binaries>
 				<unpack>false</unpack>
