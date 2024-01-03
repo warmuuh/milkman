@@ -236,7 +236,9 @@ public class JfxTableEditor<T> extends StackPane {
 			var removeAllowed = vetoableListener == null || vetoableListener.isElementRemovalAllowed(wrappedItem.getData());
 			if (removeAllowed) {
 				obsWrappedItems.remove(wrappedItem);
-				listener.accept(wrappedItem.getData());
+				if (listener != null) {
+					listener.accept(wrappedItem.getData());
+				}
 			}
 		}));
 	}

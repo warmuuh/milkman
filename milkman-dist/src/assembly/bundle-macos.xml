@@ -66,6 +66,7 @@
 				<include>com.github.warmuuh:milkman-ws</include>
 				<include>com.github.warmuuh:milkman-sio</include>
 				<include>com.github.warmuuh:milkman-nosql</include>
+				<include>com.github.warmuuh:milkman-plugins-management</include>
 			</includes>
 			<binaries>
 				<unpack>false</unpack>

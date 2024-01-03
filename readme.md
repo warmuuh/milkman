@@ -20,6 +20,7 @@ The importer will be available in version 5.7.0 but is already implemented in th
  * Download latest version in [Release Section](https://github.com/warmuuh/milkman/releases). Or download [Nightly version](https://github.com/warmuuh/milkman/releases/tag/nightly) for latest changes.
  * **Download plugin archive as well**, if you want to use any of those plugins.
  * unzip everything into the same directory and start application via either the supplied start-scripts or `milkman.exe`
+   * starting with version 5.8.0, you can install downloaded plugins via [plugin management](/milkman-plugins-management) 
 
 # Install via Chocolatey (Win)
  * To install just Milkman run `Choco install milkman`
@@ -111,6 +112,8 @@ A NoSql plugin for interacting with all kinds of NoSql Databases
 
 ![Milkman Dark](img/screenshot-dark.png)
 
+Additional themes available here: https://github.com/lopitz/milkman-themes
+
 # Plugins
 
 No client fits all, so you are **encouraged** to write your own plugins to e.g. add headers that are necessary for your internal service structures or add importers for internal service registries.
@@ -119,7 +122,7 @@ A [sample plugin](https://github.com/warmuuh/milkman/tree/master/milkman-note) w
 
 More details about developing plugins can be found in the [plugin development guide](/docs/plugin-development.md).
 
-*Installation:* all plugins are to be copied to the `/plugins` folder
+*Installation:* all plugins are to be copied to the `/plugins` folder (or via [plugin-management](/milkman-plugins-management), since version 5.8.0)
 
 # Changes
 
