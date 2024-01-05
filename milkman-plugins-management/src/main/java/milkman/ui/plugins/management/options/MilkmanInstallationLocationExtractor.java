@@ -2,52 +2,41 @@ package milkman.ui.plugins.management.options;
 
 import java.io.File;
 import java.util.Optional;
-
 import lombok.experimental.UtilityClass;
 import milkman.MilkmanApplication;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.io.FilenameUtils;
 
 @UtilityClass
 public class MilkmanInstallationLocationExtractor {
 
-	private static final String OVERRIDE_PROPERTY_NAME = "milkman.installation.location";
+  private static final String OVERRIDE_PROPERTY_NAME = "milkman.installation.location";
 
-	public static String getMilkmanInstallationDirectory() {
-		return Optional
-			.ofNullable(System.getProperty(OVERRIDE_PROPERTY_NAME))
-			.orElseGet(MilkmanInstallationLocationExtractor::findMilkmanInstallationDirectory);
-	}
+  public static String getMilkmanInstallationDirectory() {
+    return Optional
+        .ofNullable(System.getProperty(OVERRIDE_PROPERTY_NAME))
+        .orElseGet(MilkmanInstallationLocationExtractor::findMilkmanInstallationDirectory);
+  }
 
-	private static String findMilkmanInstallationDirectory() {
-		if (runningFromJar()) {
-			return getCurrentJarDirectory();
-		}
-		return getCurrentProjectDirectory();
-	}
+  private static String findMilkmanInstallationDirectory() {
+    File jarFile = getLocationForClass(MilkmanApplication.class);
 
-	private static boolean runningFromJar() {
-		return StringUtils.endsWithIgnoreCase(getJarName(), ".jar");
-	}
+    if (FilenameUtils.isExtension(jarFile.getPath(), "jar")) {
+      return jarFile.getParent();
+    }
+    return getCurrentProjectDirectory();
+  }
 
-	private static String getJarName() {
-		return getLocationForClass();
-	}
 
-	private static String getCurrentJarDirectory() {
-		return new File(getLocationForClass()).getParent();
-	}
+  private static File getLocationForClass(Class<?> clazz) {
+    return new File(clazz
+        .getProtectionDomain()
+        .getCodeSource()
+        .getLocation()
+        .getPath());
+  }
 
-	private static String getLocationForClass() {
-		return new File(MilkmanApplication.class
-			.getProtectionDomain()
-			.getCodeSource()
-			.getLocation()
-			.getPath())
-			.getName();
-	}
-
-	private static String getCurrentProjectDirectory() {
-		return new File("").getAbsolutePath();
-	}
+  private static String getCurrentProjectDirectory() {
+    return new File("").getAbsolutePath();
+  }
 
 }
