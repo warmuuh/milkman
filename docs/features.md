@@ -3,7 +3,7 @@
 ## Marketplace
 
 There is a marketplace where plugins are shown that are released on github.
-Instructions on how to publish your own plugins can be seen (here)[/docs/plugin-development.md].
+Instructions on how to publish your own plugins can be seen [here](/docs/plugin-development.md).
 
 ![Marketplace](/img/marketplace.png)
 
