@@ -3,82 +3,98 @@
     {
       "author": "warmuuh",
       "name": "milkman-auth",
-      "artifact": "milkman-auth.jar"
+      "artifact": "milkman-auth.jar",
+      "description": "Contains key-types for authentication, such as oauth-authentication"
     },
     {
       "author": "warmuuh",
-      "name": "milkman-auth",
-      "artifact": "milkman-cassandra.jar"
+      "name": "milkman-cassandra",
+      "artifact": "milkman-cassandra.jar",
+      "description": "Introduces Cql Requests to Milkman using cassandra datastax driver."
     },
     {
       "author": "warmuuh",
-      "name": "milkman-auth",
-      "artifact": "milkman-cli.jar"
+      "name": "milkman-cli",
+      "artifact": "milkman-cli.jar",
+      "description": "This is an experimental interactive command line interface for plugin. After copying the content of the archive to the root directory of milkman, you can start it by `mm` on terminal."
     },
     {
       "author": "warmuuh",
-      "name": "milkman-auth",
-      "artifact": "milkman-explore.jar"
+      "name": "milkman-explore",
+      "artifact": "milkman-explore.jar",
+      "description": "Extends Milkman-rest with an additional response-tab that allows for `application/json` responses to be explored using JMesPath."
     },
     {
       "author": "warmuuh",
-      "name": "milkman-auth",
-      "artifact": "milkman-graphql.jar"
+      "name": "milkman-graphql",
+      "artifact": "milkman-graphql.jar",
+      "description": "Allows to craft GraphQL requests."
     },
     {
       "author": "warmuuh",
-      "name": "milkman-auth",
-      "artifact": "milkman-grpc.jar"
+      "name": "milkman-grpc",
+      "artifact": "milkman-grpc.jar",
+      "description": "Grpc Plugin for communication with Grpc Servers."
     },
     {
       "author": "warmuuh",
-      "name": "milkman-auth",
-      "artifact": "milkman-jdbc.jar"
+      "name": "milkman-jdbc",
+      "artifact": "milkman-jdbc.jar",
+      "description": "Introduces Sql Requests to Milkman using JDBC."
     },
     {
       "author": "warmuuh",
-      "name": "milkman-auth",
-      "artifact": "milkman-nosql.jar"
+      "name": "milkman-nosql",
+      "artifact": "milkman-nosql.jar",
+      "description": "Introduces Nosql Requests to Milkman using JNoSql."
     },
     {
       "author": "warmuuh",
-      "name": "milkman-auth",
-      "artifact": "milkman-note.jar"
+      "name": "milkman-note",
+      "artifact": "milkman-note.jar",
+      "description": "This is a very simple plugin that adds a tab to each request where users can enter some notes about the request."
     },
     {
       "author": "warmuuh",
-      "name": "milkman-auth",
-      "artifact": "milkman-privatebin.jar"
+      "name": "milkman-privatebin",
+      "artifact": "milkman-privatebin.jar",
+      "description": "Allows to share requests etc via Privatebin."
     },
     {
       "author": "warmuuh",
-      "name": "milkman-auth",
-      "artifact": "milkman-rest.jar"
+      "name": "milkman-rest",
+      "artifact": "milkman-rest.jar",
+      "description": "Introduces Http request (despite the wrong naming) capabilities to milkman. Consists of serveral features that together should make milkman be usable as postman-replacement for day-to-day work."
     },
     {
       "author": "warmuuh",
-      "name": "milkman-auth",
-      "artifact": "milkman-scripting.jar"
+      "name": "milkman-scripting",
+      "artifact": "milkman-scripting.jar",
+      "description": "provides scripting capabilities via `nashorn` javascript engine"
     },
     {
       "author": "warmuuh",
-      "name": "milkman-auth",
-      "artifact": "milkman-sio.jar"
+      "name": "milkman-sio",
+      "artifact": "milkman-sio.jar",
+      "description": "Support for Socket.IO transport"
     },
     {
       "author": "warmuuh",
-      "name": "milkman-auth",
-      "artifact": "milkman-sync-git.jar"
+      "name": "milkman-sync-git",
+      "artifact": "milkman-sync-git.jar",
+      "description": "This plugin allows to setup a git repository to where a workspace can be synchronized."
     },
     {
       "author": "warmuuh",
-      "name": "milkman-auth",
-      "artifact": "milkman-test.jar"
+      "name": "milkman-test",
+      "artifact": "milkman-test.jar",
+      "description": "a testrunner plugin that allows to execute multiple requests in a sequence and verify their results."
     },
     {
       "author": "warmuuh",
-      "name": "milkman-auth",
-      "artifact": "milkman-ws.jar"
+      "name": "milkman-ws",
+      "artifact": "milkman-ws.jar",
+      "description": "Support for websocket transport"
     }
   ]
 }
