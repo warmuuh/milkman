@@ -14,3 +14,11 @@ Click the Add button and choose the plugin file in the open dialog. After instal
 ### Uninstalling Plugins
 
 All currently installed plugins are shown in the table. Find the plugin you don't want to use anymore and click the `X` button. 
+
+
+## <a name="marketplace"></a> Marketplace
+
+There is a marketplace where plugins are shown that are released on github. 
+Instructions on how to publish your own plugins can be seen (here)[/docs/plugin-development.md].
+
+![Marketplace](/img/marketplace.png)

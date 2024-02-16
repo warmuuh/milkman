@@ -1,6 +1,9 @@
 # Changelog
 
-version 5.8.0 - upcoming
+version 5.9.0
+  * added [marketplace](/milkman-plugins-management#marketplace) for plugins
+
+version 5.8.0
   * base64 keytype
   * Oauth: Authentication Grant flow now supports choosing port for return url
   * extended information on http responses (ssl certificate, body size etc)

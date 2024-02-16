@@ -5,6 +5,24 @@ A [sample plugin](https://github.com/warmuuh/milkman/tree/master/milkman-note) w
 
 if you want to setup a new project, an exemplary pom can be found [here](/docs/plugin-development-setup.md).
 
+
+## Marketplace registration
+if you want your plugin to show up in the milkman marketplace, you need to add a topic (aka tag) to your repository `milkman-plugins` and a 
+descriptor file `milkman-plugin.json` at the root which looks like this:
+
+```json
+{
+  "plugins": [
+    {
+      "author": "your name",
+      "name": "your plugin id",
+      "artifact": "the filename of the according artifact in your releases",
+      "description": "some description"
+    }
+  ]
+}
+```
+
 # Data Model
 
 ![img](http://www.gravizo.com/svg?@startuml;object%20Workspace;object%20Environment;Environment%20:%20isGlobal;Workspace%20o--%20%22*%22%20Environment;object%20Collection;Workspace%20o--%20%22*%22%20Collection;object%20Request;Collection%20o--%20%22*%22%20Request;%20Request%20--%3E%20HtmlRequest%20;%20Request%20--%3E%20SqlRequest%20;Request%20o-%20%22*%22%20RequestAspect;RequestAspect%20--%3E%20HttpHeaderRequestAspect;RequestAspect%20--%3E%20HttpBodyRequestAspect;@enduml)

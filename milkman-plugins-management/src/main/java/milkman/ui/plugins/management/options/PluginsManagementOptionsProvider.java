@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import milkman.ui.main.options.OptionDialogBuilder;
 import milkman.ui.main.options.OptionDialogPane;
 import milkman.ui.plugin.OptionPageProvider;
+import milkman.ui.plugins.management.market.MarketplaceDialog;
 import milkman.utils.fxml.FxmlUtil;
 
 import static milkman.ui.plugins.management.options.PluginManagementMessages.CONFIRMATION_MESSAGE_UNINSTALL_PLUGIN;
@@ -53,14 +54,23 @@ public class PluginsManagementOptionsProvider implements OptionPageProvider<Plug
 			.page("Plugins", getOptions())
 			.section("Plugins")
 			.<PluginMetaData>list()
-			.itemProvider(PluginsManagementOptions::getPlugins)
-			.columnValueProviders(columnValueProviders)
-			.columnValueProviders(columnValueProviders)
-			.newValueProvider(this::installPlugin)
-			.vetoableListChangeListener(this::uninstallPlugin)
+				.itemProvider(PluginsManagementOptions::getPlugins)
+				.columnValueProviders(columnValueProviders)
+				.columnValueProviders(columnValueProviders)
+				.newValueProvider(this::installPlugin)
+				.vetoableListChangeListener(this::uninstallPlugin)
 			.endList()
+			.button("Marketplace...", this::installFromMarketplace)
 			.endSection()
 			.build();
+	}
+
+	private void installFromMarketplace() {
+		var marketplaceDialog = new MarketplaceDialog();
+		marketplaceDialog.showAndWait();
+		if (!marketplaceDialog.isCancelled()) {
+			pluginManager.downloadAndInstallPlugin(marketplaceDialog.getChosenPlugin().artifactUrl());
+		}
 	}
 
 	private PluginMetaData installPlugin() {

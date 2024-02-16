@@ -2,6 +2,8 @@ package milkman.ui.plugins.management.options;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -15,7 +17,10 @@ import java.util.stream.Stream;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import static milkman.ExceptionDialog.showExceptionDialog;
@@ -24,6 +29,18 @@ import static milkman.ui.plugins.management.options.PluginManagementMessages.SUC
 
 @Slf4j
 public class PluginManager {
+
+	@SneakyThrows
+	public Optional<PluginMetaData> downloadAndInstallPlugin(String pluginFileUrl) {
+		InputStream in = new URL(pluginFileUrl).openStream();
+		File tempFile = File.createTempFile("milkman-plugin-", ".jar");
+		FileUtils.copyInputStreamToFile(in, tempFile);
+		try {
+			return installPlugin(tempFile);
+		} finally {
+			tempFile.delete();
+		}
+	}
 
 	public Optional<PluginMetaData> installPlugin(File pluginFile) {
 		if (isValidPluginFile(pluginFile)) {
