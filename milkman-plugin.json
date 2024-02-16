@@ -1,0 +1,84 @@
+{
+  "plugins": [
+    {
+      "author": "warmuuh",
+      "name": "milkman-auth",
+      "artifact": "milkman-auth.jar"
+    },
+    {
+      "author": "warmuuh",
+      "name": "milkman-auth",
+      "artifact": "milkman-cassandra.jar"
+    },
+    {
+      "author": "warmuuh",
+      "name": "milkman-auth",
+      "artifact": "milkman-cli.jar"
+    },
+    {
+      "author": "warmuuh",
+      "name": "milkman-auth",
+      "artifact": "milkman-explore.jar"
+    },
+    {
+      "author": "warmuuh",
+      "name": "milkman-auth",
+      "artifact": "milkman-graphql.jar"
+    },
+    {
+      "author": "warmuuh",
+      "name": "milkman-auth",
+      "artifact": "milkman-grpc.jar"
+    },
+    {
+      "author": "warmuuh",
+      "name": "milkman-auth",
+      "artifact": "milkman-jdbc.jar"
+    },
+    {
+      "author": "warmuuh",
+      "name": "milkman-auth",
+      "artifact": "milkman-nosql.jar"
+    },
+    {
+      "author": "warmuuh",
+      "name": "milkman-auth",
+      "artifact": "milkman-note.jar"
+    },
+    {
+      "author": "warmuuh",
+      "name": "milkman-auth",
+      "artifact": "milkman-privatebin.jar"
+    },
+    {
+      "author": "warmuuh",
+      "name": "milkman-auth",
+      "artifact": "milkman-rest.jar"
+    },
+    {
+      "author": "warmuuh",
+      "name": "milkman-auth",
+      "artifact": "milkman-scripting.jar"
+    },
+    {
+      "author": "warmuuh",
+      "name": "milkman-auth",
+      "artifact": "milkman-sio.jar"
+    },
+    {
+      "author": "warmuuh",
+      "name": "milkman-auth",
+      "artifact": "milkman-sync-git.jar"
+    },
+    {
+      "author": "warmuuh",
+      "name": "milkman-auth",
+      "artifact": "milkman-test.jar"
+    },
+    {
+      "author": "warmuuh",
+      "name": "milkman-auth",
+      "artifact": "milkman-ws.jar"
+    }
+  ]
+}
