@@ -380,7 +380,20 @@
 							</descriptors>
 						</configuration>
 					</execution>
-						<execution>
+					<execution>
+						<id>plugin-jars-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<finalName>plugin-jars</finalName>
+							<descriptors>
+								<descriptor>src/assembly/plugins-jars.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+					<execution>
 						<id>assembly-cli</id>
 						<phase>package</phase>
 						<goals>
@@ -423,6 +436,12 @@
 							<excludes>
 								<exclude>${project.artifactId}*.jar</exclude>
 							</excludes>
+						</fileSet>
+						<fileSet>
+							<directory>${project.build.directory}/plugin-jars-bin</directory>
+							<includes>
+								<include>*.jar</include>
+							</includes>
 						</fileSet>
 					</fileSets>
 

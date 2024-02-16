@@ -14,12 +14,6 @@
     },
     {
       "author": "warmuuh",
-      "name": "milkman-cli",
-      "artifact": "milkman-cli.jar",
-      "description": "This is an experimental interactive command line interface for plugin. After copying the content of the archive to the root directory of milkman, you can start it by `mm` on terminal."
-    },
-    {
-      "author": "warmuuh",
       "name": "milkman-explore",
       "artifact": "milkman-explore.jar",
       "description": "Extends Milkman-rest with an additional response-tab that allows for `application/json` responses to be explored using JMesPath."

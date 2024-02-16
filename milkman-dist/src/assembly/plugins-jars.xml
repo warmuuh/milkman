@@ -1,0 +1,38 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+	<id>bin</id>
+	<formats>
+		<format>dir</format>
+	</formats>
+	<baseDirectory>milkman-jars</baseDirectory>
+	 <includeBaseDirectory>false</includeBaseDirectory>
+	<moduleSets>
+		
+		<moduleSet>
+			<useAllReactorProjects>true</useAllReactorProjects>
+			<includes>
+				<include>com.github.warmuuh:milkman-note</include>
+				<include>com.github.warmuuh:milkman-rest</include>
+				<include>com.github.warmuuh:milkman-scripting</include>
+				<include>com.github.warmuuh:milkman-explore</include>
+				<include>com.github.warmuuh:milkman-jdbc</include>
+				<include>com.github.warmuuh:milkman-sync-git</include>
+				<include>com.github.warmuuh:milkman-privatebin</include>
+				<include>com.github.warmuuh:milkman-graphql</include>
+				<include>com.github.warmuuh:milkman-grpc</include>
+				<include>com.github.warmuuh:milkman-cassandra</include>
+				<include>com.github.warmuuh:milkman-test</include>
+				<include>com.github.warmuuh:milkman-auth</include>
+				<include>com.github.warmuuh:milkman-ws</include>
+				<include>com.github.warmuuh:milkman-sio</include>
+				<include>com.github.warmuuh:milkman-nosql</include>
+			</includes>
+			<binaries>
+				<unpack>false</unpack>
+				<outputFileNameMapping>${module.artifactId}.${module.extension}</outputFileNameMapping>
+				<includeDependencies>false</includeDependencies>
+			</binaries>
+		</moduleSet>
+	</moduleSets>
+</assembly>
