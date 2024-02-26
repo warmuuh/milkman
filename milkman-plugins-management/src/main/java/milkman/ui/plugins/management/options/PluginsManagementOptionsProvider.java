@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import milkman.ui.main.options.OptionDialogBuilder;
 import milkman.ui.main.options.OptionDialogPane;
 import milkman.ui.plugin.OptionPageProvider;
+import milkman.ui.plugins.management.market.GithubApiClient;
 import milkman.ui.plugins.management.market.MarketplaceDialog;
 import milkman.utils.fxml.FxmlUtil;
 
@@ -69,7 +70,8 @@ public class PluginsManagementOptionsProvider implements OptionPageProvider<Plug
 		var marketplaceDialog = new MarketplaceDialog();
 		marketplaceDialog.showAndWait();
 		if (!marketplaceDialog.isCancelled()) {
-			pluginManager.downloadAndInstallPlugin(marketplaceDialog.getChosenPlugin().artifactUrl());
+			GithubApiClient.MarketplacePlugin chosenPlugin = marketplaceDialog.getChosenPlugin();
+			pluginManager.downloadAndInstallPlugin(chosenPlugin.artifactFilename(), chosenPlugin.artifactUrl());
 		}
 	}
 

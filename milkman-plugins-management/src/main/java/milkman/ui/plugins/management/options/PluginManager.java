@@ -20,7 +20,6 @@ import javafx.scene.control.ButtonType;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import static milkman.ExceptionDialog.showExceptionDialog;
@@ -31,20 +30,22 @@ import static milkman.ui.plugins.management.options.PluginManagementMessages.SUC
 public class PluginManager {
 
 	@SneakyThrows
-	public Optional<PluginMetaData> downloadAndInstallPlugin(String pluginFileUrl) {
+	public Optional<PluginMetaData> downloadAndInstallPlugin(String pluginFilename, String pluginFileUrl) {
 		InputStream in = new URL(pluginFileUrl).openStream();
 		File tempFile = File.createTempFile("milkman-plugin-", ".jar");
 		FileUtils.copyInputStreamToFile(in, tempFile);
 		try {
-			return installPlugin(tempFile);
+			return installPlugin(tempFile, pluginFilename);
 		} finally {
 			tempFile.delete();
 		}
 	}
-
 	public Optional<PluginMetaData> installPlugin(File pluginFile) {
+		return installPlugin(pluginFile, pluginFile.getName());
+	}
+	public Optional<PluginMetaData> installPlugin(File pluginFile, String filename) {
 		if (isValidPluginFile(pluginFile)) {
-			return copyPluginFile(pluginFile);
+			return copyPluginFile(pluginFile, filename);
 		} else {
 			new Alert(Alert.AlertType.WARNING, "The selected file is not a valid Milkman Plugin file", ButtonType.CLOSE).showAndWait();
 		}
@@ -62,10 +63,10 @@ public class PluginManager {
 		return extractPluginMetaData(result.toPath()).map(PluginMetaData::id).map(StringUtils::isNotBlank).orElse(false);
 	}
 
-	private Optional<PluginMetaData> copyPluginFile(File source) {
+	private Optional<PluginMetaData> copyPluginFile(File source, String filename) {
 		try {
 			var milkmanInstallationDirectory = MilkmanInstallationLocationExtractor.getMilkmanInstallationDirectory();
-			var copiedFile = copyPluginFileToTargetDirectory(source, Path.of(milkmanInstallationDirectory, "plugins", source.getName()));
+			var copiedFile = copyPluginFileToTargetDirectory(source, Path.of(milkmanInstallationDirectory, "plugins", filename));
 			var pluginMetaData = extractPluginMetaData(copiedFile);
 			pluginMetaData
 				.map(this::createSuccessInformation)

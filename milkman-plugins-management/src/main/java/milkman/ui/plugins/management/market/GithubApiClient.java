@@ -54,7 +54,7 @@ public class GithubApiClient {
 
 
     return result.plugins().stream().map(
-        p -> new MarketplacePlugin(p.author(), p.name(), p.description(),
+        p -> new MarketplacePlugin(p.author(), p.name(), p.description(), p.artifact(),
             "https://github.com/" + fullRepoName + "/releases/latest/download/" + p.artifact(),
             "https:/github.com/" + fullRepoName)
     ).toList();
@@ -78,7 +78,7 @@ public class GithubApiClient {
 
   }
 
-  public record MarketplacePlugin(String author, String name, String description, String artifactUrl, String documentationUrl) {
+  public record MarketplacePlugin(String author, String name, String description,String artifactFilename, String artifactUrl, String documentationUrl) {
   }
 
 }
