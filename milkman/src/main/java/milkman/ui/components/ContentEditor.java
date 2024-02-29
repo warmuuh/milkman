@@ -31,6 +31,7 @@ import milkman.utils.fxml.GenericBinding;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.fxmisc.flowless.VirtualizedScrollPane;
+import org.fxmisc.richtext.Caret;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
@@ -113,6 +114,8 @@ public class ContentEditor extends VBox {
 
 	private void setupCodeArea() {
 		codeArea = new CodeArea();
+		//always show caret, even for non-editable
+		codeArea.setShowCaret(Caret.CaretVisibility.ON);
 //		codeArea.setWrapText(true);
 		setupParagraphGraphics();
 		EventStream<Object> highLightTrigger = EventStreams.merge(codeArea.multiPlainChanges(),

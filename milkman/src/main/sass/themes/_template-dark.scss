@@ -493,6 +493,10 @@
 	.code-area {
 		-fx-text-fill: $foreground;
 		-fx-background-color: darken($background, 10%);
+
+		.caret {
+			-fx-stroke: $foreground;
+		}
 	}
 	.list-cell {
 		-fx-text-fill: $foreground;
