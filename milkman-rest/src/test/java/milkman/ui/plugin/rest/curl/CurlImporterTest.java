@@ -16,4 +16,14 @@ class CurlImporterTest {
                 "www.love.com");
     }
 
+    @Test
+    void shouldParseCommandPostCompressed(){
+        var args = CurlImporter.translateCommandline("curl --data-binary \"{\\\"somekey\\\":\\\"somevalue\\\"}\" --compressed \"https://api.leboncoin.fr/api/adfinder/v1/around_me\"");
+        assertThat(args).containsExactly("curl",
+            "--data-binary",
+            "{\"somekey\":\"somevalue\"}",
+            "--compressed",
+            "https://api.leboncoin.fr/api/adfinder/v1/around_me");
+    }
+
 }

@@ -1,7 +1,8 @@
 # Changelog
 
-version 5.9.0
+version 5.9.0 - upcoming
   * added [marketplace](/milkman-plugins-management#marketplace) for plugins
+  * improved CURL importer
 
 version 5.8.0
   * base64 keytype
