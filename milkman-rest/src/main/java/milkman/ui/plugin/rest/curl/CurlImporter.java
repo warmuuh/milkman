@@ -88,17 +88,8 @@ public class CurlImporter implements ImporterPlugin {
       return values.get(0);
     }
 
-    for (int i = 1; i < argumentList.size(); i++) {
-      String argument = argumentList.get(i);
-
-      if (argument.startsWith("-")) {
-        i += 1;
-        continue;
-      }
-      return argument;
-    }
-
-    throw new RuntimeException("Failed to extract url");
+    //return last argument
+    return argumentList.get(argumentList.size() - 1);
   }
 
 
@@ -110,6 +101,9 @@ public class CurlImporter implements ImporterPlugin {
       int firstColon = header.indexOf(':');
       if (firstColon >= 0) {
         String headerName = header.substring(0, firstColon).trim();
+        if (headerName.equalsIgnoreCase("Host")) {
+          continue;
+        }
         String headerValue = header.substring(firstColon + 1).trim();
         headers.add(new HeaderEntry(UUID.randomUUID().toString(), headerName, headerValue, true));
       }
