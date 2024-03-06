@@ -87,9 +87,20 @@ public class CurlImporter implements ImporterPlugin {
     if (values.size() > 0) {
       return values.get(0);
     }
+    for (int i = 1; i < argumentList.size(); i++) {
+      String argument = argumentList.get(i);
 
-    //return last argument
-    return argumentList.get(argumentList.size() - 1);
+      if (argument.startsWith("-")) {
+        //skip argument for non-unary arguments
+        if (!argument.equalsIgnoreCase("--compressed")) {
+          i += 1;
+        }
+        continue;
+      }
+      return argument;
+    }
+
+    throw new RuntimeException("Failed to extract url");
   }
 
 
