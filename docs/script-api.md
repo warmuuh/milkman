@@ -22,17 +22,17 @@ pre or post scripts.
 
 #### Request properties
 
-* Aspect `payload` (GrpcPayloadAspect)
+* Aspect `headers` (GrpcHeaderAspect)
+  * entries (List)
   * name (String)
-  * payload (String)
 * Aspect `operation` (GrpcOperationAspect)
   * name (String)
   * operation (String)
   * protoSchema (String)
   * useReflection (boolean)
-* Aspect `headers` (GrpcHeaderAspect)
-  * entries (List)
+* Aspect `payload` (GrpcPayloadAspect)
   * name (String)
+  * payload (String)
 #### Response properties
 
 * Aspect `Payload` (GrpcResponsePayloadAspect)
@@ -49,16 +49,16 @@ pre or post scripts.
 * Aspect `body` (RestBodyAspect)
   * body (String)
   * name (String)
-* Aspect `query` (RestQueryParamAspect)
+* Aspect `headers` (RestHeaderAspect)
   * entries (List)
   * name (String)
-* Aspect `headers` (RestHeaderAspect)
+* Aspect `query` (RestQueryParamAspect)
   * entries (List)
   * name (String)
 #### Response properties
 
-* Aspect `body` (RestResponseBodyAspect)
-  * body (Flux)
+* Aspect `headers` (RestResponseHeaderAspect)
+  * entries (List)
   * name (String)
 * Aspect `debugHeaders` (DebugRequestHeaderAspect)
   * entries (List)
@@ -66,8 +66,8 @@ pre or post scripts.
 * Aspect `debugBody` (DebugRequestBodyAspect)
   * body (String)
   * name (String)
-* Aspect `headers` (RestResponseHeaderAspect)
-  * entries (List)
+* Aspect `body` (RestResponseBodyAspect)
+  * body (Flux)
   * name (String)
 
 ### Request Type: NoSql
