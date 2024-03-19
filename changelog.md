@@ -1,6 +1,11 @@
 # Changelog
 
-version 5.9.0 - upcoming
+version 5.10.0 - upcoming
+  * upgraded to java 21
+  * upgraded to javafx 21
+  * fixed app-cds setup for startup optimization
+
+version 5.9.0
   * added [marketplace](/milkman-plugins-management#marketplace) for plugins
   * improved CURL importer
 

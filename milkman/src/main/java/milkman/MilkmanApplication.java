@@ -40,7 +40,7 @@ public class MilkmanApplication extends Application {
 				module.getMainWindow().start(primaryStage); // 1 sec
 				module.getThemeSwitcher().setTheme(CoreApplicationOptionsProvider.options().getTheme(), CoreApplicationOptionsProvider.options().isDisableAnimations());
 				module.getApplicationController().initApplication(); // 1 sec
-				module.getAppCdsGenerator().initializeCds(false);
+//				module.getAppCdsGenerator().initializeCds(false);
 				log.info("App Initialization time: {} ms", System.currentTimeMillis() - startInitializationTime);
 
 				

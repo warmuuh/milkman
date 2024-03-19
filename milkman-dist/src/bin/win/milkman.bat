@@ -1,5 +1,16 @@
+@echo off
+
+if not exist .\jre-win64\lib\client\classes.jsa (
+    .\jre-win64\bin\java.exe -Xshare:dump
+)
+
+set CDS_COMMAND=-XX:SharedArchiveFile=app-cds.jsa
+if not exist "app-cds.jsa" (
+  set CDS_COMMAND=-XX:ArchiveClassesAtExit=app-cds.jsa
+)
+
 @start .\jre-win64\bin\javaw.exe ^
-	-XX:SharedArchiveFile=app-cds.jsa ^
+	%CDS_COMMAND% ^
 	-client ^
 	-XX:+UseCompressedOops ^
 	-XX:+UseCompressedClassPointers ^
@@ -18,4 +29,3 @@
 	--add-opens javafx.graphics/com.sun.javafx.text=ALL-UNNAMED ^
 	--add-opens java.base/java.lang.reflect=ALL-UNNAMED ^
 	-Dprism.dirtyopts=false -cp plugins\*;milkman.jar milkman.MilkmanApplication
-	

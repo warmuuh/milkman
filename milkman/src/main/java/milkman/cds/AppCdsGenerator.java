@@ -39,12 +39,12 @@ public class AppCdsGenerator {
 		
 		new Thread(() -> {
 			
-			if (!PlatformUtil.isCurrentDirWritable()) {
-				log.error("Current directory is not writeable, please restart milkman as admin");
-				return;
-			}
+//			if (!PlatformUtil.isCurrentDirWritable()) {
+//				log.error("Current directory is not writeable, please restart milkman as admin");
+//				return;
+//			}
 			
-			var oldCdsArchiveName = new File("app-cds-old.jsa");
+			var oldCdsArchiveName = new File(PlatformUtil.getWritableLocationForFile("app-cds-old.jsa"));
 			if (oldCdsArchiveName.exists()) {
 				oldCdsArchiveName.delete();
 			}
@@ -61,7 +61,7 @@ public class AppCdsGenerator {
 					log.info("AppCds archive is up-to-date and usable. Not regenerating.");
 					return;
 				} else {
-					log.warn("AppCds archive not usable. renaming so it will be deleted on next run and regenerated");
+					log.error("AppCds archive not usable. renaming so it will be deleted on next run and regenerated");
 					invalidateCdsArchive();
 				}
 			}
@@ -72,9 +72,9 @@ public class AppCdsGenerator {
 	}
 
 	public void invalidateCdsArchive() {
-		var oldCdsArchiveName = new File("app-cds-old.jsa");
+		var oldCdsArchiveName = new File(PlatformUtil.getWritableLocationForFile("app-cds-old.jsa"));
 		try {
-			FileUtils.moveFile(new File("app-cds.jsa"), oldCdsArchiveName);
+			FileUtils.moveFile(new File(PlatformUtil.getWritableLocationForFile("app-cds.jsa")), oldCdsArchiveName);
 		} catch (IOException e) {
 			toaster.showToast("Failed to reset startup optimization. please remove app-cds.jsa manually");
 			log.warn("Failed to rename file. Please remove app-cds.jsa manually", e);
@@ -85,17 +85,21 @@ public class AppCdsGenerator {
 	protected void regenerateAppCdsArchive(String classPath) {
 		try {
 			log.info("Regenerating AppCds Archive.");
-			Process process = new ProcessBuilder(
-					getJavaExecutable(), 
-					"-Xshare:dump", 
-					"-XX:SharedClassListFile=classes.lst", 
-					"-XX:SharedArchiveFile=app-cds.jsa",
-					"-XX:+UseCompressedOops", 
+			ProcessBuilder pb = new ProcessBuilder(
+					getJavaExecutable(),
+					"-client",
+					"-XX:ArchiveClassesAtExit="+PlatformUtil.getWritableLocationForFile("app-cds.jsa"),
+					"-XX:+UseCompressedOops",
 					"-XX:+UseCompressedClassPointers",
-					"-cp", classPath
-					).redirectOutput(new File("appcds.log"))
-					.redirectError(new File("appcds.log"))
-					.start();
+					"-cp", classPath,
+					getClass().getName() // AppCdsGenerator::main
+					).redirectOutput(new File(PlatformUtil.getWritableLocationForFile("appcds-gen.log")))
+					.redirectError(new File(PlatformUtil.getWritableLocationForFile("appcds-gen.log")));
+
+
+//			log.info(String.join(" ",pb.command().toArray(new String[0])));
+
+			Process process = pb.start();
 			int exitStatus = process.waitFor();
 			if (exitStatus == 0) {
 				log.info("AppCds file generation done.");
@@ -113,15 +117,17 @@ public class AppCdsGenerator {
 	private boolean isSharedArchiveUsable(String classpath) {
 		try {
 			Process process = new ProcessBuilder(
-					getJavaExecutable(), 
-					"-Xshare:on", 
-					"-XX:SharedArchiveFile=app-cds.jsa",
+					getJavaExecutable(),
 					"-client",
+					"-Xshare:on", 
+					"-XX:SharedArchiveFile="+PlatformUtil.getWritableLocationForFile("app-cds.jsa"),
 					"-XX:+UseCompressedOops", 
 					"-XX:+UseCompressedClassPointers",
 					"-cp", classpath,
 					getClass().getName() // AppCdsGenerator::main
-					).start();
+					).redirectOutput(new File(PlatformUtil.getWritableLocationForFile("appcds-test.log")))
+					.redirectError(new File(PlatformUtil.getWritableLocationForFile("appcds-test.log")))
+					.start();
 			int exitStatus = process.waitFor();
 			if (exitStatus == 0) {
 				//app could be started with shared archive, everything is ok
@@ -135,20 +141,22 @@ public class AppCdsGenerator {
 	}
 
 	private boolean isRegenrationNecessary(String classPath) {
-		File oldAppCdsClasspathFile = new File("app-cds.classpath");
+		File oldAppCdsClasspathFile = new File(PlatformUtil.getWritableLocationForFile("app-cds.classpath"));
 		if (!oldAppCdsClasspathFile.exists())
 			return true;
 		
 		try {
 			String oldAppCdsClasspath = FileUtils.readFileToString(oldAppCdsClasspathFile);
 			//any changes to classpath?
-			if (!classPath.startsWith(oldAppCdsClasspath))
+			if (!classPath.startsWith(oldAppCdsClasspath)){
+				log.error("AppCds classpaths differ. regenerating...");
 				return true;
+			}
 		} catch (IOException e) {
 			log.error("Cannot read app-cds.classpath file");
 		}
 		
-		var appCdaArchiveFile = new File("app-cds.jsa");
+		var appCdaArchiveFile = new File(PlatformUtil.getWritableLocationForFile("app-cds.jsa"));
 		
 		return !appCdaArchiveFile.exists();
 	}
@@ -170,7 +178,7 @@ public class AppCdsGenerator {
 	
 	private void storeClasspath(String classpath) {
 		try {
-			FileUtils.write(new File("app-cds.classpath"), classpath);
+			FileUtils.write(new File(PlatformUtil.getWritableLocationForFile("app-cds.classpath")), classpath);
 		} catch (IOException e) {
 			log.error("Cannot write app-cds.classpath file");
 		}

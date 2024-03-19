@@ -7,8 +7,18 @@ RES_DIR="$BASE_DIR/../Resources"
 chmod +x "$RES_DIR/jre/bin/java"
 chmod +x "$RES_DIR/jre/lib/jspawnhelper"
 
+# generate static cds
+if [ ! -f "$RES_DIR/jre/lib/client/classes.jsa" ]; then
+    "$RES_DIR/jre/bin/java" -Xshare:dump
+fi
+
+CDS_COMMAND=-XX:SharedArchiveFile=~/Library/Application\ Support/Milkman/app-cds.jsa
+if [ ! -f "~/Library/Application\ Support/Milkman/app-cds.jsa" ]; then
+  CDS_COMMAND=-XX:ArchiveClassesAtExit=~/Library/Application\ Support/Milkman/app-cds.jsa
+fi
+
 "$RES_DIR/jre/bin/java" \
-    -XX:SharedArchiveFile="$RES_DIR/app-cds.jsa" \
+    $CDS_COMMAND \
     -client \
     -XX:+UseCompressedOops \
     -XX:+UseCompressedClassPointers \

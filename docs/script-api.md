@@ -22,46 +22,46 @@ pre or post scripts.
 
 #### Request properties
 
-* Aspect `operation` (GrpcOperationAspect)
-  * name (String)
-  * operation (String)
-  * protoSchema (String)
-  * useReflection (boolean)
 * Aspect `headers` (GrpcHeaderAspect)
   * entries (List)
   * name (String)
 * Aspect `payload` (GrpcPayloadAspect)
   * name (String)
   * payload (String)
+* Aspect `operation` (GrpcOperationAspect)
+  * name (String)
+  * operation (String)
+  * protoSchema (String)
+  * useReflection (boolean)
 #### Response properties
 
-* Aspect `Payload` (GrpcResponsePayloadAspect)
-  * name (String)
-  * payloads (Flux)
 * Aspect `headers` (GrpcResponseHeaderAspect)
   * entries (CompletableFuture)
   * name (String)
+* Aspect `Payload` (GrpcResponsePayloadAspect)
+  * name (String)
+  * payloads (Flux)
 
 ### Request Type: HTTP
 
 #### Request properties
 
-* Aspect `query` (RestQueryParamAspect)
+* Aspect `headers` (RestHeaderAspect)
   * entries (List)
   * name (String)
 * Aspect `body` (RestBodyAspect)
   * body (String)
   * name (String)
-* Aspect `headers` (RestHeaderAspect)
+* Aspect `query` (RestQueryParamAspect)
   * entries (List)
   * name (String)
 #### Response properties
 
-* Aspect `debugBody` (DebugRequestBodyAspect)
-  * body (String)
-  * name (String)
 * Aspect `headers` (RestResponseHeaderAspect)
   * entries (List)
+  * name (String)
+* Aspect `debugBody` (DebugRequestBodyAspect)
+  * body (String)
   * name (String)
 * Aspect `debugHeaders` (DebugRequestHeaderAspect)
   * entries (List)
