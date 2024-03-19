@@ -18,7 +18,7 @@ class NashornExecutorTest {
 
     @Test @Disabled("no solution yet")
     void shouldUseGlobalScope(){
-        NashornExecutor executor = new NashornExecutor(mock(Toaster.class));
+        NashornExecutor executor = new NashornExecutor(null);
         String out1 = executor.executeScript("console.log(testVar); var testVar = 'testValue';", null, null, new RequestExecutionContext(Optional.empty(), List.of())).getConsoleOutput();
         String out2 = executor.executeScript("console.log(testVar); var testVar = 'testValue';", null, null, new RequestExecutionContext(Optional.empty(), List.of())).getConsoleOutput();
 

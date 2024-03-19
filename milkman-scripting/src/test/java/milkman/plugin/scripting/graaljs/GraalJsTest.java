@@ -18,7 +18,7 @@ public class GraalJsTest {
 
     @Test
     void shouldExecJs() throws IOException {
-        var executor = new GraaljsExecutor(mock(Toaster.class));
+        var executor = new GraaljsExecutor(null);
         var output = executor.executeScript(SOURCE, null, null, new RequestExecutionContext(Optional.empty(), List.of())).getConsoleOutput();
 
         assertThat(output).isEqualTo("test\n");
