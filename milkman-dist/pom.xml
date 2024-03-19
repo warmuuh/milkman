@@ -17,7 +17,7 @@
 
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>
-		<jdk.version>17.0.8.1+1</jdk.version>
+		<jdk.version>21.0.2+14</jdk.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -214,9 +214,9 @@
 				<!--<groupId>com.igormaznitsa</groupId>
 				<artifactId>mvn-jlink-wrapper</artifactId>
 				<version>1.0.4</version>-->
-				<groupId>com.github.warmuuh.mvn-jlink</groupId>
+				<groupId>com.igormaznitsa</groupId>
 				<artifactId>mvn-jlink-wrapper</artifactId>
-				<version>1.0.5</version>
+				<version>1.2.1</version>
 				<configuration>
 					<!-- <modulePath>${env.JAVAFX_MODS}</modulePath> -->
 					<addModules>
@@ -246,6 +246,8 @@
 						<option>--compress=2</option>
 						<option>--no-header-files</option>
 						<option>--no-man-pages</option>
+<!--						breaks cross-platform compilation: -->
+<!--						<option>&#45;&#45;generate-cds-archive</option>-->
 						<option>--vm=client</option>
 					</options>
 					<output/>

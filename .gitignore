@@ -11,3 +11,4 @@ errors.log
 *.log
 .vscode/
 /.run
+/.sdkmanrc

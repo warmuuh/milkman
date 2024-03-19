@@ -13,11 +13,11 @@ jobs:
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           ${{ runner.os }}-maven-
-    - name: Set up JDK 17
+    - name: Set up JDK 21
       uses: actions/setup-java@v2
       with:
-        distribution: adopt
-        java-version: 17
+        distribution: liberica
+        java-version: 21
         architecture: x64
     - name: maven-settings-xml-action
       uses: whelk-io/maven-settings-xml-action@v4

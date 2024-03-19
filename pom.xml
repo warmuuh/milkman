@@ -32,7 +32,7 @@
 
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>
-		<javafx.version>13</javafx.version>
+		<javafx.version>21.0.2</javafx.version>
 	</properties>
 
 
@@ -50,7 +50,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.28</version>
+			<version>1.18.30</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- <dependency> -->
@@ -155,9 +155,9 @@
 					<goal>compile</goal>
 				</goals>
 				<configuration>
-					<release>17</release>
-					<source>17</source>
-					<target>17</target>
+					<release>21</release>
+					<source>21</source>
+					<target>21</target>
 					<annotationProcessors>
 						<annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor</annotationProcessor>
 						<annotationProcessor>wrm.hardwire.processor.AnnotationProcessor</annotationProcessor>
