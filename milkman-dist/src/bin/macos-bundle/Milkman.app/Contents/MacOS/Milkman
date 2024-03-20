@@ -12,13 +12,14 @@ if [ ! -f "$RES_DIR/jre/lib/client/classes.jsa" ]; then
     "$RES_DIR/jre/bin/java" -Xshare:dump
 fi
 
-CDS_COMMAND=-XX:SharedArchiveFile=~/Library/Application\ Support/Milkman/app-cds.jsa
-if [ ! -f "~/Library/Application\ Support/Milkman/app-cds.jsa" ]; then
-  CDS_COMMAND=-XX:ArchiveClassesAtExit=~/Library/Application\ Support/Milkman/app-cds.jsa
+CDS_DIR="/var/tmp/milkman-cds.jsa"
+CDS_COMMAND=-XX:SharedArchiveFile
+if [ ! -f "$CDS_DIR" ]; then
+  CDS_COMMAND=-XX:ArchiveClassesAtExit
 fi
 
 "$RES_DIR/jre/bin/java" \
-    $CDS_COMMAND \
+    ${CDS_COMMAND}="$CDS_DIR"\
     -client \
     -XX:+UseCompressedOops \
     -XX:+UseCompressedClassPointers \
