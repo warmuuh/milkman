@@ -154,6 +154,7 @@
 								<opts>
 									<opt>-XX:SharedArchiveFile=app-cds.jsa</opt>
 									<opt>-client</opt>
+									<opt>-Xmx2G</opt>
 									<opt>-XX:+UseCompressedOops</opt>
 									<opt>-XX:+UseCompressedClassPointers</opt>
 <!-- 									<opt>-Xlog:class+load:file=cds3.log</opt> -->

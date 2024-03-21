@@ -13,7 +13,7 @@ if [ ! -f "app-cds.jsa" ]; then
 fi
 
 ./jre-macos64/bin/java $CDS_COMMAND \
-	-client \
+	-client -Xmx2G \
 	-XX:+UseCompressedOops \
 	-XX:+UseCompressedClassPointers \
 	--add-exports javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED \

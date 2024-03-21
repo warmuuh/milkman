@@ -11,7 +11,7 @@ if not exist "app-cds.jsa" (
 
 @start .\jre-win64\bin\javaw.exe ^
 	%CDS_COMMAND% ^
-	-client ^
+	-client -Xmx2G ^
 	-XX:+UseCompressedOops ^
 	-XX:+UseCompressedClassPointers ^
 	--add-exports javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED ^

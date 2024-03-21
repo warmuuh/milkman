@@ -20,7 +20,7 @@ fi
 
 "$RES_DIR/jre/bin/java" \
     ${CDS_COMMAND}="$CDS_DIR"\
-    -client \
+    -client -Xmx2G \
     -XX:+UseCompressedOops \
     -XX:+UseCompressedClassPointers \
     --add-exports javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED \

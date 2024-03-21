@@ -35,12 +35,12 @@ pre or post scripts.
   * useReflection (boolean)
 #### Response properties
 
-* Aspect `headers` (GrpcResponseHeaderAspect)
-  * entries (CompletableFuture)
-  * name (String)
 * Aspect `Payload` (GrpcResponsePayloadAspect)
   * name (String)
   * payloads (Flux)
+* Aspect `headers` (GrpcResponseHeaderAspect)
+  * entries (CompletableFuture)
+  * name (String)
 
 ### Request Type: HTTP
 
@@ -49,22 +49,22 @@ pre or post scripts.
 * Aspect `headers` (RestHeaderAspect)
   * entries (List)
   * name (String)
-* Aspect `body` (RestBodyAspect)
-  * body (String)
-  * name (String)
 * Aspect `query` (RestQueryParamAspect)
   * entries (List)
+  * name (String)
+* Aspect `body` (RestBodyAspect)
+  * body (String)
   * name (String)
 #### Response properties
 
 * Aspect `headers` (RestResponseHeaderAspect)
   * entries (List)
   * name (String)
-* Aspect `debugBody` (DebugRequestBodyAspect)
-  * body (String)
-  * name (String)
 * Aspect `debugHeaders` (DebugRequestHeaderAspect)
   * entries (List)
+  * name (String)
+* Aspect `debugBody` (DebugRequestBodyAspect)
+  * body (String)
   * name (String)
 * Aspect `body` (RestResponseBodyAspect)
   * body (Flux)
@@ -74,12 +74,12 @@ pre or post scripts.
 
 #### Request properties
 
-* Aspect `query` (NosqlQueryAspect)
-  * name (String)
-  * query (String)
 * Aspect `parameters` (NosqlParameterAspect)
   * entries (List)
   * name (String)
+* Aspect `query` (NosqlQueryAspect)
+  * name (String)
+  * query (String)
 #### Response properties
 
 * Aspect `result` (NosqlResponseAspect)
@@ -105,13 +105,13 @@ pre or post scripts.
 
 #### Request properties
 
-* Aspect `sio` (SocketIOAspect)
-  * event (String)
-  * message (String)
-  * name (String)
 * Aspect `settings` (SocketIoSettingsAspect)
   * clientVersion (SocketIoVersion)
   * handshakePath (String)
+  * name (String)
+* Aspect `sio` (SocketIOAspect)
+  * event (String)
+  * message (String)
   * name (String)
 #### Response properties
 

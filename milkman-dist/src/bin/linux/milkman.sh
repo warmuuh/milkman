@@ -16,7 +16,7 @@ fi
 
 
 "$BASE_DIR"/jre-linux64/bin/java $CDS_COMMAND \
-	-client \
+	-client -Xmx2G \
 	-XX:+UseCompressedOops \
   -Dprism.forceGPU=true \
 	-XX:+UseCompressedClassPointers \

@@ -91,10 +91,10 @@ public class ScriptingAspectPlugin implements RequestAspectsPlugin, ToasterAware
 
 	@Override
 	public void onPostConstruct() {
-		executor = new NashornExecutor(toaster);
 		new Thread(){
 			@Override
 			public void run() {
+				executor = new NashornExecutor(toaster);
 				//already load scripts
 				((NashornExecutor)executor).initGlobalBindings();
 			}
