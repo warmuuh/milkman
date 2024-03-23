@@ -10,7 +10,7 @@
 	<artifactId>milkman-grpc</artifactId>
 
 	<properties>
-		<grpc.version>1.25.0</grpc.version>
+		<grpc.version>1.53.0</grpc.version>
 	</properties>
 
 	<dependencies>
