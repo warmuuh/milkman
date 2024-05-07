@@ -1,10 +1,12 @@
 package milkman.plugin.test.domain;
 
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Value;
 import milkman.domain.ResponseAspect;
+import milkman.domain.StatusInfoContainer;
 import reactor.core.publisher.Flux;
 
 import java.util.Map;
@@ -34,7 +36,16 @@ public class TestResultAspect implements ResponseAspect {
 		String requestId;
 		String requestName;
 		TestResultState resultState;
-		Map<String, StyledText> details;
+		StatusInfoContainer details;
+		String error;
+
+		public Optional<StatusInfoContainer> getDetails() {
+			return Optional.ofNullable(details);
+		}
+
+		public Optional<String> getError() {
+			return Optional.ofNullable(error);
+		}
 	}
 
 

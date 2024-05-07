@@ -2,23 +2,33 @@ package milkman.plugin.test.editor;
 
 import com.jfoenix.controls.JFXTreeView;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import java.util.Comparator;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TreeItem;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
+import milkman.domain.StatusInfoContainer;
 import milkman.plugin.test.domain.TestResultAspect;
 import milkman.plugin.test.domain.TestResultAspect.TestResultEvent;
 import milkman.plugin.test.domain.TestResultAspect.TestResultState;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
 import milkman.ui.plugin.ResponseAspectEditor;
+import milkman.utils.CollectionUtils;
 import milkman.utils.javafx.SettableTreeItem;
 
 import java.util.LinkedList;
@@ -115,25 +125,38 @@ public class TestResponseAspectEditor implements ResponseAspectEditor {
 		grid.setHgap(10);
 		grid.setVgap(10);
 //		grid.setPadding(new Insets(25, 25, 25, 25));
-		grid.getColumnConstraints().add(new ColumnConstraints(100));
+		grid.getColumnConstraints().add(new ColumnConstraints(200));
 
 		grid.add(new Label("Test Results for '" + resultEvent.getRequestName() + "'"), 0,0,2,1);
 		grid.add(new Label("Outcome"), 0, 1);
 		grid.add(new Label(resultEvent.getResultState().toString()), 1, 1);
 
-		int curRow = 2;
-		for (var entry : resultEvent.getDetails().entrySet()) {
-			grid.add(new Label(entry.getKey()), 0, curRow);
-			var valueLabel = new Label(entry.getValue().getText());
-			if (!CoreApplicationOptionsProvider.options().isDisableColorfulUi()) {
-				entry.getValue().getStyle().ifPresent(valueLabel::setStyle);
-			}
-			valueLabel.setWrapText(true);
-			grid.add(valueLabel, 1, curRow);
-			curRow += 1;
-		}
+		AtomicInteger curRow = new AtomicInteger(2);
+		resultEvent.getDetails().ifPresent(details -> addStatusInformation(details, (key, value) -> {
+			grid.add(key, 0, curRow.get());
+			grid.add(value, 1, curRow.get());
+			curRow.incrementAndGet();
+		}));
+
+		resultEvent.getError().ifPresent(errMsg -> {
+			grid.add(new Label("Error"), 0, curRow.get());
+			grid.add(new Label(errMsg), 1, curRow.get());
+			curRow.incrementAndGet();
+		});
 
 		resultDetails.add(grid, true);
+	}
+
+	private void addStatusInformation(StatusInfoContainer statusInformations, BiConsumer<Label, Label> addRow) {
+		statusInformations.subscribe(entry ->  Platform.runLater(() -> {
+			if (entry.isGroup()) {
+				entry.getValueMap().forEach((key, value) -> {
+					addRow.accept(new Label(entry.getKey() + " - " + key), new Label(value));
+				});
+			} else {
+				addRow.accept(new Label(entry.getKey()), new Label(entry.getValue().getText()));
+			}
+		}));
 	}
 
 	@Override

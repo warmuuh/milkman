@@ -19,14 +19,6 @@ public class StatusInfoContainer {
     emitter.onComplete();
   }
 
-  //for backwards compatibility
-  public Mono<Map<String, StyledText>> toMono() {
-    return Flux.from(emitter).collectMap(
-        StatusEntry::getKey,
-        StatusEntry::getValue
-    );
-  }
-
   public void complete() {
     emitter.onComplete();
   }

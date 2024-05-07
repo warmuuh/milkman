@@ -312,8 +312,13 @@ public class JavaRequestProcessor implements RequestProcessor {
 		response.getAspects().add(headers);
 
 
-		sslSessionInfo.thenAccept(ssl -> ssl.ifPresent(sslSession ->
-				response.getStatusInformations().add("SSL", getCertDetails(sslSession))));
+		sslSessionInfo.thenAccept(ssl -> {
+          ssl.ifPresent(sslSession ->
+              response.getStatusInformations().add("SSL", getCertDetails(sslSession)));
+
+			//HACK: ssl information is propagated last by chunckedRequest, so we can complete the status information here
+			response.getStatusInformations().complete();
+        });
 
 		httpResponse.thenAccept(res -> {
 			var responseTimeInMs = System.currentTimeMillis() - startTime.get();
