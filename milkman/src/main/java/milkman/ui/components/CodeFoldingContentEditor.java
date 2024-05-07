@@ -8,6 +8,9 @@ import java.util.Optional;
 import java.util.Stack;
 import java.util.function.IntFunction;
 
+import javafx.application.Platform;
+import javafx.scene.control.Tooltip;
+import milkman.PlatformUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.fxmisc.richtext.LineNumberFactory;
 
@@ -22,6 +25,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import lombok.Data;
 import milkman.utils.Stopwatch;
+import org.fxmisc.richtext.model.StyledDocument;
 
 /**
  * this editor supports code folding
@@ -38,6 +42,8 @@ public class CodeFoldingContentEditor extends ContentEditor {
     private Button collapseOne;
     private Button expandOne;
 
+    private Button softWrap;
+
     private int currentFoldingLevel;
     private int maxFoldingLevel;
 
@@ -50,6 +56,7 @@ public class CodeFoldingContentEditor extends ContentEditor {
     public CodeFoldingContentEditor() {
 
         collapseAll = new JFXButton();
+        collapseAll.setTooltip(new Tooltip("collapse all levels"));
         collapseAll.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.COMPRESS));
         collapseAll.setOnAction(e -> {
             setCollapseRecursively(rootRange, minFoldingLevel, 0);
@@ -59,6 +66,7 @@ public class CodeFoldingContentEditor extends ContentEditor {
 
 
         expandAll = new JFXButton();
+        expandAll.setTooltip(new Tooltip("expand all levels"));
         expandAll.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.EXPAND));
         expandAll.setOnAction(e -> {
             setCollapseRecursively(rootRange, maxFoldingLevel, 0);
@@ -67,6 +75,7 @@ public class CodeFoldingContentEditor extends ContentEditor {
         });
 
         collapseOne = new JFXButton();
+        collapseOne.setTooltip(new Tooltip("collapse one level"));
         collapseOne.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.PLUS));
         collapseOne.setOnAction(e -> {
             int nextLevel = Math.min(currentFoldingLevel + 1, maxFoldingLevel);
@@ -77,6 +86,7 @@ public class CodeFoldingContentEditor extends ContentEditor {
 
 
         expandOne = new JFXButton();
+        expandOne.setTooltip(new Tooltip("Expand one level"));
         expandOne.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.MINUS));
         expandOne.setOnAction(e -> {
             int nextLevel = Math.max(currentFoldingLevel - 1, minFoldingLevel);
@@ -85,10 +95,33 @@ public class CodeFoldingContentEditor extends ContentEditor {
             redrawText();
         });
 
+
+        softWrap = new JFXButton();
+        softWrap.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.INDENT));
+        softWrap.setTooltip(new Tooltip("Toggle Soft Wrap"));
+        softWrap.setOnAction(e -> {
+            codeArea.setWrapText(!codeArea.isWrapText());
+            redrawText();
+            // workaround https://github.com/FXMisc/RichTextFX/issues/979
+            if ( codeArea.isWrapText() ) // brute force refresh :(
+            {
+                final int c = codeArea.getCaretPosition();
+                final int p = codeArea.firstVisibleParToAllParIndex();
+                final StyledDocument doc = codeArea.subDocument( 0, codeArea.getLength() );
+
+                codeArea.clear();
+
+                codeArea.insert( 0, doc );
+                codeArea.showParagraphAtTop( p );
+                codeArea.moveTo( c );
+            }
+        });
+
         header.getChildren().add(collapseAll);
         header.getChildren().add(expandAll);
         header.getChildren().add(collapseOne);
         header.getChildren().add(expandOne);
+        header.getChildren().add(softWrap);
 
         highlighters.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
             if (n != null) {
