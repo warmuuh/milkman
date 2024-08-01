@@ -6,6 +6,8 @@ import com.jfoenix.controls.JFXListCell;
 import com.jfoenix.controls.JFXListView;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import java.util.LinkedList;
+import java.util.function.Supplier;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -33,8 +35,9 @@ public class ManageWorkspacesDialog {
 	private ObservableList<String> workspaces;
 
 	public Event<AppCommand> onCommand = new Event<AppCommand>();
+	private Supplier<List<String>> workspaceNamesLoader;
 
-	
+
 	public class WorkspaceCell extends JFXListCell<String> {
 		@Override
 		protected void updateItem(String workspaceName, boolean empty) {
@@ -61,7 +64,7 @@ public class ManageWorkspacesDialog {
 			deleteButton.setTooltip(new Tooltip("Delete workspace"));
 			deleteButton.setOnAction(e -> {
 				onCommand.invoke(new AppCommand.DeleteWorkspace(workspaceName));
-				Platform.runLater(() -> workspaces.remove(workspaceName));
+				Platform.runLater(ManageWorkspacesDialog.this::loadWorkspaces);
 			});
 
 			JFXButton exportButton = new JFXButton();
@@ -94,21 +97,26 @@ public class ManageWorkspacesDialog {
 		}
 	}
 	
-	public void showAndWait(List<String> workspaceNames) {
+	public void showAndWait(Supplier<List<String>> workspaceNamesLoader) {
+		this.workspaceNamesLoader = workspaceNamesLoader;
 		JFXDialogLayout content = new ManageWorkspacesDialogFxml(this);
 		JavaFxUtils.publishEscToParent(workspaceList);
 
-		workspaces = FXCollections.observableList(workspaceNames);
+		workspaces = FXCollections.observableList(new LinkedList<>());
+		loadWorkspaces();
 		workspaceList.setItems(workspaces);
 		workspaceList.setCellFactory(l -> new WorkspaceCell());
 		workspaceList.setSelectionModel(new NoSelectionModel<String>());
 		dialog = FxmlUtil.createDialog(content);
 		dialog.showAndWait();
 	}
-	
-	
-	
-	 public void onClose() {
+
+	private void loadWorkspaces() {
+		workspaces.setAll(workspaceNamesLoader.get());
+	}
+
+
+	public void onClose() {
 		dialog.close();
 	}
 

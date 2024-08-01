@@ -311,6 +311,16 @@ public class ApplicationController {
 
 
 	private void deleteWorkspace(String workspaceName) {
+		boolean isNotEmptyWs = persistence.loadWorkspaceByName(workspaceName)
+				.stream().anyMatch(ws -> !ws.getCollections().isEmpty());
+		if (isNotEmptyWs) {
+			var dialog = new ConfirmationInputDialog();
+			dialog.showAndWait("Confirm delete", "The workspace '" + workspaceName + "' contains requests. Are you sure you want to delete it?");
+			if (dialog.isCancelled()){
+				return;
+			}
+		}
+
 		persistence.deleteWorkspace(workspaceName);
 		if (workspaceController.getActiveWorkspace().getName().equals(workspaceName)) {
 			List<String> otherWorkspaces = persistence.loadWorkspaceNames();
@@ -319,6 +329,8 @@ public class ApplicationController {
 			} else {
 				loadWorkspace(otherWorkspaces.get(0));
 			}
+		} else {
+			toolbarComponent.setWorkspaces(workspaceController.getActiveWorkspace(), persistence.loadWorkspaceNames());
 		}
 	}
 
@@ -336,7 +348,7 @@ public class ApplicationController {
 	private void openWorkspaceManagementDialog() {
 		ManageWorkspacesDialog dialog = new ManageWorkspacesDialog();
 		dialog.onCommand.add(this::handleCommand);
-		dialog.showAndWait(persistence.loadWorkspaceNames());
+		dialog.showAndWait(persistence::loadWorkspaceNames);
 	}
 
 
