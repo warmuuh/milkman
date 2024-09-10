@@ -280,7 +280,7 @@
 			"$schema": "http://json-schema.org/draft-07/schema#",
 			"$id": "#/definitions/description",
 			"description": "A Description can be a raw text, or be an object, which holds the description along with its format.",
-			"type": "string"
+			"type": "any"
 		},
 		"event-list": {
 			"$id": "#/definitions/event-list",

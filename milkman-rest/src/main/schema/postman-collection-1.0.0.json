@@ -928,11 +928,7 @@
 					}
 				},
 				"rawModeData": {
-					"type": [
-						"string",
-						"null",
-						"array"
-					],
+					"type": "string",
 					"description": "Contains the raw data (parameters) that Postman sends to the server"
 				},
 				"graphqlModeData": {

@@ -1,18 +1,11 @@
 package milkman.ui.plugin.rest.postman.importers;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
-
+import co.poynt.postman.model.PostmanEnvValue;
+import co.poynt.postman.model.PostmanEnvironment;
 import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.ValueInstantiator;
@@ -20,9 +13,10 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.milkman.rest.postman.schema.v21.ItemGroup;
 import com.milkman.rest.postman.schema.v21.PostmanCollection210;
 import com.milkman.rest.postman.schema.v21.Url;
-
-import co.poynt.postman.model.PostmanEnvValue;
-import co.poynt.postman.model.PostmanEnvironment;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 import milkman.domain.Collection;
 import milkman.domain.Environment;
 import milkman.domain.Environment.EnvironmentEntry;
@@ -108,7 +102,9 @@ public class PostmanImporterV21 {
 			
 			//adding headers
 			RestHeaderAspect headers = new RestHeaderAspect();
-			pmItem.getRequest().getHeader().forEach(h -> headers.getEntries().add(new HeaderEntry(UUID.randomUUID().toString(),h.getKey(), h.getValue(), true)));
+			if (pmItem.getRequest().getHeader() != null) {
+				pmItem.getRequest().getHeader().forEach(h -> headers.getEntries().add(new HeaderEntry(UUID.randomUUID().toString(),h.getKey(), h.getValue(), true)));
+			}
 			request.addAspect(headers);
 			
 			//adding bodies
