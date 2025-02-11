@@ -31,8 +31,22 @@ public class HttpOptionsPluginProvider implements OptionPageProvider<HttpOptions
 		private boolean askForProxyAuth = false;
 		private boolean certificateValidation = false;
 		private boolean followRedirects = false;
-		private String httpProtocol = "HTTP/2";
+		private String httpProtocol = "Auto";
+		private String client = "Java";
 		private List<Certificate> certificates = new LinkedList<>();
+
+
+		public boolean isJavaClient() {
+			return client.contains("Java");
+		}
+
+		public boolean isJettyClient() {
+			return client.contains("Jetty");
+		}
+
+		public boolean isHttpProtocolAuto() {
+			return httpProtocol.contains("Auto");
+		}
 
 		public boolean isHttp2Support() {
 			return httpProtocol.contains("HTTP/2");
@@ -71,7 +85,8 @@ public class HttpOptionsPluginProvider implements OptionPageProvider<HttpOptions
 				.section("Requests")
 					.toggle("Validate Certificates", HttpOptions::isCertificateValidation, HttpOptions::setCertificateValidation)
 					.toggle("Follow Redirects", HttpOptions::isFollowRedirects, HttpOptions::setFollowRedirects)
-					.selection("Protocol", HttpOptions::getHttpProtocol, HttpOptions::setHttpProtocol, List.of("HTTP/1.1", "HTTP/2", "HTTP/3"))
+				.selection("Protocol", HttpOptions::getHttpProtocol, HttpOptions::setHttpProtocol, List.of("Auto", "HTTP/1.1", "HTTP/2", "HTTP/3"))
+				.selection("Http Client", HttpOptions::getClient, HttpOptions::setClient, List.of("Java", "Jetty (experimental)"))
 				.endSection()
 				.section("Client Certificates")
 				.list(
