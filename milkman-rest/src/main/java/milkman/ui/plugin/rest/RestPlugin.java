@@ -65,7 +65,7 @@ public class RestPlugin implements RequestAspectsPlugin, RequestTypePlugin {
 	
 	@Override
 	public ResponseContainer executeRequestAsync(RequestContainer request, Templater templater, AsyncControl asyncControl) {
-		RequestProcessor requestProcessor = new JavaRequestProcessor();
+		RequestProcessor requestProcessor = new JettyRequestProcessor();
 		return requestProcessor.executeRequest((RestRequestContainer) request, templater, asyncControl);
 		
 	}

@@ -41,7 +41,7 @@ class JettyHttpResponse<T> implements HttpResponse<T> {
   @Override
   public HttpHeaders headers() {
     Map<String, List<String>> headers = new HashMap<>();
-    response.getFields().forEach(header ->
+    response.getHttpFields().forEach(header ->
         headers.computeIfAbsent(header.getName(), name -> new LinkedList<>())
             .add(header.getValue()));
 

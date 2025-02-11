@@ -17,7 +17,7 @@ import milkman.ui.plugin.rest.tls.CertificateReader;
 import milkman.ui.plugin.rest.tls.CustomCertificateKeyManager;
 import milkman.ui.plugin.rest.tls.TrustAllTrustManager;
 import milkman.ui.plugin.rest.domain.*;
-import milkman.ui.plugin.rest.http3.JettyHttp3Client;
+//import milkman.ui.plugin.rest.http3.JettyHttp3Client;
 import milkman.utils.AsyncResponseControl.AsyncControl;
 import milkman.utils.json.BlockingFluxByteToStringConverter;
 import org.apache.commons.lang3.StringUtils;
@@ -80,9 +80,9 @@ public class JavaRequestProcessor implements RequestProcessor {
 	@SneakyThrows
 	private HttpClient buildClient(RestRequestContainer request) {
 
-		if (HttpOptionsPluginProvider.options().isHttp3Support()) {
-			return new JettyHttp3Client();
-		}
+//		if (HttpOptionsPluginProvider.options().isHttp3Support()) {
+//			return new JettyHttp3Client();
+//		}
 
 		Builder builder = HttpClient.newBuilder();
 		if (!HttpOptionsPluginProvider.options().isHttp2Support()){

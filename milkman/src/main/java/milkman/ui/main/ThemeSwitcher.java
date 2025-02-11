@@ -29,7 +29,9 @@ public class ThemeSwitcher {
 	public void setTheme(String themeName, boolean disableAnimations){
 		plugins.loadThemePlugins().stream()
 			.filter(p -> p.getName().equals(themeName))
-			.findAny().ifPresent(theme -> mainWindow.switchToTheme(theme, disableAnimations));
+			.findAny().ifPresentOrElse(
+					theme -> mainWindow.switchToTheme(theme, disableAnimations),
+						() -> mainWindow.switchToTheme(plugins.loadThemePlugins().get(0), disableAnimations));
 	}
 	
 	

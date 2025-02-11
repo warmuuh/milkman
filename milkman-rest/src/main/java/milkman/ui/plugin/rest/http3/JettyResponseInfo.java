@@ -23,7 +23,7 @@ class JettyResponseInfo implements ResponseInfo {
   @Override
   public HttpHeaders headers() {
     Map<String, List<String>> headers = new HashMap<>();
-    responseInfo.getFields().forEach(header ->
+    responseInfo.getHttpFields().forEach(header ->
         headers.computeIfAbsent(header.getName(), name -> new LinkedList<>())
             .add(header.getValue()));
 
