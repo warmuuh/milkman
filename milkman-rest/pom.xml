@@ -82,10 +82,37 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.eclipse.jetty.http3</groupId>
-			<artifactId>http3-client</artifactId>
-			<version>11.0.15</version>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-client</artifactId>
+			<version>12.0.16</version>
 		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.http2</groupId>
+			<artifactId>jetty-http2-client</artifactId>
+			<version>12.0.16</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.http2</groupId>
+			<artifactId>jetty-http2-client-transport</artifactId>
+			<version>12.0.16</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.jetty.http3</groupId>
+			<artifactId>jetty-http3-client-transport</artifactId>
+			<version>12.0.16</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.http3</groupId>
+			<artifactId>jetty-http3-client</artifactId>
+			<version>12.0.16</version>
+		</dependency>
+
+<!--		<dependency>-->
+<!--			<groupId>org.eclipse.jetty.http3</groupId>-->
+<!--			<artifactId>http3-client</artifactId>-->
+<!--			<version>11.0.15</version>-->
+<!--		</dependency>-->
 
 	</dependencies>
 
