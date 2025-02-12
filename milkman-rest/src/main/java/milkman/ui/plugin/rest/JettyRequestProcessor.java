@@ -2,16 +2,18 @@ package milkman.ui.plugin.rest;
 
 import java.net.PasswordAuthentication;
 import java.net.URL;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.ByteBuffer;
+import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
+import javax.net.ssl.SSLSession;
 import lombok.SneakyThrows;
 import milkman.domain.ResponseContainer;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
@@ -25,17 +27,13 @@ import milkman.ui.plugin.rest.domain.RestRequestContainer;
 import milkman.ui.plugin.rest.domain.RestResponseBodyAspect;
 import milkman.ui.plugin.rest.domain.RestResponseContainer;
 import milkman.ui.plugin.rest.domain.RestResponseHeaderAspect;
-import milkman.ui.plugin.rest.tls.CertificateReader;
 import milkman.utils.AsyncResponseControl;
-import milkman.utils.json.BlockingFluxByteToStringConverter;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpClientTransport;
 import org.eclipse.jetty.client.HttpProxy;
 import org.eclipse.jetty.client.Origin;
 import org.eclipse.jetty.client.Request;
-import org.eclipse.jetty.client.Response;
 import org.eclipse.jetty.client.Socks5Proxy;
 import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.client.transport.HttpClientTransportDynamic;
@@ -49,7 +47,6 @@ import org.eclipse.jetty.io.ClientConnector;
 import org.eclipse.jetty.io.Content;
 import org.eclipse.jetty.quic.client.ClientQuicConfiguration;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import reactor.adapter.JdkFlowAdapter;
 import reactor.core.publisher.Flux;
 
 public class JettyRequestProcessor implements RequestProcessor {
@@ -66,54 +63,108 @@ public class JettyRequestProcessor implements RequestProcessor {
                                               AsyncResponseControl.AsyncControl asyncControl) {
 
 
-    try (HttpClient client = configureClient(request)) {
+    HttpClient client = configureClient(request);
+    try {
       client.start();
-      Request jettyRequest = toRequest(request, client, templater);
-      asyncControl.triggerReqeuestStarted();
-      AtomicLong startTime = new AtomicLong(System.currentTimeMillis());
-
-      //TODO support async chuncked execution
-      //TODO support 407 proxy auth retry
-      ContentResponse response = jettyRequest.send();
-
-
-      asyncControl.triggerRequestSucceeded();
-
-
-      return toResponseContainer(jettyRequest, response, startTime);
     } catch (Exception e) {
-      asyncControl.triggerRequestFailed(e);
-      throw new RuntimeException("Failed to execute request", e);
+      throw new RuntimeException(e);
     }
+    Request jettyRequest = toRequest(request, client, templater);
+    asyncControl.triggerReqeuestStarted();
+    AtomicLong startTime = new AtomicLong(System.currentTimeMillis());
+
+    JettyResponseListener responseListener = new JettyResponseListener(asyncControl);
+    jettyRequest.listener(responseListener);
+
+
+    jettyRequest.send(responseListener);
+
+
+    Runnable stopClient = () -> {
+      try {
+        client.stop();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    };
+    responseListener.getRequestDone().thenRun(stopClient);
+    asyncControl.onCancellationRequested.add(() -> {
+      jettyRequest.abort(new RuntimeException("Request was cancelled"))
+          .thenRun(stopClient);
+      asyncControl.triggerRequestFailed(new RuntimeException("Request was cancelled"));
+    });
+
+    List<JettyResponseListener.HeaderValue> headers = List.of();
+
+    //TODO support 407 proxy auth retry
+    //we block until we get the headers:
+    try {
+      headers = responseListener.getHeaders().get();
+    } catch (InterruptedException e) {
+      asyncControl.triggerRequestFailed(e);
+    } catch (ExecutionException e) {
+      asyncControl.triggerRequestFailed(e.getCause());
+    }
+    return toResponseContainer(jettyRequest, headers, responseListener, startTime);
   }
 
   private static RestResponseContainer toResponseContainer(Request request,
-                                                           ContentResponse httpResponse,
+                                                           List<JettyResponseListener.HeaderValue> headers,
+                                                           JettyResponseListener responseListener,
                                                            AtomicLong startTime) {
     RestResponseContainer response = new RestResponseContainer(request.getURI().toString());
-    response.getStatusInformations().add("status", "" + httpResponse.getStatus());
-    response.getStatusInformations()
-        .add("Time", (System.currentTimeMillis() - startTime.get()) + "ms");
 
-    response.getStatusInformations()
-        .add("Details", Map.of("Size", "" + httpResponse.getContent().length));
+    buildStatusView(responseListener, response);
 
+    var bodyFlux = tapContentLength(responseListener.getChunks(), response);
+    bodyFlux = bodyFlux.doOnComplete(() -> {
+      response.getStatusInformations()
+          .add("Time", (System.currentTimeMillis() - startTime.get()) + "ms");
+      response.getStatusInformations().complete();
+    });
 
     response.getAspects()
-        .add(new RestResponseBodyAspect(Flux.fromArray(new byte[][] {httpResponse.getContent()})));
+        .add(new RestResponseBodyAspect(bodyFlux));
     response.getAspects()
         .add(new RestResponseHeaderAspect(
-            httpResponse.getHeaders().stream().map(h -> new HeaderEntry(
+            headers.stream().map(h -> new HeaderEntry(
                 UUID.randomUUID().toString(), h.getName(), h.getValue(), true)).toList()));
 
     addDebugOutput(request, response);
 
-    //TODO: add ssl status information
-    //TODO fix ttfb
-    buildStatusView(httpResponse, response, System.currentTimeMillis() - startTime.get());
-    response.getStatusInformations().complete();
+
+    responseListener.getSslSessionInfo().thenAccept(ssl -> {
+      ssl.ifPresent(sslSession ->
+          response.getStatusInformations().add("SSL", getCertDetails(sslSession)));
+    });
 
     return response;
+  }
+
+
+  private static Flux<byte[]> tapContentLength(Flux<byte[]> bodyPublisher,
+                                               RestResponseContainer response) {
+    AtomicLong byteCount = new AtomicLong(0);
+    bodyPublisher = bodyPublisher.doOnNext(bytes -> {
+      var curByteCount = byteCount.addAndGet(bytes.length);
+      response.getStatusInformations().add("Details", Map.of("Size", "" + curByteCount));
+    });
+    return bodyPublisher;
+  }
+
+  @SneakyThrows
+  private static Map<String, String> getCertDetails(SSLSession sslSession) {
+    LinkedHashMap<String, String> result = new LinkedHashMap<>();
+    result.put("Protocol", sslSession.getProtocol());
+    Certificate cert = sslSession.getPeerCertificates()[0];
+    result.put("Certificate type", cert.getType());
+    if (cert instanceof X509Certificate) {
+      var x509 = (X509Certificate) sslSession.getPeerCertificates()[0];
+      result.put("Subject", x509.getSubjectX500Principal().getName());
+      result.put("Valid from", x509.getNotBefore().toInstant().toString());
+      result.put("Valid until", x509.getNotAfter().toInstant().toString());
+    }
+    return result;
   }
 
   private static void addDebugOutput(Request request, RestResponseContainer response) {
@@ -139,23 +190,34 @@ public class JettyRequestProcessor implements RequestProcessor {
     }
   }
 
-  private static void buildStatusView(Response httpResponse, RestResponseContainer response,
-                                      long ttfbInMs) {
-    String versionStr = "undefined";
-    if (httpResponse.getVersion() == HttpVersion.HTTP_1_1) {
-      versionStr = "1.1";
-    } else if (httpResponse.getVersion() == HttpVersion.HTTP_2) {
-      versionStr = "2.0";
-    } else if (httpResponse.getVersion() == HttpVersion.HTTP_3) {
-      versionStr = "3.0";
-    }
-    response.getStatusInformations()
-        .add("Status", new ResponseContainer.StyledText("" + httpResponse.getStatus(),
-            getStyle(httpResponse.getStatus())))
-        .add("Details", Map.of(
-            "TTFB", ttfbInMs + "ms",
-            "Http", versionStr
-        ));
+  private static void buildStatusView(JettyResponseListener responseListener,
+                                      RestResponseContainer response) {
+    responseListener.getResponseLineInfo().thenAccept(info -> {
+      response.getStatusInformations()
+          .add("Status", new ResponseContainer.StyledText("" + info.getStatus(),
+              getStyle(info.getStatus())));
+
+      String versionStr = "undefined";
+      if (info.getVersion() == HttpVersion.HTTP_1_1) {
+        versionStr = "1.1";
+      } else if (info.getVersion() == HttpVersion.HTTP_2) {
+        versionStr = "2.0";
+      } else if (info.getVersion() == HttpVersion.HTTP_3) {
+        versionStr = "3.0";
+      }
+
+      response.getStatusInformations()
+          .add("Details", Map.of(
+              "Http", versionStr
+          ));
+    });
+
+
+    responseListener.getTtfb().thenAccept(ttfb -> {
+      response.getStatusInformations().add("Details", Map.of(
+          "TTFB", ttfb + "ms"
+      ));
+    });
   }
 
 
