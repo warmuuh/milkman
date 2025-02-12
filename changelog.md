@@ -4,6 +4,7 @@ version 5.10.0 - upcoming
   * upgraded to java 21
   * upgraded to javafx 21
   * fixed app-cds setup for startup optimization
+  * added new http-client `Jetty (experimental)` which supports socks5 proxy now
 
 version 5.9.0
   * added [marketplace](/milkman-plugins-management#marketplace) for plugins
