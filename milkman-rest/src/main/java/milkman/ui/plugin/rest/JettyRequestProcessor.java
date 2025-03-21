@@ -1,7 +1,11 @@
 package milkman.ui.plugin.rest;
 
+import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.SecureRandom;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
@@ -13,7 +17,10 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
 import lombok.SneakyThrows;
 import milkman.domain.ResponseContainer;
 import milkman.ui.main.options.CoreApplicationOptionsProvider;
@@ -27,6 +34,9 @@ import milkman.ui.plugin.rest.domain.RestRequestContainer;
 import milkman.ui.plugin.rest.domain.RestResponseBodyAspect;
 import milkman.ui.plugin.rest.domain.RestResponseContainer;
 import milkman.ui.plugin.rest.domain.RestResponseHeaderAspect;
+import milkman.ui.plugin.rest.tls.CertificateReader;
+import milkman.ui.plugin.rest.tls.CustomCertificateKeyManager;
+import milkman.ui.plugin.rest.tls.TrustAllTrustManager;
 import milkman.utils.AsyncResponseControl;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
@@ -238,7 +248,8 @@ public class JettyRequestProcessor implements RequestProcessor {
 
 
   private Request toRequest(RestRequestContainer request, HttpClient client, Templater templater) {
-    Request jreq = client.newRequest(templater.replaceTags(request.getUrl()));
+    URI uri = encodeUrl(templater.replaceTags(request.getUrl()));
+    Request jreq = client.newRequest(uri);
     jreq.method(request.getHttpMethod());
 
     request.getAspect(RestHeaderAspect.class)
@@ -274,6 +285,17 @@ public class JettyRequestProcessor implements RequestProcessor {
     }
 
     return jreq;
+  }
+
+  private static URI encodeUrl(String urlAsStr) {
+    //do proper url encoding, e.g. for special characters in path
+    try {
+      var url = new URL(urlAsStr);
+      return new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(),
+              url.getQuery(), url.getRef());
+    } catch (MalformedURLException | URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   private static HttpClient configureClient(RestRequestContainer request) {
@@ -326,23 +348,51 @@ public class JettyRequestProcessor implements RequestProcessor {
     //TODO support legacy ssl protocols "SSLv3","TLSv1","TLSv1.1","TLSv1.2"
 
     SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
+
+
+    TrustManager[] trustManagers = null;
+    KeyManager[] keyManagers = null;
+
     if (!HttpOptionsPluginProvider.options().isCertificateValidation()) {
-      sslContextFactory.setTrustAll(true);
+      // Create a trust manager that does not validate certificate chains
+      trustManagers = new TrustManager[]{
+          new TrustAllTrustManager()
+      };
     }
+
 
     //setup client cert if necessary
     if (StringUtils.isNotEmpty(request.getClientCertificate())) {
-//      CertificateReader certReader = new CertificateReader();
-//      milkman.ui.plugin.rest.tls.Certificate cert =
-//          HttpOptionsPluginProvider.options().getCertificates().stream()
-//              .filter(c -> c.getName().equals(request.getClientCertificate()))
-//              .findAny()
-//              .orElseThrow(() -> new IllegalStateException(
-//                  "Certificate not found: " + request.getClientCertificate()));
-//
-//      var x509Certificate = certReader.readCertificate(cert);
-//      var privateKey = certReader.readPrivateKey(cert);
-      //TODO: how to set client cert?
+      CertificateReader certReader = new CertificateReader();
+      milkman.ui.plugin.rest.tls.Certificate cert =
+          HttpOptionsPluginProvider.options().getCertificates().stream()
+              .filter(c -> c.getName().equals(request.getClientCertificate()))
+              .findAny()
+              .orElseThrow(() -> new IllegalStateException(
+                  "Certificate not found: " + request.getClientCertificate()));
+
+      try {
+        var x509Certificate = certReader.readCertificate(cert);
+        var privateKey = certReader.readPrivateKey(cert);
+        if (privateKey != null && x509Certificate != null) {
+          keyManagers =  new KeyManager[]{
+              new CustomCertificateKeyManager(x509Certificate, privateKey)
+          };
+        }
+
+      } catch (Exception e) {
+        throw new RuntimeException("Failed to load client certificate", e);
+      }
+
+
+      try {
+        SSLContext sc = SSLContext.getInstance("SSL");
+        sc.init(keyManagers, trustManagers, new SecureRandom());
+        sslContextFactory.setSslContext(sc);
+        sslContextFactory.setIncludeProtocols("SSLv3","TLSv1","TLSv1.1","TLSv1.2");
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
 
     ClientConnector connector = new ClientConnector();
