@@ -1,6 +1,6 @@
 # Changelog
 
-version 5.10.0 - upcoming
+version 5.10.0
   * upgraded to java 21
   * upgraded to javafx 21
   * fixed app-cds setup for startup optimization
