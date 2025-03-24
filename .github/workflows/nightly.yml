@@ -17,7 +17,7 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - uses: actions/cache@v1
+      - uses: actions/cache@v4
         with:
           path: ~/.mvnJlinkCache
           key: ${{ runner.os }}-mvnJlinkCache-${{ hashFiles('**/pom.xml') }}
