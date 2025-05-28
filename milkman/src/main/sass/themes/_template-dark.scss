@@ -92,7 +92,7 @@
 		}
 	}
 
-	.jfx-tree-table-view {
+	.table-view {
 		-fx-min-height: 200px;
 	}
 }
@@ -415,16 +415,17 @@
 		-fx-fill: $foreground;
 	}
 }
-.jfx-tree-table-view {
+.table-view {
 	-fx-background-color: darken($background, 10%);
-	.column-header {
+	.column-header, .column-header-background, .filler {
 		.label {
 			-fx-text-fill: $foreground;
 		}
 		-fx-border-width: 0 1 0 1;
 		-fx-border-color: $foreground;
+		-fx-background-color: darken($background, 10%);
 	}
-	.tree-table-cell {
+	.table-cell {
 		-fx-border-width: 0 0 0 0;
 		-fx-pref-height: 32px;
 		-fx-alignment: center-left;
@@ -438,7 +439,7 @@
 	>.virtual-flow {
 		>.clipped-container {
 			>.sheet {
-				>.tree-table-row-cell {
+				>.table-row-cell {
 					-fx-background-color: darken($background, 10%);
 				}
 			}
@@ -448,11 +449,11 @@
 		>.virtual-flow {
 			>.clipped-container {
 				>.sheet {
-					>.tree-table-row-cell {
+					>.table-row-cell {
 						&:filled {
 							&:selected {
 								-fx-background-color: lighten($background, 10%);
-								-fx-table-cell-border-color: -fx-tree-table-color;
+								-fx-table-cell-border-color: -fx-table-color;
 								-fx-text-fill: white;
 							}
 						}
@@ -460,16 +461,16 @@
 				}
 			}
 		}
-		.tree-table-row-cell {
+		.table-row-cell {
 			&:selected {
-				.tree-table-cell {
+				.table-cell {
 					-fx-text-fill: white;
 				}
 			}
 		}
 	}
-	.tree-table-row-cell {
-		.tree-table-cell {
+	.table-row-cell {
+		.table-cell {
 			-fx-text-fill: $foreground;
 		}
 	}

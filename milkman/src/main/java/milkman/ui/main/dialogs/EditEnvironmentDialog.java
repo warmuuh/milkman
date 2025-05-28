@@ -9,7 +9,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import milkman.domain.Environment;
 import milkman.domain.Environment.EnvironmentEntry;
-import milkman.ui.components.JfxTableEditor;
+import milkman.ui.components.TableEditor;
 import milkman.utils.fxml.FxmlBuilder.HboxExt;
 import milkman.utils.fxml.FxmlUtil;
 
@@ -20,7 +20,7 @@ import static milkman.utils.fxml.FxmlBuilder.label;
 
 public class EditEnvironmentDialog {
 
-	 JfxTableEditor<EnvironmentEntry> editor;
+	 TableEditor<EnvironmentEntry> editor;
 	private Dialog dialog;
 	JFXButton colorButton;
 	FontAwesomeIconView colorIcon;
@@ -80,7 +80,7 @@ public class EditEnvironmentDialog {
 
 			setHeading(new HboxExt(label("Edit Environment"), colorButton));
 
-			var editor = controller.editor = new JfxTableEditor<>("env.list");
+			var editor = controller.editor = new TableEditor<>("env.list");
 			editor.setMinHeight(500);
 			editor.setMinWidth(800);
 			setBody(editor);
