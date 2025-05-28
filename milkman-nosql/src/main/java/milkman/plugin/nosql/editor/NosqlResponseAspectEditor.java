@@ -12,16 +12,16 @@ import javafx.scene.layout.VBox;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 import milkman.plugin.nosql.domain.NosqlResponseAspect;
-import milkman.ui.components.JfxTableEditor;
+import milkman.ui.components.TableEditor;
 import milkman.ui.plugin.ResponseAspectEditor;
 
 public class NosqlResponseAspectEditor implements ResponseAspectEditor {
 
-	private JfxTableEditor<List<String>> editor;
+	private TableEditor<List<String>> editor;
 
 	@Override
 	public Tab getRoot(RequestContainer request, ResponseContainer response) {
-		editor = new JfxTableEditor<>("nosql.result.list");
+		editor = new TableEditor<>("nosql.result.list");
 		editor.disableAddition();
 		editor.setRowToStringConverter(this::rowToString);
 		VBox.setVgrow(editor, Priority.ALWAYS);

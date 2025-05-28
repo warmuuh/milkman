@@ -10,7 +10,7 @@ import javafx.scene.layout.VBox;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 import milkman.plugin.jdbc.domain.RowSetResponseAspect;
-import milkman.ui.components.JfxTableEditor;
+import milkman.ui.components.TableEditor;
 import milkman.ui.plugin.ResponseAspectEditor;
 
 import java.util.LinkedList;
@@ -19,7 +19,7 @@ import java.util.function.Function;
 
 public class JdbcResultSetAspectEditor implements ResponseAspectEditor {
 
-	private JfxTableEditor<List<String>> editor;
+	private TableEditor<List<String>> editor;
 
 	private boolean contentIsTransposed;
 
@@ -27,7 +27,7 @@ public class JdbcResultSetAspectEditor implements ResponseAspectEditor {
 
 	@Override
 	public Tab getRoot(RequestContainer request, ResponseContainer response) {
-		editor = new JfxTableEditor<>("jdbc.result.list");
+		editor = new TableEditor<>("jdbc.result.list");
 		editor.disableAddition();
 		editor.setRowToStringConverter(this::rowToString);
 		VBox.setVgrow(editor, Priority.ALWAYS);

@@ -32,7 +32,7 @@
 
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>
-		<javafx.version>21.0.2</javafx.version>
+		<javafx.version>24.0.1</javafx.version>
 	</properties>
 
 

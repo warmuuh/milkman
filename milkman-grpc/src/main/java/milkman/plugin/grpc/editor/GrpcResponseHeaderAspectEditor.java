@@ -7,7 +7,7 @@ import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 import milkman.plugin.grpc.domain.GrpcResponseHeaderAspect;
 import milkman.plugin.grpc.domain.HeaderEntry;
-import milkman.ui.components.JfxTableEditor;
+import milkman.ui.components.TableEditor;
 import milkman.ui.plugin.ResponseAspectEditor;
 
 public class GrpcResponseHeaderAspectEditor implements ResponseAspectEditor {
@@ -16,7 +16,7 @@ public class GrpcResponseHeaderAspectEditor implements ResponseAspectEditor {
 	@SneakyThrows
 	public Tab getRoot(RequestContainer request, ResponseContainer response) {
 		GrpcResponseHeaderAspect headers = response.getAspect(GrpcResponseHeaderAspect.class).get();
-		JfxTableEditor<HeaderEntry> editor = new JfxTableEditor<HeaderEntry>("grpc.resheaders.list");
+		TableEditor<HeaderEntry> editor = new TableEditor<HeaderEntry>("grpc.resheaders.list");
 		editor.disableAddition();
 		editor.addReadOnlyColumn("Name", HeaderEntry::getName);
 		editor.addReadOnlyColumn("Value", HeaderEntry::getValue);

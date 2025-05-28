@@ -14,7 +14,7 @@ import milkman.domain.RequestContainer;
 import milkman.plugin.nosql.domain.NosqlParameterAspect;
 import milkman.plugin.nosql.domain.ParameterEntry;
 import milkman.ui.components.AutoCompleter;
-import milkman.ui.components.JfxTableEditor;
+import milkman.ui.components.TableEditor;
 import milkman.ui.plugin.AutoCompletionAware;
 import milkman.ui.plugin.RequestAspectEditor;
 import org.apache.commons.io.IOUtils;
@@ -30,7 +30,7 @@ public class NosqlParametersAspectEditor implements RequestAspectEditor, AutoCom
 	@SneakyThrows
 	public Tab getRoot(RequestContainer request) {
 		NosqlParameterAspect params = request.getAspect(NosqlParameterAspect.class).get();
-		JfxTableEditor<ParameterEntry> editor = new JfxTableEditor<ParameterEntry>("nosql.parameters.list");
+		TableEditor<ParameterEntry> editor = new TableEditor<ParameterEntry>("nosql.parameters.list");
 		editor.enableAddition(() -> {
 			Platform.runLater( () -> params.setDirty(true));
 			return new ParameterEntry(UUID.randomUUID().toString(), "", "", true);
