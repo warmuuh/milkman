@@ -20,6 +20,7 @@ import com.jfoenix.controls.cells.editors.base.JFXTreeTableCell;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
@@ -329,7 +330,8 @@ public class JfxTableEditor<T> extends StackPane {
 		
 		TreeItem<RecursiveWrapper<T>> root = new RecursiveTreeItem<>(obsWrappedItems, RecursiveTreeObject::getChildren);
 		table.setRoot(root);
-		
+
+		delayedScrollToTop();
 //		Platform.runLater(() -> {
 //			table.resizeColumns();
 //		});
@@ -356,7 +358,21 @@ public class JfxTableEditor<T> extends StackPane {
 //		});
 		
 	}
-	
+
+	private void delayedScrollToTop() {
+		new Thread(() -> {
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+			Platform.runLater(() -> {
+				table.autosize();
+				table.scrollTo(5);
+			});
+		}).start();
+	}
+
 	public void clearContent() {
 		table.getColumns().clear();
 	}

@@ -2,15 +2,13 @@ package milkman.ui.components;
 
 import java.util.function.Consumer;
 
-import com.jfoenix.controls.cells.editors.TextFieldEditorBuilder;
-
 import javafx.beans.value.ChangeListener;
 import javafx.event.EventHandler;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
 import lombok.RequiredArgsConstructor;
-import milkman.ui.components.JfxTableEditor.TextFieldEditorBuilderPatch;
+import milkman.ui.components.TableEditor.TextFieldEditorBuilderPatch;
 
 @RequiredArgsConstructor
 public class InitializingCellBuilder extends TextFieldEditorBuilderPatch {

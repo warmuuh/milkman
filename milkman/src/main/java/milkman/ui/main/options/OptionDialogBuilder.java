@@ -21,7 +21,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import lombok.RequiredArgsConstructor;
-import milkman.ui.components.JfxTableEditor;
+import milkman.ui.components.TableEditor;
 import milkman.utils.fxml.GenericBinding;
 
 public class OptionDialogBuilder  {
@@ -180,7 +180,7 @@ public class OptionDialogBuilder  {
 			for (int i = 0; i < items.size(); i++) {
 				zipWithIndex.add(new HashMap.SimpleEntry<>(i, items.get(i)));
 			}
-			JfxTableEditor<Entry<Integer, String>> table = new JfxTableEditor<>("options.list");
+			TableEditor<Entry<Integer, String>> table = new TableEditor<>("options.list");
 			table.addColumn("Script Url", Entry::getValue, (e, v) -> {
 				e.setValue(v);
 				items.set(e.getKey(), v);
@@ -201,7 +201,7 @@ public class OptionDialogBuilder  {
 				Consumer<V> valueEditor
 				) {
 			List<V> items = itemProvider.apply(optionsObject);
-			JfxTableEditor<V> table = new JfxTableEditor<>("options.generic.list");
+			TableEditor<V> table = new TableEditor<>("options.generic.list");
 			columnValueProviders.forEach(table::addReadOnlyColumn);
 			table.enableAddition(newValueProvider);
 			table.addDeleteColumn("remove", items::remove);
@@ -217,7 +217,7 @@ public class OptionDialogBuilder  {
 
 		<V> OptionPaneBuilder<T> list(OptionListBuilder<T, V> listBuilder) {
 			var items = listBuilder.itemProvider.apply(optionsObject);
-			var table = new JfxTableEditor<V>("options.generic.list");
+			var table = new TableEditor<V>("options.generic.list");
 			listBuilder.columnValueProviders.forEach(table::addReadOnlyColumn);
 			table.enableAddition(listBuilder.newValueProvider);
 			table.addDeleteColumn("remove", items::remove, listBuilder.changeListener);
