@@ -271,7 +271,7 @@ public class JettyRequestProcessor implements RequestProcessor {
             if (mimeType == null) {
               mimeType = "text/plain";
             }
-            jreq.body(new StringRequestContent(bodyContent, mimeType));
+            jreq.body(new StringRequestContent(mimeType, bodyContent));
           }
         });
 
