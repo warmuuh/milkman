@@ -246,10 +246,10 @@ public class JettyRequestProcessor implements RequestProcessor {
     return style + "#fc3b14";
   }
 
-
+  @SneakyThrows
   private Request toRequest(RestRequestContainer request, HttpClient client, Templater templater) {
-    URI uri = encodeUrl(templater.replaceTags(request.getUrl()));
-    Request jreq = client.newRequest(uri);
+    String url = HttpUtil.escapeUrl(request, templater);
+    Request jreq = client.newRequest(url);
     jreq.method(request.getHttpMethod());
 
     request.getAspect(RestHeaderAspect.class)

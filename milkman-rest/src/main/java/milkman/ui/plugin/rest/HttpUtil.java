@@ -29,7 +29,10 @@ public class HttpUtil {
 		String finalUrl = templater.replaceTags(request.getUrl());
 		URL url = new URL(URLDecoder.decode(finalUrl));
 	    URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
-	    return uri.toASCIIString();
+		// fix missing encoding for [ and ]
+	    return uri.toASCIIString()
+				.replace("[", "%5B")
+				.replace("]", "%5D");
 	}
 	
 	public static String authorizationHeaderValue(PasswordAuthentication creds) {
