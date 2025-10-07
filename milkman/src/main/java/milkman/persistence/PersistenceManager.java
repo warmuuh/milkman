@@ -1,5 +1,6 @@
 package milkman.persistence;
 
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -105,9 +106,17 @@ public class PersistenceManager {
 	}
 	
 	private Nitrite createOrOpenDb(JacksonMapper nitriteMapper) {
+
+		String writableLocationForFile = PlatformUtil.getWritableLocationForFile("database.db");
+		var parent = new File(writableLocationForFile).getParentFile();
+		if (!parent.exists()) {
+			if (!parent.mkdirs()) {
+				throw new RuntimeException("Cannot create database folder " + parent.getAbsolutePath());
+			}
+		}
 		var createdDb = Nitrite.builder()
 		        .compressed()
-		        .filePath(PlatformUtil.getWritableLocationForFile("database.db"))
+		        .filePath(writableLocationForFile)
 		        .nitriteMapper(nitriteMapper)
 		        .openOrCreate("milkman", "bringthemilk");
 		if (createdDb == null)
