@@ -10,6 +10,7 @@ import milkman.plugin.mcp.domain.McpToolsAspect;
 import milkman.plugin.mcp.editor.McpQueryAspectEditor;
 import milkman.plugin.mcp.editor.McpRequestEditor;
 import milkman.plugin.mcp.editor.McpResponseAspectEditor;
+import milkman.plugin.mcp.editor.McpStructuredOutputAspectEditor;
 import milkman.plugin.mcp.editor.McpToolsAspectEditor;
 import milkman.ui.plugin.RequestAspectEditor;
 import milkman.ui.plugin.RequestAspectsPlugin;
@@ -30,7 +31,7 @@ public class McpPlugin implements RequestTypePlugin, RequestAspectsPlugin {
 
   @Override
   public List<ResponseAspectEditor> getResponseTabs() {
-    return List.of(new McpResponseAspectEditor());
+    return List.of(new McpResponseAspectEditor(), new McpStructuredOutputAspectEditor());
   }
 
   @Override

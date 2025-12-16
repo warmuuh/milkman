@@ -1,9 +1,11 @@
 package milkman.plugin.mcp;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.modelcontextprotocol.client.McpAsyncClient;
 import io.modelcontextprotocol.client.McpClient;
 import io.modelcontextprotocol.client.transport.HttpClientSseClientTransport;
 import io.modelcontextprotocol.spec.McpSchema;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
@@ -11,6 +13,7 @@ import milkman.plugin.mcp.domain.McpQueryAspect;
 import milkman.plugin.mcp.domain.McpRequestContainer;
 import milkman.plugin.mcp.domain.McpResponseAspect;
 import milkman.plugin.mcp.domain.McpResponseContainer;
+import milkman.plugin.mcp.domain.McpStructuredOutputAspect;
 import milkman.plugin.mcp.domain.McpToolsAspect;
 import milkman.plugin.mcp.domain.McpTransportType;
 import milkman.ui.plugin.Templater;
@@ -47,6 +50,11 @@ public class McpRequestProcessor {
     response.setResponse("trigger request in Query editor...");
     responseContainer.getAspects().add(response);
 
+
+    McpStructuredOutputAspect structuredOutputAspect = new McpStructuredOutputAspect();
+    structuredOutputAspect.setStructuredOutput("trigger request in Query editor...");
+    responseContainer.getAspects().add(structuredOutputAspect);
+
     asyncControl.onCancellationRequested.add(() -> {
       System.out.println("Disconnecting MCP client...");
       client.close();
@@ -66,22 +74,47 @@ public class McpRequestProcessor {
     McpSchema.Tool selectedTool = toolAspect.getSelectedMcpTool()
         .orElseThrow(() -> new IllegalArgumentException("No tool selected"));
 
-    McpResponseAspect responseAspect = response.getAspect(McpResponseAspect.class)
-        .orElseThrow(() -> new IllegalArgumentException("Missing response aspect"));
-
     McpAsyncClient mcpClient = ((McpResponseContainer) response).getMcpClient();
     mcpClient.callTool(McpSchema.CallToolRequest.builder()
             .name(selectedTool.name())
             .arguments(queryAspect.getQuery())
-        .build())
+            .build())
         .subscribe(
-            result -> updateResponse(result, responseAspect),
-            error -> responseAspect.setResponse("Failed to call tool: " + error.getMessage()));
+            result -> updateResponse(result, response),
+            error -> updateErrorResponse(error, response));
   }
 
-  private static void updateResponse(McpSchema.CallToolResult result, McpResponseAspect responseAspect) {
+  private void updateErrorResponse(Throwable error, ResponseContainer response) {
+    McpResponseAspect responseAspect = response.getAspect(McpResponseAspect.class)
+        .orElseThrow(() -> new IllegalArgumentException("Missing response aspect"));
+    responseAspect.setResponse("Failed to call tool: " + error.getMessage());
+  }
+
+  private static void updateResponse(McpSchema.CallToolResult result, ResponseContainer response) {
+    McpResponseAspect responseAspect = response.getAspect(McpResponseAspect.class)
+        .orElseThrow(() -> new IllegalArgumentException("Missing response aspect"));
+    responseAspect.setResponse(prettyPrintContents(result.content()));
+
+    McpStructuredOutputAspect structuredOutputAspect =
+        response.getAspect(McpStructuredOutputAspect.class)
+            .orElseThrow(() -> new IllegalArgumentException("Missing structured output aspect"));
+
+    if (result.structuredContent() == null) {
+      structuredOutputAspect.setStructuredOutput("No structured content returned.");
+    } else {
+      try {
+        structuredOutputAspect.setStructuredOutput(
+            JsonUtil.prettyPrint(result.structuredContent()));
+      } catch (JsonProcessingException e) {
+        structuredOutputAspect.setStructuredOutput(
+            "Failed to pretty print structured content: " + e.getMessage());
+      }
+    }
+  }
+
+  private static String prettyPrintContents(List<McpSchema.Content> contents) {
     StringBuilder sb = new StringBuilder();
-    for (McpSchema.Content content : result.content()) {
+    for (McpSchema.Content content : contents) {
       sb.append("Content Type: ").append(content.type()).append("\n");
       switch (content) {
         case McpSchema.TextContent text -> sb.append(text.text()).append("\n");
@@ -95,7 +128,6 @@ public class McpRequestProcessor {
         default -> sb.append("<omitted>\n");
       }
     }
-
-    responseAspect.setResponse(sb.toString());
+    return sb.toString();
   }
 }
