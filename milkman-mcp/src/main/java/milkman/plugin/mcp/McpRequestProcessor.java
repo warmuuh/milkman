@@ -23,6 +23,7 @@ import milkman.ui.plugin.Templater;
 import milkman.utils.AsyncResponseControl;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 @Slf4j
@@ -41,16 +42,20 @@ public class McpRequestProcessor {
     // TODO: disconnect when already connected
 
     var transport = HttpClientSseClientTransport.builder(request.getUrl()).build();
-    McpAsyncClient client = McpClient.async(transport).build();
+    McpAsyncClient client = McpClient.async(transport)
+        // TODO: setup consumers and show/trigger changes in UI
+        .loggingConsumer(notice -> {
+          log.info("MCP Notice: {}", notice);
+          return Mono.empty();
+        })
+        .build();
 
     McpResponseContainer responseContainer = new McpResponseContainer();
     responseContainer.setMcpClient(client);
 
-
     McpResponseAspect response = new McpResponseAspect();
     response.setResponse("trigger request in Query editor...");
     responseContainer.getAspects().add(response);
-
 
     McpStructuredOutputAspect structuredOutputAspect = new McpStructuredOutputAspect();
     structuredOutputAspect.setStructuredOutput("trigger request in Query editor...");
@@ -63,24 +68,29 @@ public class McpRequestProcessor {
 
     client.initialize().subscribeOn(Schedulers.boundedElastic())
         .subscribe(res -> {
-          responseContainer.getStatusInformations().add("Protocol", res.protocolVersion());
-          responseContainer.getStatusInformations().add("Server", Map.of(
-              "Server", res.serverInfo().name(),
-              "Server Version", res.serverInfo().version()
-          ));
-          responseContainer.getStatusInformations().add("Capabilities", Map.of(
-              "Tools", toCapabilityString(res.capabilities().tools()),
-              "Completions", toCapabilityString(res.capabilities().completions()),
-              "Logging", toCapabilityString(res.capabilities().logging()),
-              "Prompts", toCapabilityString(res.capabilities().prompts()),
-              "Resources", toCapabilityString(res.capabilities().resources()),
-              "Experimental", res.capabilities().experimental().keySet().toString()
-          ));
+          updateStatusOnInitialization(res, responseContainer);
           asyncControl.triggerReqeuestStarted();
           asyncControl.triggerReqeuestReady();
         });
 
     return responseContainer;
+  }
+
+  private static void updateStatusOnInitialization(
+      McpSchema.InitializeResult res, McpResponseContainer responseContainer) {
+    responseContainer.getStatusInformations().add("Protocol", res.protocolVersion());
+    responseContainer.getStatusInformations().add("Server", Map.of(
+        "Server", res.serverInfo().name(),
+        "Server Version", res.serverInfo().version()
+    ));
+    responseContainer.getStatusInformations().add("Capabilities", Map.of(
+        "Tools", toCapabilityString(res.capabilities().tools()),
+        "Completions", toCapabilityString(res.capabilities().completions()),
+        "Logging", toCapabilityString(res.capabilities().logging()),
+        "Prompts", toCapabilityString(res.capabilities().prompts()),
+        "Resources", toCapabilityString(res.capabilities().resources()),
+        "Experimental", res.capabilities().experimental().keySet().toString()
+    ));
   }
 
   private static String toCapabilityString(Object capabilityObject) {
