@@ -45,7 +45,7 @@ public class ResponseBodyTabController implements ResponseAspectEditor, ContentT
 		
 		AtomicInteger idx = new AtomicInteger(0);
 		body.getBody()
-				.subscribeOn(Schedulers.elastic())
+				.subscribeOn(Schedulers.boundedElastic())
 				.subscribe(
 				value -> {
 					val cidx = idx.getAndIncrement();

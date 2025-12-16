@@ -108,7 +108,7 @@ public class PersistenceManager {
 	private Nitrite createOrOpenDb(JacksonMapper nitriteMapper) {
 
 		String writableLocationForFile = PlatformUtil.getWritableLocationForFile("database.db");
-		var parent = new File(writableLocationForFile).getParentFile();
+		var parent = new File(writableLocationForFile).getAbsoluteFile().getParentFile();
 		if (!parent.exists()) {
 			if (!parent.mkdirs()) {
 				throw new RuntimeException("Cannot create database folder " + parent.getAbsolutePath());

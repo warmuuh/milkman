@@ -86,7 +86,7 @@ public class TestRunner {
 						asyncControl.triggerRequestSucceeded();
 						sink.complete();
 					})
-					.subscribeOn(Schedulers.elastic())
+					.subscribeOn(Schedulers.boundedElastic())
 					.publish().connect();
 			asyncControl.onCancellationRequested.add(subscription::dispose);
 		}).doOnComplete(() -> {
@@ -121,7 +121,7 @@ public class TestRunner {
 		return Mono.defer(() -> Mono.just(executor.executeRequest(request.getT3(), Optional.of(overrideEnv), asyncControl)))
 				.retryWhen(Retry.fixedDelay(testDetails.getRetries(), retryDelay)
 //						.filter(t -> !testDetails.isIgnore()) // might be wanted behavior: retry on error but ignore result, so we dont use this filter here
-						.scheduler(Schedulers.elastic()))
+						.scheduler(Schedulers.boundedElastic()))
 				.doOnNext(res -> replay.next(new TestResultEvent(request.getT1().toString(),
 						request.getT3().getName(),
 						SUCCEEDED,

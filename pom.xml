@@ -28,7 +28,8 @@
 		<module>milkman-sio</module>
 		<module>milkman-nosql</module>
 		<module>milkman-plugins-management</module>
-	</modules>
+        <module>milkman-mcp</module>
+    </modules>
 
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>
