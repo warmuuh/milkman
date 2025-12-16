@@ -1,11 +1,14 @@
 package milkman.plugin.mcp;
 
+import static org.apache.commons.lang3.builder.ToStringStyle.NO_CLASS_NAME_STYLE;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.modelcontextprotocol.client.McpAsyncClient;
 import io.modelcontextprotocol.client.McpClient;
 import io.modelcontextprotocol.client.transport.HttpClientSseClientTransport;
 import io.modelcontextprotocol.spec.McpSchema;
 import java.util.List;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
@@ -18,6 +21,8 @@ import milkman.plugin.mcp.domain.McpToolsAspect;
 import milkman.plugin.mcp.domain.McpTransportType;
 import milkman.ui.plugin.Templater;
 import milkman.utils.AsyncResponseControl;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import reactor.core.scheduler.Schedulers;
 
 @Slf4j
@@ -37,14 +42,10 @@ public class McpRequestProcessor {
 
     var transport = HttpClientSseClientTransport.builder(request.getUrl()).build();
     McpAsyncClient client = McpClient.async(transport).build();
-    client.initialize().subscribeOn(Schedulers.boundedElastic())
-        .subscribe(res -> {
-          asyncControl.triggerReqeuestStarted();
-          asyncControl.triggerReqeuestReady();
-        });
 
     McpResponseContainer responseContainer = new McpResponseContainer();
     responseContainer.setMcpClient(client);
+
 
     McpResponseAspect response = new McpResponseAspect();
     response.setResponse("trigger request in Query editor...");
@@ -56,12 +57,51 @@ public class McpRequestProcessor {
     responseContainer.getAspects().add(structuredOutputAspect);
 
     asyncControl.onCancellationRequested.add(() -> {
-      System.out.println("Disconnecting MCP client...");
       client.close();
       asyncControl.triggerRequestSucceeded();
     });
 
+    client.initialize().subscribeOn(Schedulers.boundedElastic())
+        .subscribe(res -> {
+          responseContainer.getStatusInformations().add("Protocol", res.protocolVersion());
+          responseContainer.getStatusInformations().add("Server", Map.of(
+              "Server", res.serverInfo().name(),
+              "Server Version", res.serverInfo().version()
+          ));
+          responseContainer.getStatusInformations().add("Capabilities", Map.of(
+              "Tools", toCapabilityString(res.capabilities().tools()),
+              "Completions", toCapabilityString(res.capabilities().completions()),
+              "Logging", toCapabilityString(res.capabilities().logging()),
+              "Prompts", toCapabilityString(res.capabilities().prompts()),
+              "Resources", toCapabilityString(res.capabilities().resources()),
+              "Experimental", res.capabilities().experimental().keySet().toString()
+          ));
+          asyncControl.triggerReqeuestStarted();
+          asyncControl.triggerReqeuestReady();
+        });
+
     return responseContainer;
+  }
+
+  private static String toCapabilityString(Object capabilityObject) {
+    if (capabilityObject == null) {
+      return "no";
+    }
+    ToStringStyle style = new ToStringStyle() {
+      {
+        this.setUseClassName(false);
+        this.setUseIdentityHashCode(false);
+        this.setContentStart("");
+        this.setContentEnd("");
+        this.setFieldSeparator(",");
+        this.setFieldNameValueSeparator(":");
+      }
+    };
+    String details = ToStringBuilder.reflectionToString(capabilityObject, style);
+    if (details.isEmpty()) {
+      return "yes";
+    }
+    return "yes (" + details + ")";
   }
 
   public void executeRequest(RequestContainer request, ResponseContainer response) {
