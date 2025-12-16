@@ -17,6 +17,7 @@ import milkman.ui.plugin.RequestTypeEditor;
 import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.ResponseAspectEditor;
 import milkman.ui.plugin.Templater;
+import milkman.utils.AsyncResponseControl;
 
 public class McpPlugin implements RequestTypePlugin, RequestAspectsPlugin {
 
@@ -24,7 +25,7 @@ public class McpPlugin implements RequestTypePlugin, RequestAspectsPlugin {
 
   @Override
   public List<RequestAspectEditor> getRequestTabs() {
-    return List.of(new McpToolsAspectEditor(), new McpQueryAspectEditor());
+    return List.of(new McpToolsAspectEditor(), new McpQueryAspectEditor(processor));
   }
 
   @Override
@@ -61,7 +62,13 @@ public class McpPlugin implements RequestTypePlugin, RequestAspectsPlugin {
 
   @Override
   public ResponseContainer executeRequest(RequestContainer request, Templater templater) {
-    return processor.connect((McpRequestContainer) request, templater);
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public ResponseContainer executeRequestAsync(RequestContainer request, Templater templater,
+      AsyncResponseControl.AsyncControl asyncControl) {
+    return processor.connect((McpRequestContainer) request, templater, asyncControl);
   }
 
   @Override

@@ -1,7 +1,7 @@
 package milkman.plugin.mcp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.modelcontextprotocol.client.McpSyncClient;
+import io.modelcontextprotocol.client.McpAsyncClient;
 import lombok.Data;
 import milkman.domain.ResponseContainer;
 
@@ -9,6 +9,6 @@ import milkman.domain.ResponseContainer;
 public class McpResponseContainer extends ResponseContainer {
 
   @JsonIgnore
-  McpSyncClient mcpClient;
+  McpAsyncClient mcpClient;
 
 }

@@ -1,6 +1,6 @@
 package milkman.plugin.mcp.editor;
 
-import io.modelcontextprotocol.client.McpSyncClient;
+import io.modelcontextprotocol.client.McpAsyncClient;
 import io.modelcontextprotocol.spec.McpSchema;
 import java.util.Optional;
 import javafx.application.Platform;
@@ -11,44 +11,57 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.SplitPane;
 import javafx.geometry.Orientation;
 import lombok.extern.slf4j.Slf4j;
+import milkman.ctrl.ExecutionListenerManager;
 import milkman.domain.RequestContainer;
+import milkman.domain.ResponseContainer;
 import milkman.plugin.mcp.domain.McpRequestContainer;
+import milkman.plugin.mcp.domain.McpResponseContainer;
 import milkman.plugin.mcp.domain.McpToolsAspect;
 import milkman.ui.main.Toaster;
+import milkman.ui.plugin.ExecutionListenerAware;
 import milkman.ui.plugin.RequestAspectEditor;
 import milkman.ui.plugin.ToasterAware;
-import milkman.utils.fxml.FxmlUtil;
 
 @Slf4j
-public class McpToolsAspectEditor implements RequestAspectEditor, ToasterAware {
+public class McpToolsAspectEditor implements RequestAspectEditor, ToasterAware,
+    ExecutionListenerAware {
   private Toaster toaster;
+  private ExecutionListenerManager executionListenerManager;
 
   @Override
   public Tab getRoot(RequestContainer request) {
+    return getRoot(request, Optional.empty());
+  }
+
+  @Override
+  public Tab getRoot(RequestContainer request, Optional<ResponseContainer> response) {
     var list = new ListView<McpSchema.Tool>();
     McpToolsAspect toolsAspect = request.getAspect(McpToolsAspect.class).get();
     list.getItems().addAll(toolsAspect.getTools());
     list.setCellFactory(param -> new McpToolListCell());
 
-    registerUpdateListener((McpRequestContainer) request, list, toolsAspect);
-
     var descriptionArea = new TextArea();
     descriptionArea.setEditable(false);
 
-
     list.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newTool) -> {
-      if (newTool != null) {
+      if (newTool != null && !newTool.name().equals(toolsAspect.getSelectedTool())) {
         toolsAspect.setSelectedTool(newTool.name());
+        request.setDirty(true);
       }
       descriptionArea.setText(newTool != null ? newTool.description() : "");
     });
 
-    toolsAspect.getSelectedTool().ifPresent(tool -> {
+    response.ifPresent(resp -> updateToolList((McpResponseContainer) resp, list, toolsAspect));
+    registerUpdateListener((McpRequestContainer) request, list, toolsAspect);
+
+    toolsAspect.getSelectedMcpTool().ifPresent(tool -> {
       Platform.runLater(() -> {
         list.getSelectionModel().select(tool);
-        descriptionArea.setText(tool.description());
       });
     });
+
+
+
 
     var splitPane = new SplitPane(list, descriptionArea);
     splitPane.setOrientation(Orientation.HORIZONTAL);
@@ -59,20 +72,43 @@ public class McpToolsAspectEditor implements RequestAspectEditor, ToasterAware {
 
   private void registerUpdateListener(
       McpRequestContainer request, ListView<McpSchema.Tool> list, McpToolsAspect toolsAspect) {
-    request.getMcpClient().subscribe(mcpClient -> {
-      Platform.runLater(() ->
-          updateToolList(mcpClient, list, toolsAspect));
-    });
+    executionListenerManager.listenOnExecution(request, "mcp-tool-list-updater",
+        new ExecutionListener() {
+          @Override
+          public void onRequestStarted(RequestContainer request, ResponseContainer response) {
+
+          }
+
+          @Override
+          public void onRequestReady(RequestContainer request, ResponseContainer response) {
+            Platform.runLater(() -> {
+              updateToolList((McpResponseContainer) response, list, toolsAspect);
+            });
+          }
+
+          @Override
+          public void onRequestFinished(RequestContainer request, ResponseContainer response) {
+
+          }
+        });
   }
 
   private void updateToolList(
-      McpSyncClient mcpClient, ListView<McpSchema.Tool> list, McpToolsAspect toolsAspect) {
+      McpResponseContainer response, ListView<McpSchema.Tool> list, McpToolsAspect toolsAspect) {
+    McpAsyncClient mcpClient = ((McpResponseContainer) response).getMcpClient();
     list.getItems().clear();
     try {
       log.info("Fetching MCP tools..., client: {}", mcpClient);
-      McpSchema.ListToolsResult result = mcpClient.listTools();
+      McpSchema.ListToolsResult result = mcpClient.listTools().block();
       toolsAspect.setTools(result.tools());
       list.getItems().setAll(toolsAspect.getTools());
+
+      toolsAspect.getSelectedMcpTool().ifPresent(tool -> {
+        Platform.runLater(() -> {
+          list.getSelectionModel().select(tool);
+          toolsAspect.getToolsChanged().invoke();
+        });
+      });
     } catch (Exception e) {
       toaster.showToast("Failed to fetch MCP tools: " + e.getMessage());
 
@@ -87,6 +123,11 @@ public class McpToolsAspectEditor implements RequestAspectEditor, ToasterAware {
   @Override
   public void setToaster(Toaster toaster) {
     this.toaster = toaster;
+  }
+
+  @Override
+  public void setExecutionListenerManager(ExecutionListenerManager manager) {
+    this.executionListenerManager = manager;
   }
 
   private class McpToolListCell extends ListCell<McpSchema.Tool> {

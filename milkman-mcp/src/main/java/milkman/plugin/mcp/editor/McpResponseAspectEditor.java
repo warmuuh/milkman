@@ -1,5 +1,6 @@
 package milkman.plugin.mcp.editor;
 
+import javafx.application.Platform;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Priority;
@@ -21,12 +22,14 @@ public class McpResponseAspectEditor implements ResponseAspectEditor {
 
 		initEditor(rowSetAspect);
 
-		return new Tab("Result", editor);
+		return new Tab("Contents", editor);
 	}
 
 
 	private void initEditor(McpResponseAspect rowSetAspect) {
-		editor.setText(rowSetAspect.getResponse());
+		rowSetAspect.getResponse().subscribe(s -> {
+			Platform.runLater(() -> editor.setText(s));
+		});
 	}
 
 	@Override

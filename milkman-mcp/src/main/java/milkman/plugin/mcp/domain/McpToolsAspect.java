@@ -2,14 +2,11 @@ package milkman.plugin.mcp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.modelcontextprotocol.spec.McpSchema;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import lombok.Data;
 import milkman.domain.RequestAspect;
 import milkman.utils.Event0;
-import milkman.utils.WeakEvent;
 
 @Data
 public class McpToolsAspect extends RequestAspect {
@@ -28,7 +25,7 @@ public class McpToolsAspect extends RequestAspect {
 	}
 
 	@JsonIgnore
-	public Optional<McpSchema.Tool> getSelectedTool() {
+	public Optional<McpSchema.Tool> getSelectedMcpTool() {
 		if (selectedTool == null || selectedTool.isEmpty())
 			return Optional.empty();
 		for (McpSchema.Tool tool : tools) {
