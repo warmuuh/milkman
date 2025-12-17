@@ -1,9 +1,8 @@
 package milkman.plugin.mcp.editor;
 
+import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
-import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -16,13 +15,12 @@ import milkman.ui.plugin.AutoCompletionAware;
 import milkman.ui.plugin.RequestTypeEditor;
 import milkman.utils.fxml.FxmlBuilder;
 import milkman.utils.fxml.FxmlBuilder.HboxExt;
-import milkman.utils.fxml.FxmlUtil;
 import milkman.utils.fxml.GenericBinding;
 
 public class McpRequestEditor implements RequestTypeEditor, AutoCompletionAware {
 
 
-  ChoiceBox<McpTransportType> type;
+  JFXComboBox type;
   TextField url;
 
 
@@ -82,7 +80,7 @@ public class McpRequestEditor implements RequestTypeEditor, AutoCompletionAware 
     public McpRequestEditorFxml(McpRequestEditor controller) {
       this.controller = controller;
       HBox.setHgrow(this, Priority.ALWAYS);
-      controller.type = add(FxmlBuilder.choiceBox("mcpTransportType"));
+      controller.type = add(FxmlBuilder.comboBox("mcpTransportType"));
       controller.type.getItems().addAll(McpTransportType.values());
 
       controller.url = add(new JFXTextField(), true);

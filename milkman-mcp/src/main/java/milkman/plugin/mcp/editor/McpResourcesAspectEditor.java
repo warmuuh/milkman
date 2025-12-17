@@ -4,6 +4,7 @@ import static milkman.utils.FunctionalUtils.run;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXListView;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import io.modelcontextprotocol.client.McpAsyncClient;
@@ -58,7 +59,7 @@ public class McpResourcesAspectEditor implements RequestAspectEditor, ToasterAwa
 
   @Override
   public Tab getRoot(RequestContainer request, Optional<ResponseContainer> response) {
-    this.resourceList = new ListView<McpSchema.Resource>();
+    this.resourceList = new JFXListView<>();
     McpResourcesAspect resourcesAspect = request.getAspect(McpResourcesAspect.class)
         .orElseThrow(() -> new IllegalArgumentException("Mcp Resource Aspect missing"));
     resourceList.getItems().addAll(resourcesAspect.getResources());

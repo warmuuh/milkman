@@ -4,6 +4,7 @@ import static milkman.utils.FunctionalUtils.run;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXListView;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import io.modelcontextprotocol.client.McpAsyncClient;
@@ -57,7 +58,7 @@ public class McpPromptsAspectEditor implements RequestAspectEditor, ToasterAware
 
   @Override
   public Tab getRoot(RequestContainer request, Optional<ResponseContainer> response) {
-    this.promptList = new ListView<McpSchema.Prompt>();
+    this.promptList = new JFXListView<>();
     McpPromptsAspect promptsAspect = request.getAspect(McpPromptsAspect.class)
         .orElseThrow(() -> new IllegalArgumentException("Mcp Prompt Aspect missing"));
     promptList.getItems().addAll(promptsAspect.getPrompts());

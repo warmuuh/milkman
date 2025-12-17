@@ -4,6 +4,7 @@ import static milkman.utils.FunctionalUtils.run;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXListView;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import io.modelcontextprotocol.client.McpAsyncClient;
@@ -57,7 +58,7 @@ public class McpToolsAspectEditor implements RequestAspectEditor, ToasterAware,
 
   @Override
   public Tab getRoot(RequestContainer request, Optional<ResponseContainer> response) {
-    this.toolList = new ListView<McpSchema.Tool>();
+    this.toolList = new JFXListView<>();
     McpToolsAspect toolsAspect = request.getAspect(McpToolsAspect.class)
         .orElseThrow(() -> new IllegalArgumentException("Mcp Tool Aspect missing"));
     toolList.getItems().addAll(toolsAspect.getTools());
