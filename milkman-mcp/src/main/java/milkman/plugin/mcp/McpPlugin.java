@@ -4,10 +4,10 @@ import java.util.List;
 import milkman.domain.RequestContainer;
 import milkman.domain.RequestExecutionContext;
 import milkman.domain.ResponseContainer;
-import milkman.plugin.mcp.domain.McpQueryAspect;
 import milkman.plugin.mcp.domain.McpRequestContainer;
 import milkman.plugin.mcp.domain.McpToolsAspect;
-import milkman.plugin.mcp.editor.McpQueryAspectEditor;
+import milkman.plugin.mcp.domain.McpTransportType;
+import milkman.plugin.mcp.editor.McpInstructionsAspectEditor;
 import milkman.plugin.mcp.editor.McpRequestEditor;
 import milkman.plugin.mcp.editor.McpResponseAspectEditor;
 import milkman.plugin.mcp.editor.McpStructuredOutputAspectEditor;
@@ -18,6 +18,7 @@ import milkman.ui.plugin.RequestTypeEditor;
 import milkman.ui.plugin.RequestTypePlugin;
 import milkman.ui.plugin.ResponseAspectEditor;
 import milkman.ui.plugin.Templater;
+import milkman.ui.plugin.rest.domain.RestHeaderAspect;
 import milkman.utils.AsyncResponseControl;
 
 public class McpPlugin implements RequestTypePlugin, RequestAspectsPlugin {
@@ -26,22 +27,22 @@ public class McpPlugin implements RequestTypePlugin, RequestAspectsPlugin {
 
   @Override
   public List<RequestAspectEditor> getRequestTabs() {
-    return List.of(new McpToolsAspectEditor(), new McpQueryAspectEditor(processor));
+    return List.of(new McpToolsAspectEditor(processor));
   }
 
   @Override
   public List<ResponseAspectEditor> getResponseTabs() {
-    return List.of(new McpResponseAspectEditor(), new McpStructuredOutputAspectEditor());
+    return List.of(new McpResponseAspectEditor(), new McpStructuredOutputAspectEditor(), new McpInstructionsAspectEditor());
   }
 
   @Override
   public void initializeRequestAspects(RequestContainer request) {
     if (request instanceof McpRequestContainer) {
-      if (!request.getAspect(McpQueryAspect.class).isPresent()) {
-        request.addAspect(new McpQueryAspect());
-      }
       if (!request.getAspect(McpToolsAspect.class).isPresent()) {
         request.addAspect(new McpToolsAspect());
+      }
+      if (!request.getAspect(RestHeaderAspect.class).isPresent()) {
+        request.addAspect(new RestHeaderAspect());
       }
     }
   }
@@ -53,7 +54,7 @@ public class McpPlugin implements RequestTypePlugin, RequestAspectsPlugin {
 
   @Override
   public RequestContainer createNewRequest() {
-    return new McpRequestContainer("New Mcp Request", "");
+    return new McpRequestContainer("New Mcp Request", McpTransportType.Sse,"");
   }
 
   @Override

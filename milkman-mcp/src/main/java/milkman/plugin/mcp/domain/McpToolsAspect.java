@@ -12,17 +12,10 @@ import milkman.utils.Event0;
 public class McpToolsAspect extends RequestAspect {
 
 	String selectedTool;
+	String query;
 
 	@JsonIgnore
 	List<McpSchema.Tool> tools = List.of();
-
-	@JsonIgnore
-	Event0 toolsChanged = new Event0();
-
-	public void setSelectedTool(String selectedTool) {
-		this.selectedTool = selectedTool;
-		toolsChanged.invoke();
-	}
 
 	@JsonIgnore
 	public Optional<McpSchema.Tool> getSelectedMcpTool() {

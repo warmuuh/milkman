@@ -15,7 +15,7 @@ import milkman.domain.RequestContainer;
 public class McpRequestContainer extends RequestContainer {
 
 
-  private McpTransportType transport = McpTransportType.Sse;
+  private McpTransportType transport;
   private String url;
 
   @Override
@@ -23,9 +23,10 @@ public class McpRequestContainer extends RequestContainer {
     return "Mcp";
   }
 
-  public McpRequestContainer(String name, String url) {
+  public McpRequestContainer(String name, McpTransportType transport, String url) {
     super(name);
     this.url = url;
+    this.transport = transport;
   }
 
 }

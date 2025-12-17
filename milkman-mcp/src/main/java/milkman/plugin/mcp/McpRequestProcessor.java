@@ -1,28 +1,31 @@
 package milkman.plugin.mcp;
 
-import static org.apache.commons.lang3.builder.ToStringStyle.NO_CLASS_NAME_STYLE;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.modelcontextprotocol.client.McpAsyncClient;
 import io.modelcontextprotocol.client.McpClient;
 import io.modelcontextprotocol.client.transport.HttpClientSseClientTransport;
+import io.modelcontextprotocol.client.transport.HttpClientStreamableHttpTransport;
 import io.modelcontextprotocol.spec.McpSchema;
+import java.net.http.HttpRequest;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
-import milkman.plugin.mcp.domain.McpQueryAspect;
+import milkman.plugin.mcp.domain.McpInstructionsAspect;
 import milkman.plugin.mcp.domain.McpRequestContainer;
 import milkman.plugin.mcp.domain.McpResponseAspect;
 import milkman.plugin.mcp.domain.McpResponseContainer;
 import milkman.plugin.mcp.domain.McpStructuredOutputAspect;
 import milkman.plugin.mcp.domain.McpToolsAspect;
-import milkman.plugin.mcp.domain.McpTransportType;
 import milkman.ui.plugin.Templater;
+import milkman.ui.plugin.rest.domain.RestHeaderAspect;
 import milkman.utils.AsyncResponseControl;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
@@ -35,23 +38,49 @@ public class McpRequestProcessor {
       AsyncResponseControl.AsyncControl asyncControl
   ) {
 
-    if (request.getTransport() != McpTransportType.Sse) {
-      throw new UnsupportedOperationException("Only SSE transport is supported for now");
-    }
+    RestHeaderAspect headers = request.getAspect(RestHeaderAspect.class)
+        .orElseThrow(() -> new IllegalArgumentException("Missing headers aspect"));
+    Consumer<HttpRequest.Builder> addHeaders = httpRequest -> {
+        for (var header : headers.getEntries()) {
+          if (header.isEnabled()) {
+            String headerName = templater.replaceTags(header.getName());
+            String headerValue = templater.replaceTags(header.getValue());
+            httpRequest.header(headerName, headerValue);
+          }
+        }
+    };
 
+    // TODO: support other transports
     // TODO: disconnect when already connected
+    // TODO: figure out endpoint and set it explicitly
+    var transport = switch (request.getTransport()) {
+      case Sse -> HttpClientSseClientTransport
+          .builder(request.getUrl())
+          .customizeRequest(addHeaders)
+          .build();
+      case StreamableHttp -> HttpClientStreamableHttpTransport
+          .builder(request.getUrl())
+          .customizeRequest(addHeaders)
+          .build();
+      default ->  throw new UnsupportedOperationException("Only SSE transport is supported for now");
+    };
 
-    var transport = HttpClientSseClientTransport.builder(request.getUrl()).build();
+
     McpAsyncClient client = McpClient.async(transport)
         // TODO: setup consumers and show/trigger changes in UI
         .loggingConsumer(notice -> {
           log.info("MCP Notice: {}", notice);
           return Mono.empty();
         })
+        .initializationTimeout(Duration.ofSeconds(5))
         .build();
 
     McpResponseContainer responseContainer = new McpResponseContainer();
     responseContainer.setMcpClient(client);
+
+
+    McpInstructionsAspect instructionsAspect = new McpInstructionsAspect();
+    responseContainer.getAspects().add(instructionsAspect);
 
     McpResponseAspect response = new McpResponseAspect();
     response.setResponse("trigger request in Query editor...");
@@ -69,8 +98,12 @@ public class McpRequestProcessor {
     client.initialize().subscribeOn(Schedulers.boundedElastic())
         .subscribe(res -> {
           updateStatusOnInitialization(res, responseContainer);
+          instructionsAspect.setInstructions(res.instructions());
           asyncControl.triggerReqeuestStarted();
           asyncControl.triggerReqeuestReady();
+        }, err -> {
+          updateErrorResponse(err, responseContainer);
+          asyncControl.triggerRequestFailed(err);
         });
 
     return responseContainer;
@@ -89,7 +122,9 @@ public class McpRequestProcessor {
         "Logging", toCapabilityString(res.capabilities().logging()),
         "Prompts", toCapabilityString(res.capabilities().prompts()),
         "Resources", toCapabilityString(res.capabilities().resources()),
-        "Experimental", res.capabilities().experimental().keySet().toString()
+        "Experimental", res.capabilities().experimental() != null
+            ? res.capabilities().experimental().keySet().toString()
+            : "no"
     ));
   }
 
@@ -114,20 +149,18 @@ public class McpRequestProcessor {
     return "yes (" + details + ")";
   }
 
-  public void executeRequest(RequestContainer request, ResponseContainer response) {
+  public void callTool(RequestContainer request, ResponseContainer response) {
 
     McpToolsAspect toolAspect = request.getAspect(McpToolsAspect.class)
         .orElseThrow(() -> new IllegalArgumentException("Missing tools aspect"));
 
-    McpQueryAspect queryAspect = request.getAspect(McpQueryAspect.class)
-        .orElseThrow(() -> new IllegalArgumentException("Missing query aspect"));
     McpSchema.Tool selectedTool = toolAspect.getSelectedMcpTool()
         .orElseThrow(() -> new IllegalArgumentException("No tool selected"));
 
     McpAsyncClient mcpClient = ((McpResponseContainer) response).getMcpClient();
     mcpClient.callTool(McpSchema.CallToolRequest.builder()
             .name(selectedTool.name())
-            .arguments(queryAspect.getQuery())
+            .arguments(toolAspect.getQuery())
             .build())
         .subscribe(
             result -> updateResponse(result, response),
@@ -137,7 +170,8 @@ public class McpRequestProcessor {
   private void updateErrorResponse(Throwable error, ResponseContainer response) {
     McpResponseAspect responseAspect = response.getAspect(McpResponseAspect.class)
         .orElseThrow(() -> new IllegalArgumentException("Missing response aspect"));
-    responseAspect.setResponse("Failed to call tool: " + error.getMessage());
+    var rootCause = ExceptionUtils.getRootCauseMessage(error);
+    responseAspect.setResponse("Failed to call mcp: " + rootCause);
   }
 
   private static void updateResponse(McpSchema.CallToolResult result, ResponseContainer response) {
