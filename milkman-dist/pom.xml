@@ -47,6 +47,11 @@
 		</dependency>
 		<dependency>
 			<groupId>com.github.warmuuh</groupId>
+			<artifactId>milkman-mcp</artifactId>
+			<version>5.11.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.warmuuh</groupId>
 			<artifactId>milkman-cassandra</artifactId>
 			<version>5.11.0-SNAPSHOT</version>
 		</dependency>

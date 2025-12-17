@@ -140,8 +140,8 @@ public class FxmlBuilder {
 		return spacer;
 	}
 	
-	public static ChoiceBox choiceBox(String id) {
-		ChoiceBox cb = new ChoiceBox();
+	public static <T> ChoiceBox<T> choiceBox(String id) {
+		ChoiceBox<T> cb = new ChoiceBox<>();
 		cb.setId(id);
 		return cb;
 	}

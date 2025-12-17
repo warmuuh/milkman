@@ -89,6 +89,12 @@
       "name": "milkman-ws",
       "artifact": "milkman-ws.jar",
       "description": "Support for websocket transport"
+    },
+    {
+      "author": "warmuuh",
+      "name": "milkman-mcp",
+      "artifact": "milkman-mcp.jar",
+      "description": "Support for MCP protocol"
     }
   ]
 }

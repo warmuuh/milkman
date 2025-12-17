@@ -1,5 +1,9 @@
 # Changelog
 
+upcoming - version 5.12.0:
+  * upgraded reactor to 3.7.0
+  * added [MCP plugin](/milkman-mcp)
+
 version 5.11.0
   * fixing display bugs in tables ([#197](https://github.com/warmuuh/milkman/issues/197))
 

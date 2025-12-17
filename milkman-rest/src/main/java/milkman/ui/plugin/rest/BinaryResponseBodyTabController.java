@@ -54,7 +54,7 @@ public class BinaryResponseBodyTabController implements ResponseAspectEditor, To
 
 
 		body.getBody()
-				.subscribeOn(Schedulers.elastic())
+				.subscribeOn(Schedulers.boundedElastic())
 				.collectList()
 				.map(BinaryUtil::concat)
 				.subscribe(bytes -> {
