@@ -105,6 +105,8 @@ A Socket.IO plugin for interacting with Socket.IO endpoints
 ### [NoSql Plugin](/milkman-nosql)
 A NoSql plugin for interacting with all kinds of NoSql Databases
 
+### [MCP Plugin](/milkman-mcp)
+A plugin for interacting with local/remote MCP Servers ([Model Context Protocol](http://modelcontextprotocol.io))
 
 # Showcase
 
