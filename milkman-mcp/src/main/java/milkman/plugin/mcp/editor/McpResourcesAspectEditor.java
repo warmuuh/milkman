@@ -46,10 +46,10 @@ public class McpResourcesAspectEditor implements RequestAspectEditor, ToasterAwa
     ExecutionListenerAware, ContentTypeAwareEditor {
   private Toaster toaster;
   private ExecutionListenerManager executionListenerManager;
-  private List<ContentTypePlugin> contentTypePlugins;
   private ListView<McpSchema.Resource> resourceList;
   private final McpRequestProcessor mcpRequestProcessor;
-  private TextArea inputSchema;
+  private ContentEditor inputSchema;
+  private List<ContentTypePlugin> contentTypePlugins;
 
   @Override
   public Tab getRoot(RequestContainer request) {
@@ -66,6 +66,7 @@ public class McpResourcesAspectEditor implements RequestAspectEditor, ToasterAwa
 
     var descriptionArea = new TextArea();
     descriptionArea.setEditable(false);
+    descriptionArea.getStyleClass().add("disabled");
 
     resourceList.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newResource) -> {
       if (newResource != null && !newResource.name().equals(resourcesAspect.getSelectedResource())) {
@@ -86,9 +87,14 @@ public class McpResourcesAspectEditor implements RequestAspectEditor, ToasterAwa
     });
 
 
-    this.inputSchema = new TextArea();
+    this.inputSchema = new ContentEditor();
     inputSchema.setEditable(false);
-    inputSchema.setText("No resource selected");
+    inputSchema.setDisableContent(true);
+    inputSchema.setContent(() -> "No resource selected", s -> {});
+    inputSchema.setContentTypePlugins(contentTypePlugins);
+    inputSchema.setContentType("application/json");
+    inputSchema.setHeaderVisibility(false);
+    inputSchema.showLineNumbers(false);
     updateInputSchema(resourcesAspect);
 
 
@@ -135,7 +141,7 @@ public class McpResourcesAspectEditor implements RequestAspectEditor, ToasterAwa
     resourceAspect.getSelectedMcpResource().ifPresent(resourceSpec -> {
       try {
         String prettySchema = JsonUtil.prettyPrint(resourceSpec);
-        inputSchema.setText(prettySchema);
+        inputSchema.setContent(() -> prettySchema, s -> {});
       } catch (JsonProcessingException e) {
         log.error("Failed to serialize resource spec", e);
       }

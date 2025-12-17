@@ -48,7 +48,7 @@ public class McpPromptsAspectEditor implements RequestAspectEditor, ToasterAware
   private List<ContentTypePlugin> contentTypePlugins;
   private ListView<McpSchema.Prompt> promptList;
   private final McpRequestProcessor mcpRequestProcessor;
-  private TextArea inputSchema;
+  private ContentEditor inputSchema;
 
   @Override
   public Tab getRoot(RequestContainer request) {
@@ -65,6 +65,7 @@ public class McpPromptsAspectEditor implements RequestAspectEditor, ToasterAware
 
     var descriptionArea = new TextArea();
     descriptionArea.setEditable(false);
+    descriptionArea.getStyleClass().add("disabled");
 
     promptList.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newPrompt) -> {
       if (newPrompt != null && !newPrompt.name().equals(promptsAspect.getSelectedPrompt())) {
@@ -84,10 +85,15 @@ public class McpPromptsAspectEditor implements RequestAspectEditor, ToasterAware
       });
     });
 
-
-    this.inputSchema = new TextArea();
+    this.inputSchema = new ContentEditor();
     inputSchema.setEditable(false);
-    inputSchema.setText("No prompt selected");
+    inputSchema.setDisableContent(true);
+    inputSchema.setContent(() -> "No prompt selected", s -> {});
+    inputSchema.setContentTypePlugins(contentTypePlugins);
+    inputSchema.setContentType("application/json");
+    inputSchema.setHeaderVisibility(false);
+    inputSchema.showLineNumbers(false);
+
     updateInputSchema(promptsAspect);
 
     ContentEditor editor = new ContentEditor();
@@ -145,7 +151,7 @@ public class McpPromptsAspectEditor implements RequestAspectEditor, ToasterAware
     promptAspect.getSelectedMcpPrompt().ifPresent(promptSpec -> {
       try {
         String prettySchema = JsonUtil.prettyPrint(promptSpec.arguments());
-        inputSchema.setText(prettySchema);
+        inputSchema.setContent(() -> prettySchema, s -> {});
       } catch (JsonProcessingException e) {
         log.error("Failed to serialize input schema", e);
       }

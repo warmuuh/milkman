@@ -360,6 +360,14 @@ public class ContentEditor extends VBox {
 		}
 	}
 
+	public void showLineNumbers(boolean showLineNumbers) {
+		if (showLineNumbers) {
+			setupParagraphGraphics();
+		} else {
+			codeArea.setParagraphGraphicFactory(null);
+		}
+	}
+
 	private void setupAutoIndentation() {
 		codeArea.addEventFilter(KeyEvent.KEY_PRESSED, ke -> {
 			if (ke.getCode() == KeyCode.ENTER){

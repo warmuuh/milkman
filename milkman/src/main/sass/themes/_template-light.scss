@@ -419,3 +419,10 @@
 .jfx-text-field > .input-focused-line {
     -fx-background-color: $main-accent;
 }
+
+.disabled {
+	-fx-background-color: lightgrey;
+	.content {
+		-fx-background-color: lightgrey;
+	}
+}

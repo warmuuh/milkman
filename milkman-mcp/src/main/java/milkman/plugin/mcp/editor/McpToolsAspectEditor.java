@@ -48,7 +48,7 @@ public class McpToolsAspectEditor implements RequestAspectEditor, ToasterAware,
   private List<ContentTypePlugin> contentTypePlugins;
   private ListView<McpSchema.Tool> toolList;
   private final McpRequestProcessor mcpRequestProcessor;
-  private TextArea inputSchema;
+  private ContentEditor inputSchema;
 
   @Override
   public Tab getRoot(RequestContainer request) {
@@ -65,6 +65,7 @@ public class McpToolsAspectEditor implements RequestAspectEditor, ToasterAware,
 
     var descriptionArea = new TextArea();
     descriptionArea.setEditable(false);
+    descriptionArea.getStyleClass().add("disabled");
 
     toolList.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newTool) -> {
       if (newTool != null && !newTool.name().equals(toolsAspect.getSelectedTool())) {
@@ -85,9 +86,14 @@ public class McpToolsAspectEditor implements RequestAspectEditor, ToasterAware,
     });
 
 
-    this.inputSchema = new TextArea();
+    this.inputSchema = new ContentEditor();
     inputSchema.setEditable(false);
-    inputSchema.setText("No tool selected");
+    inputSchema.setDisableContent(true);
+    inputSchema.setContent(() -> "No tool selected", s -> {});
+    inputSchema.setContentTypePlugins(contentTypePlugins);
+    inputSchema.setContentType("application/json");
+    inputSchema.setHeaderVisibility(false);
+    inputSchema.showLineNumbers(false);
     updateInputSchema(toolsAspect);
 
     ContentEditor editor = new ContentEditor();
@@ -145,7 +151,7 @@ public class McpToolsAspectEditor implements RequestAspectEditor, ToasterAware,
     toolAspect.getSelectedMcpTool().ifPresent(toolSpec -> {
       try {
         String prettySchema = JsonUtil.prettyPrint(toolSpec.inputSchema());
-        inputSchema.setText(prettySchema);
+        inputSchema.setContent(() -> prettySchema, s -> {});
       } catch (JsonProcessingException e) {
         log.error("Failed to serialize input schema", e);
       }
