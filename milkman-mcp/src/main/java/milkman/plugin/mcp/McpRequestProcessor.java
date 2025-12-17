@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
@@ -51,28 +52,34 @@ public class McpRequestProcessor {
 
     RestHeaderAspect headers = request.getAspect(RestHeaderAspect.class)
         .orElseThrow(() -> new IllegalArgumentException("Missing headers aspect"));
+
+    Map<String, String> headerMap = headers.getEntries().stream()
+        .filter(HeaderEntry::isEnabled)
+        .collect(
+            Collectors.toMap(
+                entry -> templater.replaceTags(entry.getName()),
+                entry -> templater.replaceTags(entry.getValue())
+            )
+        );
+
     Consumer<HttpRequest.Builder> addHeaders = httpRequest -> {
-      for (var header : headers.getEntries()) {
-        if (header.isEnabled()) {
-          String headerName = templater.replaceTags(header.getName());
-          String headerValue = templater.replaceTags(header.getValue());
-          httpRequest.header(headerName, headerValue);
-        }
-      }
+      headerMap.forEach(httpRequest::header);
     };
+
+    String url = templater.replaceTags(request.getUrl());
 
     var transport = switch (request.getTransport()) {
       case Sse -> HttpClientSseClientTransport
-          .builder(getBaseUri(request.getUrl()))
-          .sseEndpoint(getEndpointFromUrl(request.getUrl()))
+          .builder(getBaseUri(url))
+          .sseEndpoint(getEndpointFromUrl(url))
           .customizeRequest(addHeaders)
           .build();
       case StreamableHttp -> HttpClientStreamableHttpTransport
-          .builder(getBaseUri(request.getUrl()))
-          .endpoint(getEndpointFromUrl(request.getUrl()))
+          .builder(getBaseUri(url))
+          .endpoint(getEndpointFromUrl(url))
           .customizeRequest(addHeaders)
           .build();
-      case StdIo -> new StdioClientTransport(buildServerParams(request, templater));
+      case StdIo -> new StdioClientTransport(buildServerParams(url, headerMap));
     };
 
     transport.setExceptionHandler(t -> {
@@ -140,24 +147,12 @@ public class McpRequestProcessor {
   }
 
   private static ServerParameters buildServerParams(
-      McpRequestContainer request,
-      Templater templater
+      String url,
+      Map<String, String> headers
   ) {
-    RestHeaderAspect headers = request.getAspect(RestHeaderAspect.class)
-        .orElseThrow(() -> new IllegalArgumentException("Missing headers aspect"));
-    Map<String, String> envMap = headers.getEntries().stream()
-        .filter(HeaderEntry::isEnabled)
-        .collect(
-            java.util.stream.Collectors.toMap(
-                HeaderEntry::getName,
-                entry -> templater.replaceTags(entry.getValue())
-            )
-        );
-
     //split "url" (which we use as argument string) into command and list of args
-    var commandLine = templater.replaceTags(request.getUrl()).trim();
 
-    var parts = commandLine.split(" ");
+    var parts = url.split(" ");
     if (parts.length == 0) {
       throw new IllegalArgumentException("No command specified in url field");
     }
@@ -166,7 +161,7 @@ public class McpRequestProcessor {
 
     return ServerParameters.builder(command)
         .args(args)
-        .env(envMap)
+        .env(headers)
         .build();
   }
 
