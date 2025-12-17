@@ -4,12 +4,15 @@ import java.util.List;
 import milkman.domain.RequestContainer;
 import milkman.domain.RequestExecutionContext;
 import milkman.domain.ResponseContainer;
+import milkman.plugin.mcp.domain.McpPromptsAspect;
 import milkman.plugin.mcp.domain.McpRequestContainer;
 import milkman.plugin.mcp.domain.McpResourcesAspect;
 import milkman.plugin.mcp.domain.McpResponseAspect;
 import milkman.plugin.mcp.domain.McpToolsAspect;
 import milkman.plugin.mcp.domain.McpTransportType;
+import milkman.plugin.mcp.editor.McpEventAspectEditor;
 import milkman.plugin.mcp.editor.McpInstructionsAspectEditor;
+import milkman.plugin.mcp.editor.McpPromptsAspectEditor;
 import milkman.plugin.mcp.editor.McpRequestEditor;
 import milkman.plugin.mcp.editor.McpResourcesAspectEditor;
 import milkman.plugin.mcp.editor.McpResponseAspectEditor;
@@ -30,12 +33,17 @@ public class McpPlugin implements RequestTypePlugin, RequestAspectsPlugin {
 
   @Override
   public List<RequestAspectEditor> getRequestTabs() {
-    return List.of(new McpToolsAspectEditor(processor), new McpResourcesAspectEditor(processor));
+    return List.of(new McpToolsAspectEditor(processor),
+        new McpResourcesAspectEditor(processor),
+        new McpPromptsAspectEditor(processor));
   }
 
   @Override
   public List<ResponseAspectEditor> getResponseTabs() {
-    return List.of(new McpResponseAspectEditor(), new McpStructuredOutputAspectEditor(), new McpInstructionsAspectEditor());
+    return List.of(new McpResponseAspectEditor(),
+        new McpStructuredOutputAspectEditor(),
+        new McpInstructionsAspectEditor(),
+        new McpEventAspectEditor());
   }
 
   @Override
@@ -46,6 +54,9 @@ public class McpPlugin implements RequestTypePlugin, RequestAspectsPlugin {
       }
       if (!request.getAspect(McpResourcesAspect.class).isPresent()) {
         request.addAspect(new McpResourcesAspect());
+      }
+      if (!request.getAspect(McpPromptsAspect.class).isPresent()) {
+        request.addAspect(new McpPromptsAspect());
       }
       if (!request.getAspect(RestHeaderAspect.class).isPresent()) {
         request.addAspect(new RestHeaderAspect());

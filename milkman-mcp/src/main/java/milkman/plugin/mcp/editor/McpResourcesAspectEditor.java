@@ -108,7 +108,7 @@ public class McpResourcesAspectEditor implements RequestAspectEditor, ToasterAwa
     StackPane.setAlignment(addItemBtn, Pos.BOTTOM_RIGHT);
     StackPane.setMargin(addItemBtn, new Insets(0, 20, 20, 0));
 
-    executionListenerManager.listenOnExecution(request, "mcp-msg-sender-listener",
+    executionListenerManager.listenOnExecution(request, "mcp-msg-resources-listener",
         new ExecutionListener() {
           @Override
           public void onRequestStarted(RequestContainer request, ResponseContainer response) {

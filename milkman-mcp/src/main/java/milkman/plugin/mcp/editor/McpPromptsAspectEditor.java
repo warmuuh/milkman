@@ -12,14 +12,14 @@ import java.util.List;
 import java.util.Optional;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.SplitPane;
-import javafx.geometry.Orientation;
 import javafx.scene.layout.StackPane;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +30,7 @@ import milkman.plugin.mcp.JsonUtil;
 import milkman.plugin.mcp.McpRequestProcessor;
 import milkman.plugin.mcp.domain.McpRequestContainer;
 import milkman.plugin.mcp.domain.McpResponseContainer;
-import milkman.plugin.mcp.domain.McpToolsAspect;
+import milkman.plugin.mcp.domain.McpPromptsAspect;
 import milkman.ui.components.ContentEditor;
 import milkman.ui.main.Toaster;
 import milkman.ui.plugin.ContentTypeAwareEditor;
@@ -41,12 +41,12 @@ import milkman.ui.plugin.ToasterAware;
 
 @Slf4j
 @RequiredArgsConstructor
-public class McpToolsAspectEditor implements RequestAspectEditor, ToasterAware,
+public class McpPromptsAspectEditor implements RequestAspectEditor, ToasterAware,
     ExecutionListenerAware, ContentTypeAwareEditor {
   private Toaster toaster;
   private ExecutionListenerManager executionListenerManager;
   private List<ContentTypePlugin> contentTypePlugins;
-  private ListView<McpSchema.Tool> toolList;
+  private ListView<McpSchema.Prompt> promptList;
   private final McpRequestProcessor mcpRequestProcessor;
   private TextArea inputSchema;
 
@@ -57,44 +57,44 @@ public class McpToolsAspectEditor implements RequestAspectEditor, ToasterAware,
 
   @Override
   public Tab getRoot(RequestContainer request, Optional<ResponseContainer> response) {
-    this.toolList = new ListView<McpSchema.Tool>();
-    McpToolsAspect toolsAspect = request.getAspect(McpToolsAspect.class)
-        .orElseThrow(() -> new IllegalArgumentException("Mcp Tool Aspect missing"));
-    toolList.getItems().addAll(toolsAspect.getTools());
-    toolList.setCellFactory(param -> new McpToolListCell());
+    this.promptList = new ListView<McpSchema.Prompt>();
+    McpPromptsAspect promptsAspect = request.getAspect(McpPromptsAspect.class)
+        .orElseThrow(() -> new IllegalArgumentException("Mcp Prompt Aspect missing"));
+    promptList.getItems().addAll(promptsAspect.getPrompts());
+    promptList.setCellFactory(param -> new McpPromptListCell());
 
     var descriptionArea = new TextArea();
     descriptionArea.setEditable(false);
 
-    toolList.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newTool) -> {
-      if (newTool != null && !newTool.name().equals(toolsAspect.getSelectedTool())) {
-        toolsAspect.setSelectedTool(newTool.name());
-        updateInputSchema(toolsAspect);
+    promptList.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newPrompt) -> {
+      if (newPrompt != null && !newPrompt.name().equals(promptsAspect.getSelectedPrompt())) {
+        promptsAspect.setSelectedPrompt(newPrompt.name());
+        updateInputSchema(promptsAspect);
         request.setDirty(true);
       }
-      descriptionArea.setText(newTool != null ? newTool.description() : "");
+      descriptionArea.setText(newPrompt != null ? newPrompt.description() : "");
     });
 
-    response.ifPresent(resp -> updateToolList((McpResponseContainer) resp, toolsAspect));
-    registerUpdateListener((McpRequestContainer) request, toolList, toolsAspect);
+    response.ifPresent(resp -> updatePromptList((McpResponseContainer) resp, promptsAspect));
+    registerUpdateListener((McpRequestContainer) request, promptList, promptsAspect);
 
-    toolsAspect.getSelectedMcpTool().ifPresent(tool -> {
+    promptsAspect.getSelectedMcpPrompt().ifPresent(prompt -> {
       Platform.runLater(() -> {
-        toolList.getSelectionModel().select(tool);
+        promptList.getSelectionModel().select(prompt);
       });
     });
 
 
     this.inputSchema = new TextArea();
     inputSchema.setEditable(false);
-    inputSchema.setText("No tool selected");
-    updateInputSchema(toolsAspect);
+    inputSchema.setText("No prompt selected");
+    updateInputSchema(promptsAspect);
 
     ContentEditor editor = new ContentEditor();
     editor.setEditable(true);
-    editor.setContent(toolsAspect::getQuery,
-        run(toolsAspect::setQuery).
-            andThen(() -> toolsAspect.setDirty(true)));
+    editor.setContent(promptsAspect::getQuery,
+        run(promptsAspect::setQuery).
+            andThen(() -> promptsAspect.setDirty(true)));
     editor.setContentTypePlugins(contentTypePlugins);
     editor.setContentType("application/json");
 
@@ -102,11 +102,11 @@ public class McpToolsAspectEditor implements RequestAspectEditor, ToasterAware,
     editorSplitPane.setOrientation(Orientation.HORIZONTAL);
     editorSplitPane.setDividerPositions(0.7);
 
-    var toolSplitPane = new SplitPane(toolList, descriptionArea);
-    toolSplitPane.setOrientation(Orientation.VERTICAL);
-    toolSplitPane.setDividerPositions(0.8);
+    var promptSplitPane = new SplitPane(promptList, descriptionArea);
+    promptSplitPane.setOrientation(Orientation.VERTICAL);
+    promptSplitPane.setDividerPositions(0.8);
 
-    var splitPane = new SplitPane(toolSplitPane, editorSplitPane);
+    var splitPane = new SplitPane(promptSplitPane, editorSplitPane);
     splitPane.setOrientation(Orientation.HORIZONTAL);
     splitPane.setDividerPositions(0.2);
 
@@ -118,7 +118,7 @@ public class McpToolsAspectEditor implements RequestAspectEditor, ToasterAware,
     StackPane.setAlignment(addItemBtn, Pos.BOTTOM_RIGHT);
     StackPane.setMargin(addItemBtn, new Insets(0, 20, 20, 0));
 
-    executionListenerManager.listenOnExecution(request, "mcp-msg-tool-listener",
+    executionListenerManager.listenOnExecution(request, "mcp-msg-prompt-listener",
         new ExecutionListener() {
           @Override
           public void onRequestStarted(RequestContainer request, ResponseContainer response) {
@@ -128,7 +128,7 @@ public class McpToolsAspectEditor implements RequestAspectEditor, ToasterAware,
           public void onRequestReady(RequestContainer request, ResponseContainer response) {
             addItemBtn.setDisable(false);
             addItemBtn.setOnAction(e -> {
-              mcpRequestProcessor.callTool(request, response);
+              mcpRequestProcessor.callPrompt(request, response);
             });
           }
 
@@ -138,13 +138,13 @@ public class McpToolsAspectEditor implements RequestAspectEditor, ToasterAware,
           }
         });
 
-    return new Tab("Tools", new StackPane(splitPane, addItemBtn));
+    return new Tab("Prompts", new StackPane(splitPane, addItemBtn));
   }
 
-  private void updateInputSchema(McpToolsAspect toolAspect) {
-    toolAspect.getSelectedMcpTool().ifPresent(toolSpec -> {
+  private void updateInputSchema(McpPromptsAspect promptAspect) {
+    promptAspect.getSelectedMcpPrompt().ifPresent(promptSpec -> {
       try {
-        String prettySchema = JsonUtil.prettyPrint(toolSpec.inputSchema());
+        String prettySchema = JsonUtil.prettyPrint(promptSpec.arguments());
         inputSchema.setText(prettySchema);
       } catch (JsonProcessingException e) {
         log.error("Failed to serialize input schema", e);
@@ -153,8 +153,8 @@ public class McpToolsAspectEditor implements RequestAspectEditor, ToasterAware,
   }
 
   private void registerUpdateListener(
-      McpRequestContainer request, ListView<McpSchema.Tool> list, McpToolsAspect toolsAspect) {
-    executionListenerManager.listenOnExecution(request, "mcp-tool-list-updater",
+      McpRequestContainer request, ListView<McpSchema.Prompt> list, McpPromptsAspect promptsAspect) {
+    executionListenerManager.listenOnExecution(request, "mcp-prompt-list-updater",
         new ExecutionListener() {
           @Override
           public void onRequestStarted(RequestContainer request, ResponseContainer response) {
@@ -164,7 +164,7 @@ public class McpToolsAspectEditor implements RequestAspectEditor, ToasterAware,
           @Override
           public void onRequestReady(RequestContainer request, ResponseContainer response) {
             Platform.runLater(() -> {
-              updateToolList((McpResponseContainer) response, toolsAspect);
+              updatePromptList((McpResponseContainer) response, promptsAspect);
             });
           }
 
@@ -175,31 +175,31 @@ public class McpToolsAspectEditor implements RequestAspectEditor, ToasterAware,
         });
   }
 
-  private void updateToolList(McpResponseContainer response, McpToolsAspect toolsAspect) {
+  private void updatePromptList(McpResponseContainer response, McpPromptsAspect promptsAspect) {
     McpAsyncClient mcpClient = response.getMcpClient();
-    toolList.getItems().clear();
+    promptList.getItems().clear();
     try {
-      log.info("Fetching MCP tools..., client: {}", mcpClient);
-      McpSchema.ListToolsResult result = mcpClient.listTools().block();
-      toolsAspect.setTools(result.tools());
-      toolList.getItems().setAll(toolsAspect.getTools());
+      log.info("Fetching MCP prompts..., client: {}", mcpClient);
+      McpSchema.ListPromptsResult result = mcpClient.listPrompts().block();
+      promptsAspect.setPrompts(result.prompts());
+      promptList.getItems().setAll(promptsAspect.getPrompts());
 
-      toolsAspect.getSelectedMcpTool().ifPresent(tool -> {
+      promptsAspect.getSelectedMcpPrompt().ifPresent(prompt -> {
         Platform.runLater(() -> {
-          toolList.getSelectionModel().select(tool);
+          promptList.getSelectionModel().select(prompt);
         });
       });
-      updateInputSchema(toolsAspect);
+      updateInputSchema(promptsAspect);
 
     } catch (Exception e) {
-      toaster.showToast("Failed to fetch MCP tools: " + e.getMessage());
+      toaster.showToast("Failed to fetch MCP prompts: " + e.getMessage());
 
     }
   }
 
   @Override
   public boolean canHandleAspect(RequestContainer request) {
-    return request.getAspect(McpToolsAspect.class).isPresent();
+    return request.getAspect(McpPromptsAspect.class).isPresent();
   }
 
   @Override
@@ -218,9 +218,9 @@ public class McpToolsAspectEditor implements RequestAspectEditor, ToasterAware,
     this.contentTypePlugins = plugins;
   }
 
-  private class McpToolListCell extends ListCell<McpSchema.Tool> {
+  private class McpPromptListCell extends ListCell<McpSchema.Prompt> {
     @Override
-    protected void updateItem(McpSchema.Tool item, boolean empty) {
+    protected void updateItem(McpSchema.Prompt item, boolean empty) {
       super.updateItem(item, empty);
       if (empty || item == null) {
         setText(null);

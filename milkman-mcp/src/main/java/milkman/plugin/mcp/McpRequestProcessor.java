@@ -1,6 +1,9 @@
 package milkman.plugin.mcp;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.milkman.rest.postman.schema.v1.Request;
 import io.modelcontextprotocol.client.McpAsyncClient;
 import io.modelcontextprotocol.client.McpClient;
 import io.modelcontextprotocol.client.transport.HttpClientSseClientTransport;
@@ -14,7 +17,9 @@ import java.util.function.Consumer;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
+import milkman.plugin.mcp.domain.McpEventsAspect;
 import milkman.plugin.mcp.domain.McpInstructionsAspect;
+import milkman.plugin.mcp.domain.McpPromptsAspect;
 import milkman.plugin.mcp.domain.McpRequestContainer;
 import milkman.plugin.mcp.domain.McpResourcesAspect;
 import milkman.plugin.mcp.domain.McpResponseAspect;
@@ -42,13 +47,13 @@ public class McpRequestProcessor {
     RestHeaderAspect headers = request.getAspect(RestHeaderAspect.class)
         .orElseThrow(() -> new IllegalArgumentException("Missing headers aspect"));
     Consumer<HttpRequest.Builder> addHeaders = httpRequest -> {
-        for (var header : headers.getEntries()) {
-          if (header.isEnabled()) {
-            String headerName = templater.replaceTags(header.getName());
-            String headerValue = templater.replaceTags(header.getValue());
-            httpRequest.header(headerName, headerValue);
-          }
+      for (var header : headers.getEntries()) {
+        if (header.isEnabled()) {
+          String headerName = templater.replaceTags(header.getName());
+          String headerValue = templater.replaceTags(header.getValue());
+          httpRequest.header(headerName, headerValue);
         }
+      }
     };
 
     // TODO: support other transports
@@ -63,16 +68,17 @@ public class McpRequestProcessor {
           .builder(request.getUrl())
           .customizeRequest(addHeaders)
           .build();
-      default ->  throw new UnsupportedOperationException("Only SSE transport is supported for now");
+      default -> throw new UnsupportedOperationException(
+          "Only SSE/StreamableHttp transport is supported for now");
     };
 
 
-    McpAsyncClient client = McpClient.async(transport)
-        // TODO: setup consumers and show/trigger changes in UI
-        .loggingConsumer(notice -> {
-          log.info("MCP Notice: {}", notice);
-          return Mono.empty();
-        })
+    McpEventsAspect eventsAspect = new McpEventsAspect();
+
+    McpClient.AsyncSpec clientSpec = McpClient.async(transport);
+    registerEventConsumers(clientSpec, eventsAspect);
+
+    McpAsyncClient client = clientSpec
         .initializationTimeout(Duration.ofSeconds(5))
         .build();
 
@@ -84,12 +90,14 @@ public class McpRequestProcessor {
     responseContainer.getAspects().add(instructionsAspect);
 
     McpResponseAspect response = new McpResponseAspect();
-    response.setResponse("trigger request in Query editor...");
+    response.setResponse("Trigger request in Tool/Resource/Prompt editor...");
     responseContainer.getAspects().add(response);
 
     McpStructuredOutputAspect structuredOutputAspect = new McpStructuredOutputAspect();
-    structuredOutputAspect.setStructuredOutput("trigger request in Query editor...");
+    structuredOutputAspect.setStructuredOutput("Trigger request in Tool/Resource/Prompt editor...");
     responseContainer.getAspects().add(structuredOutputAspect);
+
+    responseContainer.getAspects().add(eventsAspect);
 
     asyncControl.onCancellationRequested.add(() -> {
       client.close();
@@ -110,6 +118,48 @@ public class McpRequestProcessor {
     return responseContainer;
   }
 
+  private static void registerEventConsumers(
+      McpClient.AsyncSpec clientSpec, McpEventsAspect eventsAspect) {
+    clientSpec
+        // TODO: setup consumers and show/trigger changes in UI
+        .loggingConsumer(notice -> {
+          eventsAspect.addEvent("LOG: [%s] %s -- %s".formatted(
+              notice.level(),
+              notice.logger(),
+              notice.data()
+          ));
+          return Mono.empty();
+        })
+        .promptsChangeConsumer(prompts -> {
+          // TODO: trigger UI update
+          eventsAspect.addEvent("Prompts changed: %s".formatted(
+              prompts.stream().map(McpSchema.Prompt::name).toList()
+          ));
+          return Mono.empty();
+        })
+        .resourcesChangeConsumer(resources -> {
+          // TODO: trigger UI update
+          eventsAspect.addEvent("Resources changed: %s".formatted(
+              resources.stream().map(McpSchema.Resource::name).toList()
+          ));
+          return Mono.empty();
+        })
+        .resourcesUpdateConsumer(resourceContents -> {
+          // TODO: trigger UI update
+          eventsAspect.addEvent("Resources updated: %s".formatted(
+              resourceContents.stream().map(McpSchema.ResourceContents::uri).toList()
+          ));
+          return Mono.empty();
+        })
+        .toolsChangeConsumer(tools -> {
+          // TODO: trigger UI update
+          eventsAspect.addEvent("Tools changed: %s".formatted(
+              tools.stream().map(McpSchema.Tool::name).toList()
+          ));
+          return Mono.empty();
+        });
+  }
+
   private static void updateStatusOnInitialization(
       McpSchema.InitializeResult res, McpResponseContainer responseContainer) {
     responseContainer.getStatusInformations().add("Protocol", res.protocolVersion());
@@ -125,7 +175,7 @@ public class McpRequestProcessor {
         "Resources", toCapabilityString(res.capabilities().resources()),
         "Experimental", res.capabilities().experimental() != null
             ? res.capabilities().experimental().keySet().toString()
-            : "no"
+            : "none"
     ));
   }
 
@@ -165,6 +215,36 @@ public class McpRequestProcessor {
             .build())
         .subscribe(
             result -> updateResponse(result, response),
+            error -> updateErrorResponse(error, response));
+  }
+
+
+  public void callPrompt(RequestContainer request, ResponseContainer response) {
+    McpRequestContainer mcpRequest = (McpRequestContainer) request;
+    McpPromptsAspect promptAspect = mcpRequest.getAspect(McpPromptsAspect.class)
+        .orElseThrow(() -> new IllegalArgumentException("Missing prompts aspect"));
+
+    McpSchema.Prompt selectedPrompt = promptAspect.getSelectedMcpPrompt()
+        .orElseThrow(() -> new IllegalArgumentException("No prompt selected"));
+
+    Map<String, Object> arguments;
+    try {
+      ObjectMapper objectMapper = new ObjectMapper();
+      arguments = objectMapper.readValue(promptAspect.getQuery(), new TypeReference<>() {
+      });
+    } catch (JsonProcessingException e) {
+      throw new IllegalArgumentException(
+          "Failed to parse prompt arguments as JSON: " + e.getMessage(), e);
+    }
+
+
+    McpAsyncClient mcpClient = ((McpResponseContainer) response).getMcpClient();
+    mcpClient.getPrompt(new McpSchema.GetPromptRequest(
+            selectedPrompt.name(),
+            arguments
+        ))
+        .subscribe(
+            result -> updatePromptResponse(result, response),
             error -> updateErrorResponse(error, response));
   }
 
@@ -212,7 +292,22 @@ public class McpRequestProcessor {
     }
   }
 
-  private static void updateResponse(McpSchema.ReadResourceResult result, ResponseContainer response) {
+
+  private void updatePromptResponse(McpSchema.GetPromptResult result, ResponseContainer response) {
+    McpResponseAspect responseAspect = response.getAspect(McpResponseAspect.class)
+        .orElseThrow(() -> new IllegalArgumentException("Missing response aspect"));
+    responseAspect.setResponse(prettyPrintPromptMessages(result.description(), result.messages()));
+
+    McpStructuredOutputAspect structuredOutputAspect =
+        response.getAspect(McpStructuredOutputAspect.class)
+            .orElseThrow(() -> new IllegalArgumentException("Missing structured output aspect"));
+
+    structuredOutputAspect.setStructuredOutput("No structured content returned.");
+  }
+
+
+  private static void updateResponse(
+      McpSchema.ReadResourceResult result, ResponseContainer response) {
     McpResponseAspect responseAspect = response.getAspect(McpResponseAspect.class)
         .orElseThrow(() -> new IllegalArgumentException("Missing response aspect"));
     responseAspect.setResponse(prettyPrintResourceContents(result.contents()));
@@ -229,12 +324,26 @@ public class McpRequestProcessor {
     for (McpSchema.ResourceContents content : contents) {
       sb.append("Content Type: ").append(content.mimeType()).append("\n");
       switch (content) {
-        case McpSchema.TextResourceContents textResource -> sb.append(textResource.text()).append("\n");
+        case McpSchema.TextResourceContents textResource ->
+            sb.append(textResource.text()).append("\n");
         case McpSchema.BlobResourceContents embedded -> {
-            sb.append("<non-text embedded resource>\n");
+          sb.append("<non-text embedded resource>\n");
         }
         default -> sb.append("<omitted>\n");
       }
+    }
+    return sb.toString();
+  }
+
+  private String prettyPrintPromptMessages(
+      String description, List<McpSchema.PromptMessage> messages) {
+    StringBuilder sb = new StringBuilder();
+    if (description != null) {
+      sb.append("Description: ").append(description).append("\n\n");
+    }
+    for (McpSchema.PromptMessage message : messages) {
+      sb.append("Role: ").append(message.role()).append("\n");
+      sb.append(prettyPrintContents(List.of(message.content()))).append("\n");
     }
     return sb.toString();
   }
@@ -257,6 +366,5 @@ public class McpRequestProcessor {
     }
     return sb.toString();
   }
-
 
 }
