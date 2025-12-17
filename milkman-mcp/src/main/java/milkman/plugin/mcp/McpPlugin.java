@@ -5,10 +5,13 @@ import milkman.domain.RequestContainer;
 import milkman.domain.RequestExecutionContext;
 import milkman.domain.ResponseContainer;
 import milkman.plugin.mcp.domain.McpRequestContainer;
+import milkman.plugin.mcp.domain.McpResourcesAspect;
+import milkman.plugin.mcp.domain.McpResponseAspect;
 import milkman.plugin.mcp.domain.McpToolsAspect;
 import milkman.plugin.mcp.domain.McpTransportType;
 import milkman.plugin.mcp.editor.McpInstructionsAspectEditor;
 import milkman.plugin.mcp.editor.McpRequestEditor;
+import milkman.plugin.mcp.editor.McpResourcesAspectEditor;
 import milkman.plugin.mcp.editor.McpResponseAspectEditor;
 import milkman.plugin.mcp.editor.McpStructuredOutputAspectEditor;
 import milkman.plugin.mcp.editor.McpToolsAspectEditor;
@@ -27,7 +30,7 @@ public class McpPlugin implements RequestTypePlugin, RequestAspectsPlugin {
 
   @Override
   public List<RequestAspectEditor> getRequestTabs() {
-    return List.of(new McpToolsAspectEditor(processor));
+    return List.of(new McpToolsAspectEditor(processor), new McpResourcesAspectEditor(processor));
   }
 
   @Override
@@ -40,6 +43,9 @@ public class McpPlugin implements RequestTypePlugin, RequestAspectsPlugin {
     if (request instanceof McpRequestContainer) {
       if (!request.getAspect(McpToolsAspect.class).isPresent()) {
         request.addAspect(new McpToolsAspect());
+      }
+      if (!request.getAspect(McpResourcesAspect.class).isPresent()) {
+        request.addAspect(new McpResourcesAspect());
       }
       if (!request.getAspect(RestHeaderAspect.class).isPresent()) {
         request.addAspect(new RestHeaderAspect());

@@ -16,6 +16,7 @@ import milkman.domain.RequestContainer;
 import milkman.domain.ResponseContainer;
 import milkman.plugin.mcp.domain.McpInstructionsAspect;
 import milkman.plugin.mcp.domain.McpRequestContainer;
+import milkman.plugin.mcp.domain.McpResourcesAspect;
 import milkman.plugin.mcp.domain.McpResponseAspect;
 import milkman.plugin.mcp.domain.McpResponseContainer;
 import milkman.plugin.mcp.domain.McpStructuredOutputAspect;
@@ -167,6 +168,21 @@ public class McpRequestProcessor {
             error -> updateErrorResponse(error, response));
   }
 
+  public void callResource(RequestContainer request, ResponseContainer response) {
+    McpRequestContainer mcpRequest = (McpRequestContainer) request;
+    McpResourcesAspect resourceAspect = mcpRequest.getAspect(McpResourcesAspect.class)
+        .orElseThrow(() -> new IllegalArgumentException("Missing resources aspect"));
+
+    McpSchema.Resource selectedResource = resourceAspect.getSelectedMcpResource()
+        .orElseThrow(() -> new IllegalArgumentException("No resource selected"));
+
+    McpAsyncClient mcpClient = ((McpResponseContainer) response).getMcpClient();
+    mcpClient.readResource(new McpSchema.ReadResourceRequest(selectedResource.uri()))
+        .subscribe(
+            result -> updateResponse(result, response),
+            error -> updateErrorResponse(error, response));
+  }
+
   private void updateErrorResponse(Throwable error, ResponseContainer response) {
     McpResponseAspect responseAspect = response.getAspect(McpResponseAspect.class)
         .orElseThrow(() -> new IllegalArgumentException("Missing response aspect"));
@@ -196,6 +212,33 @@ public class McpRequestProcessor {
     }
   }
 
+  private static void updateResponse(McpSchema.ReadResourceResult result, ResponseContainer response) {
+    McpResponseAspect responseAspect = response.getAspect(McpResponseAspect.class)
+        .orElseThrow(() -> new IllegalArgumentException("Missing response aspect"));
+    responseAspect.setResponse(prettyPrintResourceContents(result.contents()));
+
+    McpStructuredOutputAspect structuredOutputAspect =
+        response.getAspect(McpStructuredOutputAspect.class)
+            .orElseThrow(() -> new IllegalArgumentException("Missing structured output aspect"));
+
+    structuredOutputAspect.setStructuredOutput("No structured content returned.");
+  }
+
+  private static String prettyPrintResourceContents(List<McpSchema.ResourceContents> contents) {
+    StringBuilder sb = new StringBuilder();
+    for (McpSchema.ResourceContents content : contents) {
+      sb.append("Content Type: ").append(content.mimeType()).append("\n");
+      switch (content) {
+        case McpSchema.TextResourceContents textResource -> sb.append(textResource.text()).append("\n");
+        case McpSchema.BlobResourceContents embedded -> {
+            sb.append("<non-text embedded resource>\n");
+        }
+        default -> sb.append("<omitted>\n");
+      }
+    }
+    return sb.toString();
+  }
+
   private static String prettyPrintContents(List<McpSchema.Content> contents) {
     StringBuilder sb = new StringBuilder();
     for (McpSchema.Content content : contents) {
@@ -214,4 +257,6 @@ public class McpRequestProcessor {
     }
     return sb.toString();
   }
+
+
 }
