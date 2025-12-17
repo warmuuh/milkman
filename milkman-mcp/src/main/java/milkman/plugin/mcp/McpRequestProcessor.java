@@ -3,14 +3,18 @@ package milkman.plugin.mcp;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.milkman.rest.postman.schema.v1.Request;
 import io.modelcontextprotocol.client.McpAsyncClient;
 import io.modelcontextprotocol.client.McpClient;
 import io.modelcontextprotocol.client.transport.HttpClientSseClientTransport;
 import io.modelcontextprotocol.client.transport.HttpClientStreamableHttpTransport;
+import io.modelcontextprotocol.client.transport.ServerParameters;
+import io.modelcontextprotocol.client.transport.StdioClientTransport;
 import io.modelcontextprotocol.spec.McpSchema;
+import java.net.URI;
 import java.net.http.HttpRequest;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -27,6 +31,7 @@ import milkman.plugin.mcp.domain.McpResponseContainer;
 import milkman.plugin.mcp.domain.McpStructuredOutputAspect;
 import milkman.plugin.mcp.domain.McpToolsAspect;
 import milkman.ui.plugin.Templater;
+import milkman.ui.plugin.rest.domain.HeaderEntry;
 import milkman.ui.plugin.rest.domain.RestHeaderAspect;
 import milkman.utils.AsyncResponseControl;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -56,22 +61,23 @@ public class McpRequestProcessor {
       }
     };
 
-    // TODO: support other transports
-    // TODO: disconnect when already connected
-    // TODO: figure out endpoint and set it explicitly
     var transport = switch (request.getTransport()) {
       case Sse -> HttpClientSseClientTransport
-          .builder(request.getUrl())
+          .builder(getBaseUri(request.getUrl()))
+          .sseEndpoint(getEndpointFromUrl(request.getUrl()))
           .customizeRequest(addHeaders)
           .build();
       case StreamableHttp -> HttpClientStreamableHttpTransport
-          .builder(request.getUrl())
+          .builder(getBaseUri(request.getUrl()))
+          .endpoint(getEndpointFromUrl(request.getUrl()))
           .customizeRequest(addHeaders)
           .build();
-      default -> throw new UnsupportedOperationException(
-          "Only SSE/StreamableHttp transport is supported for now");
+      case StdIo -> new StdioClientTransport(buildServerParams(request, templater));
     };
 
+    transport.setExceptionHandler(t -> {
+      log.error("Transport error: ", t);
+    });
 
     McpEventsAspect eventsAspect = new McpEventsAspect();
 
@@ -107,7 +113,9 @@ public class McpRequestProcessor {
     client.initialize().subscribeOn(Schedulers.boundedElastic())
         .subscribe(res -> {
           updateStatusOnInitialization(res, responseContainer);
-          instructionsAspect.setInstructions(res.instructions());
+          if (res.instructions() != null) {
+            instructionsAspect.setInstructions(res.instructions());
+          }
           asyncControl.triggerReqeuestStarted();
           asyncControl.triggerReqeuestReady();
         }, err -> {
@@ -116,6 +124,50 @@ public class McpRequestProcessor {
         });
 
     return responseContainer;
+  }
+
+  private String getEndpointFromUrl(String url) {
+    URI uri = URI.create(url);
+    return uri.getPath();
+  }
+
+  private static String getBaseUri(String url) {
+    URI uri = URI.create(url);
+    return uri.getScheme() + "://" + uri.getHost() +
+        (uri.getPort() != -1
+            ? ":" + uri.getPort()
+            : "");
+  }
+
+  private static ServerParameters buildServerParams(
+      McpRequestContainer request,
+      Templater templater
+  ) {
+    RestHeaderAspect headers = request.getAspect(RestHeaderAspect.class)
+        .orElseThrow(() -> new IllegalArgumentException("Missing headers aspect"));
+    Map<String, String> envMap = headers.getEntries().stream()
+        .filter(HeaderEntry::isEnabled)
+        .collect(
+            java.util.stream.Collectors.toMap(
+                HeaderEntry::getName,
+                entry -> templater.replaceTags(entry.getValue())
+            )
+        );
+
+    //split "url" (which we use as argument string) into command and list of args
+    var commandLine = templater.replaceTags(request.getUrl()).trim();
+
+    var parts = commandLine.split(" ");
+    if (parts.length == 0) {
+      throw new IllegalArgumentException("No command specified in url field");
+    }
+    String command = parts[0];
+    List<String> args = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length));
+
+    return ServerParameters.builder(command)
+        .args(args)
+        .env(envMap)
+        .build();
   }
 
   private static void registerEventConsumers(

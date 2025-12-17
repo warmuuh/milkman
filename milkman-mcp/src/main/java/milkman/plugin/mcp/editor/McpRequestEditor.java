@@ -22,59 +22,74 @@ import milkman.utils.fxml.GenericBinding;
 public class McpRequestEditor implements RequestTypeEditor, AutoCompletionAware {
 
 
-	ChoiceBox<McpTransportType> type;
-	TextField url;
+  ChoiceBox<McpTransportType> type;
+  TextField url;
 
 
-	private GenericBinding<McpRequestContainer, String> urlBinding = GenericBinding.of(McpRequestContainer::getUrl, McpRequestContainer::setUrl);
-	private GenericBinding<McpRequestContainer, McpTransportType> typeBinding = GenericBinding.of(McpRequestContainer::getTransport, McpRequestContainer::setTransport);
+  private GenericBinding<McpRequestContainer, String> urlBinding =
+      GenericBinding.of(McpRequestContainer::getUrl, McpRequestContainer::setUrl);
+  private GenericBinding<McpRequestContainer, McpTransportType> typeBinding =
+      GenericBinding.of(McpRequestContainer::getTransport, McpRequestContainer::setTransport);
 
-	private AutoCompleter completer;
-	
-	
-	@Override
-	@SneakyThrows
-	public Node getRoot() {
-		Node root = new McpRequestEditorFxml(this);
-		return root;
-	}
+  private AutoCompleter completer;
 
-	@Override
-	public void displayRequest(RequestContainer request) {
-		if (!(request instanceof McpRequestContainer))
-			throw new IllegalArgumentException("Other request types not yet supported");
 
-		McpRequestContainer restRequest = (McpRequestContainer)request;
-		urlBinding.bindTo(url.textProperty(), restRequest);
-		urlBinding.addListener(s -> request.setDirty(true));
-		
-		typeBinding.bindTo(type.valueProperty(), restRequest);
-		typeBinding.addListener(s -> request.setDirty(true));
+  @Override
+  @SneakyThrows
+  public Node getRoot() {
+    Node root = new McpRequestEditorFxml(this);
+    return root;
+  }
 
-		completer.attachVariableCompletionTo(url);
-		
-	}
+  @Override
+  public void displayRequest(RequestContainer request) {
+    if (!(request instanceof McpRequestContainer)) {
+      throw new IllegalArgumentException("Other request types not yet supported");
+    }
 
-	@Override
-	public void setAutoCompleter(AutoCompleter completer) {
-		this.completer = completer;
-	}
+    McpRequestContainer mcpRequest = (McpRequestContainer) request;
+    urlBinding.bindTo(url.textProperty(), mcpRequest);
+    urlBinding.addListener(s -> request.setDirty(true));
 
-	public static class McpRequestEditorFxml extends HboxExt {
-		private McpRequestEditor controller; //avoid gc collection
 
-		public McpRequestEditorFxml(McpRequestEditor controller) {
-			this.controller = controller;
-			HBox.setHgrow(this, Priority.ALWAYS);
-			controller.type = add(FxmlBuilder.choiceBox("mcpTransportType"));
-			controller.type.getItems().addAll(McpTransportType.values());
+    typeBinding.bindTo(type.valueProperty(), mcpRequest);
+    typeBinding.addListener(s -> {
+      request.setDirty(true);
+      updatePrompt(mcpRequest);
+    });
 
-			controller.url = add(new JFXTextField(), true);
-			controller.url.setId("url");
-			controller.url.setPromptText("url");
+    completer.attachVariableCompletionTo(url);
+    updatePrompt(mcpRequest);
+  }
 
-		}
-	}
-	
+  private void updatePrompt(McpRequestContainer mcpRequest) {
+    switch (mcpRequest.getTransport()) {
+      case Sse -> url.setPromptText("Sse Endpoint URL, e.g. http://localhost:8080/sse");
+      case StreamableHttp ->
+          url.setPromptText("Streamable HTTP Endpoint URL, e.g. http://localhost:8080/mcp");
+      case StdIo -> url.setPromptText("Mcp Command, e.g. uvx my-mcp-server");
+    }
+  }
+
+  @Override
+  public void setAutoCompleter(AutoCompleter completer) {
+    this.completer = completer;
+  }
+
+  public static class McpRequestEditorFxml extends HboxExt {
+    private McpRequestEditor controller; //avoid gc collection
+
+    public McpRequestEditorFxml(McpRequestEditor controller) {
+      this.controller = controller;
+      HBox.setHgrow(this, Priority.ALWAYS);
+      controller.type = add(FxmlBuilder.choiceBox("mcpTransportType"));
+      controller.type.getItems().addAll(McpTransportType.values());
+
+      controller.url = add(new JFXTextField(), true);
+      controller.url.setId("url");
+
+    }
+  }
+
 
 }
