@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.github.warmuuh</groupId>
         <artifactId>milkman-parent</artifactId>
-        <version>5.11.0</version>
+        <version>5.12.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>milkman-mcp</artifactId>
@@ -38,13 +38,13 @@
         <dependency>
             <groupId>com.github.warmuuh</groupId>
             <artifactId>milkman</artifactId>
-            <version>5.11.0</version>
+            <version>5.12.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.warmuuh</groupId>
             <artifactId>milkman-rest</artifactId>
-            <version>5.11.0</version>
+            <version>5.12.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
