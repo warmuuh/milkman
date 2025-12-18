@@ -9,6 +9,7 @@ import io.modelcontextprotocol.client.transport.HttpClientSseClientTransport;
 import io.modelcontextprotocol.client.transport.HttpClientStreamableHttpTransport;
 import io.modelcontextprotocol.client.transport.ServerParameters;
 import io.modelcontextprotocol.client.transport.StdioClientTransport;
+import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.spec.McpSchema;
 import java.net.URI;
 import java.net.http.HttpRequest;
@@ -79,7 +80,8 @@ public class McpRequestProcessor {
           .endpoint(getEndpointFromUrl(url))
           .customizeRequest(addHeaders)
           .build();
-      case StdIo -> new StdioClientTransport(buildServerParams(url, headerMap));
+      case StdIo -> new StdioClientTransport(buildServerParams(url, headerMap),
+          McpJsonMapper.getDefault());
     };
 
     transport.setExceptionHandler(t -> {
@@ -258,7 +260,7 @@ public class McpRequestProcessor {
     McpAsyncClient mcpClient = ((McpResponseContainer) response).getMcpClient();
     mcpClient.callTool(McpSchema.CallToolRequest.builder()
             .name(selectedTool.name())
-            .arguments(toolAspect.getQuery())
+            .arguments(McpJsonMapper.getDefault(), toolAspect.getQuery())
             .build())
         .subscribe(
             result -> updateResponse(result, response),
