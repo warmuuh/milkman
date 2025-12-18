@@ -22,25 +22,25 @@ pre or post scripts.
 
 #### Request properties
 
+* Aspect `headers` (GrpcHeaderAspect)
+  * entries (List)
+  * name (String)
 * Aspect `operation` (GrpcOperationAspect)
   * name (String)
   * operation (String)
   * protoSchema (String)
   * useReflection (boolean)
-* Aspect `headers` (GrpcHeaderAspect)
-  * entries (List)
-  * name (String)
 * Aspect `payload` (GrpcPayloadAspect)
   * name (String)
   * payload (String)
 #### Response properties
 
-* Aspect `Payload` (GrpcResponsePayloadAspect)
-  * name (String)
-  * payloads (Flux)
 * Aspect `headers` (GrpcResponseHeaderAspect)
   * entries (CompletableFuture)
   * name (String)
+* Aspect `Payload` (GrpcResponsePayloadAspect)
+  * name (String)
+  * payloads (Flux)
 
 ### Request Type: HTTP
 
@@ -49,19 +49,19 @@ pre or post scripts.
 * Aspect `body` (RestBodyAspect)
   * body (String)
   * name (String)
-* Aspect `query` (RestQueryParamAspect)
+* Aspect `headers` (RestHeaderAspect)
   * entries (List)
   * name (String)
-* Aspect `headers` (RestHeaderAspect)
+* Aspect `query` (RestQueryParamAspect)
   * entries (List)
   * name (String)
 #### Response properties
 
-* Aspect `body` (RestResponseBodyAspect)
-  * body (Flux)
-  * name (String)
 * Aspect `debugBody` (DebugRequestBodyAspect)
   * body (String)
+  * name (String)
+* Aspect `body` (RestResponseBodyAspect)
+  * body (Flux)
   * name (String)
 * Aspect `debugHeaders` (DebugRequestHeaderAspect)
   * entries (List)
@@ -70,16 +70,53 @@ pre or post scripts.
   * entries (List)
   * name (String)
 
+### Request Type: Mcp
+
+#### Request properties
+
+* Aspect `tools` (McpToolsAspect)
+  * name (String)
+  * query (String)
+  * selectedMcpTool (Optional)
+  * selectedTool (String)
+  * tools (List)
+* Aspect `prompts` (McpPromptsAspect)
+  * name (String)
+  * prompts (List)
+  * query (String)
+  * selectedMcpPrompt (Optional)
+  * selectedPrompt (String)
+* Aspect `resources` (McpResourcesAspect)
+  * name (String)
+  * query (String)
+  * resources (List)
+  * selectedMcpResource (Optional)
+  * selectedResource (String)
+#### Response properties
+
+* Aspect `instructions` (McpInstructionsAspect)
+  * instructions (Flux)
+  * name (String)
+* Aspect `structuredOutput` (McpStructuredOutputAspect)
+  * name (String)
+  * structuredOutput (Flux)
+* Aspect `result` (McpResponseAspect)
+  * name (String)
+  * response (Flux)
+* Aspect `events` (McpEventsAspect)
+  * events (Flux)
+  * name (String)
+
 ### Request Type: NoSql
 
 #### Request properties
 
-* Aspect `query` (NosqlQueryAspect)
-  * name (String)
-  * query (String)
 * Aspect `parameters` (NosqlParameterAspect)
   * entries (List)
   * name (String)
+* Aspect `query` (NosqlQueryAspect)
+  * name (String)
+  * query (String)
 #### Response properties
 
 * Aspect `result` (NosqlResponseAspect)
@@ -105,13 +142,13 @@ pre or post scripts.
 
 #### Request properties
 
-* Aspect `sio` (SocketIOAspect)
-  * event (String)
-  * message (String)
-  * name (String)
 * Aspect `settings` (SocketIoSettingsAspect)
   * clientVersion (SocketIoVersion)
   * handshakePath (String)
+  * name (String)
+* Aspect `sio` (SocketIOAspect)
+  * event (String)
+  * message (String)
   * name (String)
 #### Response properties
 
@@ -131,12 +168,12 @@ pre or post scripts.
   * stopOnFirstFailure (boolean)
 #### Response properties
 
-* Aspect `Results` (TestResultAspect)
-  * name (String)
-  * results (Flux)
 * Aspect `Environment` (TestResultEnvAspect)
   * environment (Environment)
   * name (String)
+* Aspect `Results` (TestResultAspect)
+  * name (String)
+  * results (Flux)
 
 ### Request Type: WebSocket
 
