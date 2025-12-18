@@ -228,7 +228,7 @@ public class ContentEditor extends VBox {
 
 		format.setOnAction(e -> formatCurrentCode());
 
-		header = new HBox(new Label("Content Type:"), highlighters, format);
+		header = new HBox(new Label("Highlighting:"), highlighters, format);
 		header.getStyleClass().add("contentEditor-header");
 
 		getChildren().add(header);
