@@ -1,6 +1,6 @@
 # Changelog
 
-upcoming - version 5.12.0:
+version 5.12.0:
   * upgraded reactor to 3.7.0
   * added [MCP plugin](/milkman-mcp)
 
