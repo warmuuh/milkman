@@ -216,6 +216,7 @@
 	-fx-prompt-text-fill: darken($foreground, 10%);
 	-jfx-focus-color: $main-accent;
 	-jfx-unfocus-color: darken($foreground, 10%);
+	-fx-text-fill: $foreground;
 }
 
 #generalRequestEdit {
@@ -240,6 +241,14 @@
 		-fx-text-fill: white;
 	}
 
+}
+.popover {
+	-fx-fill: $background;
+	-fx-text-fill: $foreground;
+	* {
+		-fx-background-color: $background;
+		-fx-text-fill: $foreground;
+	}
 }
 
 .jfx-popup-container {

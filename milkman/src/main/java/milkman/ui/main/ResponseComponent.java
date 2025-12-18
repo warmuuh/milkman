@@ -129,7 +129,8 @@ public class ResponseComponent {
 			HBox hBox = new HBox(name);
 			hBox.setStyle("-fx-cursor: hand");
 			hBox.setOnMouseClicked(e -> {
-				new StatusPopup(values).show(hBox, PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 0, 20);
+				new StatusPopup(values)
+						.show(hBox);
 			});
 			return hBox;
 		} else {

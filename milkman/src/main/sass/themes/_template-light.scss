@@ -420,6 +420,13 @@
     -fx-background-color: $main-accent;
 }
 
+.popover {
+	.text-field {
+		-fx-text-box-border: transparent;
+		-fx-border-width: 0;
+	}
+}
+
 .disabled {
 	-fx-background-color: lightgrey;
 	.content {
