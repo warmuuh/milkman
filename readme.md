@@ -29,8 +29,9 @@ The importer will be available in version 5.7.0 but is already implemented in th
  * Milkman will be installed under C:\tools\milkman.
 
 # Install via Homebrew (MacOs)
+ * Add the tap: `brew tap warmuuh/milkman`
  * To install, run `brew install --cask milkman`. All plugins are included.
- * To update, run `brew upgrade --cask`
+ * To update, run `brew upgrade --cask milkman`
 
 # Changes
 
