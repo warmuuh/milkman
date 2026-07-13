@@ -58,3 +58,34 @@ jobs:
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  update-tap:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Update Homebrew tap
+        env:
+          TAP_DEPLOY_KEY: ${{ secrets.TAP_DEPLOY_KEY }}
+        run: |
+          RELEASE=$(curl -s https://api.github.com/repos/warmuuh/milkman/releases/latest)
+          VERSION=$(echo "$RELEASE" | jq -r '.tag_name')
+          ASSET_URL="https://github.com/warmuuh/milkman/releases/download/${VERSION}/milkman-dist-appbundle-macos64-bin.tgz"
+
+          curl -sL "$ASSET_URL" -o milkman.tgz
+          SHA256=$(sha256sum milkman.tgz | cut -d' ' -f1)
+
+          mkdir -p ~/.ssh
+          echo "$TAP_DEPLOY_KEY" > ~/.ssh/tap_key
+          chmod 600 ~/.ssh/tap_key
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          export GIT_SSH_COMMAND="ssh -i ~/.ssh/tap_key -o IdentitiesOnly=yes"
+
+          git clone git@github.com:warmuuh/homebrew-milkman.git tap
+          sed -i "s/version \".*\"/version \"${VERSION}\"/" tap/Casks/milkman.rb
+          sed -i "s/sha256 \".*\"/sha256 \"${SHA256}\"/" tap/Casks/milkman.rb
+          cd tap
+          git config user.email "action@github.com"
+          git config user.name "GitHub Action"
+          git add Casks/milkman.rb
+          git commit -m "update milkman to ${VERSION}"
+          git push
