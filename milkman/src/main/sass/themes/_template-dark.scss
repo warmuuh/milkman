@@ -563,6 +563,14 @@
             -fx-text-fill: $foreground;
         }
     }
+
+	.scroll-pane {
+		-fx-background-color: $background;
+		-fx-background: $background;
+		.viewport {
+			-fx-background-color: transparent;
+		}
+	}
 }
 .spinner {
 	-fx-background-color: $background;
