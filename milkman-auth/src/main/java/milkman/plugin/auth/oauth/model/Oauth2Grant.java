@@ -8,18 +8,20 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Map;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(include = As.PROPERTY, use = Id.CLASS, visible = true)
 public interface Oauth2Grant {
 
-	OAuth2Token getToken(Oauth2Api api, String scopes, boolean useReqBodyAuthScheme);
+	OAuth2Token getToken(Oauth2Api api, String scopes, boolean useReqBodyAuthScheme, Map<String, String> extraParams);
 
 	@Data
 	@NoArgsConstructor
 	class ClientCredentialGrant implements Oauth2Grant {
 		@Override
-		public OAuth2Token getToken(Oauth2Api api, String scopes, boolean useReqBodyAuthScheme){
-			return api.clientCredentialGrant(scopes, useReqBodyAuthScheme);
+		public OAuth2Token getToken(Oauth2Api api, String scopes, boolean useReqBodyAuthScheme, Map<String, String> extraParams){
+			return api.clientCredentialGrant(scopes, useReqBodyAuthScheme, extraParams);
 		}
 	}
 
@@ -29,8 +31,8 @@ public interface Oauth2Grant {
 		String username;
 		String password;
 		@Override
-		public OAuth2Token getToken(Oauth2Api api, String scopes, boolean useReqBodyAuthScheme){
-			return api.passwordGrant(username, password, scopes, useReqBodyAuthScheme);
+		public OAuth2Token getToken(Oauth2Api api, String scopes, boolean useReqBodyAuthScheme, Map<String, String> extraParams){
+			return api.passwordGrant(username, password, scopes, useReqBodyAuthScheme, extraParams);
 		}
 	}
 
@@ -41,8 +43,8 @@ public interface Oauth2Grant {
 		String authorizationEndpoint;
 
 		@Override
-		public OAuth2Token getToken(Oauth2Api api, String scopes, boolean useReqBodyAuthScheme){
-			return api.authenticationCodeGrant(authorizationEndpoint, scopes, useReqBodyAuthScheme);
+		public OAuth2Token getToken(Oauth2Api api, String scopes, boolean useReqBodyAuthScheme, Map<String, String> extraParams){
+			return api.authenticationCodeGrant(authorizationEndpoint, scopes, useReqBodyAuthScheme, extraParams);
 		}
 	}
 }

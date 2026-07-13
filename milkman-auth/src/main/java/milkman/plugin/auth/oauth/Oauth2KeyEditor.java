@@ -9,8 +9,10 @@ import javafx.scene.layout.HBox;
 import milkman.domain.KeySet.KeyEntry;
 import milkman.plugin.auth.oauth.GrantTypeBuilder.ClientCredentialBuilder;
 import milkman.plugin.auth.oauth.GrantTypeBuilder.PasswordBuilder;
+import milkman.plugin.auth.oauth.model.OAuth2Parameter;
 import milkman.plugin.auth.oauth.model.OAuth2Token;
 import milkman.plugin.auth.oauth.model.Oauth2Credentials;
+import milkman.ui.components.TableEditor;
 import milkman.ui.main.Toaster;
 import milkman.ui.plugin.KeyEditor;
 import milkman.ui.plugin.ToasterAware;
@@ -93,6 +95,16 @@ public class Oauth2KeyEditor implements KeyEditor<Oauth2Credentials>, ToasterAwa
                 .findAny()
                 .orElse(combobox.getItems().get(0));
         combobox.setValue(activeBuilder);
+
+        var customParamsEditor = new TableEditor<OAuth2Parameter>("oauth2.custom-params");
+        customParamsEditor.enableAddition(() -> new OAuth2Parameter(UUID.randomUUID().toString(), "", ""));
+        customParamsEditor.addColumn("Name", OAuth2Parameter::getName, OAuth2Parameter::setName);
+        customParamsEditor.addColumn("Value", OAuth2Parameter::getValue, OAuth2Parameter::setValue);
+        customParamsEditor.addDeleteColumn("Delete");
+        customParamsEditor.setItems(keyEntry.getCustomParameters());
+        customParamsEditor.setPrefHeight(120);
+        customParamsEditor.setMaxHeight(120);
+        root.add(vbox(label("Custom Parameters"), customParamsEditor));
 
         var btnFetchToken = button("Fetch Token", () -> fetchToken(keyEntry));
         btnFetchToken.getStyleClass().add("primary-button");

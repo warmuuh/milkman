@@ -7,7 +7,11 @@ import lombok.extern.slf4j.Slf4j;
 import milkman.domain.KeySet.KeyEntry;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Data
@@ -29,6 +33,13 @@ public class Oauth2Credentials extends KeyEntry {
 
     Oauth2Grant grantType;
     OAuth2Token token;
+    List<OAuth2Parameter> customParameters = new ArrayList<>();
+
+    public Map<String, String> getCustomParamsAsMap() {
+        return customParameters.stream()
+                .filter(p -> p.getName() != null && !p.getName().isBlank())
+                .collect(Collectors.toMap(OAuth2Parameter::getName, p -> p.getValue() != null ? p.getValue() : ""));
+    }
 
 
     public Oauth2Credentials(String id, String name) {
@@ -92,7 +103,7 @@ public class Oauth2Credentials extends KeyEntry {
 
     public void fetchNewToken() {
         Oauth2Api api = new Oauth2Api(clientId, clientSecret, accessTokenEndpoint);
-        token = grantType.getToken(api, scopes, requestBodyAuthScheme);
+        token = grantType.getToken(api, scopes, requestBodyAuthScheme, getCustomParamsAsMap());
     }
 
     @Override

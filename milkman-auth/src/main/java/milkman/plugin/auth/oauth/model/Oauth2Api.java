@@ -1,7 +1,10 @@
 package milkman.plugin.auth.oauth.model;
 
 import com.github.scribejava.core.builder.ServiceBuilder;
+import com.github.scribejava.core.extractors.OAuth2AccessTokenJsonExtractor;
 import com.github.scribejava.core.httpclient.jdk.JDKHttpClientConfig;
+import com.github.scribejava.core.model.OAuthConstants;
+import com.github.scribejava.core.model.OAuthRequest;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuth2AccessTokenErrorResponse;
 import com.github.scribejava.core.oauth.OAuth20Service;
@@ -20,6 +23,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.time.Instant;
 import java.util.Date;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @Slf4j
@@ -38,21 +42,46 @@ public class Oauth2Api {
 		return getToken(() -> service.refreshAccessToken(oldToken.getRefreshToken()));
 	}
 
-	public OAuth2Token clientCredentialGrant(String scopes, boolean useReqBodyAuthScheme) {
+	public OAuth2Token clientCredentialGrant(String scopes, boolean useReqBodyAuthScheme, Map<String, String> extraParams) {
+		DynamicOauth2Api api = getApi(useReqBodyAuthScheme);
 		OAuth20Service service = getOauthService(useReqBodyAuthScheme);
-		return getToken(() -> service.getAccessTokenClientCredentialsGrant(scopes));
+		return getToken(() -> {
+			OAuthRequest request = new OAuthRequest(api.getAccessTokenVerb(), api.getAccessTokenEndpoint());
+			api.getClientAuthentication().addClientAuthentication(request, clientId, clientSecret);
+			if (scopes != null) {
+				request.addParameter(OAuthConstants.SCOPE, scopes);
+			}
+			request.addParameter(OAuthConstants.GRANT_TYPE, OAuthConstants.CLIENT_CREDENTIALS);
+			extraParams.forEach(request::addParameter);
+			var response = service.execute(request);
+			return OAuth2AccessTokenJsonExtractor.instance().extract(response);
+		});
 	}
 
 
-	public OAuth2Token passwordGrant(String username, String password, String scopes, boolean useReqBodyAuthScheme) {
+	public OAuth2Token passwordGrant(String username, String password, String scopes, boolean useReqBodyAuthScheme, Map<String, String> extraParams) {
+		DynamicOauth2Api api = getApi(useReqBodyAuthScheme);
 		OAuth20Service service = getOauthService(useReqBodyAuthScheme);
-		return getToken(() -> service.getAccessTokenPasswordGrant(username, password, scopes));
+		return getToken(() -> {
+			OAuthRequest request = new OAuthRequest(api.getAccessTokenVerb(), api.getAccessTokenEndpoint());
+			api.getClientAuthentication().addClientAuthentication(request, clientId, clientSecret);
+			request.addParameter(OAuthConstants.USERNAME, username);
+			request.addParameter(OAuthConstants.PASSWORD, password);
+			if (scopes != null) {
+				request.addParameter(OAuthConstants.SCOPE, scopes);
+			}
+			request.addParameter(OAuthConstants.GRANT_TYPE, OAuthConstants.PASSWORD);
+			extraParams.forEach(request::addParameter);
+			var response = service.execute(request);
+			return OAuth2AccessTokenJsonExtractor.instance().extract(response);
+		});
 	}
 
 
-	public OAuth2Token authenticationCodeGrant(String authorizationEndpoint, String scopes, boolean useReqBodyAuthScheme) {
+	public OAuth2Token authenticationCodeGrant(String authorizationEndpoint, String scopes, boolean useReqBodyAuthScheme, Map<String, String> extraParams) {
 			return getToken(() -> {
 				AuthorizationCodeCaptureServer server = new AuthorizationCodeCaptureServer();
+				DynamicOauth2Api api = getApi(server.getReturnUrl(), authorizationEndpoint, useReqBodyAuthScheme);
 				OAuth20Service service = getOauthService(server.getReturnUrl(), authorizationEndpoint, useReqBodyAuthScheme);
 
 				var authorizationUrl = service.createAuthorizationUrlBuilder()
@@ -69,7 +98,14 @@ public class Oauth2Api {
 					throw new IllegalStateException("Authorization Flow got cancelled");
 				}
 				var code = dialog.getValue();
-				return service.getAccessToken(code);
+				OAuthRequest request = new OAuthRequest(api.getAccessTokenVerb(), api.getAccessTokenEndpoint());
+				api.getClientAuthentication().addClientAuthentication(request, clientId, clientSecret);
+				request.addParameter(OAuthConstants.CODE, code);
+				request.addParameter(OAuthConstants.REDIRECT_URI, server.getReturnUrl());
+				request.addParameter(OAuthConstants.GRANT_TYPE, OAuthConstants.AUTHORIZATION_CODE);
+				extraParams.forEach(request::addParameter);
+				var response = service.execute(request);
+				return OAuth2AccessTokenJsonExtractor.instance().extract(response);
 			});
 	}
 
@@ -90,6 +126,17 @@ public class Oauth2Api {
 		}
 	}
 
+	private DynamicOauth2Api getApi(boolean useReqBodyAuthScheme) {
+		return getApi(null, "", useReqBodyAuthScheme);
+	}
+
+	private DynamicOauth2Api getApi(String callback, String authorizationBaseUrl, boolean useReqBodyAuthScheme) {
+		ClientAuthentication clientAuthentication = useReqBodyAuthScheme
+				? RequestBodyAuthenticationScheme.instance()
+				: HttpBasicAuthenticationScheme.instance();
+		return new DynamicOauth2Api(accessTokenEndpoint, authorizationBaseUrl, clientAuthentication);
+	}
+
 	private OAuth20Service getOauthService(boolean useReqBodyAuthScheme) {
 		return getOauthService(null, useReqBodyAuthScheme);
 	}
@@ -99,15 +146,11 @@ public class Oauth2Api {
 	}
 
 	private OAuth20Service getOauthService(String callback, String authorizationBaseUrl, boolean useReqBodyAuthScheme) {
-		ClientAuthentication clientAuthentication = useReqBodyAuthScheme
-				? RequestBodyAuthenticationScheme.instance()
-				: HttpBasicAuthenticationScheme.instance();
-
 		return new ServiceBuilder(clientId)
 				.apiSecret(clientSecret)
 				.callback(callback)
 				.httpClient(new JDKHttpClient(JDKHttpClientConfig.defaultConfig().withConnectTimeout(1000).withReadTimeout(2000)))
-				.build(new DynamicOauth2Api(accessTokenEndpoint, authorizationBaseUrl, clientAuthentication));
+				.build(getApi(callback, authorizationBaseUrl, useReqBodyAuthScheme));
 	}
 
 }
