@@ -1,5 +1,8 @@
 # Changelog
 
+version 5.13.0 - upcoming:
+  * added support for custom parameters to oauth2 credentials
+
 version 5.12.0:
   * upgraded reactor to 3.7.0
   * added [MCP plugin](/milkman-mcp)

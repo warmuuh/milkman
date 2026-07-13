@@ -12,3 +12,4 @@ errors.log
 .vscode/
 /.run
 /.sdkmanrc
+/.automaker/

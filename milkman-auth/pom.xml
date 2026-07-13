@@ -19,7 +19,7 @@
 		<dependency>
 			<groupId>com.github.scribejava</groupId>
 			<artifactId>scribejava-core</artifactId>
-			<version>8.1.0</version>
+			<version>8.3.3</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>jackson-databind</artifactId>
