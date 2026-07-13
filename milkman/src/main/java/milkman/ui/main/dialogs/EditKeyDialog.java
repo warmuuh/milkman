@@ -38,11 +38,14 @@ public class EditKeyDialog {
 
 			ScrollPane scroll = new ScrollPane(body);
 			scroll.setFitToWidth(true);
-			scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+			scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
 			scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
 			scroll.setPadding(Insets.EMPTY);
-			double maxH = Screen.getPrimary().getVisualBounds().getHeight() * 0.75;
+            scroll.setPrefWidth(650);
+            scroll.setMinWidth(650);
+			double maxH = Screen.getPrimary().getVisualBounds().getHeight() * 0.60;
 			scroll.setMaxHeight(maxH);
+
 
 			setBody(scroll);
 			setActions(submit(controller::onSave));
