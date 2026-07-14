@@ -59,6 +59,8 @@ public class RestRequestContainer extends RequestContainer {
 				return style + "#257a35";
 			case "DELETE":
 				return style + "#eb3434";
+			case "QUERY":
+				return style + "#8b5cf6";
 			default:
 				return null;
 		}
