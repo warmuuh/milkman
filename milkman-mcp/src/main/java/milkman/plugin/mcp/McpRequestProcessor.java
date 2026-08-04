@@ -9,16 +9,14 @@ import io.modelcontextprotocol.client.transport.HttpClientSseClientTransport;
 import io.modelcontextprotocol.client.transport.HttpClientStreamableHttpTransport;
 import io.modelcontextprotocol.client.transport.ServerParameters;
 import io.modelcontextprotocol.client.transport.StdioClientTransport;
-import io.modelcontextprotocol.json.McpJsonMapper;
+import io.modelcontextprotocol.json.McpJsonDefaults;
 import io.modelcontextprotocol.spec.McpSchema;
 import java.net.URI;
-import java.net.http.HttpRequest;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import milkman.domain.RequestContainer;
@@ -63,25 +61,21 @@ public class McpRequestProcessor {
             )
         );
 
-    Consumer<HttpRequest.Builder> addHeaders = httpRequest -> {
-      headerMap.forEach(httpRequest::header);
-    };
-
     String url = templater.replaceTags(request.getUrl());
 
     var transport = switch (request.getTransport()) {
       case Sse -> HttpClientSseClientTransport
           .builder(getBaseUri(url))
           .sseEndpoint(getEndpointFromUrl(url))
-          .customizeRequest(addHeaders)
+          .httpRequestCustomizer((req, method, uri, body, ctx) -> headerMap.forEach(req::header))
           .build();
       case StreamableHttp -> HttpClientStreamableHttpTransport
           .builder(getBaseUri(url))
           .endpoint(getEndpointFromUrl(url))
-          .customizeRequest(addHeaders)
+          .httpRequestCustomizer((req, method, uri, body, ctx) -> headerMap.forEach(req::header))
           .build();
       case StdIo -> new StdioClientTransport(buildServerParams(url, headerMap),
-          McpJsonMapper.getDefault());
+          McpJsonDefaults.getMapper());
     };
 
     transport.setExceptionHandler(t -> {
@@ -260,7 +254,7 @@ public class McpRequestProcessor {
     McpAsyncClient mcpClient = ((McpResponseContainer) response).getMcpClient();
     mcpClient.callTool(McpSchema.CallToolRequest.builder()
             .name(selectedTool.name())
-            .arguments(McpJsonMapper.getDefault(), toolAspect.getQuery())
+            .arguments(McpJsonDefaults.getMapper(), toolAspect.getQuery())
             .build())
         .subscribe(
             result -> updateResponse(result, response),
