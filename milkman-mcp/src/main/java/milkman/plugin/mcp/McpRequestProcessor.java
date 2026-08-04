@@ -12,7 +12,6 @@ import io.modelcontextprotocol.client.transport.StdioClientTransport;
 import io.modelcontextprotocol.json.McpJsonDefaults;
 import io.modelcontextprotocol.spec.McpSchema;
 import java.net.URI;
-import java.net.http.HttpRequest;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
