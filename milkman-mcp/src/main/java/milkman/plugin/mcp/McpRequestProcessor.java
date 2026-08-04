@@ -9,7 +9,7 @@ import io.modelcontextprotocol.client.transport.HttpClientSseClientTransport;
 import io.modelcontextprotocol.client.transport.HttpClientStreamableHttpTransport;
 import io.modelcontextprotocol.client.transport.ServerParameters;
 import io.modelcontextprotocol.client.transport.StdioClientTransport;
-import io.modelcontextprotocol.json.McpJsonMapper;
+import io.modelcontextprotocol.json.McpJsonDefaults;
 import io.modelcontextprotocol.spec.McpSchema;
 import java.net.URI;
 import java.net.http.HttpRequest;
@@ -76,7 +76,7 @@ public class McpRequestProcessor {
           .httpRequestCustomizer((req, method, uri, body, ctx) -> headerMap.forEach(req::header))
           .build();
       case StdIo -> new StdioClientTransport(buildServerParams(url, headerMap),
-          McpJsonMapper.getDefault());
+          McpJsonDefaults.getMapper());
     };
 
     transport.setExceptionHandler(t -> {
@@ -255,7 +255,7 @@ public class McpRequestProcessor {
     McpAsyncClient mcpClient = ((McpResponseContainer) response).getMcpClient();
     mcpClient.callTool(McpSchema.CallToolRequest.builder()
             .name(selectedTool.name())
-            .arguments(McpJsonMapper.getDefault(), toolAspect.getQuery())
+            .arguments(McpJsonDefaults.getMapper(), toolAspect.getQuery())
             .build())
         .subscribe(
             result -> updateResponse(result, response),
