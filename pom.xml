@@ -33,7 +33,7 @@
 
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>
-		<javafx.version>21.0.2</javafx.version>
+		<javafx.version>25.0.4</javafx.version>
 	</properties>
 
 
@@ -51,7 +51,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.30</version>
+			<version>1.18.48</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- <dependency> -->
