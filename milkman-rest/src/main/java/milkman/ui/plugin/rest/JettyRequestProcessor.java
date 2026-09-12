@@ -271,7 +271,8 @@ public class JettyRequestProcessor implements RequestProcessor {
             if (mimeType == null) {
               mimeType = "text/plain";
             }
-            jreq.body(new StringRequestContent(mimeType, bodyContent));
+            var processedBody = RequestBodyPostProcessor.processBody(mimeType, bodyContent);
+            jreq.body(new StringRequestContent(mimeType, processedBody));
           }
         });
 
@@ -358,6 +359,8 @@ public class JettyRequestProcessor implements RequestProcessor {
       trustManagers = new TrustManager[]{
           new TrustAllTrustManager()
       };
+      sslContextFactory.setTrustAll(true);
+      sslContextFactory.setEndpointIdentificationAlgorithm(null);
     }
 
 
