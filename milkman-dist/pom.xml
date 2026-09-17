@@ -17,7 +17,7 @@
 
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>
-		<jdk.version>21.0.2+14</jdk.version>
+		<jdk.version>25.0.4.1+1</jdk.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -222,7 +222,7 @@
 				<version>1.0.4</version>-->
 				<groupId>com.igormaznitsa</groupId>
 				<artifactId>mvn-jlink-wrapper</artifactId>
-				<version>1.2.1</version>
+				<version>1.2.6</version>
 				<configuration>
 					<!-- <modulePath>${env.JAVAFX_MODS}</modulePath> -->
 					<addModules>
@@ -249,7 +249,7 @@
 						<addModule>jdk.dynalink</addModule>
 					</addModules>
 					<options>
-						<option>--compress=2</option>
+						<option>--compress=zip-6</option>
 						<option>--no-header-files</option>
 						<option>--no-man-pages</option>
 <!--						breaks cross-platform compilation: -->
