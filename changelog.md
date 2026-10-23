@@ -3,6 +3,7 @@
 version 5.13.0 - upcoming:
   * added support for custom parameters to oauth2 credentials
   * upgraded to java 25
+  * upgraded [MCP plugin](/milkman-mcp) to MCP Java SDK 2.1.0
 
 version 5.12.0:
   * upgraded reactor to 3.7.0
