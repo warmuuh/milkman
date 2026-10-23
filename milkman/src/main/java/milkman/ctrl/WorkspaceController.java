@@ -55,9 +55,15 @@ public class WorkspaceController {
 
 	public void loadWorkspace(Workspace workspace) {
 		this.activeWorkspace = workspace;
+		long t = System.currentTimeMillis();
 		loadCollections(workspace);
+		log.debug("[startup] loadCollections: {} ms", System.currentTimeMillis() - t);
+		t = System.currentTimeMillis();
 		closeUnknownRequestContainers(workspace);
+		log.debug("[startup] closeUnknownRequestContainers: {} ms", System.currentTimeMillis() - t);
+		t = System.currentTimeMillis();
 		displayRequest(workspace.getActiveRequest());
+		log.debug("[startup] displayRequest: {} ms", System.currentTimeMillis() - t);
 	}
 
 	public void reloadActiveWorkspace() {
@@ -127,10 +133,14 @@ public class WorkspaceController {
 
 		var cachedResponse = Optional.ofNullable(activeWorkspace.getCachedResponses().get(request.getId()));
 
+		long t = System.currentTimeMillis();
 		plugins.loadRequestAspectPlugins().forEach(p -> p.initializeRequestAspects(request));
+		log.debug("[startup] loadRequestAspectPlugins + init: {} ms", System.currentTimeMillis() - t);
+		t = System.currentTimeMillis();
 		workingAreaView.display(request,
 				activeWorkspace.getOpenRequests(),
 				cachedResponse.map(AsyncResponseControl::getResponse));
+		log.debug("[startup] workingAreaView.display: {} ms", System.currentTimeMillis() - t);
 		
 		if (cachedResponse.isPresent()) {
 			workingAreaView.displayResponseFor(request, cachedResponse.get());

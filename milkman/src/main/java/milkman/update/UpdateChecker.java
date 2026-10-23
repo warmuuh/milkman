@@ -22,7 +22,7 @@ public class UpdateChecker {
 	private final GithubReleaseChecker releaseChecker = new GithubReleaseChecker("warmuuh", "milkman");
 	
 	public void checkForUpdateAsync() {
-		new Thread(() -> {
+		Thread t = new Thread(() -> {
 			try {
 				releaseChecker.getNewerRelease(currentVersion).ifPresent(newVersion -> {
 					toaster.showToast("New Version available: Milkman " + newVersion, "What's new?",
@@ -31,7 +31,9 @@ public class UpdateChecker {
 			} catch (IOException e) {
 				log.error("Failed to fetch release information", e);
 			}
-		}).run();
+		}, "milkman-update-check");
+		t.setDaemon(true);
+		t.start();
 	}
 	
 	

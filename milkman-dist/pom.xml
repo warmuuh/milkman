@@ -154,16 +154,11 @@
 							</classPath>
 							<jre>
 								<path>.\jre-win64\</path>
-								<!-- <minVersion>11</minVersion> -->
-								<!-- <maxVersion>1.9.0</maxVersion> -->
+								<!-- launch4j can't do conditional AOTCache selection like milkman.bat does;
+								     users wanting a warm cache should launch via milkman.bat at least once. -->
 								<opts>
-									<opt>-XX:SharedArchiveFile=app-cds.jsa</opt>
-									<opt>-client</opt>
 									<opt>-Xmx2G</opt>
 									<opt>-XX:+UseCompressedOops</opt>
-									<opt>-XX:+UseCompressedClassPointers</opt>
-<!-- 									<opt>-Xlog:class+load:file=cds3.log</opt> -->
-									<!-- <opt>-Djava.endorsed.dirs=./endorsed</opt> --><!-- not yet supported with modules -->
 									<opt><![CDATA[--add-exports javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED]]></opt>
 									<opt><![CDATA[--add-exports javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED]]></opt>
 									<opt><![CDATA[--add-exports javafx.controls/com.sun.javafx.scene.control.skin=ALL-UNNAMED]]></opt>

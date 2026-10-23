@@ -1,28 +1,29 @@
 #!/bin/sh
 
 BASE_DIR="$(cd "$(dirname "$0")"; pwd)" || exit 2
-
 RES_DIR="$BASE_DIR/../Resources"
 
 chmod +x "$RES_DIR/jre/bin/java"
 chmod +x "$RES_DIR/jre/lib/jspawnhelper"
 
-# generate static cds
-if [ ! -f "$RES_DIR/jre/lib/client/classes.jsa" ]; then
-    "$RES_DIR/jre/bin/java" -Xshare:dump
+APP_DATA="${HOME}/Library/Application Support/Milkman"
+mkdir -p "$APP_DATA"
+AOT_CACHE="$APP_DATA/milkman.aot"
+AOT_CONF="$APP_DATA/milkman.aot.config"
+
+if [ -f "$AOT_CACHE" ] && [ "$RES_DIR/milkman.jar" -nt "$AOT_CACHE" ]; then
+  rm -f "$AOT_CACHE" "$AOT_CONF"
 fi
 
-CDS_DIR="/var/tmp/milkman-cds.jsa"
-CDS_COMMAND=-XX:SharedArchiveFile
-if [ ! -f "$CDS_DIR" ]; then
-  CDS_COMMAND=-XX:ArchiveClassesAtExit
+if [ -f "$AOT_CACHE" ]; then
+  AOT_OPT="-XX:AOTCache=$AOT_CACHE"
+else
+  AOT_OPT="-XX:AOTMode=record -XX:AOTConfiguration=$AOT_CONF"
 fi
 
-"$RES_DIR/jre/bin/java" \
-    ${CDS_COMMAND}="$CDS_DIR"\
-    -client -Xmx2G \
-    -XX:+UseCompressedOops \
-    -XX:+UseCompressedClassPointers \
+JAVA="$RES_DIR/jre/bin/java"
+CP="$RES_DIR/plugins/*:$RES_DIR/milkman.jar"
+BASE_OPTS="-Xmx2G -XX:+UseCompressedOops \
     --add-exports javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED \
     --add-exports javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED \
     --add-exports javafx.controls/com.sun.javafx.scene.control.skin=ALL-UNNAMED \
@@ -37,4 +38,11 @@ fi
     --add-opens javafx.graphics/javafx.scene.text=ALL-UNNAMED \
     --add-opens javafx.graphics/com.sun.javafx.text=ALL-UNNAMED \
     --add-opens java.base/java.lang.reflect=ALL-UNNAMED \
-    -Dprism.dirtyopts=false -Dprism.lcdtext=false -cp "$RES_DIR/plugins/*:$RES_DIR/milkman.jar" milkman.MilkmanApplication
+    -Dprism.dirtyopts=false -Dprism.lcdtext=false"
+
+"$JAVA" $AOT_OPT $BASE_OPTS -cp "$CP" milkman.MilkmanApplication
+
+if [ -f "$AOT_CONF" ] && [ ! -f "$AOT_CACHE" ]; then
+  nohup "$JAVA" -XX:AOTMode=create -XX:AOTConfiguration="$AOT_CONF" -XX:AOTCache="$AOT_CACHE" \
+    $BASE_OPTS -cp "$CP" milkman.MilkmanApplication >/dev/null 2>&1 &
+fi

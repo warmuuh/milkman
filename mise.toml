@@ -1,0 +1,161 @@
+# mise config for local Milkman development.
+#
+# Usage:
+#   mise run build          # compile + install all modules (except milkman-dist)
+#   mise run cp              # (re)generate the runtime classpath cache
+#   mise run app              # launch Milkman detached (see `mise run tail` for output)
+#   mise run tail           # follow the app log
+#   mise run kill             # kill the launched instance
+#   mise run status            # show launched pid state
+#   mise run clean           # drop cached classpath + Maven install artifacts
+#
+# The run config in .run/ uses the Liberica full JDK with bundled JavaFX
+# installed via SDKMAN. Override DEV_JDK to point at a different install.
+
+[env]
+# Override DEV_JDK / DEV_WORKDIR via `mise set` or a local .mise.local.toml.
+# DEV_JDK runs the app. On master (RichTextFX 0.11.2) JavaFX 25 trips on a
+# TextFlow.getUnderlineShape final-override, so run with JavaFX 21.
+# BUILD_JDK compiles the project. The parent pom targets Java 21 bytecode but
+# the javac needs JavaFX 25's module exports to resolve the compile deps.
+DEV_JDK = "{{env.HOME}}/.sdkman/candidates/java/25.0.2.fx-librca"
+BUILD_JDK = "{{env.HOME}}/.sdkman/candidates/java/25.0.2.fx-librca"
+DEV_WORKDIR = "{{env.HOME}}/Library/Application Support/Milkman"
+MVN_SETTINGS = "{{config_root}}/.mvn/dev-settings.xml"
+CP_FILE = "{{config_root}}/.mvn/dev-classpath.txt"
+PID_FILE = "{{config_root}}/.mvn/dev-milkman.pid"
+LOG_FILE = "{{config_root}}/.mvn/dev-milkman.log"
+CDS_FILE = "{{config_root}}/.mvn/dev-app-cds.jsa"
+
+[tasks.build]
+description = "Compile + install every milkman module (except milkman-dist)."
+run = '''
+JAVA_HOME="$BUILD_JDK" ./mvnw -s "$MVN_SETTINGS" -q -DskipTests -pl '!milkman-dist' install
+'''
+
+[tasks.cp]
+description = "Resolve the runtime classpath from milkman-dist's dependency graph."
+run = '''
+JAVA_HOME="$BUILD_JDK" ./mvnw -s "$MVN_SETTINGS" -q -DskipTests \
+  -pl milkman-dist -am dependency:build-classpath \
+  -Dmdep.outputFile="$CP_FILE"
+echo "wrote $CP_FILE"
+'''
+
+[tasks.app]
+description = "Launch Milkman detached. Rebuild + classpath are regenerated if missing."
+depends = ["cp"]
+run = '''
+set -euo pipefail
+if [ ! -d "$DEV_JDK" ]; then
+  echo "Liberica full JDK not found at $DEV_JDK" >&2
+  echo "Install with: sdk install java 21.0.2.fx-librca" >&2
+  exit 2
+fi
+
+AOT_CONF="${CDS_FILE}.config"
+# Two-phase AOT cache: record on first run, create the cache in the background
+# at exit, use cache on subsequent runs. One-step `-XX:AOTCacheOutput` tripped
+# on Liberica 25.0.2 ("config built by different HotSpot").
+if [ -f "$CDS_FILE" ]; then
+  CDS_OPT=("-XX:AOTCache=$CDS_FILE")
+else
+  CDS_OPT=("-XX:AOTMode=record" "-XX:AOTConfiguration=$AOT_CONF")
+fi
+if [ "${DEV_NO_CDS:-}" = "1" ]; then
+  CDS_OPT=("-Xshare:off")
+fi
+
+BASE_OPTS=(
+  -Xmx2G
+  -XX:+UseCompressedOops
+  --add-exports javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED
+  --add-exports javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED
+  --add-exports javafx.controls/com.sun.javafx.scene.control.skin=ALL-UNNAMED
+  --add-exports javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED
+  --add-exports javafx.graphics/com.sun.javafx.scene.text=ALL-UNNAMED
+  --add-exports javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED
+  --add-exports javafx.graphics/com.sun.glass.ui=ALL-UNNAMED
+  --add-exports javafx.base/com.sun.javafx.event=ALL-UNNAMED
+  --add-opens javafx.controls/javafx.scene.control.skin=ALL-UNNAMED
+  --add-opens javafx.controls/javafx.scene.control=ALL-UNNAMED
+  --add-opens javafx.graphics/javafx.scene=ALL-UNNAMED
+  --add-opens javafx.graphics/javafx.scene.text=ALL-UNNAMED
+  --add-opens javafx.graphics/com.sun.javafx.text=ALL-UNNAMED
+  --add-opens java.base/java.lang.reflect=ALL-UNNAMED
+  -Dprism.dirtyopts=false
+  -Dprism.lcdtext=false
+)
+
+mkdir -p "$DEV_WORKDIR"
+: >"$LOG_FILE"
+CP="$(cat "$CP_FILE")"
+# Wrap java in a subshell that waits for exit, then kicks off the AOT create
+# phase in the background. Mirrors the production launch scripts.
+RUNNER="$(mktemp -t milkman-run.XXXXXX)"
+cat >"$RUNNER" <<RUN
+#!/usr/bin/env bash
+"$DEV_JDK/bin/java" ${CDS_OPT[@]@Q} ${BASE_OPTS[@]@Q} -cp '$CP' milkman.MilkmanApplication
+rc=\$?
+if [ -f "$AOT_CONF" ] && [ ! -f "$CDS_FILE" ]; then
+  nohup "$DEV_JDK/bin/java" -XX:AOTMode=create -XX:AOTConfiguration="$AOT_CONF" -XX:AOTCache="$CDS_FILE" ${BASE_OPTS[@]@Q} -cp '$CP' milkman.MilkmanApplication >/dev/null 2>&1 &
+fi
+exit \$rc
+RUN
+chmod +x "$RUNNER"
+(cd "$DEV_WORKDIR" && nohup "$RUNNER" >"$LOG_FILE" 2>&1 &
+ echo $! >"$PID_FILE")
+echo "started pid=$(cat "$PID_FILE") workdir=$DEV_WORKDIR log=$LOG_FILE"
+'''
+
+[tasks.kill]
+description = "Kill a previously launched Milkman instance (and any stray MilkmanApplication processes)."
+run = '''
+if [ -f "$PID_FILE" ]; then
+  pid="$(cat "$PID_FILE")"
+  if kill -0 "$pid" 2>/dev/null; then
+    kill "$pid" || true
+    sleep 1
+    kill -9 "$pid" 2>/dev/null || true
+    echo "killed pid-file pid=$pid"
+  fi
+  rm -f "$PID_FILE"
+fi
+# Catch stray MilkmanApplication JVMs (e.g. prior session left behind, Nitrite
+# locks the DB file so a leftover blocks the next launch).
+stray="$(pgrep -f 'milkman.MilkmanApplication' || true)"
+if [ -n "$stray" ]; then
+  echo "killing stray MilkmanApplication: $stray"
+  echo "$stray" | xargs kill 2>/dev/null || true
+  sleep 1
+  echo "$stray" | xargs kill -9 2>/dev/null || true
+fi
+'''
+
+[tasks.status]
+description = "Show pid state."
+run = '''
+if [ -f "$PID_FILE" ]; then
+  pid="$(cat "$PID_FILE")"
+  if kill -0 "$pid" 2>/dev/null; then
+    echo "running pid=$pid"
+    ps -p "$pid" -o pid,state,etime,command | tail -n+2
+  else
+    echo "stale pid=$pid"
+  fi
+else
+  echo "not launched"
+fi
+'''
+
+[tasks.tail]
+description = "Follow the app log."
+run = 'tail -f "$LOG_FILE"'
+
+[tasks.clean]
+description = "Drop cached classpath and milkman install jars."
+run = '''
+rm -f "$CP_FILE" "$PID_FILE" "$LOG_FILE"
+rm -rf ~/.m2/repository/com/github/warmuuh/milkman*
+echo "cleaned"
+'''
