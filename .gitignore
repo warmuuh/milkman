@@ -13,3 +13,6 @@ errors.log
 /.run
 /.sdkmanrc
 /.automaker/
+.mvn/dev-*
+.mvn/wrapper/maven-wrapper.jar
+.mise.local.toml

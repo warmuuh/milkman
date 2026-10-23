@@ -39,29 +39,32 @@ public class MainWindow {
 
 	public void start(Stage primaryStage) throws Exception {
 		try {
-//			FXMLLoader loader = new FXMLLoader(getClass().getResource("/MainWindow.fxml"));
-//			loader.setControllerFactory(this::getController);
-
+			long t = System.currentTimeMillis();
 			StackPane root = new MainWindowFxml(this);
+			log.debug("[startup] MainWindowFxml ctor: {} ms", System.currentTimeMillis() - t);
 			FxmlUtil.setPrimaryStage(primaryStage);
 
+			t = System.currentTimeMillis();
 			mainScene = new Scene(root);
-			
+			log.debug("[startup] new Scene(root): {} ms", System.currentTimeMillis() - t);
+
+			t = System.currentTimeMillis();
 			hotkeys.registerGlobalHotkeys(mainScene);
-			
+			log.debug("[startup] registerGlobalHotkeys: {} ms", System.currentTimeMillis() - t);
+
 			primaryStage.setScene(mainScene);
 	        Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
 
 			primaryStage.setWidth(Math.min(1000, bounds.getWidth()));
 			primaryStage.setHeight(Math.min(800, bounds.getHeight()));
 
+			t = System.currentTimeMillis();
 			setIcon(primaryStage);
-			
-			
-//			org.fxmisc.cssfx.CSSFX.start(primaryStage);
-			
-			
+			log.debug("[startup] setIcon: {} ms", System.currentTimeMillis() - t);
+
+			t = System.currentTimeMillis();
 			primaryStage.show();
+			log.debug("[startup] primaryStage.show: {} ms", System.currentTimeMillis() - t);
 			primaryStage.setTitle("Milkman");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -88,16 +91,21 @@ public class MainWindow {
 	protected void setIcon(Stage primaryStage) {
 		var icon = new Image(getClass().getResourceAsStream("/images/icon.png"));
 		primaryStage.getIcons().add(icon);
-		
-		try {
-			//doing it via AWT to support icon on macOs:
-			var awtIcon = java.awt.Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/icon.png"));
-			Taskbar awtTaskbar = Taskbar.getTaskbar();
-			awtTaskbar.setIconImage(awtIcon);
-		} catch (final Throwable e) {
-            log.warn("The os does not support setting taskbar icon");
-        }
-		
+
+		// AWT Toolkit init + Taskbar.getTaskbar() cost ~80 ms on macOS; defer it so
+		// it does not block the first paint. The dock icon still appears before the
+		// user can act on the window.
+		Thread t = new Thread(() -> {
+			try {
+				var awtIcon = java.awt.Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/icon.png"));
+				Taskbar awtTaskbar = Taskbar.getTaskbar();
+				awtTaskbar.setIconImage(awtIcon);
+			} catch (final Throwable e) {
+				log.warn("The os does not support setting taskbar icon");
+			}
+		}, "milkman-set-taskbar-icon");
+		t.setDaemon(true);
+		t.start();
 	}
 
 	public void switchToTheme(UiThemePlugin theme, boolean disableAnimations) {
