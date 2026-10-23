@@ -67,12 +67,14 @@ public class McpRequestProcessor {
       case Sse -> HttpClientSseClientTransport
           .builder(getBaseUri(url))
           .sseEndpoint(getEndpointFromUrl(url))
-          .httpRequestCustomizer((req, method, uri, body, ctx) -> headerMap.forEach(req::header))
+          .addHttpRequestCustomizer(
+              (req, method, uri, body, ctx) -> headerMap.forEach(req::header))
           .build();
       case StreamableHttp -> HttpClientStreamableHttpTransport
           .builder(getBaseUri(url))
           .endpoint(getEndpointFromUrl(url))
-          .httpRequestCustomizer((req, method, uri, body, ctx) -> headerMap.forEach(req::header))
+          .addHttpRequestCustomizer(
+              (req, method, uri, body, ctx) -> headerMap.forEach(req::header))
           .build();
       case StdIo -> new StdioClientTransport(buildServerParams(url, headerMap),
           McpJsonDefaults.getMapper());
@@ -252,8 +254,7 @@ public class McpRequestProcessor {
         .orElseThrow(() -> new IllegalArgumentException("No tool selected"));
 
     McpAsyncClient mcpClient = ((McpResponseContainer) response).getMcpClient();
-    mcpClient.callTool(McpSchema.CallToolRequest.builder()
-            .name(selectedTool.name())
+    mcpClient.callTool(McpSchema.CallToolRequest.builder(selectedTool.name())
             .arguments(McpJsonDefaults.getMapper(), toolAspect.getQuery())
             .build())
         .subscribe(
