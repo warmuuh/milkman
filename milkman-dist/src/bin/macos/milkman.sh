@@ -14,9 +14,9 @@ if [ -f "$AOT_CACHE" ] && [ milkman.jar -nt "$AOT_CACHE" ]; then
 fi
 
 if [ -f "$AOT_CACHE" ]; then
-  AOT_OPT="-XX:AOTCache=$AOT_CACHE"
+  set -- "-XX:AOTCache=$AOT_CACHE"
 else
-  AOT_OPT="-XX:AOTMode=record -XX:AOTConfiguration=$AOT_CONF"
+  set -- "-XX:AOTMode=record" "-XX:AOTConfiguration=$AOT_CONF"
 fi
 
 JAVA=./jre-macos64/bin/java
@@ -38,7 +38,7 @@ BASE_OPTS="-Xmx2G -XX:+UseCompressedOops \
     --add-opens java.base/java.lang.reflect=ALL-UNNAMED \
     -Dprism.dirtyopts=false -Dprism.lcdtext=false"
 
-$JAVA $AOT_OPT $BASE_OPTS -cp "$CP" milkman.MilkmanApplication
+$JAVA "$@" $BASE_OPTS -cp "$CP" milkman.MilkmanApplication
 
 # After a record run, materialize the AOT cache in the background so the next
 # launch gets it. Harmless if it fails; next launch will just record again.

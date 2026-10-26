@@ -14,9 +14,9 @@ if [ -f "$AOT_CACHE" ] && [ "$BASE_DIR/milkman.jar" -nt "$AOT_CACHE" ]; then
 fi
 
 if [ -f "$AOT_CACHE" ]; then
-  AOT_OPT="-XX:AOTCache=$AOT_CACHE"
+  set -- "-XX:AOTCache=$AOT_CACHE"
 else
-  AOT_OPT="-XX:AOTMode=record -XX:AOTConfiguration=$AOT_CONF"
+  set -- "-XX:AOTMode=record" "-XX:AOTConfiguration=$AOT_CONF"
 fi
 
 JAVA="$BASE_DIR/jre-linux64/bin/java"
@@ -38,7 +38,7 @@ BASE_OPTS="-Xmx2G -XX:+UseCompressedOops -Dprism.forceGPU=true \
     --add-opens java.base/java.lang.reflect=ALL-UNNAMED \
     -Dprism.dirtyopts=false"
 
-"$JAVA" $AOT_OPT $BASE_OPTS -cp "$CP" milkman.MilkmanApplication
+"$JAVA" "$@" $BASE_OPTS -cp "$CP" milkman.MilkmanApplication
 
 if [ -f "$AOT_CONF" ] && [ ! -f "$AOT_CACHE" ]; then
   nohup "$JAVA" -XX:AOTMode=create -XX:AOTConfiguration="$AOT_CONF" -XX:AOTCache="$AOT_CACHE" \
