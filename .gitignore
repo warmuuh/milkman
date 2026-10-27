@@ -14,5 +14,6 @@ errors.log
 /.sdkmanrc
 /.automaker/
 .mvn/dev-*
+!.mvn/dev-settings.xml
 .mvn/wrapper/maven-wrapper.jar
 .mise.local.toml

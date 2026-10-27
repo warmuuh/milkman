@@ -54,6 +54,16 @@ if [ ! -d "$DEV_JDK" ]; then
 fi
 
 AOT_CONF="${CDS_FILE}.config"
+SIG_FILE="${CDS_FILE}.sig"
+# Invalidate the AOT cache if the classpath has changed since it was recorded.
+# Otherwise the JVM aborts with "shared class paths mismatch".
+CP_SIG="$(shasum "$CP_FILE" | awk '{print $1}')"
+if [ -f "$CDS_FILE" ] && [ "$(cat "$SIG_FILE" 2>/dev/null)" != "$CP_SIG" ]; then
+  echo "classpath changed → invalidating AOT cache"
+  rm -f "$CDS_FILE" "$AOT_CONF"
+fi
+echo "$CP_SIG" >"$SIG_FILE"
+
 # Two-phase AOT cache: record on first run, create the cache in the background
 # at exit, use cache on subsequent runs. One-step `-XX:AOTCacheOutput` tripped
 # on Liberica 25.0.2 ("config built by different HotSpot").
@@ -85,20 +95,25 @@ BASE_OPTS=(
   --add-opens java.base/java.lang.reflect=ALL-UNNAMED
   -Dprism.dirtyopts=false
   -Dprism.lcdtext=false
+  "-Dmilkman.installation.location=$DEV_WORKDIR"
 )
 
-mkdir -p "$DEV_WORKDIR"
+mkdir -p "$DEV_WORKDIR/plugins"
 : >"$LOG_FILE"
 CP="$(cat "$CP_FILE")"
+# macOS bash is 3.2 and does NOT support ${arr[@]@Q} — it silently returns
+# values without quoting. Use printf '%q ' for portable quoting.
+CDS_OPT_Q="$(printf '%q ' "${CDS_OPT[@]}")"
+BASE_OPTS_Q="$(printf '%q ' "${BASE_OPTS[@]}")"
 # Wrap java in a subshell that waits for exit, then kicks off the AOT create
 # phase in the background. Mirrors the production launch scripts.
 RUNNER="$(mktemp -t milkman-run.XXXXXX)"
 cat >"$RUNNER" <<RUN
 #!/usr/bin/env bash
-"$DEV_JDK/bin/java" ${CDS_OPT[@]@Q} ${BASE_OPTS[@]@Q} -cp '$CP' milkman.MilkmanApplication
+$(printf '%q' "$DEV_JDK/bin/java") $CDS_OPT_Q $BASE_OPTS_Q -cp $(printf '%q' "$CP") milkman.MilkmanApplication
 rc=\$?
 if [ -f "$AOT_CONF" ] && [ ! -f "$CDS_FILE" ]; then
-  nohup "$DEV_JDK/bin/java" -XX:AOTMode=create -XX:AOTConfiguration="$AOT_CONF" -XX:AOTCache="$CDS_FILE" ${BASE_OPTS[@]@Q} -cp '$CP' milkman.MilkmanApplication >/dev/null 2>&1 &
+  nohup $(printf '%q' "$DEV_JDK/bin/java") -XX:AOTMode=create -XX:AOTConfiguration=$(printf '%q' "$AOT_CONF") -XX:AOTCache=$(printf '%q' "$CDS_FILE") $BASE_OPTS_Q -cp $(printf '%q' "$CP") milkman.MilkmanApplication >/dev/null 2>&1 &
 fi
 exit \$rc
 RUN
@@ -155,7 +170,7 @@ run = 'tail -f "$LOG_FILE"'
 [tasks.clean]
 description = "Drop cached classpath and milkman install jars."
 run = '''
-rm -f "$CP_FILE" "$PID_FILE" "$LOG_FILE"
+rm -f "$CP_FILE" "$PID_FILE" "$LOG_FILE" "$CDS_FILE" "${CDS_FILE}.config" "${CDS_FILE}.sig"
 rm -rf ~/.m2/repository/com/github/warmuuh/milkman*
 echo "cleaned"
 '''
