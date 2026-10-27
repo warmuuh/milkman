@@ -5,6 +5,8 @@ version 5.13.0 - upcoming:
   * upgraded to java 25
   * upgraded [MCP plugin](/milkman-mcp) to MCP Java SDK 2.1.0
   * reduced cold-start time (~2.0s → ~0.7s) via launch-script AOTCache and startup code fixes
+  * added native macOS Apple Silicon (arm64) distribution — previously only an x86_64 bundle was shipped, forcing Rosetta
+  * bundled runtimes now include the Server VM (C2) across all platforms, improving warm startup
 
 version 5.12.0:
   * upgraded reactor to 3.7.0

@@ -69,10 +69,12 @@ jobs:
         run: |
           RELEASE=$(curl -s https://api.github.com/repos/warmuuh/milkman/releases/latest)
           VERSION=$(echo "$RELEASE" | jq -r '.tag_name')
-          ASSET_URL="https://github.com/warmuuh/milkman/releases/download/${VERSION}/milkman-dist-appbundle-macos64-bin.tgz"
+          BASE_URL="https://github.com/warmuuh/milkman/releases/download/${VERSION}"
 
-          curl -sL "$ASSET_URL" -o milkman.tgz
-          SHA256=$(sha256sum milkman.tgz | cut -d' ' -f1)
+          curl -sL "${BASE_URL}/milkman-dist-appbundle-macos64-bin.tgz" -o milkman-intel.tgz
+          curl -sL "${BASE_URL}/milkman-dist-appbundle-macos-aarch64-bin.tgz" -o milkman-arm64.tgz
+          INTEL_SHA256=$(sha256sum milkman-intel.tgz | cut -d' ' -f1)
+          ARM_SHA256=$(sha256sum milkman-arm64.tgz | cut -d' ' -f1)
 
           mkdir -p ~/.ssh
           echo "$TAP_DEPLOY_KEY" > ~/.ssh/tap_key
@@ -81,8 +83,22 @@ jobs:
           export GIT_SSH_COMMAND="ssh -i ~/.ssh/tap_key -o IdentitiesOnly=yes"
 
           git clone git@github.com:warmuuh/homebrew-milkman.git tap
-          sed -i "s/version \".*\"/version \"${VERSION}\"/" tap/Casks/milkman.rb
-          sed -i "s/sha256 \".*\"/sha256 \"${SHA256}\"/" tap/Casks/milkman.rb
+          # Expected Cask format (dual-arch, see docs.brew.sh/Cask-Cookbook):
+          #   cask "milkman" do
+          #     arch arm: "-aarch64", intel: "64"
+          #     version "..."
+          #     on_arm do
+          #       sha256 "<arm sha>"
+          #     end
+          #     on_intel do
+          #       sha256 "<intel sha>"
+          #     end
+          #     url "https://github.com/warmuuh/milkman/releases/download/#{version}/milkman-dist-appbundle-macos#{arch}-bin.tgz"
+          #     ...
+          #   end
+          sed -i -E "s|^([[:space:]]*version )\".*\"|\1\"${VERSION}\"|" tap/Casks/milkman.rb
+          sed -i -E "/on_arm do/,/^  end$/{s|sha256 \"[^\"]*\"|sha256 \"${ARM_SHA256}\"|}" tap/Casks/milkman.rb
+          sed -i -E "/on_intel do/,/^  end$/{s|sha256 \"[^\"]*\"|sha256 \"${INTEL_SHA256}\"|}" tap/Casks/milkman.rb
           cd tap
           git config user.email "action@github.com"
           git config user.name "GitHub Action"

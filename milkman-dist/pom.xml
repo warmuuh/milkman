@@ -249,7 +249,8 @@
 						<option>--no-man-pages</option>
 <!--						breaks cross-platform compilation: -->
 <!--						<option>&#45;&#45;generate-cds-archive</option>-->
-						<option>--vm=client</option>
+<!--						&#45;&#45;vm omitted so jlink defaults to all VMs. -->
+<!--						&#45;&#45;vm=client previously dropped the Server VM (C2) and halved startup speed. -->
 					</options>
 					<output/>
 					<tool/>
@@ -304,6 +305,24 @@
 							<providerConfig>
 								<version>${jdk.version}</version>
 								<arch>amd64-full</arch>
+								<type>jdk</type>
+								<os>macos</os>
+							</providerConfig>
+						</configuration>
+					</execution>
+					<execution>
+						<id>call-jlink-macos-aarch64</id>
+						<goals>
+							<goal>jlink</goal>
+						</goals>
+						<phase>package</phase>
+						<configuration>
+							<output>${project.build.directory}${file.separator}jre-macos-aarch64</output>
+
+							<provider>BELLSOFT</provider><!-- liberica contains javafx -->
+							<providerConfig>
+								<version>${jdk.version}</version>
+								<arch>aarch64-full</arch>
 								<type>jdk</type>
 								<os>macos</os>
 							</providerConfig>
@@ -367,6 +386,34 @@
 							<finalName>${project.artifactId}-appbundle-macos64</finalName>
 							<descriptors>
 								<descriptor>src/assembly/bundle-macos.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+					<execution>
+						<id>distro-assembly-macos-aarch64</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<tarLongFileMode>posix</tarLongFileMode>
+							<finalName>${project.artifactId}-macos-aarch64</finalName>
+							<descriptors>
+								<descriptor>src/assembly/bin-macos-aarch64.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+					<execution>
+						<id>distro-assembly-macos-aarch64-bundle</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<tarLongFileMode>posix</tarLongFileMode>
+							<finalName>${project.artifactId}-appbundle-macos-aarch64</finalName>
+							<descriptors>
+								<descriptor>src/assembly/bundle-macos-aarch64.xml</descriptor>
 							</descriptors>
 						</configuration>
 					</execution>
