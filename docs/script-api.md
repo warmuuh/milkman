@@ -22,17 +22,17 @@ pre or post scripts.
 
 #### Request properties
 
-* Aspect `operation` (GrpcOperationAspect)
-  * name (String)
-  * operation (String)
-  * protoSchema (String)
-  * useReflection (boolean)
 * Aspect `payload` (GrpcPayloadAspect)
   * name (String)
   * payload (String)
 * Aspect `headers` (GrpcHeaderAspect)
   * entries (List)
   * name (String)
+* Aspect `operation` (GrpcOperationAspect)
+  * name (String)
+  * operation (String)
+  * protoSchema (String)
+  * useReflection (boolean)
 #### Response properties
 
 * Aspect `Payload` (GrpcResponsePayloadAspect)
@@ -46,13 +46,13 @@ pre or post scripts.
 
 #### Request properties
 
-* Aspect `query` (RestQueryParamAspect)
-  * entries (List)
-  * name (String)
 * Aspect `body` (RestBodyAspect)
   * body (String)
   * name (String)
 * Aspect `headers` (RestHeaderAspect)
+  * entries (List)
+  * name (String)
+* Aspect `query` (RestQueryParamAspect)
   * entries (List)
   * name (String)
 #### Response properties
@@ -63,29 +63,29 @@ pre or post scripts.
 * Aspect `body` (RestResponseBodyAspect)
   * body (Flux)
   * name (String)
-* Aspect `debugBody` (DebugRequestBodyAspect)
-  * body (String)
-  * name (String)
 * Aspect `headers` (RestResponseHeaderAspect)
   * entries (List)
+  * name (String)
+* Aspect `debugBody` (DebugRequestBodyAspect)
+  * body (String)
   * name (String)
 
 ### Request Type: Mcp
 
 #### Request properties
 
-* Aspect `resources` (McpResourcesAspect)
-  * name (String)
-  * query (String)
-  * resources (List)
-  * selectedMcpResource (Optional)
-  * selectedResource (String)
 * Aspect `prompts` (McpPromptsAspect)
   * name (String)
   * prompts (List)
   * query (String)
   * selectedMcpPrompt (Optional)
   * selectedPrompt (String)
+* Aspect `resources` (McpResourcesAspect)
+  * name (String)
+  * query (String)
+  * resources (List)
+  * selectedMcpResource (Optional)
+  * selectedResource (String)
 * Aspect `tools` (McpToolsAspect)
   * name (String)
   * query (String)
@@ -94,9 +94,6 @@ pre or post scripts.
   * tools (List)
 #### Response properties
 
-* Aspect `result` (McpResponseAspect)
-  * name (String)
-  * response (Flux)
 * Aspect `instructions` (McpInstructionsAspect)
   * instructions (Flux)
   * name (String)
@@ -106,17 +103,20 @@ pre or post scripts.
 * Aspect `events` (McpEventsAspect)
   * events (Flux)
   * name (String)
+* Aspect `result` (McpResponseAspect)
+  * name (String)
+  * response (Flux)
 
 ### Request Type: NoSql
 
 #### Request properties
 
-* Aspect `parameters` (NosqlParameterAspect)
-  * entries (List)
-  * name (String)
 * Aspect `query` (NosqlQueryAspect)
   * name (String)
   * query (String)
+* Aspect `parameters` (NosqlParameterAspect)
+  * entries (List)
+  * name (String)
 #### Response properties
 
 * Aspect `result` (NosqlResponseAspect)
@@ -142,13 +142,13 @@ pre or post scripts.
 
 #### Request properties
 
-* Aspect `settings` (SocketIoSettingsAspect)
-  * clientVersion (SocketIoVersion)
-  * handshakePath (String)
-  * name (String)
 * Aspect `sio` (SocketIOAspect)
   * event (String)
   * message (String)
+  * name (String)
+* Aspect `settings` (SocketIoSettingsAspect)
+  * clientVersion (SocketIoVersion)
+  * handshakePath (String)
   * name (String)
 #### Response properties
 
